@@ -1,0 +1,86 @@
+// 基础视图样式
+
+
+//去除滚动条样式
+::-webkit-scrollbar {  
+    display: none;  
+    width: 0 !important;  
+    height: 0 !important;  
+    -webkit-appearance: none;  
+    background: transparent;  
+} 
+
+// 布局相关
+.t_left{
+	text-align: left;
+}
+.t_center{
+	text-align: center;
+}
+.t_right{
+	text-align: right;
+}
+.f_left{
+	float: left;
+}
+.f_right{
+	float: right;
+}
+.clearfix:after{    /*在.clearfix后边追加一个隐藏的block,带一个clear:both属性*/
+    content: "";
+    display: block;  /*block宽度会横向填充满屏幕，在父元素的最后追加一个height:0，占满屏幕的看不见的细长条*/
+    line-height: 0;
+    clear: both;  /*这个最下边细长条左右两边都清除float*/
+}
+.t_oneline{
+	overflow:hidden; /*超出的部分隐藏起来。*/ 
+	white-space:nowrap;/*不显示的地方用省略号...代替*/
+	text-overflow:ellipsis;/* 支持 IE */
+	word-break: break-all;
+}
+.t_twoline{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	word-break: break-all;
+	line-clamp: 2;
+}
+
+.t_threeline{
+	text-overflow: -o-ellipsis-lastline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.borderCDCDCD{
+	border: #CDCDCD 1upx solid;
+	box-sizing: border-box;
+}
+
+.borderfff{
+	border: #FFFFFF 1upx solid;
+}
+
+.borderred{
+	border: $red01 1upx solid;
+}
+
+.borderbottom{
+	border-bottom: #CDCDCD 1upx solid;
+}
+
+.bordertop{
+	border-top: #CDCDCD 1upx solid;
+}
+
+.borderradiu30{
+	border-radius: 30upx;
+}
+

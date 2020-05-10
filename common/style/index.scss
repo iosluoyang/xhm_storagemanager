@@ -1,0 +1,10 @@
+/* 引入colorUI的样式 */
+@import "@/colorui/main.css";
+@import "@/colorui/icon.css";
+@import "@/colorui/animation.css";
+@import "@/common/style/aboutcolorUI.scss"; // 重写colorUI的部分样式
+
+/* 引入tree 样式 */
+@import "@/components/ly-tree/ly-tree.css";
+
+@import "@/common/style/base.scss"; // 基本样式

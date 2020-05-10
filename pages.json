@@ -1,0 +1,98 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/home/index",
+			"style" : {
+				"navigationBarTitleText":"首页"
+			}
+		}
+        ,{
+            "path" : "pages/base/login",
+            "style" : {
+            	"navigationBarTitleText":"登录"
+            }
+        }
+		,{
+		    "path" : "pages/goodstype/index",
+		    "style" : {
+				"navigationBarTitleText":"商品分类"
+			}
+		}
+		,{
+		    "path" : "pages/goods/goodslist",
+				"style" : {
+				"navigationBarTitleText":"商品列表",
+				"app-plus" : {
+					"bounce" : "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
+				}
+			}
+		}
+		,{
+		    "path" : "pages/goods/goodsdetail",
+		    "style" : {
+				"navigationBarTitleText":"商品详情"
+			}
+		}
+		,{
+		    "path" : "pages/goods/handlegoods",
+		    "style" : {
+				"navigationBarTitleText":"新增/编辑商品"
+			}
+		}
+		,{
+		    "path" : "pages/stock/index",
+		    "style" : {
+				"navigationBarTitleText":"库存管理"
+			}
+		}
+        ,{
+            "path" : "pages/me/index",
+            "style" : {
+            	"navigationBarTitleText":"我"
+            }
+        }
+		,{
+		    "path" : "pages/me/resetpwd",
+		    "style" : {
+				"navigationBarTitleText":"重置密码"
+			}
+		}
+        ,{
+            "path" : "pages/me/persondetail",
+            "style" : {
+            	"navigationBarTitleText":"个人详情"
+            }
+        }
+        ,{
+            "path" : "pages/managepeople/index",
+            "style" : {
+				"navigationBarTitleText":"人员管理"
+			}
+        }
+        ,{
+            "path" : "pages/managepeople/handlemember",
+            "style" : {
+				"navigationBarTitleText":"添加成员/编辑成员"
+			}
+        }
+        ,{
+            "path" : "pages/managepeople/operationlog/index",
+            "style" : {
+				"navigationBarTitleText":"操作日志"
+			}
+        }
+        ,{
+            "path" : "pages/me/buildqrcode",
+            "style" : {
+				"navigationBarTitleText":"生成二维码"
+			}
+        }
+    ],
+	"globalStyle": {
+		"navigationStyle": "custom",
+		"backgroundColor": "#FFFFFF",
+		"usingComponents": {
+			"ly-tree-node": "/components/ly-tree/ly-tree-node" // 加载tree组件 否则小程序和APP不显示
+		}
+	}
+}
