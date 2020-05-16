@@ -26,6 +26,11 @@ const en = {
 		success: "success",
 		fail: "fail",
 		needtowait: "Coming soon……",
+		choosable: "Optional",
+		all: "All",
+		other: "Other",
+		onekeyclone: "Clone",
+		fix: "Fix",
 	
 	},
 	
@@ -72,7 +77,7 @@ const en = {
 		searchproduct: "Search by the Product Name",
 		deletetypecontent: "the products which belong to this classification will be moved to the other classification, you can set their classification later",
 		pleaseselectgoodstype: "Please select the product type",
-		lackstocktip: "You have not fill up the specification and the price of the product , Do you want to continue uploading product ?",
+		lackstocktip: "Please click preview button and fill up the stock and price infos",
 		pleaseselectgoodspec: "Please select the specification",
 		pleasescangoodsbarcode: "Please scan the QR Code",
 		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
@@ -201,8 +206,11 @@ const en = {
 	// 商品相关
 	goods: {
 		
-		price: "Selling Price",
 		costprice: "Cost Price",
+		price: "Sale Price",
+		agentprice: "Agent Price",
+		creditprice: "Credit Price",
+		
 		stock: "Stock",
 		sellnum: "Selling",
 		specindex: "Index",

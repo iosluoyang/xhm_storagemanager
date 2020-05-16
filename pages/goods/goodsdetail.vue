@@ -75,16 +75,44 @@
 				</view>
 				
 				<!-- 平台售价 -->
-				<view class="cu-item arrow" @tap.stop="fixprice('price')">
+				<view class="cu-item arrow" @tap.stop="fixprice('saleprice')">
 					<view class="content">
 						<text class="cuIcon text-red cuIcon-moneybagfill"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.price}}</text>
-						<text class="text-sm text-red" v-if="selectstockinfo">{{selectstockinfo.price}}</text>
+						<text class="text-sm text-red" v-if="selectspecinfo">{{selectspecinfo.salePrice}}</text>
 						
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.goods.goodsdetail.fixprice}}</text>
+						<text class="text-grey">{{i18n.base.fix}}</text>
+					</view>
+				</view>
+				
+				<!-- 代理价 -->
+				<view class="cu-item arrow" @tap.stop="fixprice('agentprice')">
+					<view class="content">
+						<text class="cuIcon cuIcon-moneybag"></text>
+						<text class="text-df text-black margin-right-sm">{{i18n.goods.agentprice}}</text>
+						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.agentPrice}}</text>
+						
+					</view>
+					
+					<view class="action">
+						<text class="text-grey">{{i18n.base.fix}}</text>
+					</view>
+				</view>
+				
+				<!-- 授信价 -->
+				<view class="cu-item arrow" @tap.stop="fixprice('creditprice')">
+					<view class="content">
+						<text class="cuIcon cuIcon-moneybag"></text>
+						<text class="text-df text-black margin-right-sm">{{i18n.goods.creditprice}}</text>
+						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.creditPrice}}</text>
+						
+					</view>
+					
+					<view class="action">
+						<text class="text-grey">{{i18n.base.fix}}</text>
 					</view>
 				</view>
 				
@@ -93,13 +121,14 @@
 					<view class="content">
 						<text class="cuIcon cuIcon-moneybag"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.costprice}}</text>
-						<text class="text-sm text-grey" v-if="selectstockinfo">{{selectstockinfo.costPrice}}</text>
+						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.costPrice}}</text>
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.goods.goodsdetail.fixcostprice}}</text>
+						<text class="text-grey">{{i18n.base.fix}}</text>
 					</view>
 				</view>
+				
 				
 			</view>
 			
@@ -123,7 +152,7 @@
 		</goodsspecselector>
 		
 		<!-- 价格修改弹出框 -->
-		<view class="cu-modal" v-if="selectstockinfo" :class=" ifshowmodal ?'show':''">
+		<view class="cu-modal" v-if="selectspecinfo" :class=" ifshowmodal ?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{ fixpricetype === 'costprice' ? i18n.goods.goodsdetail.fixcostprice : i18n.goods.goodsdetail.fixprice }}</view>
@@ -140,7 +169,7 @@
 					<input type="digit"
 							class="borderbottom radius text-xl"
 							maxlength="6" 
-							:placeholder=" fixpricetype === 'costprice' ? `${i18n.goods.costprice}: ${selectstockinfo.costPrice}` : (fixpricetype === 'price' ? `${i18n.goods.price}: ${selectstockinfo.price}` : '') " 
+							:placeholder=" fixpricetype === 'costprice' ? `${i18n.goods.costprice}: ${selectspecinfo.costPrice}` : (fixpricetype === 'price' ? `${i18n.goods.price}: ${selectspecinfo.price}` : '') " 
 							v-model="tempfixprice"
 							:cursor-spacing="20"
 							:focus="ifshowmodal"
@@ -180,12 +209,12 @@
 				
 				selectattributeIdArr: [], // 默认选中的属性id数组
 				
-				selectstockinfo: null, // 当前选中的规格对象
+				selectspecinfo: null, // 当前选中的规格对象
 				showspecstr: null, // 当前选中的规格名称文本
 				ifshowpopup: false, // 是否显示底部规格弹框  默认为否不显示
 				
 				ifshowmodal: false, // 是否显示价格修改弹窗  默认为否
-				fixpricetype: '', // 修改价格的类型  costprice为修改成本价  price为修改平台售价
+				fixpricetype: '', // 修改价格的类型  costprice为修改成本价  saleprice为修改平台售价 agentprice为修改代理价 creditprice为修改授信价
 				tempfixprice: '', // 临时输入价格变量
 				ifshowfixbtnanimation: false, // 是否显示修改价格时的错误提示动画  默认为否
 				
@@ -251,9 +280,9 @@
 				
 				let product = _this.product
 				// 处理商品价格数据
-				let stockinfos = product.stockInfos
-				let maxprice = Math.max.apply(Math, stockinfos.map(function(stockinfo) {return stockinfo.price}))
-				let minprice = Math.min.apply(Math, stockinfos.map(function(stockinfo) {return stockinfo.price}))
+				let specs = product.specs
+				let maxprice = Math.max.apply(Math, specs.map(function(specinfo) {return specinfo.salePrice}))
+				let minprice = Math.min.apply(Math, specs.map(function(specinfo) {return specinfo.salePrice}))
 				let showproductprice = `${minprice} ~ ${maxprice}`
 				product.price = showproductprice
 				
@@ -290,8 +319,8 @@
 			// 选择完某个库存规格
 			confirmselectspec(info) {
 				// 当前选择的库存
-				let selectstockinfo = info.stockinfo
-				this.selectstockinfo = selectstockinfo
+				let selectspecinfo = info.specinfo
+				this.selectspecinfo = selectspecinfo
 				
 				// 当前规格文本
 				let showspecstr = info.showspecstr
@@ -303,7 +332,7 @@
 			fixprice(pricetype) {
 				
 				// 判断是否已经选择了规格  没有的话提示请先选择规格
-				if(this.selectstockinfo) {
+				if(this.selectspecinfo) {
 					this.fixpricetype = pricetype
 					this.ifshowmodal = true
 				}
@@ -339,15 +368,29 @@
 					if(this.fixpricetype === 'costprice') {
 						data = {
 							pid: this.pid,
-							specId: this.selectstockinfo.specId,
-							costPrice: targetprice
+							specId: this.selectspecinfo.specId,
+							costPrice: targetprice,
 						}
 					}
-					else if(this.fixpricetype === 'price') {
+					else if(this.fixpricetype === 'saleprice') {
 						data = {
 							pid: this.pid,
-							specId: this.selectstockinfo.specId,
+							specId: this.selectspecinfo.specId,
 							price: targetprice
+						}
+					}
+					else if(this.fixpricetype === 'agentprice') {
+						data = {
+							pid: this.pid,
+							specId: this.selectspecinfo.specId,
+							agentPrice: targetprice
+						}
+					}
+					else if(this.fixpricetype === 'creditprice') {
+						data = {
+							pid: this.pid,
+							specId: this.selectspecinfo.specId,
+							creditPrice: targetprice
 						}
 					}
 					
@@ -356,8 +399,8 @@
 						_this.hideModal() // 隐藏价格修改弹框
 						// 将当前已经选中的属性id数组设置给规格属性选择器
 						let selectattributeIdArr = []
-						_this.selectstockinfo.computeAttributeValues.forEach(valueinfo => {
-							selectattributeIdArr.push(valueinfo.attributeId)
+						_this.selectspecinfo.attributeList.forEach(attributevalueinfo => {
+							selectattributeIdArr.push(attributevalueinfo.attributeId)
 						})
 						_this.selectattributeIdArr = selectattributeIdArr
 						// 重新请求数据

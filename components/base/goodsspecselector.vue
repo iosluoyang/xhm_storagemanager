@@ -23,7 +23,7 @@
 						<!-- 当前已选规格 -->
 						<view class="proinfospec margin-bottom-sm">
 							<text class="text-grey text-df">{{`${i18n.goods.goodsdetail.selected}: `}}</text>
-							<text class="text-black text-bold text-df" v-if="selectstockinfo">{{ showspecstr }}</text>
+							<text class="text-black text-bold text-df" v-if="selectspecinfo">{{ showspecstr }}</text>
 						</view>
 						
 						<!-- 价格信息 -->
@@ -32,14 +32,14 @@
 							<!-- 平台售价 -->
 							<view class="sellprice text-df flex align-center margin-right">
 								<text class="text-grey">{{ `${i18n.goods.price}: ` }}</text>
-								<text class="text-red" v-if="selectstockinfo">{{ selectstockinfo.price }}</text>
+								<text class="text-red" v-if="selectspecinfo">{{ selectspecinfo.salePrice }}</text>
 							</view>
 							
 							<!-- 成本价 -->
-							<view class="originalprice text-df flex align-center">
+							<!-- <view class="originalprice text-df flex align-center">
 								<text class="text-grey">{{ `${i18n.goods.costprice}: ` }}</text>
-								<text class="text-grey" v-if="selectstockinfo">{{ selectstockinfo.costPrice }}</text>
-							</view>
+								<text class="text-grey" v-if="selectspecinfo">{{ selectspecinfo.costPrice }}</text>
+							</view> -->
 							
 						</view>
 						
@@ -59,21 +59,21 @@
 			<scroll-view scroll-y class="content padding text-left">
 				
 				<!-- 属性列表区域 -->
-				<view class="attributesview" v-if="specs">
+				<view class="attributesview" v-if="attributeList">
 					
-					<view class="eachattributeview" v-for="(nameinfo, nameindex) in specs" :key="nameindex">
+					<view class="eachattributeview" v-for="(attributeinfo, attributeindex) in attributeList" :key="attributeindex">
 						
 						<!-- 属性名 -->
-						<view class="attributenameview text-black text-lg">{{nameinfo.attributeName}}</view>
+						<view class="attributenameview text-black text-lg">{{attributeinfo.attributeName}}</view>
 						
 						<!-- 属性值 -->
 						<view class="attributevaluesview flex flex-wrap align-center padding">
 							
-							<view class="eachvalue cu-btn radius margin-left-sm" v-for="(valueinfo, valueindex) in nameinfo.attributeValues" :key="valueindex"
-							:class=" valueinfo.selected ? 'bg-blue' : 'bg-gray' "
-							@tap.stop="selectattribute(nameindex,valueindex)">
+							<view class="eachvalue cu-btn radius margin-left-sm" v-for="(attributevalueinfo, attributevalueindex) in attributeinfo.attributeValues" :key="attributevalueindex"
+							:class=" attributevalueinfo.selected ? 'bg-blue' : 'bg-gray' "
+							@tap.stop="selectattribute(attributeindex,attributevalueindex)">
 							
-								{{valueinfo.attributeValue}}
+								{{attributevalueinfo.attributeValue}}
 								
 							</view>
 						
@@ -87,7 +87,7 @@
 			
 			<!-- 按钮区域 -->
 			<view class="padding bordertop">
-				<button class="cu-btn block shadow-blur lg bg-gradual-blue round" :disabled="!selectstockinfo" @tap.stop="confirmselectstockinfo">{{i18n.base.confirm}}</button>
+				<button class="cu-btn block shadow-blur lg bg-gradual-blue round" :disabled="!selectspecinfo" @tap.stop="confirmselectspec">{{i18n.base.confirm}}</button>
 			</view>
 			
 		</view>
@@ -149,9 +149,8 @@
 			return {
 				product: null, // 当前商品的信息
 				proimg: null, // 当前的商品图片
-				specs: [], // 当前商品的规格数组
-				
-				}
+				attributeList: [], // 当前商品的属性数组
+			}
 		},
 		
 		watch: {
@@ -159,7 +158,7 @@
 			// 默认选中的属性数组发生变化时
 			defaultselectattributeIds(newValue, oldValue) {
 				console.log(`检测到默认选中规格变更 开始重新计算数据源选中状态`);
-				this.getproductdata()
+				this.getproductspecdata()
 			},
 			
 			//
@@ -168,16 +167,16 @@
 		
 		computed: {
 			
-			// 当前选中的规格库存信息
-			selectstockinfo() {
+			// 当前选中的规格信息
+			selectspecinfo() {
 				
 				let selectattributeIdArr = []
 				// 首先计算当前已经选择的规格id数组
-				this.specs.forEach(nameinfo => {
-					if(nameinfo.attributeValues) {
-						nameinfo.attributeValues.forEach(valueinfo => {
-							if(valueinfo.selected) {
-								selectattributeIdArr.push(valueinfo.attributeId)
+				this.attributeList.forEach(attributeinfo => {
+					if(attributeinfo.attributeValues) {
+						attributeinfo.attributeValues.forEach(attributevalueinfo => {
+							if(attributevalueinfo.selected) {
+								selectattributeIdArr.push(attributevalueinfo.attributeId)
 							}
 						})
 					}
@@ -186,10 +185,10 @@
 				// 根据当前选中的规格id数组计算出当前所选规格的库存和价格信息
 				
 				// 遍历当前的库存价格组合
-				let selectstockinfo = this.stockinfos.find((stockinfo) => {
+				let selectspecinfo = this.specs.find((specinfo) => {
 					
-					// 如果选中的规格数量为0或者数量与当前库存对象对应的属性值数量不一致代表没有匹配 直接返回
-					if(selectattributeIdArr.length === 0 || !stockinfo.computeAttributeValues || stockinfo.computeAttributeValues.length === 0 || selectattributeIdArr.length !== stockinfo.computeAttributeValues.length) {
+					// 如果选中的规格数量为0或者数量与当前规格对象对应的属性值数量不一致代表没有匹配 直接返回
+					if(selectattributeIdArr.length === 0 || !specinfo.attributeList || specinfo.attributeList.length === 0 || selectattributeIdArr.length !== specinfo.attributeList.length) {
 						return false
 					}
 					else {
@@ -197,8 +196,8 @@
 						// 遍历下属的每一个属性值 只要有一个条件不符合就直接结束查找 返回
 						
 						// 只要找到其中一个属性不包含在已选择的数组中的则结束查找
-						let ifallmatchindex = stockinfo.computeAttributeValues.findIndex((valueinfo,valueindex) => {
-							return !selectattributeIdArr.contains(valueinfo.attributeId)
+						let ifallmatchindex = specinfo.attributeList.findIndex((attributevalueinfo,valueindex) => {
+							return !selectattributeIdArr.contains(attributevalueinfo.attributeId)
 						})
 						if(ifallmatchindex !== -1) {
 							return false
@@ -212,9 +211,9 @@
 					
 				})
 				
-				console.log(`当前库存价格对象为:${JSON.stringify(selectstockinfo)}`);
+				console.log(`当前库存价格对象为:${JSON.stringify(selectspecinfo)}`);
 				
-				return selectstockinfo
+				return selectspecinfo
 			},
 			
 			// 当前属性值集合展示文本
@@ -223,11 +222,11 @@
 				// 当前属性值集合展示文本
 				let showspecArr = []
 				
-				let selectstockinfo = this.selectstockinfo
+				let selectspecinfo = this.selectspecinfo
 				
-				if(selectstockinfo) {
-					selectstockinfo.computeAttributeValues.forEach(valueinfo => {
-						showspecArr.push(valueinfo.attributeValue)
+				if(selectspecinfo) {
+					selectspecinfo.attributeList.forEach(attributevalueinfo => {
+						showspecArr.push(attributevalueinfo.attributeValue)
 					})
 				}
 				let showspecstr = showspecArr.join('、')
@@ -240,11 +239,11 @@
 				
 				let selectattributeIds = []
 				
-				let selectstockinfo = this.selectstockinfo
+				let selectspecinfo = this.selectspecinfo
 				
-				if(selectstockinfo) {
-					selectstockinfo.computeAttributeValues.forEach(valueinfo => {
-						selectattributeIds.push(valueinfo.attributeId)
+				if(selectspecinfo) {
+					selectspecinfo.attributeList.forEach(attributevalueinfo => {
+						selectattributeIds.push(attributevalueinfo.attributeId)
 					})
 				}
 				return selectattributeIds
@@ -259,14 +258,14 @@
 			_this = this
 			
 			// 请求当前商品的信息
-			_this.getproductdata()
+			_this.getproductspecdata()
 			
 		},
 		
 		methods: {
 			
-			// 获取商品的信息
-			getproductdata() {
+			// 获取商品的规格相关信息
+			getproductspecdata() {
 				_this.$api.goodsapi.getgoodsdetail({pid:_this.pid}).then(response => {
 					// 获取数据成功
 					let product = response.data.product
@@ -275,15 +274,15 @@
 					let proimg = product.imgs.split(',').length > 0 ? _this.imgUrl + product.imgs.split(',')[0] : null
 					_this.proimg = proimg
 					
+					let attributeList = product.attributeList
+					
+					_this.setmapattributeArr(attributeList) // 处理属性数组 
+					
 					let specs = product.specs
-					
-					_this.setmapspecArr(specs) // 处理规格数组 
-					
-					let stockinfos = product.stockInfos
-					_this.stockinfos = stockinfos
+					_this.specs = specs
 					
 					// 获取完之后调用一次选中方法
-					_this.confirmselectstockinfo()
+					_this.confirmselectspec()
 					
 				}).catch(error => {
 					// 获取数据失败
@@ -291,25 +290,25 @@
 				
 			},
 			
-			// 设置当前处理过的规格数组
-			setmapspecArr(specsArr) {
+			// 设置当前处理过的属性数组
+			setmapattributeArr(attributeList) {
 				
-				let specs = []
+				let newattributeList = []
 				
-				if(specsArr && specsArr.length > 0) {
+				if(attributeList && attributeList.length > 0) {
 					
-					specsArr.forEach((specnameinfo,index) => {
+					attributeList.forEach((attributeinfo,index) => {
 						
 						let values = []
 						// 遍历二级分类数组
-						if(specnameinfo.attributeValues && specnameinfo.attributeValues.length > 0) {
-							specnameinfo.attributeValues.forEach((specvalueinfo, index) => {
+						if(attributeinfo.attributeValues && attributeinfo.attributeValues.length > 0) {
+							attributeinfo.attributeValues.forEach((attributevalueinfo, index) => {
 								
-								let selected = _this.defaultselectattributeIds.findIndex((attributeId) => { return parseInt(specvalueinfo.attributeId) === parseInt(attributeId)}) !== -1
+								let selected = _this.defaultselectattributeIds.findIndex((attributeId) => { return parseInt(attributevalueinfo.attributeId) === parseInt(attributeId)}) !== -1
 								
 								let value = {
-									attributeId: specvalueinfo.attributeId,
-									attributeValue: specvalueinfo.attributeValue,
+									attributeId: attributevalueinfo.attributeId,
+									attributeValue: attributevalueinfo.attributeValue,
 									selected: selected
 								}
 								values.push(value)
@@ -317,17 +316,17 @@
 							})
 						}
 						
-						let eachspec = {
-							attributeName: specnameinfo.attributeName,
+						let eachattributeinfo = {
+							attributeName: attributeinfo.attributeName,
 							attributeValues: values
 						}
 						
-						specs.push(eachspec)
+						newattributeList.push(eachattributeinfo)
 						
 					})
 					
 				}
-				_this.specs = specs
+				_this.attributeList = attributeList
 				
 			},
 			
@@ -335,31 +334,31 @@
 			selectattribute(nameindex,valueindex) {
 				
 				// 找到对应的属性值
-				let myselfspecnameinfo = _this.specs[nameindex]
-				let myselfspecnamevalues = myselfspecnameinfo.attributeValues
-				let myselfspecvalueinfo = myselfspecnamevalues[valueindex]
-				let myselfselected = myselfspecvalueinfo.selected
+				let myselfattributeinfo = _this.attributeList[nameindex]
+				let myselfattributevalues = myselfattributeinfo.attributeValues
+				let myselfattributevalueinfo = myselfattributevalues[valueindex]
+				let myselfselected = myselfattributevalueinfo.selected
 				
 				// 如果是未选中则将同级的全部设置为未选中
-				myselfspecnamevalues.forEach((specvalueinfo, index) => {
+				myselfattributevalues.forEach((specvalueinfo, index) => {
 					if(!myselfselected) {
 						specvalueinfo.selected = false
 					}
 				})
 				// 将自己选中状态取反
-				myselfspecvalueinfo.selected = !myselfspecvalueinfo.selected
+				myselfattributevalueinfo.selected = !myselfattributevalueinfo.selected
 				
-				myselfspecnameinfo.attributeValues = myselfspecnamevalues
-				_this.$set(_this.specs, nameindex, myselfspecnameinfo)
+				myselfattributeinfo.attributeValues = myselfattributevalues
+				_this.$set(_this.attributeList, nameindex, myselfattributeinfo)
 				
 			},
 			
 			// 确定选中某一个规格
-			confirmselectstockinfo() {
+			confirmselectspec() {
 				// 当前选中的规格和规格文本
 				
 				let info = {
-					stockinfo: _this.selectstockinfo,
+					specinfo: _this.selectspecinfo,
 					showspecstr: _this.showspecstr,
 					selectattributeIds: _this.selectattributeIds
 				}

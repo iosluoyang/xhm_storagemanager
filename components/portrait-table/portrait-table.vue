@@ -2,11 +2,16 @@
 	<view class="table">
 		<view class="thead">
 			<view 
-				:style="{textAlign:align,backgroundColor:titleBg}"
 				class="title" 
 				v-for="(item, index) in title" 
-				:key="index">
-				<text>{{ item.label }}</text>
+				:key="index"
+				:style="{textAlign:align,backgroundColor:titleBg,lineHeight: item.ifclone ? '44rpx' : '88rpx'}"
+				
+				>
+				
+					<view class="t_threeline text-bold text-df">{{ item.label }}</view>
+					<view v-if="item.ifclone" class="text-sm text-blue" @tap.stop="clonetabledata(index)">{{i18n.base.onekeyclone}}</view>
+			
 			</view>
 		</view>
 		<view class="tbody_wrap">
@@ -23,7 +28,7 @@
 								:style="{textAlign:align}" 
 								:type="zItem[item.value].inputtype" 
 								:placeholder="zItem[item.value].placeholder" 
-								v-model="zItem[item.value].defaultvalue" 
+								v-model="zItem[item.value].value" 
 								confirm-type="next"
 								:cursor-spacing="30" />
 						<text v-else-if=" zItem[item.value] && (zItem[item.value].type === 'string') " :style="{textAlign:align}">{{ zItem[item.value].value || '-' }}</text>
@@ -59,7 +64,14 @@ export default {
 			default:'#fff'
 		}
 	},
-	methods: {},
+	methods: {
+		
+		// 复制table的某个数据
+		clonetabledata(rowindex) {
+			this.$emit('clonetablerowdata',rowindex)
+		},
+		
+	},
 };
 </script>
 

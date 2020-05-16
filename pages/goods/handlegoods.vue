@@ -62,7 +62,7 @@
 			
 			<!-- 商品规格内容 只有新增商品才显示 -->
 			<uni-collapse v-if="type==='add'" class="goodsspecview">
-				<uni-collapse-item :open="ifopencollapse" ref="goodsspecitem" :title="i18n.goods.handlegoods.goodsspec" showAnimation>
+				<uni-collapse-item :open.sync="ifopencollapse" ref="goodsspecitem" :title="i18n.goods.handlegoods.goodsspec" showAnimation>
 					
 					<!-- 规格内容区域 -->
 					<view class="padding-xl bg-gray">
@@ -75,37 +75,39 @@
 						<!-- 属性列表区域 -->
 						<view v-if="type==='add'" class="addspecsview flex flex-direction align-center">
 							
-							<view class="eachspecview bg-white padding-sm radius margin-bottom-sm flex align-center justify-between" v-for="(specnameitem, specnameindex) in goodsspecArr" :key="specnameindex">
+							<view class="eachspecview bg-white padding-sm radius margin-bottom-sm flex align-center justify-between" v-for="(attributeItem, attributeIndex) in attributeList" :key="attributeIndex">
 								
-								<!-- 规格名称区域 -->
-								<view class="specnameview flex-sub padding-sm flex align-center">
-									<input type="text" class="specname text-df padding-left-sm padding-right-sm borderCDCDCD radius margin-right-sm" 
-											v-model="specnameitem.attributeName" 
+								<!-- 左侧属性名称 -->
+								<view class="attributenameview flex-sub padding-sm flex align-center">
+									
+									<input type="text" class="attributename text-df padding-left-sm padding-right-sm borderCDCDCD radius margin-right-sm" 
+											v-model="attributeItem.attributeName" 
 											:placeholder="i18n.goods.handlegoods.addspecnameholder"
 											confirm-type="next"
 											:cursor-spacing="30"
 									/>
-									<text class="cuIcon cuIcon-delete text-red" @tap.stop="deletespec(specnameindex)"></text>
+									<text class="cuIcon cuIcon-delete text-red" @tap.stop="deleteAttribute(attributeIndex)"></text>
 								</view>
 								
-								<!-- 规格值集合 -->
-								<view class="specvaluesview padding-sm flex-sub flex flex-direction">
+								<!-- 右侧属性值集合 -->
+								<view class="attributevaluesview padding-sm flex-sub flex flex-direction">
 									
-									<view class="eachvalueview margin-bottom-sm flex align-center" v-for="(specvalueitem,specvalueindex) in specnameitem.attributeValues" :key="specvalueindex">
+									<view class="eachattributevalueview margin-bottom-sm flex align-center" v-for="(attributeValueItem,attributeValueIndex) in attributeItem.attributeValues" :key="attributeValueIndex">
+										
 										<!-- 属性值输入框 -->
-										<input type="text" class="eachspecvalue text-df padding-left-sm padding-right-sm borderCDCDCD radius margin-right-sm" 
-												v-model="specvalueitem.attributeValue" 
+										<input type="text" class="eachattributevalue text-df padding-left-sm padding-right-sm borderCDCDCD radius margin-right-sm" 
+												v-model="attributeValueItem.attributeValue" 
 												:placeholder="i18n.goods.handlegoods.addspecvalueholder" 
 												confirm-type="next"
 												:cursor-spacing="30"
 										/>
 										<!-- 属性值删除按钮 -->
-										<text class="cuIcon cuIcon-delete text-red" @tap.stop="deletespecvalue([specnameindex,specvalueindex])"></text>
+										<text class="cuIcon cuIcon-delete text-red" @tap.stop="deleteAttributeValue([attributeIndex,attributeValueIndex])"></text>
 									</view>
 									
 									
 									<!-- 最后一行为添加属性值按钮 -->
-									<button class="cu-btn sm round bg-blue" @tap.stop="addspecvalue(specnameindex)">
+									<button class="cu-btn sm round bg-blue" @tap.stop="addAttributeValue(attributeIndex)">
 										<text class="cuIcon-roundaddfill margin-right-sm"></text>
 										<text class="text-white">{{i18n.base.add}}</text>
 									</button>
@@ -120,13 +122,13 @@
 						<view v-if="type==='add'" class="optionbtnview flex align-center margin-bottom">
 							
 							<!-- 添加属性按钮 -->
-							<button class="flex-sub cu-btn round bg-blue" @tap.stop="addspec">
+							<button class="flex-sub cu-btn round bg-blue" @tap.stop="addAttribute">
 								<text class="cuIcon-roundaddfill margin-right-sm"></text>
 								<text class="text-white">{{i18n.goods.handlegoods.addspecname}}</text>
 							</button>
 							
 							<!-- 预览按钮 -->
-							<button v-if="goodsspecArr && goodsspecArr.length > 0" class="flex-sub margin-left cu-btn block round bg-cyan" :loading="ifloadingpreview" @tap.stop="previewspecdata">
+							<button v-if="attributeList && attributeList.length > 0" class="flex-sub margin-left cu-btn block round bg-cyan" :loading="ifloadingpreview" @tap.stop="previewspecdata">
 								<text class="cuIcon-forwardfill margin-right-sm"></text>
 								<text class="text-white">{{i18n.base.preview}}</text>
 							</button>
@@ -137,7 +139,7 @@
 						<view v-if="tableData && tableData.length > 0" class="text-center text-df margin-bottom">{{i18n.goods.handlegoods.tabletip}}</view>
 						
 						<!-- 属性值table区域 -->
-						<p-table class="tableview" :tableData="tableData" :title="tableTitleData" align="center" titleBg="#cdcdcd"></p-table>
+						<p-table class="tableview" :tableData="tableData" :title="tableTitleData" @clonetablerowdata="clonetablerowdata" align="center" titleBg="#cdcdcd"></p-table>
 						
 					
 					</view>
@@ -218,11 +220,9 @@
 				secondTypeId: null, // 商品所属的二级分类id
 				
 				
-				ifopencollapse: false, // 是否展开商品规格  默认关闭 当提交数据时进行展开
-				goodsspecArr: [], // 商品规格数组
-				newspecs: [], // 获取完价格库存信息之后生成的最新的规格数组 仅用于上送数据使用
-				stockInfos: [], // 商品价格库存信息
-				newestockinfos: [], // 处理完数据之后的库存价格组合数组 仅用于上送数据使用
+				ifopencollapse: false, // 是否展开商品属性  默认关闭 当提交数据时进行展开
+				attributeList: [], // 商品属性列表
+				specs: [], // 商品规格列表
 				ifloadingpreview: false, // 是否正在加载预览  默认为否
 				tableData: [], // 表格数据
 				tableTitleData: [], // 表格头数据
@@ -294,7 +294,7 @@
 					_this.secondTypeId = product.subTypeId
 					
 					// 规格数组
-					_this.goodsspecArr = product.specs
+					_this.attributeList = product.specs
 					
 					// 获取库存数组
 					_this.stockInfos = product.stockInfos
@@ -396,10 +396,10 @@
 				})
 			},
 			
-			// 添加商品规格
-			addspec() {
-				// 往规格数组中加入数据
-				let attributeInfo = {
+			// 添加商品属性
+			addAttribute() {
+				// 往属性数组中加入数据
+				let attributeItem = {
 					attributeName: '',
 					attributeValues: [
 						{
@@ -407,77 +407,98 @@
 						}
 					],
 				}
-				this.goodsspecArr.push(attributeInfo)
+				this.attributeList.push(attributeItem)
 			},
 			
-			// 删除商品规格
-			deletespec(specnameindex) {
-				this.goodsspecArr.splice(specnameindex, 1)
+			// 删除商品属性
+			deleteAttribute(attributeIndex) {
+				uni.showModal({
+					content: this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: this.i18n.base.cancel,
+					confirmText: this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始删除
+							this.attributeList.splice(attributeIndex, 1)
+						}
+					}
+				});
 			},
 			
 			// 添加某个商品属性的值
-			addspecvalue(specnameindex) {
-				// console.log(`添加的是第${specnameindex}个商品属性`);
+			addAttributeValue(attributeIndex) {
 				// 找到对应的数组  添加属性值
-				let specnameitem = {...this.goodsspecArr[specnameindex]}
-				let attributeArr = specnameitem.attributeValues  // 如: [红色,黄色,蓝色]
+				let attributeItem = {...this.attributeList[attributeIndex]}
+				let attributeValues = attributeItem.attributeValues  // 如: [红色,黄色,蓝色]
 				// 即将添加的属性值
-				let addattributevalue = {
-					attributeValueId: attributeArr.length,
+				let addattributevalueitem = {
 					attributeValue: ''
 				}
-				attributeArr.push(addattributevalue)
+				attributeValues.push(addattributevalueitem)
 				// 强制更新数组
-				specnameitem.attributeValues = attributeArr
-				this.$set(this.goodsspecArr, specnameindex, specnameitem)
-				this.$forceUpdate()
+				attributeItem.attributeValues = attributeValues
+				this.$set(this.attributeList, attributeIndex, attributeItem)
 			},
 			
 			// 删除某个商品属性的值
-			deletespecvalue([specnameindex,specvalueindex]) {
-				console.log(`当前删除的属性名索引为:${specnameindex} --- 属性值索引为:${specvalueindex}`);
+			deleteAttributeValue([attributeIndex,attributeValueIndex]) {
 				
-				// 找到对应的属性名
-				let specnameitem = {...this.goodsspecArr[specnameindex]}
-				let attributeValues = specnameitem.attributeValues
-				// 删除对应的属性值
-				attributeValues.splice(specvalueindex, 1)
-				// 强制更新
-				this.$set(this.goodsspecArr, specnameindex, specnameitem)
+				uni.showModal({
+					content: this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: this.i18n.base.cancel,
+					confirmText: this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始删除
+							
+							// 找到对应的属性
+							let attributeItem = {...this.attributeList[attributeIndex]}
+							let attributeValues = attributeItem.attributeValues
+							// 删除对应的属性值
+							attributeValues.splice(attributeValueIndex, 1)
+							// 强制更新
+							this.$set(this.attributeList, attributeIndex, attributeItem)
+						}
+					}
+				});
+				
+				
 				
 			},
 			
-			// 检查规格数据 返回true或者false 代表是否通过检查
-			checkspecdata() {
+			// 检查属性数据 返回true或者false 代表是否通过检查
+			checkAttributeData() {
 				
-				// 获取当前规格数据
-				let goodsspecArr = [...this.goodsspecArr]
+				// 获取当前规格列表数据
+				let attributeList = [...this.attributeList]
 				
 				// 遍历数据 校验是否缺少字段
 				let ifdataready = true // 数据是否完整  默认为完整
 				
-				// 如果规格数据为空则校验不通过
-				if(goodsspecArr.length === 0) {
+				// 如果规格数据为空则校验不通过 即商品至少有一个属性
+				if(attributeList.length === 0) {
 					ifdataready = false
 				}
 				
 				// 终止for循环，使用break
-				for (var i=0; i < goodsspecArr.length; i++) {
+				for (var i=0; i < attributeList.length; i++) {
 					
-					let specnameitem = goodsspecArr[i]
+					let attributeItem = attributeList[i]
 					
 					// 如果没有属性名的值或者没有属性值数组
-					if(specnameitem.attributeName === '' || specnameitem.attributeValues.length === 0) {
+					if(attributeItem.attributeName === '' || attributeItem.attributeValues.length === 0) {
 						ifdataready = false
 						break //终止for循环，使用break
 					}
 					else{
-						// 开始遍历属性值数组
-						let emptyspecvalueitem = specnameitem.attributeValues.find((specvalueitem, specvalueindex) => {
-							return specvalueitem.attributeValue === ''
+						// 开始遍历该属性下的属性值数组 如果有空的属性值则校验不通过
+						let emptyattributeValueItem = attributeItem.attributeValues.find((attributeValueItem, attributeValueIndex) => {
+							return attributeValueItem.attributeValue === ''
 						})
 						// 如果有存在空的属性值的话也结束循环
-						if(emptyspecvalueitem) {
+						if(emptyattributeValueItem) {
 							ifdataready = false
 							break //终止for循环，使用break
 						}
@@ -488,61 +509,33 @@
 				
 			},
 			
-			// 获取属性规格组合数据
-			getsstockinfospromise() {
+			// 获取属性组合之后的规格数据
+			getSpecListPromise() {
 				
 				let promise = new Promise((resolve, reject) => {
 					
 					// 获取当前规格数据
-					let goodsspecArr = [..._this.goodsspecArr]
+					let attributeList = [..._this.attributeList]
 					
-					// 组合规格数组
-					let specs = []
-					goodsspecArr.forEach((specnameitem,specnameindex) => {
-						// 组合属性值集合数据
-						let attributeValues = []
-						specnameitem.attributeValues.forEach((specvalueitem, specvalueindex) => {
-							let eachspec = {
-								attributeId: specvalueitem.attributeId,
-								attributeValue:specvalueitem.attributeValue
-							}
-							attributeValues.push(eachspec)
-						})
-						let spec = {
-							attributeName: specnameitem.attributeName,
-							attributeValues: attributeValues
-						}
-						specs.push(spec)
+					_this.$api.goodsapi.getprospecs({attributeList}).then(response => {
+						
+						// 带有属性id的最新属性值列表
+						let newattributeList = response.data.attributeList
+						_this.attributeList = newattributeList
+						// 获取属性组合之后的规格列表
+						let specs = response.data.specs // 后台经过笛卡尔积计算出来的规格数组
+						_this.specs = specs
+						
+						resolve(specs)
+						
+					}).catch(error => {
+						// 获取规格列表失败
+						uni.showToast({
+							title: `${_this.i18n.error.getspecserror}`,
+							icon: 'none'
+						});
+						reject(`${_this.i18n.error.getspecserror}`)
 					})
-					
-					// 如果是新增状态下则获取库存和价格组合
-					if(_this.type === 'add') {
-						// 获取属性规格组合数据
-						_this.$api.goodsapi.getprospecs({specs}).then(response => {
-							// 获取属性规格组合数据成功
-							let newspecs = response.data.specs
-							_this.newspecs = newspecs
-							let stockInfos = response.data.stockInfos // 后台经过笛卡尔积计算出来的规格数组
-							_this.stockInfos = stockInfos
-							
-							resolve(stockInfos)
-							
-						}).catch(error => {
-							// 获取规格库存组合失败
-							uni.showToast({
-								title: `${_this.i18n.error.getspecserror}`,
-								icon: 'none'
-							});
-							reject(`${_this.i18n.error.getspecserror}`)
-						})
-					}
-					// 如果是编辑状态下不用调用接口获取  直接使用后台返回的数值即可
-					else{
-						let newspecs = specs
-						_this.newspecs = newspecs
-						resolve(_this.stockInfos)
-					}
-					
 					
 				})
 				
@@ -553,8 +546,8 @@
 			// 获取table预览数据
 			gettabledata() {
 				
-				let newspecs = this.newspecs
-				let stockInfos = this.stockInfos
+				let attributeList = this.attributeList
+				let specs = this.specs
 				
 				// 设置table的表头要展示的数据
 				let tabletitle = []
@@ -562,75 +555,104 @@
 				// 首先增加索引项
 				let indextitle = {
 					label: _this.i18n.goods.specindex,
-					value: 'index'
+					value: 'index',
+					ifclone: false, // 是否可以克隆
 				}
 				tabletitle.push(indextitle)
 				
-				newspecs.forEach((specnameitem, specnameindex) => {
+				attributeList.forEach((attributeItem, attributeIndex) => {
 					let title = {
-						label: specnameitem.attributeName,
-						value: specnameitem.attributeName, /*`value${specnameindex}`*/
+						label: attributeItem.attributeName,
+						value: attributeItem.attributeName,
+						ifclone: false, // 是否可以克隆
 					}
 					tabletitle.push(title)
 				})
 				
-				// 再增加成本价，库存和平台售价的展示
+				// 再增加成本价,平台售价,代理价,授信价以及库存信息
 				let costpricetitle = {
 					label: _this.i18n.goods.costprice,
-					value: "costPrice"
+					value: "costPrice",
+					ifclone: true, // 是否可以克隆
 				}
-				let pricetitle = {
+				let salepricetitle = {
 					label: _this.i18n.goods.price,
-					value: "price"
+					value: "salePrice",
+					ifclone: true, // 是否可以克隆
+				}
+				let agentpricetitle = {
+					label: _this.i18n.goods.agentprice,
+					value: "agentPrice",
+					ifclone: true, // 是否可以克隆
+				}
+				let creditpricetitle = {
+					label: _this.i18n.goods.creditprice,
+					value: "creditPrice",
+					ifclone: true, // 是否可以克隆
 				}
 				let stocktitle = {
 					label: _this.i18n.goods.stock,
-					value: "stockCount"
+					value: "stockCount",
+					ifclone: true, // 是否可以克隆
 				}
-				tabletitle.push(costpricetitle, pricetitle, stocktitle)
+				tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle, stocktitle)
 				
 				
 				// 组装tabledata数据 需要展示的具体数据源
 				let tabledata = []
-				stockInfos.forEach((stockinfoitem, stockindex) => {
+				specs.forEach((specItem, specIndex) => {
 					
 					let eachtabledata = {}
 					
 					//首先增加规格索引的值
 					eachtabledata['index'] = {
 						type: 'string',
-						value: stockindex.toString()
+						value: (specIndex + 1).toString()
 					}
 					
-					newspecs.forEach((specnameitem, specnameindex) => {
+					attributeList.forEach((attributeItem, attributeIndex) => {
 						
-						eachtabledata[specnameitem.attributeName] = {
+						eachtabledata[attributeItem.attributeName] = {
 							type: 'string',
-							value: stockinfoitem.computeAttributeValues[specnameindex].attributeValue
+							value: specItem.attributeList[attributeIndex].attributeValue
 						}
 						
 						// eachtabledata[specnameitem.attributeName] = stockinfoitem.computeAttributeValues[specnameindex].attributeValue
 					})
 					
-					// 增加成本价 库存和平台售价的展示
+					// 再增加成本价,平台售价,代理价,授信价以及库存信息
 					eachtabledata['costPrice'] = {
 						type: 'input',
 						inputtype: 'digit',
-						defaultvalue: _this.type === 'add' ? '' :  stockinfoitem.costPrice,
+						value: _this.type === 'add' ? '' :  specItem.costPrice,
 						placeholder: _this.i18n.goods.costprice
 					}
 					
-					eachtabledata['price'] = {
+					eachtabledata['salePrice'] = {
 						type: 'input',
 						inputtype: 'digit',
-						defaultvalue: _this.type === 'add' ? '' :  stockinfoitem.price,
+						value: _this.type === 'add' ? '' :  specItem.salePrice,
 						placeholder: _this.i18n.goods.price
+					}
+					
+					eachtabledata['agentPrice'] = {
+						type: 'input',
+						inputtype: 'digit',
+						value: _this.type === 'add' ? '' :  specItem.agentPrice,
+						placeholder: _this.i18n.goods.agentprice
+					}
+					
+					eachtabledata['creditPrice'] = {
+						type: 'input',
+						inputtype: 'digit',
+						value: _this.type === 'add' ? '' :  stockinfoitem.creditPrice,
+						placeholder: _this.i18n.goods.creditprice
 					}
 					
 					eachtabledata['stockCount'] = {
 						type: 'input',
 						inputtype: 'number',
-						defaultvalue: _this.type === 'add' ? '' :  stockinfoitem.stockCount,
+						value: _this.type === 'add' ? '' :  stockinfoitem.stockCount,
 						placeholder: _this.i18n.goods.stock
 					}
 					
@@ -640,20 +662,21 @@
 									
 				_this.tableTitleData = tabletitle
 				_this.tableData = tabledata
+				// console.log(`当前获取的tabletitle数据为:${JSON.stringify(_this.tableTitleData)}\n\n获取到的table数据为:${JSON.stringify(_this.tableData)}`);
 			},
 			
 			// 预览库存价格规格table
 			previewspecdata() {
 				
-				// 检查规格数据
-				let ifdataready = this.checkspecdata()
+				// 检查属性数据
+				let ifdataready = this.checkAttributeData()
 				
 				// 数据通过校验
 				if(ifdataready) {
 					
 					_this.ifloadingpreview = true // 开始预览等待动画
 					// 开始获取预览的规格table数据
-					_this.getsstockinfospromise().then((stockInfos) => {
+					_this.getSpecListPromise().then((specList) => {
 						// 开始获取tabledata数据
 						_this.gettabledata()
 						// 获取tabledata成功
@@ -671,6 +694,31 @@
 					});
 				}
 				
+			},
+			
+			// 克隆表格的某项数据
+			clonetablerowdata(rowindex) {
+				
+				// 找到第0个数据条
+				let tablecolumndata = _this.tableData[0]
+				// 找到该数据的要复制的内容
+				// 找到对应的tabletitle的value值(即为tabledata的key值)
+				let tablekey = _this.tableTitleData[rowindex].value
+				let copydata = tablecolumndata[tablekey]
+				// 代表拿到的是输入框  复制其值到该行的所有数据中
+				if(copydata.type === 'input') {
+					let copyvalue = copydata.value
+					
+					let newtabledata = [..._this.tableData]
+					newtabledata.forEach((eachtabledata,index) => {
+						let eachcolumntabledata = eachtabledata[tablekey]
+						if(eachcolumntabledata.type === 'input') {
+							eachcolumntabledata.value = copyvalue
+						}
+					})
+					_this.tableData = newtabledata
+					
+				}
 			},
 			
 			// 点击确定
@@ -697,13 +745,13 @@
 				}
 				
 				// 检查商品标识码
-				// if(_this.goodsbarcode === '') {
-				// 	uni.showToast({
-				// 		title: _this.i18n.tip.pleasescangoodsbarcode,
-				// 		icon: 'none'
-				// 	});
-				// 	return
-				// }
+				if(_this.goodsbarcode === '') {
+					uni.showToast({
+						title: _this.i18n.tip.pleasescangoodsbarcode,
+						icon: 'none'
+					});
+					return
+				}
 				
 				// 检查商品分类
 				if(_this.firstTypeId == null || _this.firstTypeId == undefined){
@@ -719,10 +767,9 @@
 				
 				// 新增商品
 				if(_this.type === 'add') {
-					
-					// 检查商品规格
-					let ifdataready = _this.checkspecdata()
-					if(!ifdataready) {
+					// 检查商品属性数据
+					let ifhasattribute = _this.checkAttributeData()
+					if(!ifhasattribute) {
 						uni.showToast({
 							title: _this.i18n.error.lackspec,
 							icon: 'none'
@@ -731,64 +778,49 @@
 						return
 					}
 					
-					// 判断是否已经进行了预览 即是否有tabledata数据
+					// 有商品属性数据  继续检查规格数据 即是否有tabledata数据
 					if(_this.tableData.length === 0) {
 						
-						// 还未进行预览 此时提示用户
-						// 获取stockInfo数据
+						// 还未进行预览获取tabledata数据 此时提示用户进行预览并填写价格等相关信息
 						
 						uni.showModal({
 							content: _this.i18n.tip.lackstocktip,
-							showCancel: true,
-							cancelText: _this.i18n.base.cancel,
+							showCancel: false,
 							confirmText: _this.i18n.base.confirm,
-							success: res => {
-								// 点击了确定 此时获取后台返回的stockinfo
-								if(res.confirm) {
-									_this.getsstockinfospromise().then((stockInfos) => {
-										// 获取成功  继续后续操作
-										_this.neweststockinfos = stockInfos
-										
-										// 进行后续操作 上传图片
-										_this.uploadgoodspic()
-										
-									}).catch(() => {
-										return
-									})
-								}
-								// 点击了取消  取消本次上传 展开规格区域
-								else {
-									_this.ifopencollapse = true
-									return
-								}
-								
-							}
 						});
+						_this.ifopencollapse = true
+						return
 						
 					}
 					else{
 						// 进行了预览  有tabledata数据 此时遍历tabledata数据组装数据
-						let stockInfos = [..._this.stockInfos]
+						let specs = [..._this.specs]
 						let tabledata = [..._this.tableData]
-						let neweststockinfos = []
+						let newspecs = []
 						
 						tabledata.forEach((tabledatainfo, tableindex) => {
-							let neweststockinfo = stockInfos[tableindex]
+							let newspecitem = specs[tableindex] // tabledata的数量与specs的数量相等且对应
 							
 							// 成本价
-							let costPrice = tabledatainfo['costPrice'].defaultvalue || ''
-							neweststockinfo.costPrice = costPrice
-							// 售价
-							let price = tabledatainfo['price'].defaultvalue || ''
-							neweststockinfo.price = price
+							let costPrice = tabledatainfo['costPrice'].value || ''
+							newspecitem.costPrice = costPrice
+							// 平台售价
+							let salePrice = tabledatainfo['salePrice'].value || ''
+							newspecitem.salePrice = salePrice
+							// 代理价
+							let agentPrice = tabledatainfo['agentPrice'].value || ''
+							newspecitem.agentPrice = agentPrice
+							// 授信价
+							let creditPrice = tabledatainfo['creditPrice'].value || ''
+							newspecitem.creditPrice = creditPrice
 							// 库存
-							let stockCount = parseInt(tabledatainfo['stockCount'].defaultvalue) || 0
-							neweststockinfo.stockCount = stockCount
+							let stockCount = parseInt(tabledatainfo['stockCount'].value) || 0
+							newspecitem.stockCount = stockCount
 							
-							neweststockinfos.push(neweststockinfo)
+							newspecs.push(newspecitem)
 							
 						})
-						_this.neweststockinfos = neweststockinfos
+						_this.specs = newspecs
 						
 						// 进行后续操作 上传图片
 						_this.uploadgoodspic()
@@ -895,8 +927,8 @@
 						subTypeId: _this.secondTypeId,
 						barCode: _this.goodsbarcode,
 						imgs: imgs,
-						specs: _this.newspecs,
-						stockInfos: _this.neweststockinfos
+						attributeList: _this.attributeList,
+						specs: _this.specs
 					}
 					
 					_this.$api.goodsapi.addproduct(data).then(response => {
@@ -944,11 +976,11 @@
 					let data = {
 						pid: _this.pid,
 						title: _this.goodstitle,
+						imgs: imgs,
 						productIntro: _this.goodsdes,
 						firstTypeId: _this.firstTypeId,
 						subTypeId: _this.secondTypeId,
 						barCode: _this.goodsbarcode,
-						imgs: imgs,
 					}
 					_this.$api.goodsapi.editproduct(data).then(response => {
 						

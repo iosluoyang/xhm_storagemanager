@@ -26,6 +26,11 @@ const th = {
 		success: "สำเร็จ",
 		fail: "ผิดพลาด",
 		needtowait: "โปรดรอสักครู่……",
+		choosable: "Optional",
+		all: "All",
+		other: "Other",
+		onekeyclone: "Clone",
+		fix: "Fix",
 	
 	},
 	
@@ -71,7 +76,7 @@ const th = {
 		searchproduct: "ค้นหาจาก ชื่อสินค้า",
 		deletetypecontent: "สินค้าที่ถูกจัดในหมวดนี้จะถูกย้ายไปในหมวดอื่น คุณสามารถตั้งค่าประเภทได้ภายหลัง",
 		pleaseselectgoodstype: "โปรดเลือกประเภทสินค้า",
-		lackstocktip: "คุณยังกรอกข้อมูลราคาสินค้าไม่ครบ คุณต้องการจะกรอกข้อมูลให้สมบูรณ์ หรือ กรอกใหม่ภายหลัง",
+		lackstocktip: "Please click preview button and fill up the stock and price infos",
 		pleaseselectgoodspec: "กรุณาเลือกรายละเอียดสินค้า",
 		pleasescangoodsbarcode: "Please scan the QR Code",
 		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
@@ -200,8 +205,11 @@ const th = {
 	// 商品相关
 	goods: {
 		
-		price: "ราคาขาย",
 		costprice: "ราคาทุน",
+		price: "ราคาขาย",
+		agentprice: "Agent Price",
+		creditprice: "Credit Price",
+
 		stock: "จำนวนในคลัง",
 		sellnum: "จำนวนที่ขาย",
 		specindex: "ดัชนี",

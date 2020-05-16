@@ -28,6 +28,8 @@ const zh = {
 		choosable: "可选",
 		all: "全部",
 		other: "其他",
+		onekeyclone: "一键克隆",
+		fix: "修改",
 	
 	},
 	
@@ -73,7 +75,7 @@ const zh = {
 		searchproduct: "输入商品名称进行搜索",
 		deletetypecontent: "删除分类后该分类下的所有商品将自动转为其他分类,后续需要您手动设置",
 		pleaseselectgoodstype: "请选择商品分类",
-		lackstocktip: "您还没有上传商品的库存和价格信息,是否继续上传商品?",
+		lackstocktip: "请点击预览并补充商品的价格和库存信息",
 		pleaseselectgoodspec: "请先选择商品规格",
 		pleasescangoodsbarcode: "请扫描商品上的二维码",
 		ifsuretofixstock: "确定进行出库/入库操作吗?",
@@ -203,8 +205,11 @@ const zh = {
 	// 商品相关
 	goods: {
 		
-		price: "平台售价",
 		costprice: "成本价",
+		price: "平台售价",
+		agentprice: "代理价",
+		creditprice: "授信价",
+		
 		stock: "库存",
 		sellnum: "日销量",
 		specindex: "规格索引",
