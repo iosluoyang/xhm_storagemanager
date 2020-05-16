@@ -192,7 +192,6 @@ const zh = {
 		
 	},
 	
-	
 	// 商品分类相关
 	goodstype: {
 		currenttype: "当前选中的分类",
@@ -251,6 +250,7 @@ const zh = {
 	
 	// 库存相关
 	stock: {
+		amount: "数量",
 		typestocknumplacholder: "请输入出/入库数量",
 		stockin: "入库",
 		stockout: "出库",

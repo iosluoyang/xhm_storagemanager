@@ -251,6 +251,7 @@ const th = {
 	
 	// 库存相关
 	stock: {
+		amount: "Amount",
 		typestocknumplacholder: "Please enter the Amount",
 		stockin: "Stock In",
 		stockout: "Stock Out",

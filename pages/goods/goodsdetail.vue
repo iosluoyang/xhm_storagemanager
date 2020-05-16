@@ -75,57 +75,50 @@
 				</view>
 				
 				<!-- 平台售价 -->
-				<view class="cu-item arrow" @tap.stop="fixprice('saleprice')">
+				<view class="cu-item">
 					<view class="content">
 						<text class="cuIcon text-red cuIcon-moneybagfill"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.price}}</text>
-						<text class="text-sm text-red" v-if="selectspecinfo">{{selectspecinfo.salePrice}}</text>
-						
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.base.fix}}</text>
+						<text class="text-xl text-red" v-if="selectspecinfo">{{selectspecinfo.salePrice}}</text>
 					</view>
 				</view>
 				
 				<!-- 代理价 -->
-				<view class="cu-item arrow" @tap.stop="fixprice('agentprice')">
+				<view class="cu-item">
 					<view class="content">
 						<text class="cuIcon cuIcon-moneybag"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.agentprice}}</text>
-						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.agentPrice}}</text>
-						
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.base.fix}}</text>
+						<text class="text-xl text-grey" v-if="selectspecinfo">{{selectspecinfo.agentPrice}}</text>
 					</view>
 				</view>
 				
 				<!-- 授信价 -->
-				<view class="cu-item arrow" @tap.stop="fixprice('creditprice')">
+				<view class="cu-item">
 					<view class="content">
 						<text class="cuIcon cuIcon-moneybag"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.creditprice}}</text>
-						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.creditPrice}}</text>
-						
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.base.fix}}</text>
+						<text class="text-xl text-grey" v-if="selectspecinfo">{{selectspecinfo.creditPrice}}</text>
 					</view>
 				</view>
 				
 				<!-- 成本价 -->
-				<view class="cu-item arrow" @tap.stop="fixprice('costprice')">
+				<view class="cu-item">
 					<view class="content">
 						<text class="cuIcon cuIcon-moneybag"></text>
 						<text class="text-df text-black margin-right-sm">{{i18n.goods.costprice}}</text>
-						<text class="text-sm text-grey" v-if="selectspecinfo">{{selectspecinfo.costPrice}}</text>
 					</view>
 					
 					<view class="action">
-						<text class="text-grey">{{i18n.base.fix}}</text>
+						<text class="text-xl text-grey" v-if="selectspecinfo">{{selectspecinfo.costPrice}}</text>
 					</view>
 				</view>
 				
@@ -152,10 +145,10 @@
 		</goodsspecselector>
 		
 		<!-- 价格修改弹出框 -->
-		<view class="cu-modal" v-if="selectspecinfo" :class=" ifshowmodal ?'show':''">
+		<view class="cu-modal" v-if="false && selectspecinfo" :class=" ifshowmodal ?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">{{ fixpricetype === 'costprice' ? i18n.goods.goodsdetail.fixcostprice : i18n.goods.goodsdetail.fixprice }}</view>
+					<view class="content">{{ i18n.base.fix }}</view>
 					<view class="action" @tap="hideModal">
 						<text class="cuIcon-close text-grey"></text>
 					</view>
@@ -167,7 +160,7 @@
 					
 					<!-- 价格展示输入框 -->
 					<input type="digit"
-							class="borderbottom radius text-xl"
+							class="borderbottom radius text-df"
 							maxlength="6" 
 							:placeholder=" fixpricetype === 'costprice' ? `${i18n.goods.costprice}: ${selectspecinfo.costPrice}` : (fixpricetype === 'price' ? `${i18n.goods.price}: ${selectspecinfo.price}` : '') " 
 							v-model="tempfixprice"
@@ -283,7 +276,7 @@
 				let specs = product.specs
 				let maxprice = Math.max.apply(Math, specs.map(function(specinfo) {return specinfo.salePrice}))
 				let minprice = Math.min.apply(Math, specs.map(function(specinfo) {return specinfo.salePrice}))
-				let showproductprice = `${minprice} ~ ${maxprice}`
+				let showproductprice = maxprice === minprice ? `${minprice}` : `${minprice} ~ ${maxprice}`
 				product.price = showproductprice
 				
 			},
@@ -331,6 +324,12 @@
 			// 点击开始修改价格
 			fixprice(pricetype) {
 				
+				uni.showToast({
+					title: _this.i18n.tip.needtowait,
+					icon: 'none',
+					duration: 1500
+				});
+				
 				// 判断是否已经选择了规格  没有的话提示请先选择规格
 				if(this.selectspecinfo) {
 					this.fixpricetype = pricetype
@@ -344,11 +343,9 @@
 					});
 					_this.ifshowpopup = true
 				}
-				
-				
-				
+
 			},
-			
+						
 			// 确定修改价格
 			confirmfixprice() {
 				
