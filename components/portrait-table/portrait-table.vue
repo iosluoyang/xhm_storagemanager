@@ -31,7 +31,8 @@
 								v-model="zItem[item.value].value" 
 								confirm-type="next"
 								:cursor-spacing="30" />
-						<text v-else-if=" zItem[item.value] && (zItem[item.value].type === 'string') " :style="{textAlign:align}">{{ zItem[item.value].value || '-' }}</text>
+								
+						<text v-else-if=" zItem[item.value] && (zItem[item.value].type === 'string') " :style="{textAlign:align,width: '100%'}">{{ zItem[item.value].value || '-' }}</text>
 						
 					</view>
 				</view>

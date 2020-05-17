@@ -206,6 +206,7 @@ const en = {
 	// 商品相关
 	goods: {
 		
+		pricestr: "Price",
 		costprice: "Cost Price",
 		price: "Sale Price",
 		agentprice: "Agent Price",
@@ -245,6 +246,7 @@ const en = {
 			selected: "Selected",
 			fixcostprice: "Edit CostPrice",
 			fixprice: "Edit Price",
+			stockrecord: "Stock Record",
 			
 		},
 		

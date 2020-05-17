@@ -203,7 +203,7 @@ const zh = {
 	
 	// 商品相关
 	goods: {
-		
+		pricestr: "价格",
 		costprice: "成本价",
 		price: "平台售价",
 		agentprice: "代理价",
@@ -243,6 +243,7 @@ const zh = {
 			selected: "已选",
 			fixcostprice: "修改成本价",
 			fixprice: "修改售价",
+			stockrecord: "出入库记录",
 			
 		}
 		

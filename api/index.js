@@ -2,6 +2,7 @@ import baseapi from '@/api/base.js'
 import userapi from '@/api/user.js'
 import managepeopleapi from '@/api/managepeople.js'
 import goodsapi from '@/api/goods.js'
+import stockapi from '@/api/stock.js'
 
 
 export default {
@@ -9,4 +10,5 @@ export default {
 	userapi, // 用户相关api接口
 	managepeopleapi, // 管理成员相关api接口
 	goodsapi, // 商品相关api接口
+	stockapi, // 库存相关api接口
 }

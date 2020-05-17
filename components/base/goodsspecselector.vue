@@ -3,7 +3,7 @@
 	<!--底部选择层-->
 	<view class="prodetailmodal cu-modal bottom-modal" :key="mykey" :class=" ifshowpopup ? 'show' : '' " @tap.stop="hidepopup">
 		
-		<view class="cu-dialog" v-if="product" @tap.stop="">
+		<view class="cu-dialog" v-if="product">
 			
 			<!-- 头部区域 -->
 			<view class="cu-bar padding-bottom borderbottom">
@@ -31,15 +31,9 @@
 							
 							<!-- 平台售价 -->
 							<view class="sellprice text-df flex align-center margin-right">
-								<text class="text-grey">{{ `${i18n.goods.price}: ` }}</text>
-								<text class="text-red" v-if="selectspecinfo">{{ selectspecinfo.salePrice }}</text>
+								<text class="text-grey">{{ `${i18n.goods.price}:` }}</text>
+								<text class="text-red margin-left-sm" v-if="selectspecinfo">{{ selectspecinfo.salePrice }}</text>
 							</view>
-							
-							<!-- 成本价 -->
-							<!-- <view class="originalprice text-df flex align-center">
-								<text class="text-grey">{{ `${i18n.goods.costprice}: ` }}</text>
-								<text class="text-grey" v-if="selectspecinfo">{{ selectspecinfo.costPrice }}</text>
-							</view> -->
 							
 						</view>
 						
@@ -170,50 +164,57 @@
 			// 当前选中的规格信息
 			selectspecinfo() {
 				
-				let selectattributeIdArr = []
-				// 首先计算当前已经选择的规格id数组
-				this.attributeList.forEach(attributeinfo => {
-					if(attributeinfo.attributeValues) {
-						attributeinfo.attributeValues.forEach(attributevalueinfo => {
-							if(attributevalueinfo.selected) {
-								selectattributeIdArr.push(attributevalueinfo.attributeId)
-							}
-						})
-					}
-				})
-				
-				// 根据当前选中的规格id数组计算出当前所选规格的库存和价格信息
-				
-				// 遍历当前的库存价格组合
-				let selectspecinfo = this.specs.find((specinfo) => {
+				// 是否有属性列表
+				if(this.attributeList.length === 0) {
+					return undefined
+				}
+				else{
+					let selectattributeIdArr = []
+					// 首先计算当前已经选择的规格id数组
+					this.attributeList.forEach(attributeinfo => {
+						if(attributeinfo.attributeValues) {
+							attributeinfo.attributeValues.forEach(attributevalueinfo => {
+								if(attributevalueinfo.selected) {
+									selectattributeIdArr.push(attributevalueinfo.attributeId)
+								}
+							})
+						}
+					})
 					
-					// 如果选中的规格数量为0或者数量与当前规格对象对应的属性值数量不一致代表没有匹配 直接返回
-					if(selectattributeIdArr.length === 0 || !specinfo.attributeList || specinfo.attributeList.length === 0 || selectattributeIdArr.length !== specinfo.attributeList.length) {
-						return false
-					}
-					else {
-						// 数量相等且不为0的时候进行匹配
-						// 遍历下属的每一个属性值 只要有一个条件不符合就直接结束查找 返回
+					// 根据当前选中的规格id数组计算出当前所选规格的信息
+					
+					// 遍历当前的库存价格组合
+					let selectspecinfo = this.specs.find((specinfo) => {
 						
-						// 只要找到其中一个属性不包含在已选择的数组中的则结束查找
-						let ifallmatchindex = specinfo.attributeList.findIndex((attributevalueinfo,valueindex) => {
-							return !selectattributeIdArr.contains(attributevalueinfo.attributeId)
-						})
-						if(ifallmatchindex !== -1) {
+						// 如果选中的规格数量为0或者数量与当前规格对象对应的属性值数量不一致代表没有匹配 直接返回
+						if(selectattributeIdArr.length === 0 || !specinfo.attributeList || specinfo.attributeList.length === 0 || selectattributeIdArr.length !== specinfo.attributeList.length) {
 							return false
 						}
-						// 全部匹配上 返回true
-						else{
-							return true
+						else {
+							// 数量相等且不为0的时候进行匹配
+							// 遍历下属的每一个属性值 只要有一个条件不符合就直接结束查找 返回
+							
+							// 只要找到其中一个属性不包含在已选择的数组中的则结束查找
+							let ifallmatchindex = specinfo.attributeList.findIndex((attributevalueinfo,valueindex) => {
+								return !selectattributeIdArr.contains(attributevalueinfo.attributeId)
+							})
+							if(ifallmatchindex !== -1) {
+								return false
+							}
+							// 全部匹配上 返回true
+							else{
+								return true
+							}
+							
 						}
 						
-					}
+					})
 					
-				})
+					console.log(`当前库存价格对象为:${JSON.stringify(selectspecinfo)}`);
+					
+					return selectspecinfo
+				}
 				
-				console.log(`当前库存价格对象为:${JSON.stringify(selectspecinfo)}`);
-				
-				return selectspecinfo
 			},
 			
 			// 当前属性值集合展示文本
@@ -229,6 +230,7 @@
 						showspecArr.push(attributevalueinfo.attributeValue)
 					})
 				}
+				
 				let showspecstr = showspecArr.join('、')
 				return showspecstr
 				

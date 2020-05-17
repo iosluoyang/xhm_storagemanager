@@ -205,6 +205,7 @@ const th = {
 	// 商品相关
 	goods: {
 		
+		pricestr: "Price",
 		costprice: "ราคาทุน",
 		price: "ราคาขาย",
 		agentprice: "Agent Price",
@@ -244,7 +245,7 @@ const th = {
 			selected: "Selected",
 			fixcostprice: "Edit CostPrice",
 			fixprice: "Edit Price",
-			
+			stockrecord: "Stock Record",
 		},
 		
 	},

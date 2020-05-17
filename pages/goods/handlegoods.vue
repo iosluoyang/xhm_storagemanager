@@ -668,12 +668,8 @@
 			// 预览库存价格规格table
 			previewspecdata() {
 				
-				// 检查属性数据
-				let ifdataready = this.checkAttributeData()
-				
-				// 数据通过校验
-				if(ifdataready) {
-					
+				function starttopreview() {
+					// 开始预览
 					_this.ifloadingpreview = true // 开始预览等待动画
 					// 开始获取预览的规格table数据
 					_this.getSpecListPromise().then((specList) => {
@@ -684,6 +680,31 @@
 					}).catch(() => {
 						_this.ifloadingpreview = false // 结束预览等待动画
 					})
+				}
+				
+				// 检查属性数据
+				let ifdataready = this.checkAttributeData()
+				
+				// 数据通过校验
+				if(ifdataready) {
+					
+					// 如果已经有了tabledata数据代表已经预览过了  则此时进行提示用户
+					if(_this.tableData && _this.tableData.length > 0) {
+						uni.showModal({
+							content: _this.i18n.tip.resetconfirm,
+							showCancel: true,
+							cancelText: _this.i18n.base.cancel,
+							confirmText: _this.i18n.base.confirm,
+							success: res => {
+								if(res.confirm) {
+									starttopreview()
+								}
+							}
+						});
+					}
+					else {
+						starttopreview()
+					}
 					
 				}
 				// 数据未通过校验 报错
@@ -1095,6 +1116,12 @@
 				.uni-collapse-cell__title-text{
 					font-size: 16px;
 					font-weight: bold;
+				}
+				
+				.input-placeholder{
+					color: #aaaaaa;
+					padding: 5rpx;
+					font-size: 5px;
 				}
 			}
 			
