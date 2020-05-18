@@ -65,6 +65,7 @@ export default {
 			default:'#fff'
 		}
 	},
+		
 	methods: {
 		
 		// 复制table的某个数据

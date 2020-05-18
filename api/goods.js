@@ -72,6 +72,7 @@ function fixgoodsprice(data){
 	return flyrequest.fly.request('/app/product/modifyPrice.do',data)
 }
 
+
 // 商品入库
 function stockin(data){
 	return flyrequest.fly.request('/app/product/addStockCount.do',data)

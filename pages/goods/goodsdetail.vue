@@ -133,46 +133,15 @@
 		</view>
 		
 		<!--底部规格选择层-->
-		<goodsspecselector v-if="pid" 
+		<goodsspecselector  v-if="pid"
+							ref="goodspecselector"
 							:pid="pid"
 							mykey="goodsdetail"
 							:defaultselectattributeIds="selectattributeIdArr" 
 							:ifshowpopup="ifshowpopup"
 							@confirmselectspecinfo="confirmselectspec"
-							@hidepopup="hidepopup">
-		</goodsspecselector>
-		
-		<!-- 价格修改弹出框 -->
-		<view class="cu-modal" v-if="false && selectspecinfo" :class=" ifshowmodal ?'show':''">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">{{ i18n.base.fix }}</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-grey"></text>
-					</view>
-				</view>
-				<view class="padding-xl">
-					
-					<!-- 当前规格展示 -->
-					<view class="text-df text-left margin-bottom">{{`${i18n.goods.handlegoods.goodsspec}: ${showspecstr}`}}</view>
-					
-					<!-- 价格展示输入框 -->
-					<input type="digit"
-							class="borderbottom radius text-df"
-							maxlength="6" 
-							:placeholder=" fixpricetype === 'costprice' ? `${i18n.goods.costprice}: ${selectspecinfo.costPrice}` : (fixpricetype === 'price' ? `${i18n.goods.price}: ${selectspecinfo.price}` : '') " 
-							v-model="tempfixprice"
-							:cursor-spacing="20"
-							:focus="ifshowmodal"
-							 />
-					
-				</view>
-				<view class="cu-bar btn-group bg-white justify-around">
-					<button class="cu-btn round lg line-grey text-grey" @tap="hideModal">{{i18n.base.cancel}}</button>
-					<button class="cu-btn round lg bg-gradual-blue" :class=" ifshowfixbtnanimation ? 'animation-shake' : '' " @tap="confirmfixprice">{{i18n.base.confirm}}</button>
-				</view>
-			</view>
-		</view>
+							@hidepopup="ifshowpopup = false">
+		</goodsspecselector>		
 		
 	</view>
 </template>
@@ -200,15 +169,11 @@
 				swiperData: null, // 轮播图数据
 				
 				selectattributeIdArr: [], // 默认选中的属性id数组
+				recordselectattributeIdArr: [], // 记录当前已经选中的属性id数组  刷新时数据用
 				
 				selectspecinfo: null, // 当前选中的规格对象
 				showspecstr: null, // 当前选中的规格名称文本
 				ifshowpopup: false, // 是否显示底部规格弹框  默认为否不显示
-				
-				ifshowmodal: false, // 是否显示价格修改弹窗  默认为否
-				fixpricetype: '', // 修改价格的类型  costprice为修改成本价  saleprice为修改平台售价 agentprice为修改代理价 creditprice为修改授信价
-				tempfixprice: '', // 临时输入价格变量
-				ifshowfixbtnanimation: false, // 是否显示修改价格时的错误提示动画  默认为否
 				
 			};
 		},
@@ -224,6 +189,9 @@
 			_this.loaddetaildata()
 			
 			uni.$on('updateprodetail', function(){
+				// 刷新规格选择器
+				_this.selectattributeIdArr = _this.recordselectattributeIdArr
+				_this.$refs.goodspecselector.getproductspecdata()
 				// 加载商详信息
 				_this.loaddetaildata()
 			})
@@ -306,13 +274,13 @@
 				
 			},
 			
-			
 		},
 		
 		methods: {
 			
 			// 加载商详信息
 			loaddetaildata() {
+				
 				_this.$api.goodsapi.getgoodsdetail({pid: _this.pid}).then(response => {
 					// 获取详情成功
 					let product = response.data.product
@@ -416,7 +384,7 @@
 			
 			// 选择完某个库存规格
 			confirmselectspec(info) {
-				console.log(`商详中获取选择的规格对象………………`)
+				
 				// 当前选择的库存
 				let selectspecinfo = info.specinfo
 				this.selectspecinfo = selectspecinfo
@@ -425,6 +393,10 @@
 				let showspecstr = info.showspecstr
 				this.showspecstr = showspecstr
 				
+				// 记录当前已选的属性
+				let selectattributeIds = info.selectattributeIds
+				this.recordselectattributeIdArr = selectattributeIds
+				
 			},
 			
 			// 跳转修改价格页面
@@ -432,110 +404,6 @@
 				uni.navigateTo({
 					url: `/pages/goods/handlepriceandstock?pid=${_this.pid}`
 				});
-			},
-			
-			// 点击开始修改价格
-			fixprice(pricetype) {
-				
-				uni.showToast({
-					title: _this.i18n.tip.needtowait,
-					icon: 'none',
-					duration: 1500
-				});
-				
-				// 判断是否已经选择了规格  没有的话提示请先选择规格
-				if(this.selectspecinfo) {
-					this.fixpricetype = pricetype
-					this.ifshowmodal = true
-				}
-				else{
-					uni.showToast({
-						title: _this.i18n.tip.pleaseselectgoodspec,
-						icon: 'none',
-						duration: 1500
-					});
-					_this.ifshowpopup = true
-				}
-
-			},
-						
-			// 确定修改价格
-			confirmfixprice() {
-				
-				let targetprice = this.tempfixprice
-				
-				// 校验数据
-				if(!targetprice || targetprice === '') {
-					this.ifshowfixbtnanimation = true
-					setTimeout(function() {
-						_this.ifshowfixbtnanimation = false
-					}, 1500);
-				}
-				else{
-					// 开始上送
-					
-					let data = {}
-					if(this.fixpricetype === 'costprice') {
-						data = {
-							pid: this.pid,
-							specId: this.selectspecinfo.specId,
-							costPrice: targetprice,
-						}
-					}
-					else if(this.fixpricetype === 'saleprice') {
-						data = {
-							pid: this.pid,
-							specId: this.selectspecinfo.specId,
-							price: targetprice
-						}
-					}
-					else if(this.fixpricetype === 'agentprice') {
-						data = {
-							pid: this.pid,
-							specId: this.selectspecinfo.specId,
-							agentPrice: targetprice
-						}
-					}
-					else if(this.fixpricetype === 'creditprice') {
-						data = {
-							pid: this.pid,
-							specId: this.selectspecinfo.specId,
-							creditPrice: targetprice
-						}
-					}
-					
-					this.$api.goodsapi.fixgoodsprice(data).then(response => {
-						// 修改成功
-						_this.hideModal() // 隐藏价格修改弹框
-						// 将当前已经选中的属性id数组设置给规格属性选择器
-						let selectattributeIdArr = []
-						_this.selectspecinfo.attributeList.forEach(attributevalueinfo => {
-							selectattributeIdArr.push(attributevalueinfo.attributeId)
-						})
-						_this.selectattributeIdArr = selectattributeIdArr
-						// 重新请求数据
-						_this.loaddetaildata()
-						
-					}).catch(error => {
-						_this.ifshowfixbtnanimation = true
-						setTimeout(function() {
-							_this.ifshowfixbtnanimation = false
-						}, 1500);
-					})
-					
-				}
-			},
-			
-			// 点击隐藏价格修改弹窗
-			hideModal() {
-				this.ifshowmodal = false
-				this.tempfixprice = '' // 清除当前临时价格记录
-			},
-			
-			// 点击隐藏底部规格选择弹出框
-			hidepopup() {
-				// 可以选择二次确认
-				this.ifshowpopup = false
 			},
 			
 			// 编辑商品

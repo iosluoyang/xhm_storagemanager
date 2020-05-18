@@ -9,8 +9,7 @@
 		</view>
 		
 		<!-- 属性值table区域 -->
-		<p-table class="tableview" :tableData="tableData" :title="tableTitleData" @clonetablerowdata="clonetablerowdata" align="center" titleBg="#cdcdcd"></p-table>
-		
+		<p-table class="tableview" v-model="tableData" :tableData="tableData" :title="tableTitleData" @clonetablerowdata="clonetablerowdata" align="center" titleBg="#cdcdcd"></p-table>
 		
 	</view>
 	
@@ -61,15 +60,30 @@
 			watch: {
 				
 				attributeList(newValue, oldValue) {
-					
-				},
-				
-				specs(newValue, oldValue) {
-					console.log(`获取到了最新的规格数据------${JSON.stringify(newValue)}`);
+					console.log(`商品属性有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
 					// 重新计算tabledata数据
 					_this.gettabledata()
 				},
 				
+				specs(newValue, oldValue) {
+					console.log(`规格有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
+					// 重新计算tabledata数据
+					_this.gettabledata()
+				},
+				
+				tableData: {
+					handler(newValue, oldValue) {
+						// 调用获取最新的specs方法
+						console.log(`检测到tabledata发生变化,此时进行传值同步数据`);
+						if(_this) {
+							_this.getnewspecs()
+						}
+						
+					},
+					immediate: true,
+					deep: true
+					
+				}
 				
 			},
 			
@@ -92,133 +106,120 @@
 					let attributeList = this.attributeList
 					let specs = this.specs
 					
-					// 没有属性或者规格
-					if(attributeList.length === 0 ||  specs.length === 0) {
-						_this.tableTitleData = []
-						_this.tableData = []
-						return
+					// 设置table的表头要展示的数据
+					let tabletitle = []
+					
+					// 首先增加索引项
+					let indextitle = {
+						label: _this.i18n.goods.specindex,
+						value: 'index',
+						ifclone: false, // 是否可以克隆
 					}
-					// 有属性和规格
-					else {
-						
-						// 设置table的表头要展示的数据
-						let tabletitle = []
-						
-						// 首先增加索引项
-						let indextitle = {
-							label: _this.i18n.goods.specindex,
-							value: 'index',
+					tabletitle.push(indextitle)
+					
+					// 再增加商品属性的每一项
+					attributeList.forEach((attributeItem, attributeIndex) => {
+						let title = {
+							label: attributeItem.attributeName,
+							value: attributeItem.attributeName,
 							ifclone: false, // 是否可以克隆
 						}
-						tabletitle.push(indextitle)
+						tabletitle.push(title)
+					})
+					
+					// 最后增加成本价,平台售价,代理价,授信价以及库存信息
+					let costpricetitle = {
+						label: _this.i18n.goods.costprice,
+						value: "costPrice",
+						ifclone: true, // 是否可以克隆
+					}
+					let salepricetitle = {
+						label: _this.i18n.goods.price,
+						value: "salePrice",
+						ifclone: true, // 是否可以克隆
+					}
+					let agentpricetitle = {
+						label: _this.i18n.goods.agentprice,
+						value: "agentPrice",
+						ifclone: true, // 是否可以克隆
+					}
+					let creditpricetitle = {
+						label: _this.i18n.goods.creditprice,
+						value: "creditPrice",
+						ifclone: true, // 是否可以克隆
+					}
+					let stocktitle = {
+						label: _this.i18n.goods.stock,
+						value: "stockCount",
+						ifclone: true, // 是否可以克隆
+					}
+					tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle, stocktitle)
+					
+					
+					// 组装tabledata数据 需要展示的具体数据源
+					let tabledata = []
+					specs.forEach((specItem, specIndex) => {
 						
-						// 再增加商品属性的每一项
+						let eachtabledata = {}
+						
+						// 首先增加规格索引的值
+						eachtabledata['index'] = {
+							type: 'string',
+							value: (specIndex + 1).toString()
+						}
+						
+						// 然后增加每一个属性对应的值
 						attributeList.forEach((attributeItem, attributeIndex) => {
-							let title = {
-								label: attributeItem.attributeName,
-								value: attributeItem.attributeName,
-								ifclone: false, // 是否可以克隆
+							
+							eachtabledata[attributeItem.attributeName] = {
+								type: 'string',
+								value: specItem.attributeList[attributeIndex].attributeValue
 							}
-							tabletitle.push(title)
+							
 						})
 						
 						// 最后增加成本价,平台售价,代理价,授信价以及库存信息
-						let costpricetitle = {
-							label: _this.i18n.goods.costprice,
-							value: "costPrice",
-							ifclone: true, // 是否可以克隆
+						eachtabledata['costPrice'] = {
+							type: 'input',
+							inputtype: 'digit',
+							value: _this.type === 'add' ? '' :  specItem.costPrice,
+							placeholder: _this.i18n.goods.costprice
 						}
-						let salepricetitle = {
-							label: _this.i18n.goods.price,
-							value: "salePrice",
-							ifclone: true, // 是否可以克隆
-						}
-						let agentpricetitle = {
-							label: _this.i18n.goods.agentprice,
-							value: "agentPrice",
-							ifclone: true, // 是否可以克隆
-						}
-						let creditpricetitle = {
-							label: _this.i18n.goods.creditprice,
-							value: "creditPrice",
-							ifclone: true, // 是否可以克隆
-						}
-						let stocktitle = {
-							label: _this.i18n.goods.stock,
-							value: "stockCount",
-							ifclone: true, // 是否可以克隆
-						}
-						tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle, stocktitle)
 						
+						eachtabledata['salePrice'] = {
+							type: 'input',
+							inputtype: 'digit',
+							value: _this.type === 'add' ? '' :  specItem.salePrice,
+							placeholder: _this.i18n.goods.price
+						}
 						
-						// 组装tabledata数据 需要展示的具体数据源
-						let tabledata = []
-						specs.forEach((specItem, specIndex) => {
-							
-							let eachtabledata = {}
-							
-							// 首先增加规格索引的值
-							eachtabledata['index'] = {
-								type: 'string',
-								value: (specIndex + 1).toString()
-							}
-							
-							// 然后增加每一个属性对应的值
-							attributeList.forEach((attributeItem, attributeIndex) => {
-								
-								eachtabledata[attributeItem.attributeName] = {
-									type: 'string',
-									value: specItem.attributeList[attributeIndex].attributeValue
-								}
-								
-								// eachtabledata[specnameitem.attributeName] = stockinfoitem.computeAttributeValues[specnameindex].attributeValue
-							})
-							
-							// 最后增加成本价,平台售价,代理价,授信价以及库存信息
-							eachtabledata['costPrice'] = {
-								type: 'input',
-								inputtype: 'digit',
-								value: _this.type === 'add' ? '' :  specItem.costPrice,
-								placeholder: _this.i18n.goods.costprice
-							}
-							
-							eachtabledata['salePrice'] = {
-								type: 'input',
-								inputtype: 'digit',
-								value: _this.type === 'add' ? '' :  specItem.salePrice,
-								placeholder: _this.i18n.goods.price
-							}
-							
-							eachtabledata['agentPrice'] = {
-								type: 'input',
-								inputtype: 'digit',
-								value: _this.type === 'add' ? '' :  specItem.agentPrice,
-								placeholder: _this.i18n.goods.agentprice
-							}
-							
-							eachtabledata['creditPrice'] = {
-								type: 'input',
-								inputtype: 'digit',
-								value: _this.type === 'add' ? '' :  specItem.creditPrice,
-								placeholder: _this.i18n.goods.creditprice
-							}
-							
-							eachtabledata['stockCount'] = {
-								type: 'input',
-								inputtype: 'number',
-								value: _this.type === 'add' ? '' :  specItem.stockCount,
-								placeholder: _this.i18n.goods.stock
-							}
-							
-							tabledata.push(eachtabledata)
-											
-						})
-											
-						_this.tableTitleData = tabletitle
-						_this.tableData = tabledata
+						eachtabledata['agentPrice'] = {
+							type: 'input',
+							inputtype: 'digit',
+							value: _this.type === 'add' ? '' :  specItem.agentPrice,
+							placeholder: _this.i18n.goods.agentprice
+						}
 						
-					}
-					
+						eachtabledata['creditPrice'] = {
+							type: 'input',
+							inputtype: 'digit',
+							value: _this.type === 'add' ? '' :  specItem.creditPrice,
+							placeholder: _this.i18n.goods.creditprice
+						}
+						
+						eachtabledata['stockCount'] = {
+							type: 'input',
+							inputtype: 'number',
+							value: _this.type === 'add' ? '' :  specItem.stockCount,
+							placeholder: _this.i18n.goods.stock
+						}
+						
+						tabledata.push(eachtabledata)
+										
+					})
+										
+					_this.tableTitleData = tabletitle
+					_this.tableData = tabledata
 					
 				},
 				
@@ -244,13 +245,45 @@
 						})
 						_this.tableData = newtabledata
 						
-						// 传递最新的tableData数据
-						_this.$emit('gettabledata', _this.tableData)
-						
 					}
+				
 				},
 				
-				
+				// 根据当前tabledata组装新的specs数据
+				getnewspecs() {
+					
+					let specs = [..._this.specs]
+					let tabledata = [..._this.tableData]
+					let newspecs = []
+					
+					tabledata.forEach((tabledatainfo, tableindex) => {
+						let newspecitem = specs[tableindex] // tabledata的数量与specs的数量相等且对应
+						
+						// 成本价
+						let costPrice = tabledatainfo['costPrice'].value || ''
+						newspecitem.costPrice = costPrice
+						// 平台售价
+						let salePrice = tabledatainfo['salePrice'].value || ''
+						newspecitem.salePrice = salePrice
+						// 代理价
+						let agentPrice = tabledatainfo['agentPrice'].value || ''
+						newspecitem.agentPrice = agentPrice
+						// 授信价
+						let creditPrice = tabledatainfo['creditPrice'].value || ''
+						newspecitem.creditPrice = creditPrice
+						// 库存
+						let stockCount = parseInt(tabledatainfo['stockCount'].value) || 0
+						newspecitem.stockCount = stockCount
+						
+						newspecs.push(newspecitem)
+						
+					})
+					
+					if(newspecs && newspecs.length > 0) {
+						this.$emit('getnewspecs', newspecs)
+					}
+					
+				},
 				
 			},
 		

@@ -153,6 +153,7 @@
 			defaultselectattributeIds(newValue, oldValue) {
 				console.log(`检测到默认选中规格变更 开始重新计算数据源选中状态`);
 				this.getproductspecdata()
+				
 			},
 			
 			//
@@ -210,7 +211,7 @@
 						
 					})
 					
-					console.log(`当前库存价格对象为:${JSON.stringify(selectspecinfo)}`);
+					console.log(`当前规格对象为:${JSON.stringify(selectspecinfo)}`);
 					
 					return selectspecinfo
 				}
@@ -307,7 +308,6 @@
 							attributeinfo.attributeValues.forEach((attributevalueinfo, index) => {
 								
 								let selected = _this.defaultselectattributeIds.findIndex((attributeId) => { return parseInt(attributevalueinfo.attributeId) === parseInt(attributeId)}) !== -1
-								
 								let value = {
 									attributeId: attributevalueinfo.attributeId,
 									attributeValue: attributevalueinfo.attributeValue,
@@ -328,7 +328,7 @@
 					})
 					
 				}
-				_this.attributeList = attributeList
+				_this.attributeList = newattributeList				
 				
 			},
 			
