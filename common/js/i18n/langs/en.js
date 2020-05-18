@@ -41,6 +41,7 @@ const en = {
 		goodstype: "Classification",
 		goodslist: "Product List",
 		goodsdetail: "Product Detail",
+		handlerpriceandstock: "Edit Price",
 		addgoods: "Upload Product",
 		editgoods: "Edit Product",
 		stock: "Stock",
@@ -239,6 +240,7 @@ const en = {
 			addspecnameholder: "eg: Color",
 			addspecvalueholder: "eg: Red",
 			tabletip: "Scroll to Left can check all the data",
+			clonetip: "Click clone and copy the first data to others",
 			deletegoods: "Delete this product",
 			
 		},

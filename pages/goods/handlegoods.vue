@@ -136,7 +136,10 @@
 						</view>
 						
 						<!-- table的提示文字 -->
-						<view v-if="tableData && tableData.length > 0" class="text-center text-df margin-bottom">{{i18n.goods.handlegoods.tabletip}}</view>
+						<view v-if="tableData && tableData.length > 0" class="text-center text-df margin-bottom">
+							<text class="text-df margin-bottom-sm block">{{i18n.goods.handlegoods.tabletip}}</text>
+							<text class="text-blue">({{i18n.goods.handlegoods.clonetip}})</text>
+						</view>
 						
 						<!-- 属性值table区域 -->
 						<p-table class="tableview" :tableData="tableData" :title="tableTitleData" @clonetablerowdata="clonetablerowdata" align="center" titleBg="#cdcdcd"></p-table>
@@ -645,14 +648,14 @@
 					eachtabledata['creditPrice'] = {
 						type: 'input',
 						inputtype: 'digit',
-						value: _this.type === 'add' ? '' :  stockinfoitem.creditPrice,
+						value: _this.type === 'add' ? '' :  specItem.creditPrice,
 						placeholder: _this.i18n.goods.creditprice
 					}
 					
 					eachtabledata['stockCount'] = {
 						type: 'input',
 						inputtype: 'number',
-						value: _this.type === 'add' ? '' :  stockinfoitem.stockCount,
+						value: _this.type === 'add' ? '' :  specItem.stockCount,
 						placeholder: _this.i18n.goods.stock
 					}
 					

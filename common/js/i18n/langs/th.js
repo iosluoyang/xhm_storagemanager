@@ -41,6 +41,7 @@ const th = {
 		goodstype: "ประเภท",
 		goodslist: "รายการสินค้า",
 		goodsdetail: "ข้อมูลสินค้า",
+		handlerpriceandstock: "Edit Price",
 		addgoods: "เพิ่มสินค้า",
 		editgoods: "แก้ไขสินค้า",
 		stock: "จัดการคลังสินค้า",
@@ -238,6 +239,7 @@ const th = {
 			addspecnameholder: "เช่น สี, ขนาด, วัสดุ",
 			addspecvalueholder: "เช่น สีแดง",
 			tabletip: "เลื่อนไปทางซ้าย เพื่อตรวจสอบข้อมูลให้ครบถ้วน",
+			clonetip: "Click clone and copy the first data to others",
 			deletegoods: "ลบสินค้าตัวนี้",
 			
 		},

@@ -78,7 +78,13 @@
 			
 			<!-- 价格展示  仅超级管理员可以看到 -->
 			<view v-if="user.type === 0 && priceList && priceList.length > 0" class="priceshowview bg-white padding bordertop">
-				<text class="text-xl text-bold text-black">{{ i18n.goods.pricestr }}:</text>
+				<view class="padding flex align-center justify-between">
+					<text class="text-xl text-bold text-black margin-right-sm">{{ i18n.goods.pricestr }}:</text>
+					<button class="cu-btn radius sm cuIcon-edit" @tap.stop="jumptofixprice">
+						<text class="margin-left-sm">{{ i18n.base.fix }}</text>
+					</button>
+					<!-- <view class="cu-tag radius bg-grey" @tap.stop="jumptofixprice">{{ i18n.base.fix }}</view> -->
+				</view>
 				<view class="grid col-2 text-center">
 					<view class="padding flex flex-direction" v-for="(priceitem, index) in priceList" :key="index">
 						<!-- 价格标题 -->
@@ -102,12 +108,12 @@
 						<view class="cu-time">{{ recorditem.createDate.substr(-14) }}</view>
 						
 						<view class="cu-item" :class="[ recorditem.flag === 0 ? 'cuIcon-roundright text-green' : 'cuIcon-pullleft text-red' ]">
-							<view class="content shadow-blur" :class="[ recorditem.flag === 0 ? 'bg-gradual-green' : 'bg-gradual-red' ]">
-								<text>【{{ recorditem.flag === 0 ? i18n.stock.stockin : i18n.stock.stockout }}】</text>
+							<view class="content shadow-blur text-light" :class="[ recorditem.flag === 0 ? 'bg-gradual-green' : 'bg-gradual-red' ]">
+								<text class="text-bold">【{{ recorditem.flag === 0 ? i18n.stock.stockin : i18n.stock.stockout }}】</text>
 								<!-- xxx 出库了 商品A 100个 -->
-								<text>{{ `${recorditem.realName} (${recorditem.account})` }}</text>
-								<text>{{ `${recorditem.flag === 0 ? i18n.stock.stockin : i18n.stock.stockout}` }}</text>
-								<text>{{ `${recorditem.title} (${recorditem.specInfo.specName})` }}</text>
+								<text class="margin-right-sm">{{ `${recorditem.realName} (${recorditem.account})` }}</text>
+								<text class="margin-right-sm">{{ `${recorditem.flag === 0 ? i18n.stock.stockin : i18n.stock.stockout}` }}</text>
+								<text class="margin-right-sm ">{{ `${recorditem.title} (${recorditem.specInfo.specName})` }}</text>
 								<text>{{ `${recorditem.stockCount}` }}</text>
 								<!-- <text>{{ `${recorditem.customerInfo.name}` }}</text> -->
 							</view>
@@ -419,6 +425,13 @@
 				let showspecstr = info.showspecstr
 				this.showspecstr = showspecstr
 				
+			},
+			
+			// 跳转修改价格页面
+			jumptofixprice() {
+				uni.navigateTo({
+					url: `/pages/goods/handlepriceandstock?pid=${_this.pid}`
+				});
 			},
 			
 			// 点击开始修改价格

@@ -87,6 +87,12 @@
 				"navigationBarTitleText":"生成二维码"
 			}
         }
+        ,{
+            "path" : "pages/goods/handlepriceandstock",
+            "style" : {
+				"navigationBarTitleText":"修改商品价格"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",

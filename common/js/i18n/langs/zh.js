@@ -40,6 +40,7 @@ const zh = {
 		goodstype: "分类管理",
 		goodslist: "商品列表",
 		goodsdetail: "商品详情",
+		handlerpriceandstock: "修改价格",
 		addgoods: "上传商品",
 		editgoods: "编辑商品",
 		stock: "库存管理",
@@ -236,6 +237,7 @@ const zh = {
 			addspecnameholder: "属性名,如: 颜色",
 			addspecvalueholder: "属性值,如: 红色",
 			tabletip: "向左滑动可查看完整数据",
+			clonetip: "点击clone可复制第一个规格数据到其他规格",
 			deletegoods: "删除商品",
 			
 		},
