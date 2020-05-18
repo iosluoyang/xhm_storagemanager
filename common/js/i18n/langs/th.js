@@ -113,6 +113,7 @@ const th = {
 		lackgoodsmainpic: "โปรดเพิ่มข้อมูลรูปภาพ",
 		lackgoodstitle: "กรุณาใส่ชื่อสินค้า",
 		lackgoodstype: "กรุณาเลือกประเภทสินค้า",
+		lackgoodsdes: "Please enter the description",
 		uploaderror: "การเพิ่มข้อมูลขัดข้อง",
 		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
 		

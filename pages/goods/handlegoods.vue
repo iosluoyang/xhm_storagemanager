@@ -215,7 +215,7 @@
 				mainpiclimitnum: 5, // 主图上传的数量限制
 				goodstitle: '', // 商品标题
 				goodsdes: '', // 商品描述
-				goodsbarcode: '', // 商品标识码
+				goodsbarcode: '2020testtest', // 商品标识码
 				firstTypeId: null, // 商品所属的一级分类id
 				secondTypeId: null, // 商品所属的二级分类id
 				
@@ -783,6 +783,14 @@
 					return
 				}
 				
+				// 检查商品描述
+				if(_this.goodsdes === '') {
+					uni.showToast({
+						title: _this.i18n.error.lackgoodsdes,
+						icon: 'none'
+					});
+					return
+				}
 				
 				// 区分新增还是编辑
 				

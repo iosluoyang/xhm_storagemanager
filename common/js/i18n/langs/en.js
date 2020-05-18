@@ -113,6 +113,7 @@ const en = {
 		lackgoodsmainpic: "please upload the picture",
 		lackgoodstitle: "please enter the title",
 		lackgoodstype: "Please select the classification",
+		lackgoodsdes: "Please enter the description",
 		uploaderror: "upload error",
 		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
 		

@@ -111,6 +111,7 @@ const zh = {
 		lackgoodsmainpic: "请上传商品图片",
 		lackgoodstitle: "请输入商品标题",
 		lackgoodstype: "请选择商品分类",
+		lackgoodsdes: "请输入商品描述",
 		uploaderror: "上传失败",
 		lackemail: "您还未补充邮箱,是否前往补充邮箱地址?",
 		

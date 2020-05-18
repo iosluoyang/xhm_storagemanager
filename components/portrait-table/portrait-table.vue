@@ -9,9 +9,9 @@
 				
 				>
 				
-					<view class="t_threeline text-bold text-df">{{ item.label }}</view>
+					<view class="t_oneline text-bold text-df" style="max-width: 200rpx;">{{ item.label }}</view>
 					<view v-if="item.ifclone" class="text-sm text-blue" @tap.stop="clonetabledata(index)">{{i18n.base.onekeyclone}}</view>
-			
+		
 			</view>
 		</view>
 		<view class="tbody_wrap">
