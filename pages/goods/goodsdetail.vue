@@ -38,7 +38,7 @@
 			</view>
 			
 			<!-- 商品其他信息展示 -->
-			<view class="cu-list menu">
+			<view class="cu-list menu borderbottom">
 				
 				<!-- 分类(仅展示) -->
 				<view class="cu-item">
@@ -63,7 +63,7 @@
 				</view>
 				
 				<!-- 规格展示(可选择) -->
-				<view class="cu-item arrow" @tap.stop="previewspec">
+				<!-- <view class="cu-item arrow" @tap.stop="previewspec">
 					<view class="content">
 						<text class="cuIcon-sort text-blue margin-right-xs"></text>
 						<text class="text-black">{{i18n.goods.handlegoods.goodsspec}}</text>
@@ -72,14 +72,31 @@
 					<view class="action">
 						<text class="text-gray text-df">{{ showspecstr ? showspecstr : i18n.base.select }}</text>
 					</view>
+				</view> -->
+				
+			</view>
+			
+			<!-- 展示商品的所有规格 -->
+			<view class="specsview padding flex justify-between borderbottom">
+				
+				<text class="spectitle text-xl text-bold">{{i18n.goods.handlegoods.goodsspec}}:</text>
+				
+				<view v-if="product && product.specs && product.specs.length > 0" style="max-width: 60%;" class="allspecview flex flex-wrap align-center">
+					<view class="cu-tag round padding xl margin-bottom-sm" v-for="(specitem, index) in product.specs" :key="index" 
+							:class="[ selectspecinfo && specitem.specId === selectspecinfo.specId ? 'bg-blue' : 'line-grey' ]"
+							@tap.stop="selectspecinfo = specitem"
+					>
+						{{ specitem.attributeList.map((attributeitem) => {return attributeitem.attributeValue}).join('、') }}
+						
+					</view>
 				</view>
 				
 			</view>
 			
 			<!-- 价格展示  仅超级管理员可以看到 -->
-			<view v-if="user.type === 0 && priceList && priceList.length > 0" class="priceshowview bg-white padding bordertop">
-				<view class="padding flex align-center justify-between">
-					<text class="text-xl text-bold text-black margin-right-sm">{{ i18n.goods.pricestr }}:</text>
+			<view v-if="user.type === 0 && priceList && priceList.length > 0" class="priceshowview bg-white padding borderbottom">
+				<view class="flex align-center justify-between">
+					<text class="text-xl text-bold margin-right-sm">{{ i18n.goods.pricestr }}:</text>
 					<button class="cu-btn radius sm cuIcon-edit" @tap.stop="jumptofixprice">
 						<text class="margin-left-sm">{{ i18n.base.fix }}</text>
 					</button>
@@ -96,7 +113,7 @@
 			</view>
 			
 			<!-- 最近的出入库记录 -->
-			<view class="stockrecordview bg-white padding bordertop">
+			<view class="stockrecordview bg-white padding">
 				
 				<text class="text-xl text-bold text-black">{{ i18n.goods.goodsdetail.stockrecord }}:</text>
 				
@@ -133,7 +150,7 @@
 		</view>
 		
 		<!--底部规格选择层-->
-		<goodsspecselector  v-if="pid"
+		<!-- <goodsspecselector  v-if="pid"
 							ref="goodspecselector"
 							:pid="pid"
 							mykey="goodsdetail"
@@ -141,7 +158,7 @@
 							:ifshowpopup="ifshowpopup"
 							@confirmselectspecinfo="confirmselectspec"
 							@hidepopup="ifshowpopup = false">
-		</goodsspecselector>		
+		</goodsspecselector> -->		
 		
 	</view>
 </template>
@@ -189,9 +206,6 @@
 			_this.loaddetaildata()
 			
 			uni.$on('updateprodetail', function(){
-				// 刷新规格选择器
-				_this.selectattributeIdArr = _this.recordselectattributeIdArr
-				_this.$refs.goodspecselector.getproductspecdata()
 				// 加载商详信息
 				_this.loaddetaildata()
 			})
@@ -265,10 +279,15 @@
 				}
 				else {
 					
-					let computedstockrecord = this.stockrecordlist.filter((recorditem) => {
-						return recorditem.specInfo.specId === selectspecinfo.specId
-					})
-					return computedstockrecord
+					if(this.stockrecordlist && this.stockrecordlist.length > 0) {
+						let computedstockrecord = this.stockrecordlist.filter((recorditem) => {
+							return recorditem.specInfo.specId === selectspecinfo.specId
+						})
+						return computedstockrecord
+					}
+					else{
+						return []
+					}
 					
 				}
 				
@@ -296,6 +315,21 @@
 						})
 					}
 					if(swiperData.length > 0) {_this.swiperData = swiperData}
+					
+					// 如果存在已选规格则根据最新数据找到该规格
+					if(_this.selectspecinfo) {
+						product.specs.find((specitem) => {
+							if(specitem.specId === _this.selectspecinfo.specId) {
+								_this.selectspecinfo = specitem
+							}
+							return specitem.specId === _this.selectspecinfo.specId
+						})
+					}
+					// 如果没有选中的话则默认选中第一个规格数据
+					else if(product.specs && product.specs.length > 0){
+						_this.selectspecinfo = product.specs[0]
+					}
+
 					
 					// 计算商品的价格
 					_this.calculateproductprice()

@@ -31,6 +31,15 @@ const en = {
 		other: "Other",
 		onekeyclone: "Clone",
 		fix: "Fix",
+		week: {
+			Monday: "Monday",
+			Tuesday: "Tuesday",
+			Wednesday: "Wednesday",
+			Thursday: "Thursday",
+			Friday: "Friday",
+			Saturday: "Saturday",
+			Sunday: "Sunday"
+		},
 	
 	},
 	
@@ -166,7 +175,7 @@ const en = {
 			mytask: "My Task",
 			myupload: "My Upload",
 			feedback: "Feedback",
-			myoperation: "My Operation",
+			workingtime: "Working Time",
 			more: "More",
 		},
 		

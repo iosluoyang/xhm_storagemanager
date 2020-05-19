@@ -30,6 +30,15 @@ const zh = {
 		other: "其他",
 		onekeyclone: "一键克隆",
 		fix: "修改",
+		week: {
+			Monday: "周一",
+			Tuesday: "周二",
+			Wednesday: "周三",
+			Thursday: "周四",
+			Friday: "周五",
+			Saturday: "周六",
+			Sunday: "周日"
+		},
 	
 	},
 	
@@ -164,7 +173,7 @@ const zh = {
 			mytask: "我的任务",
 			myupload: "我的上传",
 			feedback: "反馈",
-			myoperation: "操作记录",
+			workingtime: "工作时间",
 			more: "更多",
 		},
 		

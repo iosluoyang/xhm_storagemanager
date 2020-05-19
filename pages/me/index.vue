@@ -64,6 +64,7 @@
 				<text>{{item.name}}</text>
 			</view>
 		</view>
+		
 		<!-- 列表 -->
 		<view class="cu-list menu sm-border card-menu margin-top">
 			
@@ -120,11 +121,12 @@
 						name: this.i18n.me.panel.myupload
 					},
 					{
-						id: 'myoperation',
-						cuIcon: 'repairfill',
+						id: 'workingtime',
+						cuIcon: 'timefill',
 						color: 'yellow',
 						badge: 0,
-						name: this.i18n.me.panel.myoperation
+						name: this.i18n.me.panel.workingtime,
+						url: '/pages/me/workingtime'
 					},
 					{
 						cuIcon: 'settingsfill',

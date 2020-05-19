@@ -31,6 +31,15 @@ const th = {
 		other: "Other",
 		onekeyclone: "Clone",
 		fix: "Fix",
+		week: {
+			Monday: "Monday",
+			Tuesday: "Tuesday",
+			Wednesday: "Wednesday",
+			Thursday: "Thursday",
+			Friday: "Friday",
+			Saturday: "Saturday",
+			Sunday: "Sunday"
+		},
 	
 	},
 	
@@ -165,7 +174,7 @@ const th = {
 			mytask: "งานของฉัน",
 			myupload: "การใส่ข้อมูล ของฉัน",
 			feedback: "การตอบรับ",
-			myoperation: "การปฏิบัติการ",
+			workingtime: "Working Time",
 			more: "……"
 		},
 		

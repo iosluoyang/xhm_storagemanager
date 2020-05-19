@@ -93,6 +93,12 @@
 				"navigationBarTitleText":"修改商品价格"
 			}
         }
+        ,{
+            "path" : "pages/me/workingtime",
+            "style" : {
+				"navigationBarTitleText":"工作时间"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",

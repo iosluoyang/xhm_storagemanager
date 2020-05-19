@@ -2,12 +2,6 @@
 	
 	<view class="goodspectableview" v-if="tableData && tableData.length > 0">
 		
-		<!-- table的提示文字 -->
-		<view class="text-center text-df margin-bottom">
-			<text class="text-df margin-bottom-sm block">{{i18n.goods.handlegoods.tabletip}}</text>
-			<text class="text-blue">({{i18n.goods.handlegoods.clonetip}})</text>
-		</view>
-		
 		<!-- 属性值table区域 -->
 		<p-table class="tableview" v-model="tableData" :tableData="tableData" :title="tableTitleData" @clonetablerowdata="clonetablerowdata" align="center" titleBg="#cdcdcd"></p-table>
 		
@@ -29,6 +23,12 @@
 			},
 			
 			props: {
+				
+				// table的类型  default 默认模式 有价格和库存  price 价格模式  stock 库存模式 
+				type: {
+					type: String,
+					default: 'default',
+				},
 				
 				// 商品属性列表
 				attributeList: {
@@ -59,30 +59,34 @@
 			
 			watch: {
 				
-				attributeList(newValue, oldValue) {
-					console.log(`商品属性有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
-					// 重新计算tabledata数据
-					_this.gettabledata()
+				attributeList: {
+					
+					handler: function(newValue, oldValue) {
+						console.log(`商品属性有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
+						// 重新计算tabledata数据
+						_this.gettabledata()
+					},
+					deep: true // 深度检测
 				},
 				
-				specs(newValue, oldValue) {
-					console.log(`规格有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
-					// 重新计算tabledata数据
-					_this.gettabledata()
+				specs: {
+					
+					handler: function(newValue, oldValue) {
+						console.log(`规格有变动，重新计算tabledata数据------${JSON.stringify(newValue)}`);
+						// 重新计算tabledata数据
+						_this.gettabledata()
+					},
+					deep: true // 深度检测
 				},
 				
 				tableData: {
+					
 					handler(newValue, oldValue) {
 						// 调用获取最新的specs方法
-						console.log(`检测到tabledata发生变化,此时进行传值同步数据`);
-						if(_this) {
-							_this.getnewspecs()
-						}
-						
+						console.log(`检测到tabledata发生变化,此时获取最新的specs数据进行传值同步数据`);
+						_this.getnewspecs()
 					},
-					immediate: true,
 					deep: true
-					
 				}
 				
 			},
@@ -153,9 +157,20 @@
 						value: "stockCount",
 						ifclone: true, // 是否可以克隆
 					}
-					tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle, stocktitle)
 					
-					
+					// 价格模式
+					if(this.type === 'price') {
+						tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle)
+					}
+					// 库存模式
+					else if(this.type === 'stock') {
+						tabletitle.push(stocktitle)
+					}
+					// 通用模式
+					else if(this.type === 'default') {
+						tabletitle.push(costpricetitle, salepricetitle, agentpricetitle, creditpricetitle, stocktitle)
+					}
+
 					// 组装tabledata数据 需要展示的具体数据源
 					let tabledata = []
 					specs.forEach((specItem, specIndex) => {
@@ -173,7 +188,7 @@
 							
 							eachtabledata[attributeItem.attributeName] = {
 								type: 'string',
-								value: specItem.attributeList[attributeIndex].attributeValue
+								value: specItem.attributeList.length > attributeIndex ? specItem.attributeList[attributeIndex].attributeValue : ''
 							}
 							
 						})

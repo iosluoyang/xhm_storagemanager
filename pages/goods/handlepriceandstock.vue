@@ -9,8 +9,8 @@
 		<!-- 商品名称 -->
 		<view v-if="product" class="margin text-xxl text-center text-bold text-black">{{ product.title }}</view>
 		
-		<!-- 商品规格库存table -->
-		<goodspectable v-if="attributeList && attributeList.length > 0 && specs && specs.length > 0" class="goodstable padding" :attributeList="attributeList" :specs="specs" @getnewspecs="getnewspecs"></goodspectable>
+		<!-- 商品规格table -->
+		<goodspectable v-if="attributeList && attributeList.length > 0 && specs && specs.length > 0" class="goodstable padding" type="price" :attributeList="attributeList" :specs="specs" @getnewspecs="getnewspecs"></goodspectable>
 		
 		<!-- 保存按钮 -->
 		<view class="bottombtnsview padding flex align-center">
@@ -153,7 +153,7 @@
 	
 	page{
 		width: 100%;
-		height: 100%;
+		height: 100vh;
 		background-color: #FFFFFF;
 	}
 	
