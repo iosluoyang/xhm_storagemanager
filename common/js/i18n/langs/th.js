@@ -40,6 +40,10 @@ const th = {
 			Saturday: "Saturday",
 			Sunday: "Sunday"
 		},
+		time: {
+			everyday: "Every Day",
+			workingday: "Working Day",
+		}
 	
 	},
 	
@@ -126,6 +130,7 @@ const th = {
 		lackgoodsdes: "Please enter the description",
 		uploaderror: "การเพิ่มข้อมูลขัดข้อง",
 		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
+		overtimeerror: "Start time cannot later then End time",
 		
 	},
 	
@@ -201,6 +206,11 @@ const th = {
 			qrcodenum: "QR code amount",
 			tips: "Please enter the amounts of the qrcode which you want to build , we will soon send to your Email",
 		},
+		
+		workingtime: {
+			starttime: "Start Time",
+			endtime: "End Time",
+		}
 		
 	},
 	

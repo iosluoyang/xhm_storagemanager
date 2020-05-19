@@ -15,9 +15,21 @@ function getosssignature(data){
 }
 
 
+// 获取用户工作时间
+function getworkingtime(data){
+	return flyrequest.fly.request('/app/user/getWorkingDays.do',data)
+}
+
+// 设置用户工作时间
+function setworkingtime(data){
+	return flyrequest.fly.request('/app/user/setWorkingDays.do',data)
+}
+
 export default {
 	
 	getconfig,
 	getosssignature,
+	getworkingtime,
+	setworkingtime
 	
 }

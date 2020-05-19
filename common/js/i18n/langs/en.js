@@ -40,6 +40,10 @@ const en = {
 			Saturday: "Saturday",
 			Sunday: "Sunday"
 		},
+		time: {
+			everyday: "Every Day",
+			workingday: "Working Day",
+		}
 	
 	},
 	
@@ -126,6 +130,7 @@ const en = {
 		lackgoodsdes: "Please enter the description",
 		uploaderror: "upload error",
 		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
+		overtimeerror: "Start time cannot later then End time",
 		
 		
 	},
@@ -202,6 +207,11 @@ const en = {
 			qrcodenum: "QR code amount",
 			tips: "Please enter the amounts of the qrcode which you want to build , we will soon send to your Email",
 		},
+		
+		workingtime: {
+			starttime: "Start Time",
+			endtime: "End Time",
+		}
 		
 	},
 	

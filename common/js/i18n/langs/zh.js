@@ -39,6 +39,10 @@ const zh = {
 			Saturday: "周六",
 			Sunday: "周日"
 		},
+		time: {
+			everyday: "每天",
+			workingday: "工作日",
+		}
 	
 	},
 	
@@ -124,6 +128,7 @@ const zh = {
 		lackgoodsdes: "请输入商品描述",
 		uploaderror: "上传失败",
 		lackemail: "您还未补充邮箱,是否前往补充邮箱地址?",
+		overtimeerror: "开始时间不能晚于结束时间",
 		
 		
 	},
@@ -200,6 +205,11 @@ const zh = {
 			qrcodenum: "二维码数量",
 			tips: "输入您想要生成的商品二维码数量,我们会在稍后将文件发送至您的邮箱,请在查收后下载打印并张贴到您的商品上。",
 		},
+		
+		workingtime: {
+			starttime: "开始时间",
+			endtime: "结束时间",
+		}
 		
 	},
 	
