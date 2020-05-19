@@ -2,7 +2,7 @@
 	<view class="handlepriceandstockview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-blue" isBack>
+		<cu-custom bgColor="bg-gradual-blue" isBack isBackConfirm @backPage="backPage">
 			<block slot="content">{{i18n.nav.handlerpriceandstock}}</block>
 		</cu-custom>
 		
@@ -62,6 +62,22 @@
 		},
 		
 		methods: {
+			
+			// 返回按钮的二次确认
+			backPage() {
+				uni.showModal({
+					title: _this.i18n.tip.exitconfirm,
+					content: _this.i18n.tip.datawillcleartip,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							uni.navigateBack();
+						}
+					}
+				});
+			},
 			
 			// 加载商详信息
 			loaddetaildata() {
