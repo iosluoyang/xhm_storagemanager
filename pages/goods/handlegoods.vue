@@ -971,12 +971,14 @@
 						}, 1500);
 						
 					}).catch(error => {
+						
 						_this.ifshowloading = false // 取消加载
 						// 修改失败
 						uni.showToast({
 							title: _this.i18n.error.fixerror,
 							icon: 'none'
 						});
+						
 					})
 					
 				}

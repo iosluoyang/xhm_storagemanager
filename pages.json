@@ -99,6 +99,18 @@
 				"navigationBarTitleText":"工作时间"
 			}
         }
+        ,{
+            "path" : "pages/me/customer/index",
+            "style" : {
+				"navigationBarTitleText":"客户"
+			}
+        }
+        ,{
+            "path" : "pages/me/customer/handlemember",
+            "style" : {
+				"navigationBarTitleText":"客户管理"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",

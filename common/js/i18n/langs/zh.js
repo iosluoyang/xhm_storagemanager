@@ -42,7 +42,8 @@ const zh = {
 		time: {
 			everyday: "每天",
 			workingday: "工作日",
-		}
+		},
+		
 	
 	},
 	
@@ -93,6 +94,9 @@ const zh = {
 		pleaseselectgoodspec: "请先选择商品规格",
 		pleasescangoodsbarcode: "请扫描商品上的二维码",
 		ifsuretofixstock: "确定进行出库/入库操作吗?",
+		findnewversion: "发现新版本,点击下载",
+		notinworkingtime: "您不在工作时间范围内",
+		loginotherplace: "您的账号已经在其他地方登录,请重新登录",
 	},
 	
 	// 错误提示
@@ -176,7 +180,7 @@ const zh = {
 		panel: {
 			proqrcode: "商品二维码",
 			mytask: "我的任务",
-			myupload: "我的上传",
+			customer: "客户关系",
 			feedback: "反馈",
 			workingtime: "工作时间",
 			more: "更多",
@@ -209,6 +213,17 @@ const zh = {
 		workingtime: {
 			starttime: "开始时间",
 			endtime: "结束时间",
+		},
+		
+		customer: {
+			customerId: "客户id",
+			customerimg: "客户头像",
+			customername: "客户姓名",
+			customerremark: "客户备注",
+			customerremarkplaceholder: "可以在这里添加客户备注",
+			companyname: "公司名称",
+			customerphone: "客户电话",
+			deletecustomer: "删除该客户",
 		}
 		
 	},

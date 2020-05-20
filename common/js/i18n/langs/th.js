@@ -43,7 +43,8 @@ const th = {
 		time: {
 			everyday: "Every Day",
 			workingday: "Working Day",
-		}
+		},
+		
 	
 	},
 	
@@ -94,6 +95,9 @@ const th = {
 		pleaseselectgoodspec: "กรุณาเลือกรายละเอียดสินค้า",
 		pleasescangoodsbarcode: "Please scan the QR Code",
 		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
+		findnewversion: "New Version coming , Download now ?",
+		notinworkingtime: "You are not in the working time",
+		loginotherplace: "You've logined in other platform, please login again",
 		
 	},
 	
@@ -177,7 +181,7 @@ const th = {
 		panel: {
 			proqrcode: "QR Code",
 			mytask: "งานของฉัน",
-			myupload: "การใส่ข้อมูล ของฉัน",
+			customer: "Customer",
 			feedback: "การตอบรับ",
 			workingtime: "Working Time",
 			more: "……"
@@ -210,6 +214,17 @@ const th = {
 		workingtime: {
 			starttime: "Start Time",
 			endtime: "End Time",
+		},
+		
+		customer: {
+			customerId: "Customer ID",
+			customerimg: "Avatar",
+			customername: "Name",
+			customerremark: "Remark",
+			customerremarkplaceholder: "You can enter some remark for this customer",
+			companyname: "Company Name",
+			customerphone: "Phone",
+			deletecustomer: "Delete Customer",
 		}
 		
 	},

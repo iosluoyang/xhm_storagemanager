@@ -104,52 +104,71 @@
 		
 		onLoad() {
 			// 设置个人中心任务面板内容
-			let panelList = [
-				
-					{
-						cuIcon: 'qr_code',
-						color: 'blue',
-						badge: 0,
-						name: this.i18n.me.panel.proqrcode,
-						url: '/pages/me/buildqrcode'
-					},
-					{
-						id: 'myupload',
-						cuIcon: 'lightfill',
-						color: 'orange',
-						badge: 126,
-						name: this.i18n.me.panel.myupload
-					},
-					{
-						id: 'workingtime',
-						cuIcon: 'timefill',
-						color: 'yellow',
-						badge: 0,
-						name: this.i18n.me.panel.workingtime,
-						url: '/pages/me/workingtime'
-					},
-					{
-						cuIcon: 'settingsfill',
-						color: 'brown',
-						badge: 0,
-						name: this.i18n.nav.resetpwd,
-						url: '/pages/me/resetpwd'
-					},
-					{
-						cuIcon: 'markfill',
-						color: 'purple',
-						badge: 0,
-						name: this.i18n.me.panel.feedback
-					},
-					{
-						cuIcon: 'favorfill',
-						color: 'cyan',
-						badge: 0,
-						name: this.i18n.me.panel.more
-					},
-				
-			]
-				
+			
+			// 商品二维码
+			let qrcodeitem = {
+				cuIcon: 'qr_code',
+				color: 'blue',
+				badge: 0,
+				name: this.i18n.me.panel.proqrcode,
+				url: '/pages/me/buildqrcode'
+			}
+			
+			// 客户关系
+			let customeritem = {
+				id: 'customer',
+				cuIcon: 'lightfill',
+				color: 'red',
+				badge: 100,
+				name: this.i18n.me.panel.customer,
+				url: '/pages/me/customer/index'
+			}
+			
+			// 工作时间
+			let workingtimeitem = {
+				id: 'workingtime',
+				cuIcon: 'timefill',
+				color: 'yellow',
+				badge: 0,
+				name: this.i18n.me.panel.workingtime,
+				url: '/pages/me/workingtime'
+			}
+			
+			// 重置密码
+			let resetpwditem = {
+				cuIcon: 'settingsfill',
+				color: 'brown',
+				badge: 0,
+				name: this.i18n.nav.resetpwd,
+				url: '/pages/me/resetpwd'
+			}
+			
+			// 反馈
+			let feedbackitem = {
+				cuIcon: 'markfill',
+				color: 'grey',
+				badge: 0,
+				name: this.i18n.me.panel.feedback
+			}
+			
+			// 更多
+			let moreitem = {
+				cuIcon: 'favorfill',
+				color: 'grey',
+				badge: 0,
+				name: this.i18n.me.panel.more
+			}
+			
+			let panelList = []
+			// 如果是超级管理员
+			if(this.user.type === 0) {
+				panelList = [qrcodeitem, customeritem, workingtimeitem, resetpwditem, moreitem]
+			}
+			// 如果是普通员工则有
+			else if(this.user.type === 1) {
+				panelList = [resetpwditem, moreitem]
+			}
+			
 			this.panelList = panelList
 			
 			// 登录状态下 加载个人信息

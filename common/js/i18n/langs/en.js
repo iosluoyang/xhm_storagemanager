@@ -43,7 +43,10 @@ const en = {
 		time: {
 			everyday: "Every Day",
 			workingday: "Working Day",
-		}
+		},
+		
+		
+		
 	
 	},
 	
@@ -95,6 +98,9 @@ const en = {
 		pleaseselectgoodspec: "Please select the specification",
 		pleasescangoodsbarcode: "Please scan the QR Code",
 		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
+		findnewversion: "New Version coming , Download now ?",
+		notinworkingtime: "You are not in the working time",
+		loginotherplace: "You've logined in other platform, please login again",
 	},
 	
 	// 错误提示
@@ -178,7 +184,7 @@ const en = {
 		panel: {
 			proqrcode: "QR Code",
 			mytask: "My Task",
-			myupload: "My Upload",
+			customer: "Customer",
 			feedback: "Feedback",
 			workingtime: "Working Time",
 			more: "More",
@@ -211,6 +217,18 @@ const en = {
 		workingtime: {
 			starttime: "Start Time",
 			endtime: "End Time",
+		},
+		
+		customer: {
+			customerId: "Customer ID",
+			customerimg: "Avatar",
+			customername: "Name",
+			customerremark: "Remark",
+			customerremarkplaceholder: "You can enter some remark for this customer",
+			companyname: "Company Name",
+			customerphone: "Phone",
+			deletecustomer: "Delete Customer",
+			
 		}
 		
 	},

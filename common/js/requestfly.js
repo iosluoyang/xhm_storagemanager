@@ -1,6 +1,7 @@
 import store from '@/store'
 import defaultconfig from "@/common/config/base.js"
 import md5 from 'js-md5'
+import i18n from '@/common/js/i18n/i18n.js'
 import { getrequestbasepara } from "@/common/js/base.js"
 
 
@@ -132,12 +133,36 @@ var responseinterceptor = function(response) {
     }
 
 	// 统一的错误码处理 报接口错误信息  特殊错误码做特殊处理
-	// 1.E30001 token失效，调用refreshToken接口获取新token
-	// 2.E30004 refreshToken过期需要跳转到登录页面用户重新登录
+	// E10019/E10029/E30003	用户被禁用/账号信息不存在/非本人token	跳转到登录页面
+	// E10023 系统配置信息需要更新
+	// E10027	强制版本升级
+	// E20006 非工作时间段不能进行此业务操作
+	// E30001 token失效，调用refreshToken接口获取新token
+	// E30004 refreshToken过期需要跳转到登录页面用户重新登录
+	// E30005 该用户已在其他地方登陆
 	if (res.errorCode === '000000') {
 		// 接口调用成功
 		return res
 	} 
+	else if (res.errorCode === 'E10019' || res.errorCode === 'E10029' || res.errorCode === 'E30003') {
+		// 用户被冻结
+		uni.showModal({
+			content: i18n.messages[i18n.locale].index.managepeople.handlemember.userfreeze,
+			showCancel: false,
+			confirmText: i18n.messages[i18n.locale].index.base.confirm,
+			success: res => {
+				if(res.confirm) {
+					// 重置至登录页面  首先需要删除本地的token信息
+					store.dispatch('user/resettoken').then(() => {
+						uni.reLaunch({
+							url: `/pages/base/login?forbidback=true` // 禁止后退
+						})
+					})
+				}
+			}
+		})
+		return Promise.reject(res || {msg:i18n.messages[i18n.locale].index.managepeople.userfreeze} )
+	}
 	else if (res.errorCode === 'E10023') {
 		// 系统配置信息需要更新
 		
@@ -154,6 +179,53 @@ var responseinterceptor = function(response) {
 		})
 		
 	} 
+	else if (res.errorCode === 'E10027') {
+		
+		// 强制版本升级
+		uni.showModal({
+			content: i18n.messages[i18n.locale].index.tip.findnewversion,
+			showCancel: false,
+			confirmText: i18n.messages[i18n.locale].index.base.confirm,
+			success: res => {
+				if(res.confirm) {
+					// 开始下载新版本
+					
+					const downloadTask = uni.downloadFile({
+					    url: 'http://www.example.com/file/test', //仅为示例，并非真实的资源
+					    success: (res) => {
+					        if (res.statusCode === 200) {
+					            console.log('下载成功');
+					        }
+					    }
+					});
+					
+					downloadTask.onProgressUpdate((res) => {
+					    console.log('下载进度' + res.progress);
+					    console.log('已经下载的数据长度' + res.totalBytesWritten);
+					    console.log('预期需要下载的数据总长度' + res.totalBytesExpectedToWrite);
+					
+					    // 测试条件，取消下载任务。
+					    if (res.progress > 50) {
+					        downloadTask.abort();
+					    }
+					});
+					
+				}
+			}
+		})
+		
+		return Promise.reject({msg:'Updating……'} )
+		
+	}
+	else if (res.errorCode === 'E20006') {
+		// 非工作时间段不能进行此业务操作
+		uni.showModal({
+			content: i18n.messages[i18n.locale].index.tip.notinworkingtime,
+			showCancel: false,
+			confirmText: i18n.messages[i18n.locale].index.base.confirm
+		})
+		return Promise.reject({msg:i18n.messages[i18n.locale].index.tip.notinworkingtime} )
+	}
 	else if (res.errorCode === 'E30001') {
 		// token失效，调用refreshToken接口获取新token
 		// 锁定响应拦截器
@@ -176,57 +248,29 @@ var responseinterceptor = function(response) {
         uni.reLaunch({
         	url: '/pages/base/login'
         })
-        return Promise.reject(res || {msg:'登录态失效'})
+        reject(res || {msg:'登录态失效'})
       })
     }
-	else if(res.errorCode === 'E10019') {
-		// 用户被冻结
-		return new Promise((resolve, reject) => {
-			
-			uni.showModal({
-				content: 'Your Account Already been locked , Please login again',
-				showCancel: false,
-				confirmText: 'OK',
-				success: res => {
-					if(res.confirm) {
-						// 重置至登录页面  首先需要删除本地的token信息
-						return store.dispatch('user/resettoken').then(() => {
-							uni.reLaunch({
-								url: `/pages/base/login?forbidback=true` // 禁止后退
-							})
-							return reject(res || {msg:'Account Locked'} )
-						})
-					}
-				}
-			})
-			
-		})
-		
-	}
 	else if (res.errorCode === 'E30005') {
       // 该用户已在其他地方登录  弹出提示框然后进行页面跳转
-		return new Promise((resolve,reject) => {
-			
-			uni.showModal({
-				title: '提示',
-				content: '您的账号已经在其他地方登录,请重新登录',
-				showCancel: false,
-				cancelText: '',
-				confirmText: '确定',
-				success: res => {
-					if(res.confirm) {
-						// 跳转至登录页面  首先需要删除本地的token信息
-						return store.dispatch('user/resettoken').then(() => {
-							uni.reLaunch({
-								url: '/pages/base/login'
-							})
-							return reject(res || {msg:'账号掉线'} )
-						})
-					}
-				}
-			})
-			
-		})
+	  uni.showModal({
+	  	content: i18n.messages[i18n.locale].index.tip.loginotherplace,
+	  	showCancel: false,
+	  	confirmText: i18n.messages[i18n.locale].index.base.confirm,
+	  	success: res => {
+	  		if(res.confirm) {
+	  			// 跳转至登录页面  首先需要删除本地的token信息
+	  			return store.dispatch('user/resettoken').then(() => {
+	  				uni.reLaunch({
+	  					url: '/pages/base/login?forbidback=true'
+	  				})
+	  				
+	  			})
+	  		}
+	  	}
+	  })
+	  return Promise.reject(res || {msg:i18n.messages[i18n.locale].index.tip.loginotherplace} )
+		
     } 
 	else {
       // 其他常见错误

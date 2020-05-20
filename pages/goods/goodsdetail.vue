@@ -460,7 +460,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page{
 		
 	}
@@ -470,6 +470,7 @@
 		
 		.optionview{
 			position: fixed;
+			z-index: 20;
 			left: 0;
 			right: 0;
 			bottom: 0;
