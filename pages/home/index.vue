@@ -136,7 +136,8 @@
 					id: 'producttype',
 					name: 'Different Types',
 					color: 'red',
-					cuIcon: 'sort'
+					cuIcon: 'sort',
+					url: '/pages/goodstype/index'
 				}
 				
 				// 商品功能
@@ -145,16 +146,18 @@
 					id: 'productlist',
 					name: 'All the Product',
 					color: 'blue',
-					cuIcon: 'goodsfavor'
+					cuIcon: 'goodsfavor',
+					url: '/pages/goods/goodslist'
 				}
 				
-				// 人员管理功能
-				let memberitem = {
-					title: this.i18n.nav.managepeople,
-					id: 'management',
-					name: 'About Member',
+				// 客户关系功能
+				let customeritem = {
+					title: this.i18n.nav.customer,
+					id: 'customer',
+					name: "My Customer",
 					color: 'purple',
-					cuIcon: 'peoplelist'
+					cuIcon: 'peoplelist',
+					url: '/pages/customer/index'
 				}
 				
 				// 库存管理功能
@@ -163,7 +166,8 @@
 					id: 'stockinout',
 					name: 'Stock IN/OUT',
 					color: 'green',
-					cuIcon: 'order'
+					cuIcon: 'order',
+					url: '/pages/stock/index'
 				}
 				
 				// 个人中心功能
@@ -172,16 +176,18 @@
 					id: 'me',
 					name: 'Personal',
 					color: 'orange',
-					cuIcon: 'people'
+					cuIcon: 'people',
+					url: '/pages/me/index'
 				}
+				
 				let elements = []
 				// 根据当前的用户标识选择部分的功能显示(因为支持游客模式 所以只有登录状态下的管理员才能展示全部功能)
 				// 超级管理员
 				if(this.$basejs.ifloginflag() && this.user.type === 0){
-					elements = [scanitem,typeitem,goodsitem,memberitem,stockitem,personalitem]
+					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem]
 				}
 				else{
-					elements = [scanitem,typeitem,goodsitem,stockitem,personalitem]
+					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem]
 				}
 				
 				this.elements = elements
@@ -193,101 +199,64 @@
 				
 				// 检查登录状态
 				_this.$basejs.checklogin().then(() => {
-					
-					switch (item.id){
-						// 扫一扫
-						case 'scan':
-						{
-							// 开始扫一扫
-							_this.$basejs.scanQR().then(vaildcontent => {
-								
-								// 扫描成功
-								
-								// 调用接口获取对应的pid
-								_this.$api.goodsapi.getpidbyqrcode({barCode: vaildcontent}).then(response => {
-									let pid = response.data.pid
-									// 找到了对应的pid  直接跳转至商品详情页
-									if(pid) {
-										uni.navigateTo({
-											url: `/pages/goods/goodsdetail?pid=${pid}`
-										});
-									}
-									// 未找到pid 说明有该二维码但是没有对应的商品 提示用户
-									else {
+					// 有跳转链接存在
+					if(item.url) {
+						uni.navigateTo({
+							url: item.url
+						});
+					}
+					// 无链接跳转存在 根据id选择处理事件
+					else{
+						switch (item.id){
+							// 扫一扫
+							case 'scan':
+							{
+								// 开始扫一扫
+								_this.$basejs.scanQR().then(vaildcontent => {
+									
+									// 扫描成功
+									
+									// 调用接口获取对应的pid
+									_this.$api.goodsapi.getpidbyqrcode({barCode: vaildcontent}).then(response => {
+										let pid = response.data.pid
+										// 找到了对应的pid  直接跳转至商品详情页
+										if(pid) {
+											uni.navigateTo({
+												url: `/pages/goods/goodsdetail?pid=${pid}`
+											});
+										}
+										// 未找到pid 说明有该二维码但是没有对应的商品 提示用户
+										else {
+											uni.showModal({
+												title: _this.i18n.base.tip,
+												content: _this.i18n.error.qrcodewithoutgoods,
+												showCancel: false,
+												confirmText: _this.i18n.base.confirm
+											});
+										}
+									}).catch(error => {
 										uni.showModal({
 											title: _this.i18n.base.tip,
-											content: _this.i18n.error.qrcodewithoutgoods,
+											content: _this.i18n.error.scanerror,
 											showCancel: false,
 											confirmText: _this.i18n.base.confirm
 										});
-									}
-								}).catch(error => {
+									})
+									
+								}).catch((othercontent) => {
 									uni.showModal({
-										title: _this.i18n.base.tip,
-										content: _this.i18n.error.scanerror,
+										content: othercontent,
 										showCancel: false,
 										confirmText: _this.i18n.base.confirm
 									});
 								})
-								
-							}).catch((othercontent) => {
-								uni.showModal({
-									content: othercontent,
-									showCancel: false,
-									confirmText: _this.i18n.base.confirm
-								});
-							})
+							}
+								break;
+							default:
+								break;
 						}
-							break;
-						// 商品分类
-						case 'producttype':
-						{
-							uni.navigateTo({
-								url: `/pages/goodstype/index`
-							});
-						}
-							break;
-						// 商品列表
-						case 'productlist':
-						{
-							uni.navigateTo({
-								url: `/pages/goods/goodslist`
-							});
-						}
-							break;
-						// 人员管理
-						case 'management':
-						{
-							uni.navigateTo({
-								url: `/pages/managepeople/index`
-							});
-						}
-							break;
-						// 库存管理
-						case 'stockinout':
-						{
-							uni.showToast({
-								title: _this.i18n.base.needtowait,
-								icon: 'none'
-							});
-							// uni.navigateTo({
-							// 	url: `/pages/stock/index`
-							// });
-						}
-							break;
-						// 我
-						case 'me':
-						{
-							uni.navigateTo({
-								url: `/pages/me/index`
-							});
-						}
-							break;
-						default:
-							break;
 					}
-					
-					
+
 				})
 				
 			},

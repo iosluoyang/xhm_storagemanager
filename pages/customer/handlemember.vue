@@ -2,7 +2,7 @@
 	<view class="handlememberview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-purple" isBack>
 			<block slot="content">{{navtitle}}</block>
 		</cu-custom>
 		
@@ -63,7 +63,7 @@
 		
 		<!-- 确定按钮 -->
 		<view class="btnview padding flex flex-direction">
-			<button class="cu-btn bg-gradual-orange round shadow lg"
+			<button class="cu-btn bg-gradual-purple round shadow lg"
 					:class="[btnanimationname ? 'animation-' + btnanimationname :'']"
 					:data-class="btnanimationname ? btnanimationname : '' " @tap.stop="confirm">{{i18n.base.save}}</button>
 		</view>
@@ -99,7 +99,7 @@
 				uni.navigateBack();
 			}
 			this.type = type
-			this.navtitle = this.type === 'add' ? this.i18n.nav.addmember : this.i18n.nav.editmember
+			this.navtitle = this.type === 'add' ? this.i18n.nav.addcustomer : this.i18n.nav.editcustomer
 			
 			uni.setNavigationBarTitle({
 				title: this.navtitle

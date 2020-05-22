@@ -2,8 +2,8 @@
 	<view class="customerview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
-			<block slot="content">{{i18n.me.panel.customer}}</block>
+		<cu-custom bgColor="bg-gradual-purple" isBack>
+			<block slot="content">{{i18n.nav.customer}}</block>
 		</cu-custom>
 		
 		<!-- 搜索框 -->
@@ -13,7 +13,7 @@
 				<input type="text" :placeholder="i18n.tip.searchpeople" v-model="searchText" confirm-type="search"></input>
 			</view>
 			<view class="action">
-				<button class="cu-btn bg-gradual-orange shadow round" @tap.stop="starttosearch">{{i18n.base.scrollto}}</button>
+				<button class="cu-btn bg-gradual-purple shadow round" @tap.stop="starttosearch">{{i18n.base.scrollto}}</button>
 			</view>
 		</view>
 		
@@ -77,7 +77,7 @@
 		</scroll-view>
 		
 		<!-- 添加按钮 悬浮 -->
-		<view class="addmemberbtn cu-btn round bg-gradual-orange shadow-blur cuIcon lg" @tap.stop="addmember">
+		<view class="addmemberbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="addmember">
 			<text class="cuIcon-add" style="font-size: 100upx;"></text>
 		</view>
 		
@@ -146,14 +146,14 @@
 			// 添加成员
 			addmember() {
 				uni.navigateTo({
-					url: '/pages/me/customer/handlemember?type=add'
+					url: '/pages/customer/handlemember?type=add'
 				});
 			},
 			
 			// 编辑成员
 			editmember(member) {
 				uni.navigateTo({
-					url: `/pages/me/customer/handlemember?type=edit&customerId=${member.customerId}`
+					url: `/pages/customer/handlemember?type=edit&customerId=${member.customerId}`
 				});
 			},
 			

@@ -59,9 +59,9 @@ const th = {
 		addgoods: "เพิ่มสินค้า",
 		editgoods: "แก้ไขสินค้า",
 		stock: "จัดการคลังสินค้า",
-		managepeople: "รายการชื่อผู้ดูแล",
-		addmember: "เพิ่มผู้ดูแล",
-		editmember: "แก้ไขรายชื่อ",
+		customer: "Customer",
+		addcustomer: "เพิ่มผู้ดูแล",
+		editcustomer: "เพิ่มผู้ดูแล",
 		operationlog: "ประวัติการเข้าใช้งาน",
 		me: "ฉัน",
 		resetpwd: "ตั้งค่า",
@@ -156,6 +156,8 @@ const th = {
 	managepeople: {
 		
 		handlemember: {
+			addmember: "เพิ่มผู้ดูแล",
+			editmember: "แก้ไขรายชื่อ",
 			name: "ชื่อผู้ใช้",
 			account: "ชื่อบัญชี",
 			remark: "ตำแหน่ง",
@@ -181,7 +183,7 @@ const th = {
 		panel: {
 			proqrcode: "QR Code",
 			mytask: "งานของฉัน",
-			customer: "Customer",
+			managepeople: "รายการชื่อผู้ดูแล",
 			feedback: "การตอบรับ",
 			workingtime: "Working Time",
 			more: "……"

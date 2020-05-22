@@ -61,9 +61,9 @@ const en = {
 		addgoods: "Upload Product",
 		editgoods: "Edit Product",
 		stock: "Stock",
-		managepeople: "Member",
-		addmember: "Add Member",
-		editmember: "Edit Member",
+		customer: "Customer",
+		addcustomer: "Add Customer",
+		editcustomer: "Edit Customer",
 		operationlog: "Operation Log",
 		me: "Me",
 		resetpwd: "Reset",
@@ -159,6 +159,8 @@ const en = {
 	managepeople: {
 		
 		handlemember: {
+			addmember: "Add Member",
+			editmember: "Edit Member",
 			name: "Member name",
 			account: "Account",
 			remark: "Member Remark",
@@ -184,7 +186,7 @@ const en = {
 		panel: {
 			proqrcode: "QR Code",
 			mytask: "My Task",
-			customer: "Customer",
+			managepeople: "Member",
 			feedback: "Feedback",
 			workingtime: "Working Time",
 			more: "More",

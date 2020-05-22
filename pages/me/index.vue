@@ -114,14 +114,14 @@
 				url: '/pages/me/buildqrcode'
 			}
 			
-			// 客户关系
-			let customeritem = {
-				id: 'customer',
+			// 人员管理
+			let memberitem = {
+				id: 'member',
 				cuIcon: 'lightfill',
 				color: 'red',
-				badge: 100,
-				name: this.i18n.me.panel.customer,
-				url: '/pages/me/customer/index'
+				badge: 0,
+				name: this.i18n.me.panel.managepeople,
+				url: '/pages/managepeople/index'
 			}
 			
 			// 工作时间
@@ -162,7 +162,7 @@
 			let panelList = []
 			// 如果是超级管理员
 			if(this.user.type === 0) {
-				panelList = [qrcodeitem, customeritem, workingtimeitem, resetpwditem, moreitem]
+				panelList = [qrcodeitem, memberitem, workingtimeitem, resetpwditem, moreitem]
 			}
 			// 如果是普通员工则有
 			else if(this.user.type === 1) {

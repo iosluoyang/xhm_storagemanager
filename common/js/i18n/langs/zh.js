@@ -58,9 +58,9 @@ const zh = {
 		addgoods: "上传商品",
 		editgoods: "编辑商品",
 		stock: "库存管理",
-		managepeople: "人员管理",
-		addmember: "添加人员",
-		editmember: "编辑人员",
+		customer: "客户关系",
+		addcustomer: "添加客户",
+		editcustomer: "编辑客户",
 		operationlog: "操作日志",
 		me: "个人中心",
 		resetpwd: "修改密码",
@@ -155,6 +155,8 @@ const zh = {
 	managepeople: {
 		
 		handlemember: {
+			addmember: "添加人员",
+			editmember: "编辑人员",
 			name: "人员名称",
 			account: "账号信息",
 			remark: "人员备注",
@@ -180,7 +182,7 @@ const zh = {
 		panel: {
 			proqrcode: "商品二维码",
 			mytask: "我的任务",
-			customer: "客户关系",
+			managepeople: "人员管理",
 			feedback: "反馈",
 			workingtime: "工作时间",
 			more: "更多",

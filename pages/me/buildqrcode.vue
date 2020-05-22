@@ -35,7 +35,9 @@
 		
 		onLoad() {
 			_this = this
-			_this.iffocus = true
+			setTimeout(function() {
+				_this.iffocus = true
+			}, 500);
 		},
 		
 		methods: {
