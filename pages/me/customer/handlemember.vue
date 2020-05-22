@@ -8,8 +8,20 @@
 		
 		<!-- 添加的列表内容 -->
 		<form>
+			
+			<!-- 个人头像 -->
+			<view class="cu-form-group padding" @tap.stop="chooseimg">
+				<view class="title">{{i18n.me.customer.customerimg}}</view>
+				<template>
+					<view v-if="avatarfile || customeravatarimg" class="cu-avatar round lg" :style="{backgroundImage: 'url('+(avatarfile ? avatarfile.path : (imgUrl + customeravatarimg))+')'}"></view>
+					<view v-else class="cu-avatar round lg">
+						<text class="cuIcon-people"></text>
+					</view>
+				</template>
+			</view>
+			
 			<!-- 客户名称 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<view class="title">{{i18n.me.customer.customername}}</view>
 				<input type="text" v-model="customer" />
 			</view>
@@ -21,15 +33,15 @@
 			</view>
 			
 			<!-- 客户公司名称 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<view class="title">{{i18n.me.customer.companyname}}</view>
 				<input type="text" v-model="company" />
 			</view>
 			
 			<!-- 联系方式 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<view class="title">{{i18n.me.customer.customerphone}}</view>
-				<input type="number" v-model="phone" />
+				<input type="number" maxlength="20" v-model="phone" />
 			</view>
 			
 			<!-- 客户备注 -->
@@ -67,6 +79,8 @@
 				navtitle: '', // 页面标题
 				
 				customerId: null,//	客户id
+				avatarfile: null, // 客户头像文件
+				customeravatarimg: null, // 客户头像地址
 				company: '',//	公司名称
 				customer: '',// 客户名称
 				remark: '', //	备注
@@ -93,21 +107,50 @@
 			
 			if(this.type === 'edit') {
 				// 获取编辑用户的信息
-				let editmember = uni.getStorageSync('editmember')
-				this.customerId = editmember.customerId
-				this.company = editmember.company
-				this.customer = editmember.customer
-				this.remark = editmember.remark
-				this.phone = editmember.phone
+				this.customerId = option.customerId
+				// 获取详情
+				this.getcustomerdetail()
 			}
 			
 		},
 		
-		destroyed() {
-			uni.removeStorageSync('editmember')
-		},
-		
 		methods: {
+			
+			// 获取客户详情
+			getcustomerdetail() {
+				const _this = this
+				
+				this.$api.customerapi.customerdetail({customerId: this.customerId}).then(response => {
+					// 加载成功
+					let customerinfo = response.data.customerInfo
+					
+					_this.customerId = customerinfo.customerId	//客户id
+					_this.customeravatarimg = customerinfo.img	//客户id
+					_this.company = customerinfo.company	//公司名称
+					_this.customer = customerinfo.customer	//客户名称
+					_this.remark = customerinfo.remark	//备注
+					_this.phone = customerinfo.phone	//客户联系电话
+					
+				}).catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 点击选择头像
+			chooseimg() {
+				const _this = this
+				_this.$basejs.chooseImage({
+					count: 1,
+					success(res) {
+						_this.avatarfile = res.tempFiles[0]
+					}
+				})
+				
+			},
 			
 			// 删除用户
 			deletemember() {
@@ -149,26 +192,54 @@
 				});
 			},
 			
+			// 显示错误时按钮的摇动动画
+			showbtnerranimation() {
+				
+				const _this = this
+				_this.btnanimationname = 'shake'
+				setTimeout(function() {
+					_this.btnanimationname = null
+				}, 1000);
+				
+			},
+			
 			// 确定
 			confirm() {
-				const _this = this
 				
 				// 数据校验
-				
+				// 客户名称
 				if(!this.customer || this.customer === '') {
-					this.btnanimationname = 'shake'
-					setTimeout(function() {
-						_this.btnanimationname = null
-					}, 1000);
+					this.showbtnerranimation()
 					return
 				}
 				
+				// 如果有客户头像本地文件的话则上传头像
+				if(this.avatarfile) {
+					this.$basejs.uploadmultipleimgs([this.avatarfile]).then(imgUrls => {
+						// 上传图片成功
+						let customeravatarimg = imgUrls[0]
+						this.customeravatarimg = customeravatarimg
+						// 开始上送数据
+						this.finalsubmit()
+					})
+				}
+				// 没有本地头像文件则直接进行上送
+				else {
+					this.finalsubmit()
+				}
+
+			},
+			
+			// 开始上送数据
+			finalsubmit() {
+				
+				const _this = this
 				let data = {
 					company: this.company,
 					customer: this.customer,
 					remark: this.remark,
 					phone: this.phone,
-					img: '',
+					img: this.customeravatarimg,
 					customerId: this.customerId, // 修改的时候有customerId
 				}
 				
@@ -230,7 +301,7 @@
 				}
 				
 				
-			}
+			},
 			
 		},
 		
@@ -238,5 +309,9 @@
 </script>
 
 <style lang="scss" scoped>
-
+	.handlememberview{
+		/deep/.cu-form-group .uni-input-wrapper{
+			text-align: right;
+		}
+	}
 </style>

@@ -20,9 +20,40 @@
 		<!-- 成员列表 -->
 		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="[{top:'calc('+(CustomBar + 50)+ 'px'}]"
 		 :scroll-with-animation="true" :enable-back-to-top="true">
-			<view class="cu-list menu-avatar margin-top" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() ">
+		 
+		 
+			<view class="cu-list menu-avatar comment solids-bottom">
+				
+				<view class="cu-item" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() " @tap.stop="editmember(member)">
+					
+					<template>
+						<view v-if=" member.img && member.img !== '' " class="cu-avatar round" :style="{backgroundImage: 'url('+(imgUrl + member.img)+')'}"></view>
+						<view v-else class="cu-avatar round">{{member.customer.substr(0,1)}}</view>
+					</template>
+					
+					<view class="content">
+						<view class="text-grey">{{member.customer}}</view>
+						
+						<view v-if="member.company && member.company.length > 0" class="text-gray text-df">{{i18n.me.customer.companyname}}:{{ member.company }}</view>
+						<view v-if="member.phone && member.phone.length > 0" class="text-gray text-df">{{i18n.me.customer.customerphone}}:{{ member.phone }}</view>
+
+						<view class="text-grey margin-top-sm">最新动态:</view>
+						<view class="bg-grey padding-sm radius margin-top-sm text-sm">
+							<view class="flex">
+								<view>出库人名称：</view>
+								<view class="flex-sub">2020年5月22日出库了100件</view>
+							</view>
+						</view>
+						
+					</view>
+				
+				</view>
+
+			</view>
+		 
+			<!-- <view class="cu-list menu-avatar margin-top" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() ">
 				<view class="cu-item" @tap.stop="editmember(member)">
-					<!-- 头像 -->
+					
 					<template>
 						<view v-if=" member.img && member.img !== '' " class="cu-avatar round lg" :style="{backgroundImage: 'url('+(imgUrl + member.img)+')'}"></view>
 						<view v-else class="cu-avatar round lg">{{member.customer.substr(0,1)}}</view>
@@ -37,11 +68,12 @@
 						<view class="text-gray text-sm text-cut">{{member.company || ''}}</view>
 					</view>
 					<view class="action">
-						<!-- 联系方式 -->
 						<text class="text-grey">{{ member.phone }}</text>
 					</view>
 				</view>
-			</view>
+			</view> -->
+			
+			
 		</scroll-view>
 		
 		<!-- 添加按钮 悬浮 -->
@@ -120,10 +152,8 @@
 			
 			// 编辑成员
 			editmember(member) {
-				// 将当前成员的信息存储到本地
-				uni.setStorageSync('editmember', member)
 				uni.navigateTo({
-					url: '/pages/me/customer/handlemember?type=edit'
+					url: `/pages/me/customer/handlemember?type=edit&customerId=${member.customerId}`
 				});
 			},
 			
