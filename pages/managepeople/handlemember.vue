@@ -2,7 +2,7 @@
 	<view class="handlemember">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-orange" isBack isBackConfirm>
 			<block slot="content">{{navtitle}}</block>
 		</cu-custom>
 		

@@ -4,6 +4,8 @@ import managepeopleapi from '@/api/managepeople.js'
 import goodsapi from '@/api/goods.js'
 import stockapi from '@/api/stock.js'
 import customerapi from '@/api/customer.js'
+import noticeapi from '@/api/notice.js'
+import reportapi from '@/api/report.js'
 
 
 export default {
@@ -13,4 +15,6 @@ export default {
 	goodsapi, // 商品相关api接口
 	stockapi, // 库存相关api接口
 	customerapi, // 客户相关api接口
+	noticeapi, // 公告相关api接口
+	reportapi, // 数据统计相关api接口
 }

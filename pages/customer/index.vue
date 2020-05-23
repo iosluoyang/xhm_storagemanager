@@ -17,33 +17,44 @@
 			</view>
 		</view>
 		
-		<!-- 成员列表 -->
+		<!-- 客户列表 -->
 		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="[{top:'calc('+(CustomBar + 50)+ 'px'}]"
 		 :scroll-with-animation="true" :enable-back-to-top="true">
 		 
 		 
 			<view class="cu-list menu-avatar comment solids-bottom">
 				
-				<view class="cu-item" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() " @tap.stop="editmember(member)">
+				<view class="cu-item margin-sm radius" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() " @tap.stop="editmember(member)">
 					
+					<!-- 客户头像 -->
 					<template>
 						<view v-if=" member.img && member.img !== '' " class="cu-avatar round" :style="{backgroundImage: 'url('+(imgUrl + member.img)+')'}"></view>
 						<view v-else class="cu-avatar round">{{member.customer.substr(0,1)}}</view>
 					</template>
 					
+					<!-- 右侧内容区域 -->
 					<view class="content">
-						<view class="text-grey">{{member.customer}}</view>
+						<!-- 客户名称 -->
+						<view class="text-grey t_twoline">{{member.customer}}</view>
+						<!-- 客户公司名称 -->
+						<view v-if="member.company && member.company.length > 0" class="text-gray text-df"> <text class="cuIcon cuIcon-shopfill text-blue margin-right-sm"></text>{{ member.company }}</view>
+						<!-- 客户联系方式 -->
+						<view v-if="member.phone && member.phone.length > 0" class="text-gray text-df"> <text class="cuIcon cuIcon-mobilefill text-orange margin-right-sm"></text> {{ member.phone }}</view>
+						<!-- 客户备注 -->
+						<view v-if="member.remark && member.remark.length > 0" class="text-gray text-df"> <text class="cuIcon cuIcon-discoverfill text-yellow margin-right-sm"></text> {{ member.remark }}</view>
 						
-						<view v-if="member.company && member.company.length > 0" class="text-gray text-df">{{i18n.me.customer.companyname}}:{{ member.company }}</view>
-						<view v-if="member.phone && member.phone.length > 0" class="text-gray text-df">{{i18n.me.customer.customerphone}}:{{ member.phone }}</view>
-
-						<view class="text-grey margin-top-sm">最新动态:</view>
-						<view class="bg-grey padding-sm radius margin-top-sm text-sm">
-							<view class="flex">
-								<view>出库人名称：</view>
-								<view class="flex-sub">2020年5月22日出库了100件</view>
+						<!-- 最新动态 超级管理员可以看到该项目-->
+						<view v-if="user.type===0 && member.newTranInfo" class="lastestoptionview">
+							
+							<view class="bg-grey padding-sm radius margin-top-sm text-sm">
+								<view class="flex">
+									<!-- 一个就够了(888888) 2020-05-23 出库 猫砂盆(颜色：粉色) 100件 -->
+									{{ `${member.newTranInfo.realName}(${member.newTranInfo.account}) ${member.newTranInfo.createDate} ${i18n.stock.stockout} ${member.newTranInfo.title}(${member.newTransInfo.specInfo.specName}) ${member.newTranInfo.stockCount}` }}
+								</view>
 							</view>
+							
 						</view>
+						
 						
 					</view>
 				
@@ -51,29 +62,6 @@
 
 			</view>
 		 
-			<!-- <view class="cu-list menu-avatar margin-top" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() ">
-				<view class="cu-item" @tap.stop="editmember(member)">
-					
-					<template>
-						<view v-if=" member.img && member.img !== '' " class="cu-avatar round lg" :style="{backgroundImage: 'url('+(imgUrl + member.img)+')'}"></view>
-						<view v-else class="cu-avatar round lg">{{member.customer.substr(0,1)}}</view>
-					</template>
-					
-					<view class="content">
-						<view>
-							<view class="text-black text-bold text-cut margin-right-sm">{{member.customer}}</view>
-							<view v-if="member.remark && member.remark.length > 0" class="cu-tag bg-orange round">{{member.remark}}</view>
-						</view>
-						
-						<view class="text-gray text-sm text-cut">{{member.company || ''}}</view>
-					</view>
-					<view class="action">
-						<text class="text-grey">{{ member.phone }}</text>
-					</view>
-				</view>
-			</view> -->
-			
-			
 		</scroll-view>
 		
 		<!-- 添加按钮 悬浮 -->

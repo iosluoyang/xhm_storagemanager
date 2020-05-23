@@ -82,7 +82,6 @@ const th = {
 		pleaselogin: "กรุณาเข้าสู่ระบบ",
 		defaultusername: "ผู้ใช้ทั่วไป",
 		exitconfirm: "คุณแน่ใจว่า ต้องการจะออกจากระบบ",
-		datawillcleartip: "ข้อมูลจะหายไป หากคุณยืนยันการออกจากระบบ",
 		freezeconfirm: "คุณแน่ใจว่าต้องการระงับ/ ยกเลิกการระงับผู้ใช้งาน",
 		deleteconfirm: "คุณต้องการยืนยันการลบข้อมูล",
 		resetconfirm: "คุณต้องการยืนยันการรีเซ็ต",
@@ -186,6 +185,7 @@ const th = {
 			managepeople: "รายการชื่อผู้ดูแล",
 			feedback: "การตอบรับ",
 			workingtime: "Working Time",
+			notice: "Notification",
 			more: "……"
 		},
 		
@@ -227,6 +227,12 @@ const th = {
 			companyname: "Company Name",
 			customerphone: "Phone",
 			deletecustomer: "Delete Customer",
+		},
+		
+		notice: {
+			publishnotice: "Add Notification",
+			editnotice: "Edit Notification",
+			noticeplaceholder: "Please enter the notification content"
 		}
 		
 	},
@@ -296,6 +302,19 @@ const th = {
 		stockin: "Stock In",
 		stockout: "Stock Out",
 	},
+	
+	// 数据汇总相关
+	report: {
+		
+		// 库存相关数据汇总
+		stockreport: {
+			outstockcount: "Stock Out",
+			instockcount: "Stock In",
+		},
+		
+		
+	},
+	
 	
 	
 }

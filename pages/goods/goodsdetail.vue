@@ -450,9 +450,9 @@
 			// 出入库操作
 			jumptostockmanage() {
 				
-				// 跳转出入库页面
+				// 跳转出入库操作页面
 				uni.navigateTo({
-					url: `/pages/stock/index?pid=${_this.pid}`
+					url: `/pages/stock/handlestock?pid=${_this.pid}`
 				});
 				
 			}

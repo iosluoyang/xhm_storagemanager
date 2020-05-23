@@ -45,6 +45,12 @@
 				"navigationBarTitleText":"库存管理"
 			}
 		}
+		,{
+		    "path" : "pages/stock/handlestock",
+		    "style" : {
+				"navigationBarTitleText":"库存操作"
+			}
+		}
         ,{
             "path" : "pages/me/index",
             "style" : {
@@ -109,6 +115,18 @@
             "path" : "pages/customer/handlemember",
             "style" : {
 				"navigationBarTitleText":"客户管理"
+			}
+        }
+        ,{
+            "path" : "pages/notice/index",
+            "style" : {
+				"navigationBarTitleText":"公告栏"
+			}
+        }
+        ,{
+            "path" : "pages/notice/handlenotice",
+            "style" : {
+				"navigationBarTitleText":"公告管理"
 			}
         }
     ],

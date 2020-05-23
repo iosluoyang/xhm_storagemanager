@@ -1,289 +1,217 @@
 <template>
 	<view class="stockview">
-
+		
+		<!-- 自定义导航栏 -->
 		<cu-custom bgColor="bg-gradual-green" isBack>
 			<block slot="content">{{i18n.nav.stock}}</block>
 		</cu-custom>
-
-		<!-- 商品信息区域 -->
-		<view class="proinfoview margin padding radius shadow-warp bg-white" v-if="product">
-
-			<view class="baseinfoview flex flex-direction">
-
-				<!-- 商品图片集合 -->
-				<view class="cu-avatar-group proimgsview margin-bottom-sm">
-					<view class="cu-avatar round lg" v-for="(item,index) in swiperData" :key="index" :style="[{ backgroundImage:'url(' + item + ')' }]"></view>
-				</view>
-
-				<!-- 商品名称 -->
-				<view class="t_threeline text-bold text-black margin-bottom-sm">{{product.title}}</view>
-
-				<!-- 商品规格和库存信息 -->
-				<view class="flex align-center margin-bottom-sm">
-					<!-- 商品规格信息 -->
-					<view class="selectspecview cu-tag round bg-gradual-green margin-right" :class=" ifshowbtnanimationspec ? 'animation-shake' : '' "
-					 @tap.stop="ifshowpopup=true">
-						{{ showspecstr ? showspecstr : i18n.tip.pleaseselectgoodspec }}
-					</view>
-
-					<!-- 商品库存信息 -->
-					<text v-if="selectspecinfo" class="text-grey stockview">{{ `${i18n.goods.stock}: ` }} <text class="text-bold text-black">{{selectspecinfo.stockCount}}</text>
-					</text>
-				</view>
-
-			</view>
-
+		
+		<view class="uchartsview margin bg-white">
+			<!--#ifndef MP-ALIPAY -->
+			<canvas :canvas-id="stockchartcanvasid" :id="stockchartcanvasid" class="charts" @touchstart="touchstartstockchart"></canvas>
+			<!--#endif-->
 		</view>
-
-		<!-- 操作区域 -->
-		<view class="cu-form-group margin">
-
-			<view class="title">{{i18n.stock.amount}}:</view>
-			<input type="number" v-model="typenumber" :placeholder="i18n.stock.typestocknumplacholder" />
-
-		</view>
-
-		<view class="cu-bar btn-group">
-			<button class="cu-btn round lg shadow-blur line-green" :class=" ifshowbtnanimationin ? 'animation-shake' : '' "
-			 @tap.stop="fixstock('in')">{{i18n.stock.stockin}}</button>
-			<button class="cu-btn round lg shadow-blur bg-green" :class=" ifshowbtnanimationout ? 'animation-shake' : '' "
-			 @tap.stop="fixstock('out')">{{i18n.stock.stockout}}</button>
-		</view>
-
-
-		<!--底部规格选择层-->
-		<goodsspecselector 
-			v-if="pid" 
-			mykey="stock" 
-			:pid="pid" 
-			:defaultselectattributeIds="selectattributeIdArr" 
-			:ifshowpopup="ifshowpopup"
-			@confirmselectspecinfo="confirmselectspec" 
-			@hidepopup="ifshowpopup=false"
-		>
-		</goodsspecselector>
-
-
+		
 	</view>
 </template>
 
 <script>
-	import goodsspecselector from '@/components/base/goodsspecselector.vue'
-
+	
+	import uCharts from '@/components/u-charts/u-charts.js'
 	var _this
+	var stockchart = null // 当前库存的图表
+	
 	export default {
-
-		components: {
-			goodsspecselector
-		},
-
 		data() {
 			return {
-				pid: null, // 当前商品的pid
-
-				product: null, // 当前操作的商品信息
-				swiperData: [], // 商品图片数组
-
-				selectattributeIdArr: [], // 默认选中的属性id数组
-
-
-				ifshowpopup: false, // 是否显示底部选择框  默认为否
-				selectspecinfo: null, // 当前选中的规格信息
-				showspecstr: null, // 当前显示规格内容
-
-				typenumber: '', // 当前输入的要编辑的库存数量
-
-				ifshowbtnanimationspec: false, // 是否显示选择规格按钮摇晃动画
-				ifshowbtnanimationin: false, // 是否显示入库按钮摇晃动画
-				ifshowbtnanimationout: false, // 是否显示入库按钮摇晃动画
+				stockchartcanvasid: 'canvasColumn', // 库存出入库情况图表画布id
+				
+				cWidth:'', // 图表宽度
+				cHeight:'', // 图表高度
+				pixelRatio:1, // 图表像素比
+				
+				chartData: '', // 图表数据
+				
+				
+				
 			};
 		},
-
-		onLoad(option) {
+		
+		onLoad() {
 			_this = this
-			let pid = option.pid
-			_this.pid = pid
-
-			// 加载详情数据
-			_this.loadprodetail()
-
+			
+			let res = uni.getSystemInfoSync()
+			let windowWidth = res.windowWidth
+			let windowHeight = res.windowHeight
+			
+			this.cWidth=350;
+			this.cHeight=350;
+			
+			// 获取图表数据
+			this.getchartData();
 		},
-
+		
 		methods: {
-
-			// 加载详情数据
-			loadprodetail() {
-
-				_this.$api.goodsapi.getgoodsdetail({
-					pid: _this.pid
-				}).then(response => {
-					// 获取数据成功
-					let product = response.data.product
-					_this.product = product
-
-					// 处理轮播数据
-					let swiperData = []
-					if (product.imgs) {
-						let imgsArr = product.imgs.split(',')
-						imgsArr.forEach(imgurl => {
-							let fullimgurl = _this.imgUrl + imgurl
-							swiperData.push(fullimgurl)
-						})
-					}
-					_this.swiperData = swiperData
-
-
+			
+			// 获取数据
+			getchartData() {
+				
+				// 获取最近10天的出入库数据
+				let data = {
+					dayNum: 10
+				}
+				
+				this.$api.reportapi.geteachdaystocklist(data).then(response => {
+					// 获取成功
+					let list = response.data.list
+					
+					// 处理数据
+					let chartData = _this.setchartdata(list)
+					this.chartData = chartData
+					
+					// 显示图表
+					_this.showChart(_this.stockchartcanvasid,chartData);
+					
 				}).catch(error => {
-					// 获取数据失败
 					uni.showToast({
-						title: `${_this.i18n.error.loaderror}`,
+						title: _this.i18n.error.loaderror,
 						icon: 'none'
 					});
 				})
-
+				
 			},
-
-			// 选择完某个库存规格
-			confirmselectspec(info) {
-
-				// 当前选择的库存
-				let selectspecinfo = info.specinfo
-				this.selectspecinfo = selectspecinfo
-
-				// 当前规格文本
-				let showspecstr = info.showspecstr
-				this.showspecstr = showspecstr
-
+			
+			// 处理图表数据
+			setchartdata(originallist) {
+				
+				/*
+				数据格式:
+				chartData: {
+					categories: ['2012', '2013', '2014', '2015', '2016', '2017'],
+					series: [{
+						name: '成交量A',
+						data: [35, 20, 25, 37, 4, 20],
+						color: '#000000'
+					}, {
+						name: '成交量B',
+						data: [70, 40, 65, 100, 44, 68]
+					}, {
+						name: '成交量C',
+						data: [100, 80, 95, 150, 112, 132]
+					}]
+				}
+				
+				*/
+			   
+				let list = [...originallist]
+				let categories = []
+				let outstockArr = []
+				let instockArr = []
+			   
+				list.forEach((eachitem, index) => {
+				   // 汇总日期
+				   let date = eachitem.tjDate
+				   let monthstr = date.split('-')[1]
+				   let daystr = date.split('-')[2]
+				   let categoriestr = `${monthstr}/${daystr}`
+				   categories.push(categoriestr)
+				   
+				   // 出库信息
+				   let outStockCount = eachitem.outStockCount
+				   outstockArr.push(outStockCount)
+				   
+				   // 入库信息
+				   let inStockCount = eachitem.inStockCount
+				   instockArr.push(inStockCount)
+				   
+			   })
+			   
+				let series = [
+				   {
+					   name: _this.i18n.report.stockreport.outstockcount,
+					   data: outstockArr,
+					   color: '#e54d42'
+				   },
+				   {
+						name: _this.i18n.report.stockreport.instockcount,
+						data: instockArr,
+						color: '#39b54a'
+				   }
+			   ]
+				
+				let chartData = { categories:categories , series:series };
+				
+				return chartData
+				
 			},
-
-			// 出库/入库
-			fixstock(stocktype) {
-
-				// 检查当前选中的规格
-				if (!_this.selectspecinfo) {
-					uni.showToast({
-						title: _this.i18n.error.lackspec,
-						icon: 'none'
-					});
-					_this.ifshowbtnanimationspec = true
-					setTimeout(function() {
-						_this.ifshowbtnanimationspec = false
-					}, 1500);
-					return
-				}
-
-				// 检查输入库存信息
-				let stockNum = this.typenumber
-
-				// 入库情况下
-				if (stocktype === 'in') {
-
-					if (stockNum === '' || parseInt(stockNum) === 0) {
-						_this.ifshowbtnanimationin = true
-						setTimeout(function() {
-							_this.ifshowbtnanimationin = false
-						}, 1500);
-						return
-					}
-
-				}
-				// 出库
-				else if (stocktype === 'out') {
-
-					// 校验出库数量
-					if (parseInt(stockNum) > _this.selectspecinfo.stockCount || stockNum === '' || parseInt(stockNum) === 0) {
-						_this.ifshowbtnanimationout = true
-						setTimeout(function() {
-							_this.ifshowbtnanimationout = false
-						}, 1500);
-						return
-					}
-
-				}
-
-				uni.showModal({
-					title: _this.i18n.base.tip,
-					content: _this.i18n.tip.ifsuretofixstock,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if (res.confirm) {
-
-							// 开始出入库
-							let data = {
-								pid: _this.pid,
-								specId: _this.selectspecinfo.specId,
-								stockCount: parseInt(stockNum)
-							}
-
-							if (stocktype === 'in') {
-								_this.$api.goodsapi.stockin(data).then(response => {
-
-									// 入库成功 刷新页面
-									uni.showToast({
-										title: _this.i18n.stock.stockin + _this.i18n.base.success
-									});
-
-									_this.typenumber = ''
-
-									// 发送更新事件
-									uni.$emit('updateprolist')
-									uni.$emit('updateprodetail')
-
-									setTimeout(function() {
-										uni.navigateBack();
-									}, 2000);
-
-
-								}).catch(error => {
-									uni.showToast({
-										title: _this.i18n.error.loaderror,
-										icon: 'none'
-									});
-								})
-							} else if (stocktype === 'out') {
-								_this.$api.goodsapi.stockout(data).then(response => {
-
-									// 出库成功
-									uni.showToast({
-										title: _this.i18n.stock.stockout + _this.i18n.base.success
-									});
-
-									_this.typenumber = ''
-
-									// 发送更新事件
-									uni.$emit('updateprolist')
-									uni.$emit('updateprodetail')
-
-									setTimeout(function() {
-										uni.navigateBack();
-									}, 2000);
-
-								}).catch(error => {
-									uni.showToast({
-										title: _this.i18n.error.loaderror,
-										icon: 'none'
-									});
-								})
-							}
-
+			
+			// 显示图表
+			showChart(canvasId,chartData) {
+				
+				stockchart = new uCharts({
+					$this:_this,
+					canvasId: canvasId,
+					type: 'line',
+					fontSize:11,
+					legend:{show:true},
+					dataLabel:true,
+					dataPointShape:true,
+					background:'#FFFFFF',
+					pixelRatio:_this.pixelRatio,
+					categories: chartData.categories,
+					series: chartData.series,
+					animation: true,
+					xAxis: {
+						type:'grid',
+						gridColor:'#CCCCCC',
+						gridType:'dash',
+						dashLength:8
+					},
+					yAxis: {
+						gridType:'dash',
+						gridColor:'#CCCCCC',
+						dashLength:8,
+						splitNumber:5,
+						min:10,
+						max:180,
+						format:(val)=>{return val.toFixed(0)}
+					},
+					width: _this.cWidth*_this.pixelRatio,
+					height: _this.cHeight*_this.pixelRatio,
+					extra: {
+						line:{
+							type: 'straight'
 						}
 					}
-				});
-
-
+				})
+				
+				
 			},
-
+			
+			// 触摸图表事件
+			touchstartstockchart(e) {
+				stockchart.showToolTip(e, {
+					format: function (item, category) {
+						return category + ' ' + item.name + ':' + item.data 
+					}
+				});
+			},
+			
+			//
 		},
-
 	}
 </script>
 
-<style scoped lang="scss">
-	.stockview {
-		.proimgsview {
-			direction: ltr;
+<style lang="scss" scoped>
+	.stockview{
+		.uchartsview{
+			width: 350px;
+			height:350px;
+			.charts{
+				width: 350px;
+				height: 350px;
+			}
 		}
+		
 	}
 </style>

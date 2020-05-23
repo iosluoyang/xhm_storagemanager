@@ -2,7 +2,7 @@
 	<view class="handlememberview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-purple" isBack>
+		<cu-custom bgColor="bg-gradual-purple" isBack isBackConfirm>
 			<block slot="content">{{navtitle}}</block>
 		</cu-custom>
 		
@@ -239,13 +239,15 @@
 					customer: this.customer,
 					remark: this.remark,
 					phone: this.phone,
-					img: this.customeravatarimg,
 					customerId: this.customerId, // 修改的时候有customerId
 				}
+				// 有头像的话增加头像
+				let imgdata = this.customeravatarimg ? {img: this.customeravatarimg} : {}
+				let finaldata = {...data, ...imgdata}
 				
 				// 添加成员
 				if(this.type === 'add') {
-					this.$api.customerapi.addcustomer(data).then(response => {
+					this.$api.customerapi.addcustomer(finaldata).then(response => {
 						// 添加成功  提示之后返回
 						uni.showToast({
 							title: _this.i18n.tip.addsuccess,

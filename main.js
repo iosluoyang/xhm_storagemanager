@@ -66,7 +66,11 @@ Vue.mixin({
 	
 	onShow() {
 		
-	}
+	},
+	
+	methods: {
+		
+	},
 });
 
 

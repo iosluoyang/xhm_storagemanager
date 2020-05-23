@@ -2,7 +2,7 @@
 	<view>
 		<view class="cu-custom" :style="[{height:CustomBar + 'px'}]">
 			<view class="cu-bar fixed" :style="style" :class="[bgImage!=''?'none-bg text-white bg-img':'',bgColor]">
-				<view class="action" @tap="BackPage" v-if="isBack">
+				<view class="action" @tap.stop="backPage" v-if="isBack">
 					<text class="cuIcon-back"></text>
 					<slot name="backText"></slot>
 				</view>
@@ -45,7 +45,7 @@
 				type: [Boolean, String],
 				default: false
 			},
-			// 是否需要返回的二次确认  默认为否  为是的时候点击返回响应页面的backPage事件
+			// 是否需要返回的二次确认  默认为否 
 			isBackConfirm: {
 				type: Boolean,
 				default: false
@@ -56,9 +56,22 @@
 			},
 		},
 		methods: {
-			BackPage() {
+			backPage() {
 				if(this.isBackConfirm) {
-					this.$emit('backPage')
+					
+					uni.showModal({
+						title: this.i18n.tip.exitconfirm,
+						content: this.i18n.tip.exitconfirm,
+						showCancel: true,
+						cancelText: this.i18n.base.cancel,
+						confirmText: this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								uni.navigateBack();
+							}
+						}
+					});
+					
 				}
 				else{
 					uni.navigateBack({

@@ -2,7 +2,7 @@
 	<view class="handlegoodsview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-blue" :isBack="true" isBackConfirm @backPage="backPage">
+		<cu-custom bgColor="bg-gradual-blue" :isBack="true" isBackConfirm>
 			<block slot="content">{{ type === 'add' ?  i18n.nav.addgoods : i18n.nav.editgoods }}</block>
 		</cu-custom>
 		
@@ -177,11 +177,6 @@
 				<text class="text-white">{{i18n.base.confirm}}</text>
 			</button>
 			
-			<!-- 取消按钮 编辑状态下有 -->
-			<button v-if=" type === 'edit' " class="flex-sub margin-left cu-btn block round bg-grey lg" @tap.stop="backPage">
-				<text class="text-white">{{i18n.base.cancel}}</text>
-			</button>
-			
 		</view>
 		
 		<!-- 加载条 -->
@@ -248,22 +243,6 @@
 		},
 		
 		methods: {
-			
-			// 返回按钮的二次确认
-			backPage() {
-				uni.showModal({
-					title: _this.i18n.tip.exitconfirm,
-					content: _this.i18n.tip.datawillcleartip,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							uni.navigateBack();
-						}
-					}
-				});
-			},
 			
 			// 加载商详信息
 			loaddetaildata() {

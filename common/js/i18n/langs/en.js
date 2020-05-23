@@ -85,7 +85,6 @@ const en = {
 		pleaselogin: "please login",
 		defaultusername: "Default Name",
 		exitconfirm: "Are you sure to exit?",
-		datawillcleartip: "the data will be cleaned if you leave",
 		freezeconfirm: "Are you sure to freeze/unfreeze this user ?",
 		deleteconfirm: "Are you sure to delete?",
 		resetconfirm: "Are you sure to reset?",
@@ -189,6 +188,7 @@ const en = {
 			managepeople: "Member",
 			feedback: "Feedback",
 			workingtime: "Working Time",
+			notice: "Notification",
 			more: "More",
 		},
 		
@@ -231,6 +231,12 @@ const en = {
 			customerphone: "Phone",
 			deletecustomer: "Delete Customer",
 			
+		},
+		
+		notice: {
+			publishnotice: "Add Notification",
+			editnotice: "Edit Notification",
+			noticeplaceholder: "Please enter the notification content"
 		}
 		
 	},
@@ -301,6 +307,19 @@ const en = {
 		stockin: "Stock In",
 		stockout: "Stock Out",
 	},
+	
+	// 数据汇总相关
+	report: {
+		
+		// 库存相关数据汇总
+		stockreport: {
+			outstockcount: "Stock Out",
+			instockcount: "Stock In",
+		},
+		
+		
+	},
+	
 	
 }
 

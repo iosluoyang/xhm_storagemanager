@@ -391,12 +391,11 @@
 			},
 			
 			//上拉加载
-			loadproductlist(mescroll){
+			loadproductlist(page){
 								
-				// 此时mescroll会携带page的参数:
-				let pageNum = mescroll.num; // 页码, 默认从1开始
-				let pageSize = mescroll.size; // 页长, 默认每页10条
-				let date = pageNum === 1 ? '' : mescroll.date // 请求时间标识
+				let pageNum = page.num; // 页码, 默认从1开始
+				let pageSize = page.size; // 页长, 默认每页10条
+				let date = pageNum === 1 ? '' : page.date // 请求时间标识
 				let dataArr = [...this.productlist]
 				
 				let data = {
@@ -420,7 +419,7 @@
 					if(pageNum === 1){
 						dataArr = [] //清空数据源
 						let date = response.data.date
-						mescroll.date = date
+						page.date = date
 					}
 					
 					//将请求的数据添加至现有数据源中
@@ -429,13 +428,13 @@
 					this.productlist = dataArr
 			
 					// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
-					let hasNext = dataArr.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
-					mescroll.endSuccess(list.length,hasNext)
+					let hasNext = dataArr.length === page.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
+					this.mescroll.endSuccess(list.length,hasNext)
 					
 				}).catch(error => {
 					
 					// 失败隐藏下拉加载状态
-					mescroll.endErr()
+					this.mescroll.endErr()
 					
 					//获取数据失败
 					uni.showToast({

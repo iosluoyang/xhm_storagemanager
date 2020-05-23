@@ -81,7 +81,6 @@ const zh = {
 		pleaselogin: "请登录",
 		defaultusername: "默认用户",
 		exitconfirm: "确定退出吗?",
-		datawillcleartip: "退出后数据将被清空",
 		freezeconfirm: "确定冻结/解冻该用户吗？",
 		deleteconfirm: "确定删除吗?",
 		resetconfirm: "确定重置吗?",
@@ -185,6 +184,7 @@ const zh = {
 			managepeople: "人员管理",
 			feedback: "反馈",
 			workingtime: "工作时间",
+			notice: "公告栏",
 			more: "更多",
 		},
 		
@@ -226,6 +226,12 @@ const zh = {
 			companyname: "公司名称",
 			customerphone: "客户电话",
 			deletecustomer: "删除该客户",
+		},
+		
+		notice: {
+			publishnotice: "发布公告",
+			editnotice: "编辑公告",
+			noticeplaceholder: "请输入公告内容,发布后所有成员均可见"
 		}
 		
 	},
@@ -295,6 +301,19 @@ const zh = {
 		stockin: "入库",
 		stockout: "出库",
 	},
+	
+	// 数据汇总相关
+	report: {
+		
+		// 库存相关数据汇总
+		stockreport: {
+			outstockcount: "出库量",
+			instockcount: "入库量",
+		},
+		
+		
+	},
+	
 	
 	
 }

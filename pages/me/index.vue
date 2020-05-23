@@ -40,7 +40,6 @@
 					<!-- 下面视图 包含个人简介 -->
 					<view class="text-white text-xs text-cut" style="width: 400upx;">{{ user && user.signature ? user.signature : '' }}</view>
 					
-					
 				</view>
 				
 			</view>
@@ -134,6 +133,16 @@
 				url: '/pages/me/workingtime'
 			}
 			
+			// 公告管理
+			let noticeitem = {
+				id: 'notice',
+				cuIcon: 'notificationfill',
+				color: 'cyan',
+				badge: 0,
+				name: this.i18n.me.panel.notice,
+				url: '/pages/notice/index'
+			}
+			
 			// 重置密码
 			let resetpwditem = {
 				cuIcon: 'settingsfill',
@@ -162,11 +171,11 @@
 			let panelList = []
 			// 如果是超级管理员
 			if(this.user.type === 0) {
-				panelList = [qrcodeitem, memberitem, workingtimeitem, resetpwditem, moreitem]
+				panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, moreitem]
 			}
 			// 如果是普通员工则有
 			else if(this.user.type === 1) {
-				panelList = [resetpwditem, moreitem]
+				panelList = [resetpwditem, noticeitem, moreitem]
 			}
 			
 			this.panelList = panelList

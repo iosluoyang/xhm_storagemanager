@@ -48,6 +48,21 @@
 			</view>
 		</view>
 		
+		<!-- 公告弹框 -->
+		<view class="cu-modal" :class="ifshownotice && homenotice && homenotice.content ? 'show' : '' ">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-center">
+					<view class="content text-bold text-xl">{{ i18n.me.panel.notice }}</view>
+				</view>
+				<view v-if="homenotice && homenotice.content && homenotice.content.length > 0" class="padding-xl text-light">
+					{{ homenotice.content }}
+				</view>
+				<view class="cu-bar bg-gradual-purple">
+					<view class="action flex-sub" @tap.stop="ifshownotice=false">{{ i18n.base.confirm }}</view>
+				</view>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
@@ -58,9 +73,14 @@
 	export default {
 		data() {
 			return {
+				
 				elements: [],
 				languageArr: [], // 当前语言数组
 				ifshowmodal: false, // 是否显示单选切换弹框  默认为否
+				
+				homenotice: null, // 首页公告对象
+				ifshownotice: false, // 是否显示公告弹框  默认为否
+				
 			}
 		},
 		
@@ -75,6 +95,9 @@
 			
 			// 设置主操作区域
 			this.setmainoption()
+			
+			// 获取首页公告
+			this.gethomenotice()
 			
 		},
 		
@@ -164,7 +187,7 @@
 				let stockitem = {
 					title: this.i18n.nav.stock,
 					id: 'stockinout',
-					name: 'Stock IN/OUT',
+					name: 'Stock',
 					color: 'green',
 					cuIcon: 'order',
 					url: '/pages/stock/index'
@@ -272,7 +295,21 @@
 				this.setmainoption()
 			},
 			
-			//
+			// 获取首页公告
+			gethomenotice() {
+				this.$api.noticeapi.gethomenotice().then(response => {
+					// 获取公告成功
+					let noticeinfo = response.data.notice
+					this.homenotice = noticeinfo
+					this.ifshownotice = true
+				}).catch(error => {
+					// 获取公告失败
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+			}
 			
 		}
 	}
