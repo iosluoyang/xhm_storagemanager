@@ -16,6 +16,8 @@ const en = {
 		select: "Please Select",
 		cancel: "Cancel",
 		confirm: "Confirm",
+		print: "Print",
+		download: "DownLoad",
 		click: "Click",
 		here: "Here",
 		toaddmore: "to add more",
@@ -80,6 +82,7 @@ const en = {
 		logoutsuccess: "logout success",
 		addsuccess: "add success",
 		fixsuccess: "edit success",
+		savesuccess: "save success",
 		deletesuccess: "delete success",
 		resetsuccess: "reset success",
 		pleaselogin: "please login",
@@ -100,6 +103,7 @@ const en = {
 		findnewversion: "New Version coming , Download now ?",
 		notinworkingtime: "You are not in the working time",
 		loginotherplace: "You've logined in other platform, please login again",
+		pleaseselectpricetype: "Please select the type of price(Optional)",
 	},
 	
 	// 错误提示
@@ -302,7 +306,15 @@ const en = {
 	
 	// 库存相关
 	stock: {
+		todaystocksituation: "Stock Data Today",
+		until: "Until",
+		protitle: "Title",
 		amount: "Amount",
+		customer: "Customer",
+		pricetype: "Price Type",
+		operatime: "Time",
+		operapeople: "Employee",
+		
 		typestocknumplacholder: "Please enter the Amount",
 		stockin: "Stock In",
 		stockout: "Stock Out",
@@ -315,11 +327,12 @@ const en = {
 		stockreport: {
 			outstockcount: "Stock Out",
 			instockcount: "Stock In",
+			paytotalnum: "Money Out",
+			earntotalnum: "Money In"
 		},
 		
 		
-	},
-	
+	},	
 	
 }
 

@@ -17,42 +17,74 @@
 
 				<!-- 商品名称 -->
 				<view class="t_threeline text-bold text-black margin-bottom-sm">{{product.title}}</view>
+				<!-- 商品库存 -->
+				<text v-if="selectspecinfo" class="text-grey stockview margin-bottom-sm">{{ `${i18n.goods.stock}: ` }} <text class="text-bold text-black">{{selectspecinfo.stockCount}}</text>
+				</text>
 
+				<!-- 展示商品的所有规格 -->
+				<view v-if="product && product.specs && product.specs.length > 0" class="allspecview flex flex-wrap align-center" :class=" ifremindspec ? 'animation-shake' : '' ">
+					<view class="cu-tag round padding xl margin-bottom-sm" v-for="(specitem, index) in product.specs" :key="index" 
+							:class="[ selectspecinfo && specitem.specId === selectspecinfo.specId ? 'bg-blue' : 'line-grey' ]"
+							@tap.stop="selectspecinfo = specitem"
+					>
+						{{ specitem.attributeList.map((attributeitem) => {return attributeitem.attributeValue}).join('、') }}
+						
+					</view>
+				</view>
+				
 				<!-- 商品规格和库存信息 -->
-				<view class="flex align-center margin-bottom-sm">
-					<!-- 商品规格信息 -->
+				<!-- <view class="flex align-center margin-bottom-sm">
 					<view class="selectspecview cu-tag round bg-gradual-green margin-right" :class=" ifshowbtnanimationspec ? 'animation-shake' : '' "
 					 @tap.stop="ifshowpopup=true">
 						{{ showspecstr ? showspecstr : i18n.tip.pleaseselectgoodspec }}
 					</view>
 
-					<!-- 商品库存信息 -->
 					<text v-if="selectspecinfo" class="text-grey stockview">{{ `${i18n.goods.stock}: ` }} <text class="text-bold text-black">{{selectspecinfo.stockCount}}</text>
 					</text>
-				</view>
+				</view> -->
 
 			</view>
 
 		</view>
 
 		<!-- 操作区域 -->
+		
+		<!-- 出入库数量 -->
 		<view class="cu-form-group margin">
 
 			<view class="title">{{i18n.stock.amount}}:</view>
-			<input type="number" v-model="typenumber" :placeholder="i18n.stock.typestocknumplacholder" />
+			<input :class=" ifremindamount ? 'animation-shake' : '' " type="number" v-model="typenumber" :placeholder="i18n.stock.typestocknumplacholder" />
 
 		</view>
+		
+		<!-- 出库时价格类型 -->
+		<radio-group class="block margin padding bg-white" :class=" ifremindpricetype ? 'animation-shake' : '' " @change="choosepricetype">
+			<view class="text-df margin-bottom-sm">{{i18n.tip.pleaseselectpricetype}}:</view>
+			<view class="cu-form-group">
+				<view class="title">{{ i18n.goods.price }}</view>
+				<radio :checked="Number(pricetype)===2" value="2"></radio>
+			</view>
+			<view class="cu-form-group">
+				<view class="title">{{ i18n.goods.agentprice }}</view>
+				<radio :checked="Number(pricetype)===3" value="3"></radio>
+			</view>
+			<view class="cu-form-group">
+				<view class="title">{{ i18n.goods.creditprice }}</view>
+				<radio :checked="Number(pricetype)===4" value="4"></radio>
+			</view>
+		</radio-group>
+		
 
 		<view class="cu-bar btn-group">
-			<button class="cu-btn round lg shadow-blur line-green" :class=" ifshowbtnanimationin ? 'animation-shake' : '' "
+			<button class="cu-btn round lg shadow-blur bg-gradual-blue"
 			 @tap.stop="fixstock('in')">{{i18n.stock.stockin}}</button>
-			<button class="cu-btn round lg shadow-blur bg-green" :class=" ifshowbtnanimationout ? 'animation-shake' : '' "
+			<button class="cu-btn round lg shadow-blur bg-gradual-green"
 			 @tap.stop="fixstock('out')">{{i18n.stock.stockout}}</button>
 		</view>
 
 
 		<!--底部规格选择层-->
-		<goodsspecselector 
+		<!-- <goodsspecselector 
 			v-if="pid" 
 			mykey="stock" 
 			:pid="pid" 
@@ -61,7 +93,7 @@
 			@confirmselectspecinfo="confirmselectspec" 
 			@hidepopup="ifshowpopup=false"
 		>
-		</goodsspecselector>
+		</goodsspecselector> -->
 
 
 	</view>
@@ -79,6 +111,7 @@
 
 		data() {
 			return {
+				type: '', // 页面类型 stockout为出库  stockin为入库 ''为默认代表两者兼有
 				pid: null, // 当前商品的pid
 
 				product: null, // 当前操作的商品信息
@@ -92,15 +125,17 @@
 				showspecstr: null, // 当前显示规格内容
 
 				typenumber: '', // 当前输入的要编辑的库存数量
-
-				ifshowbtnanimationspec: false, // 是否显示选择规格按钮摇晃动画
-				ifshowbtnanimationin: false, // 是否显示入库按钮摇晃动画
-				ifshowbtnanimationout: false, // 是否显示入库按钮摇晃动画
+				pricetype: null, // 出库时选择的价格类型  价格类型	2平台销售价格	3代理价	4授信价
+				
+				ifremindspec: false, // 是否显示选择规格摇晃动画
+				ifremindamount: false, // 是否显示提示数量摇晃动画
+				ifremindpricetype: false, // 是否显示提示选择出库价格类型摇晃动画
 			};
 		},
 
 		onLoad(option) {
 			_this = this
+			
 			let pid = option.pid
 			_this.pid = pid
 
@@ -145,7 +180,7 @@
 
 			// 选择完某个库存规格
 			confirmselectspec(info) {
-
+				
 				// 当前选择的库存
 				let selectspecinfo = info.specinfo
 				this.selectspecinfo = selectspecinfo
@@ -155,52 +190,66 @@
 				this.showspecstr = showspecstr
 
 			},
-
+			
+			// 选择出库价格类型
+			choosepricetype(e) {
+				this.pricetype = Number(e.detail.value)
+			},
+			
 			// 出库/入库
-			fixstock(stocktype) {
-
+			fixstock(btntype) {
+				
 				// 检查当前选中的规格
 				if (!_this.selectspecinfo) {
 					uni.showToast({
 						title: _this.i18n.error.lackspec,
 						icon: 'none'
 					});
-					_this.ifshowbtnanimationspec = true
+					_this.ifremindspec = true
 					setTimeout(function() {
-						_this.ifshowbtnanimationspec = false
+						_this.ifremindspec = false
 					}, 1500);
 					return
 				}
 
 				// 检查输入库存信息
 				let stockNum = this.typenumber
-
-				// 入库情况下
-				if (stocktype === 'in') {
+				
+				// 点击入库情况下
+				if (btntype === 'in') {
 
 					if (stockNum === '' || parseInt(stockNum) === 0) {
-						_this.ifshowbtnanimationin = true
+						_this.ifremindamount = true
 						setTimeout(function() {
-							_this.ifshowbtnanimationin = false
+							_this.ifremindamount = false
 						}, 1500);
 						return
 					}
 
 				}
-				// 出库
-				else if (stocktype === 'out') {
-
+				// 点击出库情况下
+				else if (btntype === 'out') {
+					
 					// 校验出库数量
 					if (parseInt(stockNum) > _this.selectspecinfo.stockCount || stockNum === '' || parseInt(stockNum) === 0) {
-						_this.ifshowbtnanimationout = true
+						_this.ifremindamount = true
 						setTimeout(function() {
-							_this.ifshowbtnanimationout = false
+							_this.ifremindamount = false
+						}, 1500);
+						return
+					}
+					
+					// 检查出库选择的价格类型
+					else if(!_this.pricetype) {
+						_this.ifremindpricetype = true
+						setTimeout(function() {
+							_this.ifremindpricetype = false
 						}, 1500);
 						return
 					}
 
 				}
-
+				
 				uni.showModal({
 					title: _this.i18n.base.tip,
 					content: _this.i18n.tip.ifsuretofixstock,
@@ -214,10 +263,11 @@
 							let data = {
 								pid: _this.pid,
 								specId: _this.selectspecinfo.specId,
-								stockCount: parseInt(stockNum)
+								stockCount: parseInt(stockNum),
+								type: _this.pricetype
 							}
 
-							if (stocktype === 'in') {
+							if (btntype === 'in') {
 								_this.$api.goodsapi.stockin(data).then(response => {
 
 									// 入库成功 刷新页面
@@ -242,7 +292,7 @@
 										icon: 'none'
 									});
 								})
-							} else if (stocktype === 'out') {
+							} else if (btntype === 'out') {
 								_this.$api.goodsapi.stockout(data).then(response => {
 
 									// 出库成功

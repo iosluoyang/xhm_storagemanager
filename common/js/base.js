@@ -303,7 +303,15 @@ export function scanQR() {
 		
 		// 开始扫一扫
 		
-		// 非H5平台可以直接调用扫一扫
+		// H5平台提醒用户在APP中使用
+		// #ifdef H5
+		uni.showToast({
+			title: 'Please open in App',
+			icon: 'none',
+		});
+		// #endif
+				
+		// 如果是非H5平台则直接调用扫一扫
 		// #ifndef H5
 		// 调用扫码功能
 		uni.scanCode({
@@ -332,14 +340,6 @@ export function scanQR() {
 				// 识别失败，用户取消的时候均进入fail回调 此时不进行任何的操作
 			}
 		})
-		// #endif
-		
-		// H5平台提醒用户在APP中使用
-		// #ifdef H5
-		uni.showToast({
-			title: 'Please open in App',
-			icon: 'none',
-		});
 		// #endif
 		
 	})

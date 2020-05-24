@@ -43,7 +43,7 @@
 				type: 'add', // 页面类型 add为新增  edit为编辑
 				id: null, // 公告id  编辑下有
 				
-				content: null, // 公告内容
+				content: '', // 公告内容
 				time: null,// 公告时间
 				
 				ifshowbtnanimation: false, // 是否显示按钮摇动动画  默认为否

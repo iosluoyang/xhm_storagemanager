@@ -42,8 +42,8 @@
 				<input type="text" maxlength="30" v-model="goodstitle" />
 			</view>
 			
-			<!-- 商品标识码 不能输入 只能通过扫码获得 只有在新增状态下显示 -->
-			<view v-if="type === 'add' " class="cu-form-group solid-bottom" @tap.stop="scangoods">
+			<!-- 商品标识码 不能输入 只能通过扫码获得 -->
+			<view class="cu-form-group solid-bottom" @tap.stop="scangoods">
 				
 				<view class="title">{{i18n.goods.handlegoods.goodsbarcode}}</view>
 				
@@ -720,13 +720,13 @@
 				}
 				
 				// 检查商品描述
-				if(_this.goodsdes === '') {
-					uni.showToast({
-						title: _this.i18n.error.lackgoodsdes,
-						icon: 'none'
-					});
-					return
-				}
+				// if(_this.goodsdes === '') {
+				// 	uni.showToast({
+				// 		title: _this.i18n.error.lackgoodsdes,
+				// 		icon: 'none'
+				// 	});
+				// 	return
+				// }
 				
 				// 区分新增还是编辑
 				

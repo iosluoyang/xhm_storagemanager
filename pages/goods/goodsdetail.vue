@@ -52,13 +52,13 @@
 				</view>
 				
 				<!-- 标识码(仅展示) -->
-				<view class="cu-item" v-if="product.barCode && product.barCode.length > 0">
+				<view class="cu-item arrow" v-if="product.barCode && product.barCode.length > 0" @tap.stop="checkqrcode">
 					<view class="content">
 						<text class="cuIcon-qrcode text-brown margin-right-sm"></text>
 						<text class="text-black">{{i18n.goods.handlegoods.goodsbarcode}}</text>
 					</view>
 					<view class="action">
-						<text class="text-grey text-df">{{product.barCode}}</text>
+						<text class="cuIcon cuIcon-qr_code"></text>
 					</view>
 				</view>
 				
@@ -160,6 +160,49 @@
 							@hidepopup="ifshowpopup = false">
 		</goodsspecselector> -->		
 		
+		<!-- 商品二维码弹出框 -->
+		<view class="cu-modal" :class="ifshowqrcode?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view v-if="product" class="content text-cut">{{product.title}}</view>
+					<view class="action" @tap.stop="ifshowqrcode=false">
+						<text class="cuIcon-close text-black"></text>
+					</view>
+				</view>
+				<view class="padding-xl qrimg flex justify-center">
+					<tki-qrcode
+					ref="qrcode"
+					:cid="product?product.barCode:'proqrcode'"
+					:val="qrcodeval"
+					:size="300"
+					unit="upx"
+					background="#000000"
+					foreground="#FFFFFF"
+					pdground="#FFFFFF"
+					:onval="true"
+					:showLoading="true"
+					:loadMake="true"
+					loadingText="Loading"
+					@result="getqrcodesrc" />
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						
+						<button class="cu-btn line-green text-green" @tap.stop="ifshowqrcode=false">{{i18n.base.cancel}}</button>
+						
+						<!-- 暂时屏蔽打印功能 -->
+						<!-- <button class="cu-btn bg-green margin-left" @tap.stop="printqrcode">{{i18n.base.print}}</button> -->
+						
+						<!-- 非H5平台下才有下载功能 -->
+						<!-- #ifndef H5 -->
+						<button class="cu-btn bg-green margin-left" @tap.stop="downloadqrcode">{{i18n.base.download}}</button>
+						<!-- #endif -->
+						
+					</view>
+				</view>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
@@ -168,12 +211,14 @@
 	
 	import goodstypepicker from '@/components/base/goodstypepicker.vue'
 	import goodsspecselector from '@/components/base/goodsspecselector.vue'
+	import tkiQrcode from "@/components/tki-qrcode/tki-qrcode.vue" // 二维码生成器
 	
 	export default {
 		
 		components: {
 			goodstypepicker,
 			goodsspecselector,
+			tkiQrcode,
 		},
 		
 		data() {
@@ -191,6 +236,10 @@
 				selectspecinfo: null, // 当前选中的规格对象
 				showspecstr: null, // 当前选中的规格名称文本
 				ifshowpopup: false, // 是否显示底部规格弹框  默认为否不显示
+				
+				ifshowqrcode: false, // 是否显示商品二维码弹出框  默认为否不显示
+				qrcodeval: '', // 二维码的内容
+				qrcodesrc: null, // 当前二维码图片的本地链接
 				
 			};
 		},
@@ -409,6 +458,30 @@
 				
 				console.log(`当前选中的商品分类为:${firstTypeId}---${secondTypeId}`);
 				
+			},
+			
+			// 查看商品二维码
+			checkqrcode() {
+				let barcode = this.product.barCode
+				let qrcodeval = this.$basejs.storeName() + barcode
+				this.qrcodeval = qrcodeval
+				// 开始显示商品二维码信息
+				this.ifshowqrcode = true
+			},
+			
+			// 获取二维码本地链接
+			getqrcodesrc(src) {
+				this.qrcodesrc = src
+			},
+			
+			// 打印商品二维码
+			printqrcode() {
+				console.log(`开始打印二维码`);
+			},
+			
+			// 下载商品二维码
+			downloadqrcode() {
+				this.$refs.qrcode._saveCode()
 			},
 			
 			// 预览规格

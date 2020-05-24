@@ -16,6 +16,8 @@ const th = {
 		select: "โปรดเลือก",
 		cancel: "ยกเลิก",
 		confirm: "ยืนยัน",
+		print: "Print",
+		download: "DownLoad",
 		click: "Click",
 		here: "Here",
 		toaddmore: "to add more",
@@ -77,6 +79,7 @@ const th = {
 		logoutsuccess: "การออกจากระบบสำเร็จ",
 		addsuccess: "การเพิ่มสำเร็จ",
 		fixsuccess: "การแก้ไขสำเร็จ",
+		savesuccess: "save success",
 		deletesuccess: "การลบข้อมูลเสร็จสิ้น",
 		resetsuccess: "การเริ่มต้นใหม่เสร็จสิ้น",
 		pleaselogin: "กรุณาเข้าสู่ระบบ",
@@ -97,6 +100,7 @@ const th = {
 		findnewversion: "New Version coming , Download now ?",
 		notinworkingtime: "You are not in the working time",
 		loginotherplace: "You've logined in other platform, please login again",
+		pleaseselectpricetype: "Please select the type of price(Optional)",
 		
 	},
 	
@@ -297,7 +301,15 @@ const th = {
 	
 	// 库存相关
 	stock: {
+		todaystocksituation: "Stock Data Today",
+		until: "Until",
+		protitle: "Title",
 		amount: "Amount",
+		customer: "Customer",
+		pricetype: "Price Type",
+		operatime: "Time",
+		operapeople: "Employee",
+		
 		typestocknumplacholder: "Please enter the Amount",
 		stockin: "Stock In",
 		stockout: "Stock Out",
@@ -310,13 +322,12 @@ const th = {
 		stockreport: {
 			outstockcount: "Stock Out",
 			instockcount: "Stock In",
+			paytotalnum: "Money Out",
+			earntotalnum: "Money In"
 		},
 		
-		
 	},
-	
-	
-	
+		
 }
 
 export default th

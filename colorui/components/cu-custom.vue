@@ -60,7 +60,6 @@
 				if(this.isBackConfirm) {
 					
 					uni.showModal({
-						title: this.i18n.tip.exitconfirm,
 						content: this.i18n.tip.exitconfirm,
 						showCancel: true,
 						cancelText: this.i18n.base.cancel,

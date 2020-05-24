@@ -73,7 +73,6 @@ Vue.mixin({
 	},
 });
 
-
 const app = new Vue({
 	i18n,
 	store,

@@ -6,11 +6,101 @@
 			<block slot="content">{{i18n.nav.stock}}</block>
 		</cu-custom>
 		
-		<view class="uchartsview margin bg-white">
-			<!--#ifndef MP-ALIPAY -->
-			<canvas :canvas-id="stockchartcanvasid" :id="stockchartcanvasid" class="charts" @touchstart="touchstartstockchart"></canvas>
-			<!--#endif-->
+		<!-- 今日实时数据展示 -->
+		<view class="grid col-1 padding-sm">
+			
+			<view class="bg-white padding-sm radius shadow-blur">
+				
+				<!-- 头部标题区域 -->
+				<view class="titleview flex align-center justify-between padding-bottom dashed-bottom">
+					<text class="flex-sub text-df text-black text-bold">{{ i18n.stock.todaystocksituation }}</text>
+					<text v-if="nowstockinfo" class="flex-sub text-sm text-grey text-right">{{ i18n.stock.until }}: {{ nowstockinfo.tjDate }}</text>
+				</view>
+				
+				<!-- 数据展示区域 -->
+				<view v-if="nowstockinfo" class="grid col-2 padding text-center">
+					
+					<view class="todaystockout flex flex-direction justify-center solid-right solid-bottom padding-bottom-sm">
+						<text class="text-green text-bold text-xl margin-bottom-sm">{{ nowstockinfo.outStockCount }}</text>
+						<text class="text-black text-light text-df">{{ i18n.report.stockreport.outstockcount }}</text>
+					</view>
+					
+					<view class="todaystockout flex flex-direction justify-center solid-bottom padding-bottom-sm">
+						<text class="text-red text-bold text-xl margin-bottom-sm">{{ nowstockinfo.outStockTotalMoney }}</text>
+						<text class="text-black text-light text-df">{{ i18n.report.stockreport.earntotalnum }}</text>
+					</view>
+					
+					<view class="todaystockout flex flex-direction justify-center solid-right">
+						<text class="text-blue text-bold text-xl margin-bottom-sm">{{ nowstockinfo.inStockCount }}</text>
+						<text class="text-black text-light text-df">{{ i18n.report.stockreport.instockcount }}</text>
+					</view>
+					
+					<view class="todaystockout flex flex-direction justify-center">
+						<text class="text-red text-bold text-xl margin-bottom-sm">{{ nowstockinfo.inStockTotalMoney }}</text>
+						<text class="text-black text-light text-df">{{ i18n.report.stockreport.paytotalnum }}</text>
+					</view>
+					
+				</view>
+				
+			</view>
+			
 		</view>
+		
+		<!-- 出入库操作区域 -->
+		<!-- <view class="grid col-2 padding-sm">
+			
+			<view class="padding-sm">
+				<view class="bg-gradual-green padding radius text-center shadow-blur text-lg ">
+					<text class="cuIcon cuIcon-deliver margin-right-sm"></text>
+					<text class="text-light text-xxl">{{ i18n.stock.stockout }}</text>
+				</view>
+			</view>
+			
+			<view class="padding-sm">
+				<view class="bg-gradual-blue padding radius text-center shadow-blur text-lg ">
+					<text class="cuIcon cuIcon-cart margin-right-sm"></text>
+					<text class="text-light text-xxl">{{ i18n.stock.stockin }}</text>
+				</view>
+			</view>
+			
+		</view> -->
+		
+		<!-- 近日出入库情况图表概览 -->
+		<view class="uchartsview bg-white margin">
+			<canvas :canvas-id="stockchartcanvasid" :id="stockchartcanvasid" class="charts" :style="{width: cWidth+'px',height: cHeight+'px'}" @touchstart="touchstartstockchart"></canvas>
+		</view>
+		
+		<!-- 库存记录 -->
+		<view class="stockrecordview">
+			
+			<!-- 导航栏 -->
+			<scroll-view scroll-x class="bg-white nav text-center">
+				<view class="cu-item" :class="checkstocktype === 'out' ?'text-green cur':''" @tap="tabSelect" data-stocktype="out">
+					<text class="cuIcon-deliver"></text>
+					<text class="text-df">{{ i18n.stock.stockout }}</text>
+				</view>
+				<view class="cu-item" :class="checkstocktype === 'in' ?'text-blue cur':''" @tap="tabSelect" data-stocktype="in">
+					<text class="cuIcon-cart"></text>
+					<text class="text-df">{{ i18n.stock.stockin }}</text>
+				</view>
+			</scroll-view>
+			
+			<!-- 最近10条库存列表 -->
+			<view class="recentrecordview padding">
+				
+				<view class="outrecordview" v-show="checkstocktype==='out'">
+					<stockrecorditem class="bg-white radius margin-bottom-sm solid-bottom" v-for="(stockinfo, index) in recentstockoutrecordlist" :key="index" :stockinfo="stockinfo"></stockrecorditem>
+				</view>
+				
+				<view class="inrecordview" v-show="checkstocktype==='in'">
+					<stockrecorditem class="bg-white radius margin-bottom-sm solid-bottom" v-for="(stockinfo, index) in recentstockinrecordlist" :key="index" :stockinfo="stockinfo"></stockrecorditem>
+				</view>
+
+			</view>
+			
+			
+		</view>
+		
 		
 	</view>
 </template>
@@ -18,12 +108,26 @@
 <script>
 	
 	import uCharts from '@/components/u-charts/u-charts.js'
+	import stockrecorditem from '@/components/base/stockrecorditem.vue'
+	
 	var _this
 	var stockchart = null // 当前库存的图表
 	
 	export default {
+		
+		components: {
+			
+			stockrecorditem,
+		},
+		
 		data() {
 			return {
+				
+				nowstockinfo: null, // 当前实时库存统计数据
+				checkstocktype: 'out', // 当前查看库存记录的类型  out为出库记录 in为入库记录  默认为出库记录
+				recentstockoutrecordlist: null, // 最近10条出库数据
+				recentstockinrecordlist: null, // 最近10条入库数据
+				
 				stockchartcanvasid: 'canvasColumn', // 库存出入库情况图表画布id
 				
 				cWidth:'', // 图表宽度
@@ -32,20 +136,23 @@
 				
 				chartData: '', // 图表数据
 				
-				
-				
 			};
 		},
 		
 		onLoad() {
 			_this = this
 			
+			// 获取今日实时统计数据
+			this.getstocksituationnow()
+			
+			// 获取最近10条的出入库数据
+			this.getrecentstockrecord()
+			
 			let res = uni.getSystemInfoSync()
 			let windowWidth = res.windowWidth
-			let windowHeight = res.windowHeight
 			
-			this.cWidth=350;
-			this.cHeight=350;
+			this.cWidth=windowWidth - 50;
+			this.cHeight=this.cWidth*1;
 			
 			// 获取图表数据
 			this.getchartData();
@@ -53,7 +160,63 @@
 		
 		methods: {
 			
-			// 获取数据
+			// 获取当前实时库存统计数据
+			getstocksituationnow() {
+				this.$api.reportapi.gettodaystockreport().then(response => {
+					// 获取成功
+					let nowstockinfo = response.data.stockInfo
+					this.nowstockinfo = nowstockinfo
+					
+				}).catch(error => {})
+			},
+			
+			// 获取最近的出入库数据
+			getrecentstockrecord() {
+				
+				// 获取最近10条出库数据
+				let outdata = {
+					flag: 1, //	出入库标识0入库1出库
+					pageSize: 10, //	每页显示的条数
+					pageNum: 1, //	页码
+				}
+				this.$api.stockapi.getstockrecord(outdata).then(response => {
+					// 获取成功
+					let recentstockoutrecordlist = response.data.list
+					this.recentstockoutrecordlist = recentstockoutrecordlist
+					
+				}).catch(error => {
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+				// 获取最近10条入库数据
+				let indata = {
+					flag: 0, //	出入库标识0入库1出库
+					pageSize: 10, //	每页显示的条数
+					pageNum: 1, //	页码
+				}
+				this.$api.stockapi.getstockrecord(indata).then(response => {
+					// 获取成功
+					let recentstockinrecordlist = response.data.list
+					this.recentstockinrecordlist = recentstockinrecordlist
+					
+				}).catch(error => {
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 切换查看库存记录的类型
+			tabSelect(e) {
+				this.checkstocktype = e.currentTarget.dataset.stocktype;
+			},
+			
+			// 获取最近几天的库存统计数据
 			getchartData() {
 				
 				// 获取最近10天的出入库数据
@@ -61,7 +224,7 @@
 					dayNum: 10
 				}
 				
-				this.$api.reportapi.geteachdaystocklist(data).then(response => {
+				this.$api.reportapi.geteachdaystockreport(data).then(response => {
 					// 获取成功
 					let list = response.data.list
 					
@@ -203,15 +366,10 @@
 </script>
 
 <style lang="scss" scoped>
+	
 	.stockview{
-		.uchartsview{
-			width: 350px;
-			height:350px;
-			.charts{
-				width: 350px;
-				height: 350px;
-			}
-		}
+		
 		
 	}
+	
 </style>

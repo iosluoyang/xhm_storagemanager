@@ -301,7 +301,20 @@
 					// 获取公告成功
 					let noticeinfo = response.data.notice
 					this.homenotice = noticeinfo
-					this.ifshownotice = true
+					
+					// 判断本地是否已经有了该公告 如果已经有了则不显示
+					let previousnoticeid = uni.getStorageSync('homepagenoticeid')
+					// 已经显示过同样的公告了 此时不显示该公告
+					if(previousnoticeid && Number(previousnoticeid) === Number(noticeinfo.id)) {
+						
+					}
+					// 没有显示过该公告  此时要显示该公告 然后将该公告id存在本地
+					else{
+						this.ifshownotice = true
+						// 将当前的公告id存在本地  用于下一次的比较
+						uni.setStorageSync('homepagenoticeid', noticeinfo.id)
+					}
+
 				}).catch(error => {
 					// 获取公告失败
 					uni.showToast({

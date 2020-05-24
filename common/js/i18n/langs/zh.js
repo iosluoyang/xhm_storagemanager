@@ -16,6 +16,8 @@ const zh = {
 		select: "请选择",
 		cancel: "取消",
 		confirm: "确定",
+		print: "打印",
+		download: "下载",
 		click: "点击",
 		here: "此处",
 		toaddmore: "去添加更多",
@@ -76,6 +78,7 @@ const zh = {
 		logoutsuccess: "登出成功",
 		addsuccess: "添加成功",
 		fixsuccess: "修改成功",
+		savesuccess: "保存成功",
 		deletesuccess: "删除成功",
 		resetsuccess: "重置成功",
 		pleaselogin: "请登录",
@@ -96,6 +99,7 @@ const zh = {
 		findnewversion: "发现新版本,点击下载",
 		notinworkingtime: "您不在工作时间范围内",
 		loginotherplace: "您的账号已经在其他地方登录,请重新登录",
+		pleaseselectpricetype: "请选择价格类型(可选)",
 	},
 	
 	// 错误提示
@@ -296,7 +300,15 @@ const zh = {
 	
 	// 库存相关
 	stock: {
+		todaystocksituation: "今日出入库数据",
+		until: "截止至",
+		protitle: "商品名称",
 		amount: "数量",
+		customer: "客户信息",
+		pricetype: "价格类型",
+		operatime: "操作时间",
+		operapeople: "操作人",
+		
 		typestocknumplacholder: "请输入出/入库数量",
 		stockin: "入库",
 		stockout: "出库",
@@ -309,12 +321,12 @@ const zh = {
 		stockreport: {
 			outstockcount: "出库量",
 			instockcount: "入库量",
+			paytotalnum: "总出账",
+			earntotalnum: "总入账"
 		},
 		
 		
-	},
-	
-	
+	},	
 	
 }
 
