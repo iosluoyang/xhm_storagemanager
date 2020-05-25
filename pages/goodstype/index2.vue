@@ -1,5 +1,5 @@
 <template>
-	<view class="goodstypeview" :style="[{paddingTop: ( 50) + 'px'}]">
+	<view class="goodstypeview">
 		
 		<!-- 自定义导航栏 -->
 		<cu-custom bgColor="bg-gradual-red" isBack>
@@ -18,7 +18,7 @@
 		</view>
 		
 		<!-- 左右两侧垂直滚动区域 -->
-		<view class="VerticalBox" style="height:calc(100vh - 50px - 55px)">
+		<view class="VerticalBox flex" :style="{height:'calc(100vh - 100px)'}">
 			
 			<!-- 左侧滚动区域 -->
 			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="verticalNavTop" style="height:100%">
@@ -232,37 +232,38 @@
 	.VerticalNav.nav {
 		width: 250upx;
 		white-space: initial;
-	}
-
-	.VerticalNav.nav .cu-item {
-		width: 100%;
-		text-align: center;
-		background-color: #fff;
-		margin: 0;
-		border: none;
-		height: 50px;
-		position: relative;
-	}
-
-	.VerticalNav.nav .cu-item.cur::after {
-		content: "";
-		width: 8upx;
-		height: 30upx;
-		border-radius: 10upx 0 0 10upx;
-		position: absolute;
-		background-color: currentColor;
-		top: 0;
-		right: 0upx;
-		bottom: 0;
-		margin: auto;
-	}
-
-	.VerticalBox {
-		display: flex;
+		
+		.cu-item{
+			width: 100%;
+			text-align: center;
+			background-color: #fff;
+			margin: 0;
+			border: none;
+			height: 50px;
+			position: relative;
+			
+			&.cur{
+					
+				&::after{
+					
+					content: "";
+					width: 8upx;
+					height: 30upx;
+					border-radius: 10upx 0 0 10upx;
+					position: absolute;
+					background-color: currentColor;
+					top: 0;
+					right: 0upx;
+					bottom: 0;
+					margin: auto;
+					
+				}
+			}
+		}
 	}
 
 	.VerticalMain {
-		background-color: #f1f1f1;
+		background-color: #FFFFFF;
 		flex: 1;
 		
 		.secondtypeimgview{
