@@ -19,8 +19,15 @@
 			}
 		}
 		,{
+		    "path" : "pages/goodstype/index2",
+		    "style" : {
+				"navigationBarTitleText":"商品分类",
+				"navigationStyle":"custom"
+			}
+		}
+		,{
 		    "path" : "pages/goods/goodslist",
-				"style" : {
+			"style" : {
 				"navigationBarTitleText":"商品列表",
 				"app-plus" : {
 					"bounce" : "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
@@ -129,6 +136,7 @@
 				"navigationBarTitleText":"公告管理"
 			}
         }
+        
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",
