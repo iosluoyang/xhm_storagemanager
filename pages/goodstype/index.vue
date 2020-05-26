@@ -65,11 +65,7 @@
 		<view class="cu-modal" :class="ifshowmodal?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white">
-					<!-- 新增时才显示头部 -->
-					<view v-if="optiontype === 'add'" class="content">{{ i18n.goodstype.addtypetitle }}</view>
-					<view class="action" @tap="cancelModal">
-						<text class="cuIcon-close text-blue"></text>
-					</view>
+					<view class="content">{{ optiontype === 'add' ? i18n.goodstype.addtypetype : i18n.goodstype.edittype }}</view>
 				</view>
 				<view class="padding-xl text-left">
 					<view class="cu-form-group">

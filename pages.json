@@ -19,7 +19,7 @@
 			}
 		}
 		,{
-		    "path" : "pages/goodstype/index2",
+		    "path" : "pages/goodstype/newindex",
 		    "style" : {
 				"navigationBarTitleText":"商品分类",
 				"navigationStyle":"custom"

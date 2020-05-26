@@ -10,6 +10,7 @@ const th = {
 		female: "เพศหญิง",
 		male: "เพศชาย",
 		edit: "แก้ไข",
+		del: "Delete",
 		save: "บันทึก",
 		add: "เพิ่ม",
 		preview: "แสดงผล",
@@ -244,7 +245,8 @@ const th = {
 	// 商品分类相关
 	goodstype: {
 		currenttype: "ประเภทในปัจจุบัน",
-		addtypetitle: "เพิ่มประเภท",
+		addtype: "เพิ่มประเภท",
+		edittype: "Edit Classification",
 		addtypenametitle: "ชื่อประเภท",
 		addtypenameplaceholder: "กรุณาใส่ชื่อประเภท",
 		addtypedesplaceholder: "กรุณาใส่คำอธิบายประเภทของสินค้า",

@@ -10,6 +10,7 @@ const zh = {
 		female: "女",
 		male: "男",
 		edit: "编辑",
+		del: "删除",
 		save: "保存",
 		add: "新增",
 		preview: "预览",
@@ -243,7 +244,8 @@ const zh = {
 	// 商品分类相关
 	goodstype: {
 		currenttype: "当前选中的分类",
-		addtypetitle: "添加分类",
+		addtype: "添加分类",
+		edittype: "编辑分类",
 		addtypenametitle: "分类名称",
 		addtypenameplaceholder: "请输入商品分类名称",
 		addtypedesplaceholder: "请描述一下该商品分类",

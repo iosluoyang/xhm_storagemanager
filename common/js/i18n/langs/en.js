@@ -10,6 +10,7 @@ const en = {
 		female: "female",
 		male: "male",
 		edit: "Edit",
+		del: "Delete",
 		save: "Save",
 		add: "Add",
 		preview: "Preview",
@@ -248,7 +249,8 @@ const en = {
 	// 商品分类相关
 	goodstype: {
 		currenttype: "Current Classification",
-		addtypetitle: "Add Classification",
+		addtype: "Add Classification",
+		edittype: "Edit Classification",
 		addtypenametitle: "Name",
 		addtypenameplaceholder: "Enter the name of Classification",
 		addtypedesplaceholder: "Enter the description of Classification",
