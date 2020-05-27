@@ -49,7 +49,7 @@
 							<view class="bg-grey padding-sm radius margin-top-sm text-sm">
 								<view class="flex">
 									<!-- 一个就够了(888888) 2020-05-23 出库 猫砂盆(颜色：粉色) 100件 -->
-									{{ `${member.newTranInfo.realName}(${member.newTranInfo.account}) ${member.newTranInfo.createDate} ${i18n.stock.stockout} ${member.newTranInfo.title}(${member.newTransInfo.specInfo.specName}) ${member.newTranInfo.stockCount}` }}
+									{{ `${member.newTranInfo.realName}(${member.newTranInfo.account}) ${member.newTranInfo.createDate} ${i18n.stock.stockout} ${member.newTranInfo.title}(${member.newTranInfo.specInfo.specName}) ${member.newTranInfo.stockCount}` }}
 								</view>
 							</view>
 							

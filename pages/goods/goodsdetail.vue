@@ -476,14 +476,14 @@
 					filePath: qrcodesrc,
 					success: function () {
 						uni.showToast({
-							title: that.i18n.tip.savesuccess,
+							title: _this.i18n.tip.savesuccess,
 							icon: 'success',
 							duration: 1500
 						});
 					},
 					fail: function(error) {
 						uni.showToast({
-							title: that.i18n.base.fail,
+							title: _this.i18n.base.fail,
 							icon: 'none',
 							duration: 1500
 						});
