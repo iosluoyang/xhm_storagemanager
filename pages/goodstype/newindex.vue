@@ -67,14 +67,15 @@
 								@touchstart="ListTouchStart" 
 								@touchmove="ListTouchMove" 
 								@touchend="ListTouchEnd"
+								@tap.stop="jumptogoodslist(typeinfo.typeId, secondtypeinfo.typeId)"
 								:data-target="'move-box-' + secondtypeinfo.typeId.toString()">
 								
 							<view class="cu-avatar round lg secondtypeimgview"></view>
 							
-							<view class="content" style="width: calc(100% - 48px - 30px - 10px)">
+							<view class="content text-cut" style="width: calc(100% - 48px - 30px - 10px)">
 								
-								<view class="text-grey text-cut">{{ secondtypeinfo.typeName }}</view>
-								<view class="text-gray text-sm flex">你好我是分类的描述</view>
+								<view class="text-black text-light">{{ secondtypeinfo.typeName }}</view>
+								<view class="text-cut text-grey padding-left-sm padding-right-sm bg-gray radius" @longpress="showtypedes(secondtypeinfo)">{{ secondtypeinfo.remark }}</view>
 							
 							</view>
 							
@@ -107,7 +108,7 @@
 				<view class="padding-xl text-left">
 					<view class="cu-form-group">
 						<view class="title">{{i18n.goodstype.addtypenametitle}}</view>
-						<input :placeholder="i18n.goodstype.addtypenameplaceholder" maxlength="20" v-model="addedtypeName"></input>
+						<input :placeholder="i18n.goodstype.addtypenameplaceholder" maxlength="50" v-model="addedtypeName"></input>
 					</view>
 					
 					<view class="cu-form-group margin-top">
@@ -436,6 +437,7 @@
 					let newtypedata = {
 						typeId: addtypeid,
 						typeName: data.typeName,
+						remark: data.remark,
 						sysFlag: 0, // 是否是系统分类 默认为否
 						childList: subtypeinfo ? [subtypeinfo] : [] // 有返回的subtypeinfo的说明后面需要增加他的子分类
 					}
@@ -588,6 +590,24 @@
 					}
 				});
 				
+			},
+			
+			// 查看分类描述
+			showtypedes(typeinfo) {
+				uni.showModal({
+					title: typeinfo.typeName,
+					content: typeinfo.remark,
+					showCancel: false,
+					cancelText: '',
+					confirmText: this.i18n.base.confirm
+				});
+			},
+			
+			// 点击跳转特定的商品列表页
+			jumptogoodslist(firstTypeId, secondTypeId) {
+				uni.navigateTo({
+					url: `/pages/goods/goodslist?firstTypeId=${firstTypeId}&secondTypeId=${secondTypeId}`
+				})
 			},
 			
 			// ListTouch触摸开始

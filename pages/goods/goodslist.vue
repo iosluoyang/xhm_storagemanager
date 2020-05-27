@@ -282,10 +282,10 @@
 					// 分类筛选源
 					if(filterinfo.id === 'type') {
 						filterinfo.submenu.forEach((typeinfo, typeindex) => {
-							if(typeinfo.value === _this.firstTypeId) {
+							if(Number(typeinfo.value) === Number(_this.firstTypeId)) {
 								typevalueindexArr.push(typeindex)
 								typeinfo.submenu.forEach((secondtypeinfo, secondtypeindex) => {
-									if(secondtypeinfo.value === _this.secondTypeId) {
+									if(Number(secondtypeinfo.value) === Number(_this.secondTypeId)) {
 										typevalueindexArr.push(secondtypeindex)
 									}
 								})
@@ -295,7 +295,7 @@
 					// 排序筛选源
 					if(filterinfo.id === 'sort') {
 						filterinfo.submenu.forEach((sortinfo, sortindex) => {
-							if(sortinfo.value === _this.sortType) {
+							if(Number(sortinfo.value) === Number(_this.sortType)) {
 								sortvalueindexArr.push(sortindex)
 							}
 						})

@@ -30,12 +30,12 @@
 						<text class="text-black text-light text-df">{{ i18n.report.stockreport.earntotalnum }}</text>
 					</view>
 					
-					<view class="todaystockout flex flex-direction justify-center solid-right">
+					<view class="todaystockout flex flex-direction justify-center solid-right padding-top-sm">
 						<text class="text-blue text-bold text-xl margin-bottom-sm">{{ nowstockinfo.inStockCount }}</text>
 						<text class="text-black text-light text-df">{{ i18n.report.stockreport.instockcount }}</text>
 					</view>
 					
-					<view class="todaystockout flex flex-direction justify-center">
+					<view class="todaystockout flex flex-direction justify-center padding-top-sm">
 						<text class="text-red text-bold text-xl margin-bottom-sm">{{ nowstockinfo.inStockTotalMoney }}</text>
 						<text class="text-black text-light text-df">{{ i18n.report.stockreport.paytotalnum }}</text>
 					</view>
@@ -227,7 +227,7 @@
 				this.$api.reportapi.geteachdaystockreport(data).then(response => {
 					// 获取成功
 					let list = response.data.list
-					
+					list.reverse() // 按照日期时间顺序排序
 					// 处理数据
 					let chartData = _this.setchartdata(list)
 					this.chartData = chartData
