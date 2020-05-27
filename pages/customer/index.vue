@@ -24,7 +24,7 @@
 		 
 			<view class="cu-list menu-avatar comment solids-bottom">
 				
-				<view class="cu-item margin-sm radius" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() " @tap.stop="editmember(member)">
+				<view class="cu-item margin-sm radius" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() " @tap.stop="clickcustomer(member)">
 					
 					<!-- 客户头像 -->
 					<template>
@@ -73,9 +73,13 @@
 </template>
 
 <script>
+	
+	var _this = this
+	
 	export default {
 		data() {
 			return {
+				type: 'normal', // 页面类型  select为选择客户  normal为正常模式下  默认为normal
 				
 				StatusBar: this.StatusBar,
 				CustomBar: this.CustomBar,
@@ -88,9 +92,13 @@
 			};
 		},
 		
-		onLoad() {
+		onLoad(option) {
 			
-			const _this = this
+			_this = this
+			
+			let type = option.type
+			this.type = type ? type : 'normal'
+			
 			// 设置监听
 			uni.$on('updatecustomer', function(data){
 				// 更新客户列表
@@ -129,6 +137,20 @@
 						icon: 'none'
 					});
 				})
+			},
+			
+			// 点击客户
+			clickcustomer(customer) {
+				
+				// 根据当前页面的类型选择是选择数据反显还是跳转编辑客户信息
+				if(this.type === 'select') {
+					uni.$emit('selectcustomer', customer)
+					uni.navigateBack();
+				}
+				// 正常状态下为编辑客户信息
+				else {
+					this.editmember(customer)
+				}
 			},
 			
 			// 添加成员

@@ -28,17 +28,17 @@
 		</template>
 		
 		<!-- 商品信息区域 -->
-		<view v-if="product" class="goodsinfoview bg-white">
+		<view v-if="product" class="goodsinfoview padding bg-white">
 			
 			<!-- 商品名称价格和简介 -->
-			<view class="padding borderbottom">
+			<view class="padding solid-bottom">
 				<view class="goodstitleview t_threeline text-xxl text-black margin-bottom">{{product.title}}</view>
 				<view class="goodspriceview text-red text-xl margin-bottom">{{ selectspecinfo ? selectspecinfo.salePrice : product.price }}</view>
 				<view class="goodsdesview text-df">{{product.productIntro}}</view>
 			</view>
 			
 			<!-- 商品其他信息展示 -->
-			<view class="cu-list menu borderbottom">
+			<view class="cu-list menu solid-bottom">
 				
 				<!-- 分类(仅展示) -->
 				<view class="cu-item">
@@ -77,11 +77,11 @@
 			</view>
 			
 			<!-- 展示商品的所有规格 -->
-			<view class="specsview padding flex justify-between borderbottom">
+			<view class="specsview padding flex flex-direction solid-bottom">
 				
-				<text class="spectitle text-xl text-bold">{{i18n.goods.handlegoods.goodsspec}}:</text>
+				<text class="spectitle text-xl text-bold margin-bottom">{{i18n.goods.handlegoods.goodsspec}}:</text>
 				
-				<view v-if="product && product.specs && product.specs.length > 0" style="max-width: 60%;" class="allspecview flex flex-wrap align-center">
+				<view v-if="product && product.specs && product.specs.length > 0" class="allspecview flex flex-wrap align-center">
 					<view class="cu-tag round padding xl margin-bottom-sm" v-for="(specitem, index) in product.specs" :key="index" 
 							:class="[ selectspecinfo && specitem.specId === selectspecinfo.specId ? 'bg-blue' : 'line-grey' ]"
 							@tap.stop="selectspecinfo = specitem"
@@ -94,7 +94,7 @@
 			</view>
 			
 			<!-- 价格展示  仅超级管理员可以看到 -->
-			<view v-if="user.type === 0 && priceList && priceList.length > 0" class="priceshowview bg-white padding borderbottom">
+			<view v-if="user.type === 0 && priceList && priceList.length > 0" class="priceshowview bg-white padding solid-bottom">
 				<view class="flex align-center justify-between">
 					<text class="text-xl text-bold margin-right-sm">{{ i18n.goods.pricestr }}:</text>
 					<button class="cu-btn radius sm cuIcon-edit" @tap.stop="jumptofixprice">
@@ -115,7 +115,10 @@
 			<!-- 最近的出入库记录 -->
 			<view class="stockrecordview bg-white padding">
 				
-				<text class="text-xl text-bold text-black">{{ i18n.goods.goodsdetail.stockrecord }}:</text>
+				<view class="stockstr text-xl">
+					<text class="text-bold text-black">{{ i18n.goods.goodsdetail.stockrecord }}</text>
+					<text class="text-light margin-left">( {{ i18n.goods.stock }}: {{  selectspecinfo.stockCount }})</text>
+				</view>
 				
 				<view v-if="computedstockrecord && computedstockrecord.length > 0" class="cu-timeline margin-top">
 					
@@ -124,8 +127,8 @@
 						<!-- 操作时间 -->
 						<view class="cu-time">{{ recorditem.createDate.substr(-14) }}</view>
 						
-						<view class="cu-item" :class="[ recorditem.flag === 0 ? 'cuIcon-roundright text-green' : 'cuIcon-pullleft text-red' ]">
-							<view class="content shadow-blur text-light" :class="[ recorditem.flag === 0 ? 'bg-gradual-green' : 'bg-gradual-red' ]">
+						<view class="cu-item" :class="[ recorditem.flag === 0 ? 'cuIcon-roundright text-blue' : 'cuIcon-pullleft text-green' ]">
+							<view class="content shadow-blur text-light" :class="[ recorditem.flag === 0 ? 'bg-gradual-blue' : 'bg-gradual-green' ]">
 								<text class="text-bold">【{{ recorditem.flag === 0 ? i18n.stock.stockin : i18n.stock.stockout }}】</text>
 								<!-- xxx 出库了 商品A 100个 -->
 								<text class="margin-right-sm">{{ `${recorditem.realName} (${recorditem.account})` }}</text>
@@ -145,7 +148,7 @@
 		
 		<!-- 底部操作按钮区域 -->
 		<view class="optionview cu-bar btn-group bg-white">
-			<button class="bg-gradual-blue lg round cu-btn" @tap.stop="editgoods">{{i18n.base.edit}}</button>
+			<button class="bg-grey lg round cu-btn" @tap.stop="editgoods">{{i18n.base.edit}}</button>
 			<button class="bg-gradual-green lg round cu-btn" @tap.stop="jumptostockmanage">{{i18n.nav.stock}}</button>
 		</view>
 		
@@ -169,22 +172,11 @@
 						<text class="cuIcon-close text-black"></text>
 					</view>
 				</view>
-				<view class="padding-xl qrimg flex justify-center">
-					<tki-qrcode
-					ref="qrcode"
-					:cid="product?product.barCode:'proqrcode'"
-					:val="qrcodeval"
-					:size="300"
-					unit="upx"
-					background="#000000"
-					foreground="#FFFFFF"
-					pdground="#FFFFFF"
-					:onval="true"
-					:showLoading="true"
-					:loadMake="true"
-					loadingText="Loading"
-					@result="getqrcodesrc" />
+				
+				<view v-if="product" class="padding-xl qrimg flex justify-center">
+					<uni-qrcode cid="proqrimg" ref="proqrimg" makeOnLoad :text=" $basejs.storeName() + product.barCode " @makeComplete="getqrcodeimgpath" />
 				</view>
+				
 				<view class="cu-bar bg-white justify-end">
 					<view class="action">
 						
@@ -193,9 +185,9 @@
 						<!-- 暂时屏蔽打印功能 -->
 						<!-- <button class="cu-btn bg-green margin-left" @tap.stop="printqrcode">{{i18n.base.print}}</button> -->
 						
-						<!-- 非H5平台下才有下载功能 -->
+						<!-- 非H5平台且有下载链接时下才有下载按钮 -->
 						<!-- #ifndef H5 -->
-						<button class="cu-btn bg-green margin-left" @tap.stop="downloadqrcode">{{i18n.base.download}}</button>
+						<button v-if="qrcodesrc" class="cu-btn bg-green margin-left" @tap.stop="downloadqrcode">{{i18n.base.download}}</button>
 						<!-- #endif -->
 						
 					</view>
@@ -208,17 +200,19 @@
 
 <script>
 	var _this
+	var recordlistcount = 3 // 获取最近3条的出入库记录
 	
 	import goodstypepicker from '@/components/base/goodstypepicker.vue'
 	import goodsspecselector from '@/components/base/goodsspecselector.vue'
-	import tkiQrcode from "@/components/tki-qrcode/tki-qrcode.vue" // 二维码生成器
+	import uniQrcode from '@/components/uni-qrcode/uni-qrcode.vue' // 二维码生成器
 	
 	export default {
 		
 		components: {
 			goodstypepicker,
 			goodsspecselector,
-			tkiQrcode,
+			uniQrcode,
+			
 		},
 		
 		data() {
@@ -365,21 +359,18 @@
 					}
 					if(swiperData.length > 0) {_this.swiperData = swiperData}
 					
-					// 如果存在已选规格则根据最新数据找到该规格
+					// 如果存在已选规格则更新该规格数据
 					if(_this.selectspecinfo) {
-						product.specs.find((specitem) => {
-							if(specitem.specId === _this.selectspecinfo.specId) {
-								_this.selectspecinfo = specitem
-							}
+						let newselectspecinfo =  product.specs.find((specitem) => {
 							return specitem.specId === _this.selectspecinfo.specId
 						})
+						_this.selectspecinfo = newselectspecinfo
 					}
 					// 如果没有选中的话则默认选中第一个规格数据
 					else if(product.specs && product.specs.length > 0){
 						_this.selectspecinfo = product.specs[0]
 					}
 
-					
 					// 计算商品的价格
 					_this.calculateproductprice()
 					
@@ -396,9 +387,10 @@
 				
 			},
 			
-			// 获取出入库记录
+			// 获取最近的出入库记录
 			getstockrecord() {
 				let data = {
+					pageSize: recordlistcount,
 					barCode: _this.product.barCode,
 				}
 				this.$api.stockapi.getstockrecord(data).then(response => {
@@ -462,16 +454,13 @@
 			
 			// 查看商品二维码
 			checkqrcode() {
-				let barcode = this.product.barCode
-				let qrcodeval = this.$basejs.storeName() + barcode
-				this.qrcodeval = qrcodeval
 				// 开始显示商品二维码信息
 				this.ifshowqrcode = true
 			},
 			
-			// 获取二维码本地链接
-			getqrcodesrc(src) {
-				this.qrcodesrc = src
+			// 获取二维码图片链接
+			getqrcodeimgpath(qrimgpath) {
+				_this.qrcodesrc = qrimgpath
 			},
 			
 			// 打印商品二维码
@@ -481,7 +470,25 @@
 			
 			// 下载商品二维码
 			downloadqrcode() {
-				this.$refs.qrcode._saveCode()
+				// 当前二维码链接
+				let qrcodesrc = this.qrcodesrc
+				uni.saveImageToPhotosAlbum({
+					filePath: qrcodesrc,
+					success: function () {
+						uni.showToast({
+							title: that.i18n.tip.savesuccess,
+							icon: 'success',
+							duration: 1500
+						});
+					},
+					fail: function(error) {
+						uni.showToast({
+							title: that.i18n.base.fail,
+							icon: 'none',
+							duration: 1500
+						});
+					}
+				});
 			},
 			
 			// 预览规格
@@ -525,7 +532,7 @@
 				
 				// 跳转出入库操作页面
 				uni.navigateTo({
-					url: `/pages/stock/handlestock?pid=${_this.pid}`
+					url: `/pages/stock/handlestock?pid=${_this.pid}&specId=${this.selectspecinfo ? this.selectspecinfo.specId :null}`
 				});
 				
 			}

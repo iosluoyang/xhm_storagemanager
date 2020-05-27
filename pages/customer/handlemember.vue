@@ -68,10 +68,16 @@
 					:data-class="btnanimationname ? btnanimationname : '' " @tap.stop="confirm">{{i18n.base.save}}</button>
 		</view>
 		
+		<!-- 加载条 -->
+		<loading :loadModal="ifshowloading"></loading>
+		
 	</view>
 </template>
 
 <script>
+	
+	var _this
+	
 	export default {
 		data() {
 			return {
@@ -86,6 +92,8 @@
 				remark: '', //	备注
 				phone:'', //	客户联系电话
 				
+				ifshowloading: false, // 是否显示加载动画
+				
 				btnanimationname: null, // 按钮动画  默认为null
 				
 				
@@ -94,6 +102,7 @@
 		
 		onLoad(option) {
 			
+			_this = this
 			let type = option.type
 			if(!type) {
 				uni.navigateBack();
@@ -118,7 +127,6 @@
 			
 			// 获取客户详情
 			getcustomerdetail() {
-				const _this = this
 				
 				this.$api.customerapi.customerdetail({customerId: this.customerId}).then(response => {
 					// 加载成功
@@ -142,7 +150,6 @@
 			
 			// 点击选择头像
 			chooseimg() {
-				const _this = this
 				_this.$basejs.chooseImage({
 					count: 1,
 					success(res) {
@@ -154,7 +161,6 @@
 			
 			// 删除用户
 			deletemember() {
-				const _this = this
 				
 				uni.showModal({
 					content: this.i18n.tip.deleteconfirm,
@@ -195,7 +201,6 @@
 			// 显示错误时按钮的摇动动画
 			showbtnerranimation() {
 				
-				const _this = this
 				_this.btnanimationname = 'shake'
 				setTimeout(function() {
 					_this.btnanimationname = null
@@ -214,6 +219,8 @@
 				}
 				
 				// 如果有客户头像本地文件的话则上传头像
+				_this.ifshowloading = true // 显示加载动画
+				
 				if(this.avatarfile) {
 					this.$basejs.uploadmultipleimgs([this.avatarfile]).then(imgUrls => {
 						// 上传图片成功
@@ -221,6 +228,12 @@
 						this.customeravatarimg = customeravatarimg
 						// 开始上送数据
 						this.finalsubmit()
+					}).catch(error => {
+						uni.showToast({
+							title: _this.i18n.error.uploaderror,
+							icon: 'none'
+						});
+						_this.ifshowloading = false // 隐藏加载动画
 					})
 				}
 				// 没有本地头像文件则直接进行上送
@@ -234,6 +247,7 @@
 			finalsubmit() {
 				
 				const _this = this
+				
 				let data = {
 					company: this.company,
 					customer: this.customer,
@@ -249,6 +263,7 @@
 				if(this.type === 'add') {
 					this.$api.customerapi.addcustomer(finaldata).then(response => {
 						// 添加成功  提示之后返回
+						_this.ifshowloading = false // 隐藏加载动画
 						uni.showToast({
 							title: _this.i18n.tip.addsuccess,
 							icon: 'none',
@@ -261,6 +276,7 @@
 							uni.navigateBack();
 						}, 1500);
 					}).catch(error => {
+						_this.ifshowloading = false // 隐藏加载动画
 						// 创建失败
 						uni.showToast({
 							title: _this.i18n.error.adderror,
@@ -277,6 +293,7 @@
 				else if(this.type === 'edit') {
 					
 					this.$api.customerapi.editcustomer(data).then(response => {
+						_this.ifshowloading = false // 隐藏加载动画
 						// 添加成功  提示之后返回
 						uni.showToast({
 							title: _this.i18n.tip.fixsuccess,
@@ -290,6 +307,7 @@
 							uni.navigateBack();
 						}, 1500);
 					}).catch(error => {
+						_this.ifshowloading = false // 隐藏加载动画
 						// 创建失败
 						uni.showToast({
 							title: _this.i18n.error.fixerror,

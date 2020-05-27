@@ -66,7 +66,11 @@
 		</view> -->
 		
 		<!-- 近日出入库情况图表概览 -->
-		<view class="uchartsview bg-white margin">
+		<view class="uchartsview bg-white margin padding">
+			<!-- 头部标题区域 -->
+			<view class="titleview flex align-center justify-between padding-bottom dashed-bottom">
+				<text class="flex-sub text-df text-black text-bold">{{ i18n.stock.recentlystocksituation }}</text>
+			</view>
 			<canvas :canvas-id="stockchartcanvasid" :id="stockchartcanvasid" class="charts" :style="{width: cWidth+'px',height: cHeight+'px'}" @touchstart="touchstartstockchart"></canvas>
 		</view>
 		
@@ -293,12 +297,12 @@
 				   {
 					   name: _this.i18n.report.stockreport.outstockcount,
 					   data: outstockArr,
-					   color: '#e54d42'
+					   color: '#39b54a'
 				   },
 				   {
 						name: _this.i18n.report.stockreport.instockcount,
 						data: instockArr,
-						color: '#39b54a'
+						color: '#0081ff'
 				   }
 			   ]
 				

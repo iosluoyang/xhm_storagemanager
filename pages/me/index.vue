@@ -175,7 +175,7 @@
 			}
 			// 如果是普通员工则有
 			else if(this.user.type === 1) {
-				panelList = [resetpwditem, noticeitem, moreitem]
+				panelList = [resetpwditem, moreitem]
 			}
 			
 			this.panelList = panelList

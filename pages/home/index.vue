@@ -210,7 +210,7 @@
 					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem]
 				}
 				else{
-					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem]
+					elements = [scanitem,typeitem,goodsitem,customeritem,personalitem]
 				}
 				
 				this.elements = elements

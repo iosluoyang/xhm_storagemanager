@@ -104,7 +104,7 @@ const en = {
 		findnewversion: "New Version coming , Download now ?",
 		notinworkingtime: "You are not in the working time",
 		loginotherplace: "You've logined in other platform, please login again",
-		pleaseselectpricetype: "Please select the type of price(Optional)",
+		pleaseselectpricetype: "Select price type  (Select when stock out)",
 	},
 	
 	// 错误提示
@@ -309,6 +309,7 @@ const en = {
 	// 库存相关
 	stock: {
 		todaystocksituation: "Stock Data Today",
+		recentlystocksituation: "Stock Data Recently",
 		until: "Until",
 		protitle: "Title",
 		amount: "Amount",

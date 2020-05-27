@@ -86,8 +86,11 @@
 							
 						</view>
 						
-						<!-- 给最后增加一个添加的按钮 -->
-						<view class="cu-item text-black text-xxl" style="justify-content: center;" @tap.stop="startaddgoodstype(typeinfo)">
+						<!-- 给最后增加一个添加的按钮 系统一级分类下没有 -->
+						<view v-if="typeinfo.sysFlag === 0"
+								class="cu-item text-black text-xxl" 
+								style="justify-content: center;height: 40px;"
+								@tap.stop="startaddgoodstype(typeinfo)">
 							<text class="cuIcon cuIcon-add text-bold"></text>
 						</view>
 					
@@ -199,7 +202,7 @@
 					let typelist = response.data.list
 					
 					let newtypelist = []
-					
+										
 					// 将系统添加的分类名称找到对应的国际化名称
 					typelist.forEach((firsttypeinfo, firstindex) => {
 						firsttypeinfo.typeName = firsttypeinfo.sysFlag === 1 ? _this.i18n.base[firsttypeinfo.typeName] : firsttypeinfo.typeName
@@ -213,6 +216,36 @@
 					
 					_this.typelist = newtypelist
 					
+					// 初始化完成之后如果本地没有滑动过的标识则开始自动滑动
+					let alreadyswipercell = uni.getStorageSync('alreadyswipercell')
+
+					if(!alreadyswipercell) {
+						
+						_this.$nextTick(function(){
+							
+							// 在页面加载完毕之后自动滑动第一个可滑动的二级分类 1秒钟之后恢复原状
+							let autoswipersecondtypeid = null
+							let iffindautoswipercell = _this.typelist.some((firsttypeinfo, firstindex) => {
+								if(firsttypeinfo.childList && firsttypeinfo.childList.length > 0) {
+									return firsttypeinfo.childList.some((secondtypeinfo, secondtypeindex) => {
+										if(secondtypeinfo.sysFlag === 0) autoswipersecondtypeid = secondtypeinfo.typeId
+										return secondtypeinfo.sysFlag === 0
+									})
+								}
+								else {
+									return false
+								}
+							})
+							// 如果找到有符合条件的cell则1秒钟之后开始滑动
+							if(iffindautoswipercell) {
+								setTimeout(function() {
+									_this.autoswipercell(autoswipersecondtypeid)
+								}, 300);
+							}
+							
+						})
+						
+					}
 					
 				}).catch(error => {
 					
@@ -227,8 +260,22 @@
 				
 			},
 			
+			// 自动左滑某个二级分类
+			autoswipercell(secondtypeid) {
+				
+				this.listTouchDirection = 'left'
+				this.modalName = 'move-box-' + secondtypeid.toString()
+				
+				setTimeout(function() {
+					_this.listTouchDirection = null
+					_this.modalName = null
+					// 滑动完之后记录在本地变量
+					uni.setStorageSync('alreadyswipercell', true)
+				}, 1000);
+				
+			},
+			
 			// 开始搜索
-
 			searchgoodstype: _.debounce(function(searchtext){
 				
 				console.log(`当前搜索文本是:${searchtext}`);
