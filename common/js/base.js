@@ -10,47 +10,14 @@ export function storeName() {
 }
 
 /**
- * 格式化为指定格式的时间字符串
- * @param {(Object|string|number)} time
- * @param {string} cFormat
- * @returns {string}
+ * 判断是否是H5的微信环境
  */
-export function parseTime(time, cFormat) {
-  if (arguments.length === 0) {
-    return null
-  }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
-  let date
-  if (typeof time === 'object') {
-    date = time
-  } else {
-    if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
-      time = parseInt(time)
-    }
-    if ((typeof time === 'number') && (time.toString().length === 10)) {
-      time = time * 1000
-    }
-    date = new Date(time)
-  }
-  const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay()
-  }
-  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
-    let value = formatObj[key]
-    // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
-    if (result.length > 0 && value < 10) {
-      value = '0' + value
-    }
-    return value || 0
-  })
-  return time_str
+export function ifwxH5(){
+	// #ifdef H5
+	let ua = window.navigator.userAgent.toLowerCase();
+	return ua.match(/MicroMessenger/i) == 'micromessenger';
+	// #endif
+	return false
 }
 
 // 只判断是否已经登录的标识 如果已经登录则返回true  如果没有登录则返回false
@@ -133,6 +100,51 @@ function _getclient_flag(){
 
 // 获取基础接口请求的参数包装
 export function getrequestbasepara(requestdata){
+	
+	/**
+	 * 格式化为指定格式的时间字符串
+	 * @param {(Object|string|number)} time
+	 * @param {string} cFormat
+	 * @returns {string}
+	 */
+	function parseTime(time, cFormat) {
+	  if (arguments.length === 0) {
+	    return null
+	  }
+	  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+	  let date
+	  if (typeof time === 'object') {
+	    date = time
+	  } else {
+	    if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
+	      time = parseInt(time)
+	    }
+	    if ((typeof time === 'number') && (time.toString().length === 10)) {
+	      time = time * 1000
+	    }
+	    date = new Date(time)
+	  }
+	  const formatObj = {
+	    y: date.getFullYear(),
+	    m: date.getMonth() + 1,
+	    d: date.getDate(),
+	    h: date.getHours(),
+	    i: date.getMinutes(),
+	    s: date.getSeconds(),
+	    a: date.getDay()
+	  }
+	  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+	    let value = formatObj[key]
+	    // Note: getDay() returns 0 on Sunday
+	    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+	    if (result.length > 0 && value < 10) {
+	      value = '0' + value
+	    }
+	    return value || 0
+	  })
+	  return time_str
+	}
+	
 	
 	// 添加必传参数的数据
 	var originaldata = {}
@@ -349,6 +361,7 @@ export function scanQR() {
 
 export default {
 	storeName, // 返回供应商名称  用于生成二维码的前缀
+	ifwxH5, // 是否是微信H5环境
 	ifloginflag,//判断是否登录 仅仅返回是否登录的状态标识 返回true或者false
 	checklogin,//判断是否登录  如果未登录则跳转至登录页面 返回一个promise
 	getrequestbasepara,//获取基础接口请求的参数包装

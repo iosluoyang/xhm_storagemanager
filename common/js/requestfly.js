@@ -45,22 +45,22 @@ newfly.config = fly.config // 将fly的config复制给newfly的config  保持所
 var ifneedrefreshtoken = false // 是否需要刷新token的标识 默认不需要刷新token(开发调试的时候用 后期可能根据是否临近失效时间而定)
 
 // 拦截请求参数然后对其进行参数包装
-function makeparamsforrequest(request) {
+function makeparamsforrequest(config) {
 	
   // 添加content-type
-  if (!request.headers) request.headers = {}
+  if (!config.headers) config.headers = {}
   
-  request.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+  config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
   // 如果有access的话则添加accessToken至header中
   if (store.getters.accessToken) {
-    request.headers['accessToken'] = store.getters.accessToken
+    config.headers['accessToken'] = store.getters.accessToken
   }
 
   // 添加必传参数的数据
-  var originaldata = getrequestbasepara(request.body)
-  request.body = originaldata
+  var originaldata = getrequestbasepara(config.body)
+  config.body = originaldata
   
-  return request
+  return config
 }
 
 // 配置请求拦截器
@@ -74,9 +74,9 @@ function makeparamsforrequest(request) {
 	url, // 本次请求的地址
 	withCredentials //跨域请求是否发送第三方cookie
 */
-var requestinterceptor = function(request) { //不要使用箭头函数，否则调用this.lock()时，this指向不对
+var requestinterceptor = function(config) { //不要使用箭头函数，否则调用this.lock()时，this指向不对
 
-	console.log(`本次接口请求上送的数据为:\n${JSON.stringify(request.body)}`)
+	console.log(`本次接口请求上送的数据为:\n${JSON.stringify(config.body)}`)
 	
 	// 在拦截请求的时候判断accessToken是否失效需要重新获取refreshtoken
 	// 如果需要刷新token并且当前不并在刷新token的过程中 则开始请求新的token
@@ -87,8 +87,8 @@ var requestinterceptor = function(request) { //不要使用箭头函数，否则
 		// 开始请求refreshtoken 注意这里需要使用一个新的fly实例去请求refreshtoken的数据 如果用同一个fly实例的话会导致死锁的问题
 		return store.dispatch('user/refreshtoken').then((accessToken) => {
 			// 获取到最新的accessToken
-			request = makeparamsforrequest(request)
-			return request// 只有最终返回request对象时，原来的请求才会继续
+			config = makeparamsforrequest(config)
+			return config// 只有最终返回config对象时，原来的请求才会继续
 		}).finally(() => {
 			fly.unlock()
 		})
@@ -96,8 +96,8 @@ var requestinterceptor = function(request) { //不要使用箭头函数，否则
 	}
 	else {
 		// 不需要重新获取token 直接包装请求参数即可
-		request = makeparamsforrequest(request)
-		return request // 显式返回包装过的request
+		config = makeparamsforrequest(config)
+		return config // 显式返回包装过的config
 	}
 }
 

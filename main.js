@@ -19,6 +19,10 @@ Vue.prototype.$basejs = basejs
 import api from '@/api/index.js'
 Vue.prototype.$api = api
 
+// 引入微信wxjssdk
+import jwxjs from '@/common/js/jwxjs.js'
+Vue.prototype.$jwxjs = jwxjs
+
 import cuCustom from '@/colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
 

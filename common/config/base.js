@@ -71,7 +71,7 @@ const baseUrl = function() {
 	else if(process.env.NODE_ENV === 'production') {
 		// 生产环境
 		// #ifdef H5
-		return '/apiapp'
+		return '/user/test/apiapp'
 		// #endif
 		
 		// #ifndef H5
@@ -81,7 +81,7 @@ const baseUrl = function() {
 	else{
 		// 其他环境
 		// #ifdef H5
-		return '/apiapp'
+		return '/user/test/apiapp'
 		// #endif
 		
 		// #ifndef H5

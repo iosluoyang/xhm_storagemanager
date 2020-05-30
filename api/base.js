@@ -14,6 +14,10 @@ function getosssignature(data){
 	return flyrequest.fly.request('/aliyunsts/app/token/h5token.do',data)
 }
 
+// 获取微信签名信息
+function getwxsignature(data){
+	return flyrequest.fly.request('/app/wx/getJsSdkSignature.do',data)
+}
 
 // 获取用户工作时间
 function getworkingtime(data){
@@ -29,6 +33,7 @@ export default {
 	
 	getconfig,
 	getosssignature,
+	getwxsignature,
 	getworkingtime,
 	setworkingtime
 	
