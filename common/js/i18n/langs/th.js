@@ -47,7 +47,7 @@ const th = {
 			everyday: "Every Day",
 			workingday: "Working Day",
 		},
-		address: "Address",
+		
 	
 	},
 	

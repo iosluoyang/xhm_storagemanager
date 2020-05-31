@@ -77,7 +77,7 @@ const actions = {
 	},
 	
 	// 获取微信JS签名信息
-	getWXsignature() {
+	getwxsignature() {
 		
 		return new Promise((resolve, reject) => {
 			var data = {url: location.href.split('#')[0]}

@@ -31,14 +31,6 @@
 				<textarea maxlength="-1" v-model="memberremark" :placeholder="i18n.managepeople.handlemember.remarkplaceholder"></textarea>
 			</view>
 			
-			<!-- 人员位置信息 -->
-			<view v-if="ifshowaddress" class="cu-form-group" @tap.stop="checkaddress">
-				<view class="title">{{ i18n.base.address }}</view>
-				<view class="content">
-					<text class="cuIcon cuIcon-right"></text>
-				</view>
-			</view>
-			
 			<!-- 冻结/解冻用户 -->
 			<view v-if="type==='edit'" class="cu-list menu margin-top">
 				
@@ -93,8 +85,6 @@
 				membername: "", // 人员名称
 				memberaccount: "", // 账号信息
 				memberremark: "", // 人员备注
-				address: null, // 地址信息
-				ifshowaddress: false, // 是否显示查看位置选项 默认为否不显示 在APP和wxH5
 				memberuid: null, // 人员uid  编辑状态下有值
 				iffreeze: false, // 人员是否被冻结  默认为否
 				btnanimationname: null, // 按钮动画  默认为null
@@ -103,7 +93,6 @@
 				
 			};
 		},
-		
 		
 		onLoad(option) {
 			
@@ -124,12 +113,6 @@
 				this.membername = editmember.realName
 				this.memberaccount = editmember.account
 				this.memberremark = editmember.remark
-				// #ifdef APP-PLUS
-				this.ifshowaddress = true
-				// #endif
-				if(this.$basejs.ifwxH5()) {
-					this.ifshowaddress = true
-				}
 				this.iffreeze = editmember.freezeFlag === 1
 				this.memberuid = editmember.uid
 			}
@@ -141,34 +124,6 @@
 		},
 		
 		methods: {
-			
-			// 编辑状态下查看位置
-			checkaddress() {
-				const _this = this
-				this.$jwxjs.configjwxjs(function(wx) {
-					wx.getLocation({
-					  type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-					  success: function (res) {
-						
-						var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-						var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-						var speed = res.speed; // 速度，以米/每秒计
-						var accuracy = res.accuracy; // 位置精度
-						
-						// 打开地图
-						wx.openLocation({
-						  latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
-						  longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
-						  name: _this.membername, // 位置名
-						  address: _this.memberremark, // 地址详情说明
-						  scale: 18, // 地图缩放级别,整形值,范围从1~28。默认为最大
-						  infoUrl: 'https://xhm.xiaohemu.net/jxcuser' // 在查看位置界面底部显示的超链接,可点击跳转
-						});
-						
-					  }
-					});
-				})
-			},
 			
 			// 冻结用户
 			freezemember(e) {
