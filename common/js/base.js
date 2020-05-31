@@ -3,6 +3,7 @@ import store from '@/store'
 import md5 from 'js-md5'
 import defaultconfig from '@/common/config/base.js'
 import ossuploadjs from '@/common/js/upload/upload.js'
+import jwxjs from '@/common/js/jwxjs.js'
 
 // 返回供应商名称  用于生成二维码的前缀
 export function storeName() {
@@ -315,12 +316,53 @@ export function scanQR() {
 		
 		// 开始扫一扫
 		
-		// H5平台提醒用户在APP中使用
+		// H5平台
 		// #ifdef H5
-		uni.showToast({
-			title: 'Please open in App',
-			icon: 'none',
-		});
+		
+		// 如果是微信H5环境则调用jwxjs功能
+		if(ifwxH5()) {
+			jwxjs.configjwxjs((wx) => {
+				// 调用扫一扫功能
+				console.log(`获取到了wx对象`);
+				// 开始扫一扫
+				wx.checkJsApi({
+					jsApiList: ['scanQRCode', 'chooseImage', 'openLocation'],
+					success: function(res) {
+						console.log(`检查结果为:${JSON.stringify(res.checkResult)}`);
+						// 如果支持扫一扫
+						if(res.checkResult['scanQRCode']) {
+							
+							wx.scanQRCode({
+							  needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+							  scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+							  success: function (res) {
+								  
+							    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+								if(result.indexOf(storeName()) !== -1) {
+									// 找到了有效的内容  截取标识字符串
+									let vaildcontent = result.replace(storeName(),'')
+									resolve(vaildcontent)
+								}
+								else{
+									// 不是规范的扫码内容 返回当前非规范的扫码内容
+									reject(result)
+								}
+								
+							  }
+							});
+							
+						}
+					}
+				})
+			})
+		}
+		// 其他环境提示用户使用APP
+		else{
+			uni.showToast({
+				title: 'Please open in App',
+				icon: 'none',
+			});
+		}
 		// #endif
 				
 		// 如果是非H5平台则直接调用扫一扫

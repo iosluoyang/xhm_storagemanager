@@ -47,6 +47,7 @@ const en = {
 			everyday: "Every Day",
 			workingday: "Working Day",
 		},
+		address: "Address",
 		
 		
 		

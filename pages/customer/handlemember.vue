@@ -88,6 +88,7 @@
 				avatarfile: null, // 客户头像文件
 				customeravatarimg: null, // 客户头像地址
 				company: '',//	公司名称
+				address: '', // 地址信息
 				customer: '',// 客户名称
 				remark: '', //	备注
 				phone:'', //	客户联系电话

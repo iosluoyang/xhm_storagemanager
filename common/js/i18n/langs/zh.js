@@ -46,6 +46,7 @@ const zh = {
 			everyday: "每天",
 			workingday: "工作日",
 		},
+		address: "地址",
 		
 	
 	},
