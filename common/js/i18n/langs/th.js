@@ -68,7 +68,8 @@ const th = {
 		operationlog: "ประวัติการเข้าใช้งาน",
 		me: "ฉัน",
 		resetpwd: "ตั้งค่า",
-		persondetail: "ข้อมูลส่วนตัว"
+		persondetail: "ข้อมูลส่วนตัว",
+		logistic: "โลจิสติกส์"
 	},
 	
 	// 提示

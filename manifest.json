@@ -99,11 +99,17 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx5d219092292308d7",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : false,
+            "minified" : true
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "我们需要获取您的位置以便于帮助您找到附近的商家"
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true

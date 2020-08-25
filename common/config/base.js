@@ -57,8 +57,8 @@ const app_version = function() {
 
 //根据不同环境选择不同的接口请求前缀映射
 const baseUrl = function() {
+	// 开发环境
 	if (process.env.NODE_ENV === 'development') {
-		// 开发环境
 		// #ifdef H5
 		return '/apiapp'
 		// #endif
@@ -67,9 +67,9 @@ const baseUrl = function() {
 		return 'https://jxc.xiaohemu.net/user/test/apiapp'
 		// #endif
 		
-	} 
+	}
+	// 生产环境
 	else if(process.env.NODE_ENV === 'production') {
-		// 生产环境
 		// #ifdef H5
 		return '/user/test/apiapp'
 		// #endif
@@ -77,9 +77,9 @@ const baseUrl = function() {
 		// #ifndef H5
 		return 'https://jxc.xiaohemu.net/user/test/apiapp'
 		// #endif
-	} 
+	}
+	// 其他环境
 	else{
-		// 其他环境
 		// #ifdef H5
 		return '/user/test/apiapp'
 		// #endif

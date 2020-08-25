@@ -136,7 +136,12 @@
 				"navigationBarTitleText":"公告管理"
 			}
         }
-        
+        ,{
+            "path" : "pages/logistic/index",
+            "style" : {
+				"navigationBarTitleText":"物流管理"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",
