@@ -198,7 +198,7 @@
 					title: this.i18n.nav.logistic,
 					id: 'logistic',
 					name: 'Logistic',
-					color: 'brown',
+					color: 'pink',
 					cuIcon: 'deliver',
 					url: '/pages/logistic/index'
 				}

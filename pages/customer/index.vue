@@ -18,9 +18,8 @@
 		</view>
 		
 		<!-- 客户列表 -->
-		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="[{top:'calc('+(CustomBar + 50)+ 'px'}]"
+		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="{top: `${CustomBar + 50}px`}"
 		 :scroll-with-animation="true" :enable-back-to-top="true">
-		 
 		 
 			<view class="cu-list menu-avatar comment solids-bottom">
 				

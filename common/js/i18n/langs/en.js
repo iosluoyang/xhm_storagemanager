@@ -71,7 +71,8 @@ const en = {
 		me: "Me",
 		resetpwd: "Reset",
 		persondetail: "Personal Detail",
-		logistic: "Logistic"
+		logistic: "Logistic",
+		checklogistic: "Check Logistic",
 	},
 	
 	// 提示

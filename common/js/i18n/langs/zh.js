@@ -68,7 +68,8 @@ const zh = {
 		me: "个人中心",
 		resetpwd: "修改密码",
 		persondetail: "个人资料",
-		logistic: "物流管理"
+		logistic: "物流管理",
+		checklogistic: "物流查询",
 	},
 	
 	// 提示

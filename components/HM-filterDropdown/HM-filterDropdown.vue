@@ -1,5 +1,5 @@
 <template>
-	<view class="HMfilterDropdown" @touchmove.stop.prevent="discard" >
+	<view class="HMfilterDropdown" :style="{top: `${top}px`}" @touchmove.stop.prevent="discard" >
 		<view class="nav">
 			<block v-for="(item,index) in menu" :key="index">
 				<view class="first-menu" :class="{'on':showPage==index}" @tap="togglePage(index)">
@@ -105,6 +105,10 @@
 			}
 		},
 		props: {
+			top: {
+				value: [String, Number],
+				default: 0
+			},
 			filterData: {
 				value: Array,
 				default: []

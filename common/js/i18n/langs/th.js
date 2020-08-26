@@ -69,7 +69,8 @@ const th = {
 		me: "ฉัน",
 		resetpwd: "ตั้งค่า",
 		persondetail: "ข้อมูลส่วนตัว",
-		logistic: "โลจิสติกส์"
+		logistic: "โลจิสติกส์",
+		checklogistic: "โลจิสติกส",
 	},
 	
 	// 提示

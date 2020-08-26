@@ -19,7 +19,7 @@
 		
 		<!-- 成员列表 -->
 		<!-- :style="[{height:'calc(100vh - '+ CustomBar + 'px - 50px)'}]" -->
-		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="[{top:'calc('+(CustomBar + 50)+ 'px'}]"
+		<scroll-view scroll-y class="indexes" :scroll-into-view="'indexes-'+ listCurID.toString()" :style="{top: `${CustomBar + 50}px`}"
 		 :scroll-with-animation="true" :enable-back-to-top="true">
 			<view class="cu-list menu-avatar margin-top" v-for="(member,index) in memberlist" :key="index" :id=" 'indexes-' + index.toString() ">
 				<view class="cu-item" @tap.stop="editmember(member)">

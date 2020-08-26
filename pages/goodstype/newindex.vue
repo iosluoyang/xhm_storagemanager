@@ -19,7 +19,7 @@
 		</view>
 		
 		<!-- 左右两侧垂直滚动区域 -->
-		<view class="VerticalBox flex" :style="{height: `calc(100vh - ${CustomBar}px - 10px` }">
+		<view class="VerticalBox flex" :style="{height: `calc(100vh - ${CustomBar}px - 10px)` }">
 			
 			<!-- 左侧滚动区域 -->
 			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="NavScrollTop" style="height: 100%;">

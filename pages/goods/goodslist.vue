@@ -12,17 +12,22 @@
 				
 				<view class="search-form round">
 					<text class="cuIcon-search"></text>
-					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchproduct" v-model="searchText" confirm-type="search"></input>
+					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchproduct" v-model="searchText" @confirm="searchproduct" confirm-type="search"></input>
 				</view>
+				
+				<!-- 微信小程序中没有右侧该按钮 -->
+				<!-- #ifndef MP-WEIXIN -->
 				<view class="action">
 					<button class="cu-btn bg-blue shadow-blur round" @tap.stop="searchproduct">{{i18n.base.search}}</button>
 				</view>
+				<!-- #endif -->
+				
 			</view>
 			
 		</view>
 		
 		<!-- 筛选面板 -->
-		<HMfilterDropdown class="filterview" :style="{top: customBarHeight + 'px'}" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
+		<HMfilterDropdown class="filterview" :top="customBarHeight" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
 		
 		<!-- 商品列表 -->
 		<mescroll-uni class="mescroll" :top=" customBarHeight + 44 + 'px' " @init="mescrollInit" :down="downOption" @down="downCallback" @up="loadproductlist">

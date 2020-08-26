@@ -8,8 +8,8 @@
 			>
 		<view class="picker">
 			<view class="pickercontentview flex flex-direction align-end">
-				<text class="text-df padding-bottom-sm">{{showtypestr}}</text>
-				<text class="text-sm">{{i18n.base.click}}<text class="text-blue text-light margin-lr-sm" @tap.stop="editgoodstype">{{i18n.base.here}}</text>{{i18n.base.toaddmore}}</text>
+				<view class="text-df padding-bottom-sm">{{showtypestr}}</view>
+				<view class="text-sm">{{i18n.base.click}}<view class="text-blue text-light margin-lr-sm" @tap.stop="editgoodstype">{{i18n.base.here}}</view>{{i18n.base.toaddmore}}</view>
 			</view>
 		</view>
 	</picker>
@@ -291,6 +291,12 @@
 	
 	.picker{
 		line-height: 30upx !important;
+			
+		.pickercontentview{
+			view{
+				display: inline-block;
+			}
+		}
 	}
 	
 </style>

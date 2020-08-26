@@ -84,9 +84,9 @@
 				<view v-if="product && product.specs && product.specs.length > 0" class="allspecview flex flex-wrap align-center">
 					<view class="cu-tag round padding xl margin-bottom-sm" v-for="(specitem, index) in product.specs" :key="index" 
 							:class="[ selectspecinfo && specitem.specId === selectspecinfo.specId ? 'bg-blue' : 'line-grey' ]"
-							@tap.stop="selectspecinfo = specitem"
+							@tap.stop="selectspec(specitem)"
 					>
-						{{ specitem.attributeList.map((attributeitem) => {return attributeitem.attributeValue}).join('、') }}
+						{{ specitem.attributeList.map((attributeitem) => {return attributeitem.attributeValue}).join('+') }}
 						
 					</view>
 				</view>
@@ -164,7 +164,7 @@
 		</goodsspecselector> -->		
 		
 		<!-- 商品二维码弹出框 -->
-		<view class="cu-modal" :class="ifshowqrcode?'show':''">
+		<view class="cu-modal" :class="ifshowqrcode?'show':''" @touchmove.stop.prevent="">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
 					<view v-if="product" class="content text-cut">{{product.title}}</view>
@@ -173,7 +173,8 @@
 					</view>
 				</view>
 				
-				<view v-if="product" class="padding-xl qrimg flex justify-center">
+				<!-- 注意此处根据是否显示来决定是否重新加载qrcode组件 否则在小程序中会显示异常 -->
+				<view v-if="product && ifshowqrcode" class="padding-xl qrimg flex justify-center">
 					<uni-qrcode cid="proqrimg" ref="proqrimg" makeOnLoad :text=" $basejs.storeName() + product.barCode " @makeComplete="getqrcodeimgpath" />
 				</view>
 				
@@ -494,6 +495,11 @@
 			// 预览规格
 			previewspec() {
 				_this.ifshowpopup = true
+			},
+			
+			// 选中了某个规格(注意不能直接在@tap中进行操作 否则小程序平台失效)
+			selectspec(specitem) {
+				this.selectspecinfo = specitem
 			},
 			
 			// 选择完某个库存规格
