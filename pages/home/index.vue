@@ -108,10 +108,11 @@
 			},
 			
 			showlanguagestr() {
-				let language =  this.languageArr.find((language,index) => {
-					return language.id === _this.currentlanguage
-				})
-				return language ? language.name : ''
+				// let language =  this.languageArr.find((language,index) => {
+				// 	return language.id === _this.currentlanguage
+				// })
+				// return language ? language.name : ''
+				return '语言/Lang'
 			}
 			
 		},
@@ -307,24 +308,40 @@
 			
 			// 获取首页公告
 			gethomenotice() {
-				this.$api.noticeapi.gethomenotice().then(response => {
+				
+				// 使用云函数获取公告
+				uniCloud.callFunction({
+					name: 'notification',
+					data: {
+						type: 'getnewest'
+					}
+				}).then(response => {
 					// 获取公告成功
-					let noticeinfo = response.data.notice
-					this.homenotice = noticeinfo
-					
-					// 判断本地是否已经有了该公告 如果已经有了则不显示
-					let previousnoticeid = uni.getStorageSync('homepagenoticeid')
-					// 已经显示过同样的公告了 此时不显示该公告
-					if(noticeinfo && previousnoticeid && Number(previousnoticeid) === Number(noticeinfo.id)) {
+					if(response.success) {
+						let noticeinfo = response.result.data[0]
+						this.homenotice = noticeinfo
 						
+						// 判断本地是否已经有了该公告 如果已经有了则不显示
+						let previousnoticeid = uni.getStorageSync('homepagenoticeid')
+						// 已经显示过同样的公告了 此时不显示该公告
+						if(noticeinfo && previousnoticeid && previousnoticeid === noticeinfo._id) {
+							
+						}
+						// 没有显示过该公告  此时要显示该公告 然后将该公告id存在本地
+						else if(noticeinfo){
+							this.ifshownotice = true
+							// 将当前的公告id存在本地  用于下一次的比较
+							uni.setStorageSync('homepagenoticeid', noticeinfo._id)
+						}
 					}
-					// 没有显示过该公告  此时要显示该公告 然后将该公告id存在本地
-					else if(noticeinfo){
-						this.ifshownotice = true
-						// 将当前的公告id存在本地  用于下一次的比较
-						uni.setStorageSync('homepagenoticeid', noticeinfo.id)
+					else {
+						// 获取公告失败
+						uni.showToast({
+							title: this.i18n.error.loaderror,
+							icon: 'none'
+						});
 					}
-
+					
 				}).catch(error => {
 					// 获取公告失败
 					uni.showToast({
@@ -332,7 +349,35 @@
 						icon: 'none'
 					});
 				})
-			}
+				
+				// this.$api.noticeapi.gethomenotice().then(response => {
+				// 	// 获取公告成功
+				// 	let noticeinfo = response.data.notice
+				// 	this.homenotice = noticeinfo
+					
+				// 	// 判断本地是否已经有了该公告 如果已经有了则不显示
+				// 	let previousnoticeid = uni.getStorageSync('homepagenoticeid')
+				// 	// 已经显示过同样的公告了 此时不显示该公告
+				// 	if(noticeinfo && previousnoticeid && Number(previousnoticeid) === Number(noticeinfo.id)) {
+						
+				// 	}
+				// 	// 没有显示过该公告  此时要显示该公告 然后将该公告id存在本地
+				// 	else if(noticeinfo){
+				// 		this.ifshownotice = true
+				// 		// 将当前的公告id存在本地  用于下一次的比较
+				// 		uni.setStorageSync('homepagenoticeid', noticeinfo.id)
+				// 	}
+
+				// }).catch(error => {
+				// 	// 获取公告失败
+				// 	uni.showToast({
+				// 		title: this.i18n.error.loaderror,
+				// 		icon: 'none'
+				// 	});
+				// })
+				
+			},
+			
 			
 		}
 	}

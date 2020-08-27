@@ -41,6 +41,7 @@
 		data() {
 			return {
 				type: 'add', // 页面类型 add为新增  edit为编辑
+				navtitle: '', // 导航栏标题
 				id: null, // 公告id  编辑下有
 				
 				content: '', // 公告内容
@@ -73,11 +74,20 @@
 			
 			// 获取公告详情
 			getnoticedetail() {
-				this.$api.noticeapi.noticedetail({id: this.id}).then(response => {
+				
+				uniCloud.callFunction({
+					name: 'notification',
+					data: {
+						type: 'getdetail',
+						info: {
+							_id: this.id
+						}
+					}
+				}).then(response => {
 					// 获取公告数据成功
-					let notice = response.data.notice
-					let noticetime = notice.createTime
-					let noticecontent = notice.content
+					let noticeinfo = response.result.data[0]
+					let noticetime = noticeinfo.createDate
+					let noticecontent = noticeinfo.content
 					
 					this.content = noticecontent
 					this.time = noticetime
@@ -87,6 +97,21 @@
 						icon: 'none'
 					});
 				})
+				
+				// this.$api.noticeapi.noticedetail({id: this.id}).then(response => {
+				// 	// 获取公告数据成功
+				// 	let notice = response.data.notice
+				// 	let noticetime = notice.createTime
+				// 	let noticecontent = notice.content
+					
+				// 	this.content = noticecontent
+				// 	this.time = noticetime
+				// }).catch(error => {
+				// 	uni.showToast({
+				// 		title: this.i18n.error.loaderror,
+				// 		icon: 'none'
+				// 	});
+				// })
 				
 			},
 			
@@ -112,8 +137,15 @@
 				
 				// 新增
 				if(_this.type === 'add') {
-
-					_this.$api.noticeapi.addnotice({content}).then(response => {
+					
+					// 使用云函数
+					uniCloud.callFunction({
+						name:'notification',
+						data: {
+							type: 'add',
+							info: {content}
+						}
+					}).then(response => {
 						// 发布成功
 						uni.$emit('updatenoticelist')
 						uni.showToast({
@@ -132,12 +164,44 @@
 							title: _this.i18n.error.adderror,
 							icon: 'none'
 						});
-						
 					})
+
+					// _this.$api.noticeapi.addnotice({content}).then(response => {
+					// 	// 发布成功
+					// 	uni.$emit('updatenoticelist')
+					// 	uni.showToast({
+					// 		title: _this.i18n.tip.addsuccess,
+					// 		icon: 'none',
+					// 		duration: 1500
+					// 	});
+						
+					// 	setTimeout(function() {
+					// 		uni.navigateBack();
+					// 	}, 1500);
+					// }).catch(error => {
+					// 	// 发布失败
+					// 	_this.showbtnanimation()
+					// 	uni.showToast({
+					// 		title: _this.i18n.error.adderror,
+					// 		icon: 'none'
+					// 	});
+					// })
+					
 				}
 				else if(_this.type === 'edit') {
-					_this.$api.noticeapi.editnotice({content: content, id: _this.id}).then(response => {
+					
+					uniCloud.callFunction({
+						name: 'notification',
+						data: {
+							type: 'edit',
+							info: {
+								_id: _this.id,
+								content: _this.content
+							}
+						}
+					}).then(response => {
 						// 编辑成功
+	
 						uni.$emit('updatenoticelist')
 						uni.showToast({
 							title: _this.i18n.tip.fixsuccess,
@@ -157,6 +221,29 @@
 						});
 						
 					})
+					
+					// _this.$api.noticeapi.editnotice({content: content, id: _this.id}).then(response => {
+					// 	// 编辑成功
+					// 	uni.$emit('updatenoticelist')
+					// 	uni.showToast({
+					// 		title: _this.i18n.tip.fixsuccess,
+					// 		icon: 'none',
+					// 		duration: 1500
+					// 	});
+						
+					// 	setTimeout(function() {
+					// 		uni.navigateBack();
+					// 	}, 1500);
+					// }).catch(error => {
+					// 	// 编辑失败
+					// 	_this.showbtnanimation()
+					// 	uni.showToast({
+					// 		title: _this.i18n.error.fixerror,
+					// 		icon: 'none'
+					// 	});
+						
+					// })
+					
 				}
 				
 			},
