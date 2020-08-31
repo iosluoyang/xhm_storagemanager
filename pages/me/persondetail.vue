@@ -2,7 +2,7 @@
 	<view class="persondetail">
 		
 		<!-- 导航栏 -->
-		<cu-custom class="menavbar" bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-orange" isBack>
 			<block slot="content">{{i18n.nav.persondetail}}</block>
 		</cu-custom>
 		

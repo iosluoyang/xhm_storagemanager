@@ -21,7 +21,7 @@
 					
 					<view class="grid col-4 grid-square flex-sub">
 						<view class="bg-img" v-for="(item,index) in mainimgArr" :key="index" @tap.stop="previewImg(index)">
-						 <image :src="item.path ? item.path : (imgUrl + item) " mode="aspectFill"></image>
+							<image :src="item.path ? item.path : (imgUrl + item) " mode="aspectFill"></image>
 							<view class="cu-tag bg-red" @tap.stop="deleteMainImg(index)">
 								<text class='cuIcon-close'></text>
 							</view>

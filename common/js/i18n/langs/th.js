@@ -333,7 +333,21 @@ const th = {
 		},
 		
 	},
+	
+	// 心愿单相关
+	wishlist: {
 		
+		producttitle: "Product Title",
+		sourcelink: "Source Link",
+		sourceprice: "Source Price",
+		expectprice: "Expect Price",
+		expectamount: "Expect Amount",
+		hurrylevel: "Emergency Level",
+		
+	},
+	
+	
+	
 }
 
 export default th

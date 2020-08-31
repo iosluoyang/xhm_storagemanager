@@ -2,7 +2,7 @@
 	<view class="checklogisticresultview content">
 		
 		<!-- 导航栏 -->
-		<cu-custom class="menavbar" bgColor="bg-gradual-pink" isBack>
+		<cu-custom bgColor="bg-gradual-pink" isBack>
 			<block slot="content">{{i18n.nav.checklogistic}}</block>
 		</cu-custom>
 		

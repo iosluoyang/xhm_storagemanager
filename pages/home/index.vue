@@ -208,7 +208,7 @@
 				let wishlistitem = {
 					title: this.i18n.nav.wishlist,
 					id: 'wishlist',
-					name: 'WishList',
+					name: 'Wishlist',
 					color: 'mauve',
 					cuIcon: 'like',
 					url: '/pages/wishlist/index'

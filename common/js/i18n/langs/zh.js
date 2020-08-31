@@ -333,7 +333,27 @@ const zh = {
 		},
 		
 		
-	},	
+	},
+	
+	// 心愿单相关
+	wishlist: {
+		
+		producttitle: "商品标题",
+		sourcelink: "源网站链接",
+		sourceprice: "源网站价格",
+		expectprice: "期望价格",
+		expectamount: "期望数量",
+		hurrylevel: "紧急程度",
+		hurryleveldata: {
+			level1: "一级(3天内)",
+			level2: "二级(1周内)",
+			level3: "三级(2周内)",
+			level4: "四级(1个月内)",
+			level5: "五级(无限制)"
+		},
+		uploadimg: "图片上传",
+	},
+	
 	
 }
 
