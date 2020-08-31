@@ -148,6 +148,12 @@
 				"navigationBarTitleText":"查询物流"
 			}
         }
+        ,{
+            "path" : "pages/wishlist/index",
+            "style" : {
+				"navigationBarTitleText":"心愿单"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationStyle": "custom",

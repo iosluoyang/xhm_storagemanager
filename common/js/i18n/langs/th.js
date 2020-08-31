@@ -71,6 +71,7 @@ const th = {
 		persondetail: "ข้อมูลส่วนตัว",
 		logistic: "โลจิสติกส์",
 		checklogistic: "โลจิสติกส",
+		wishlist: "Wish List",
 	},
 	
 	// 提示

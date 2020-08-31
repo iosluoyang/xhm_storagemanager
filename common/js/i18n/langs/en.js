@@ -73,6 +73,7 @@ const en = {
 		persondetail: "Personal Detail",
 		logistic: "Logistic",
 		checklogistic: "Check Logistic",
+		wishlist: "Wish List",
 	},
 	
 	// 提示

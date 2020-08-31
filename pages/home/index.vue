@@ -204,6 +204,16 @@
 					url: '/pages/logistic/index'
 				}
 				
+				// 心愿单功能
+				let wishlistitem = {
+					title: this.i18n.nav.wishlist,
+					id: 'wishlist',
+					name: 'WishList',
+					color: 'mauve',
+					cuIcon: 'like',
+					url: '/pages/wishlist/index'
+				}
+				
 				// 个人中心功能
 				let personalitem = {
 					title: this.i18n.nav.me,
@@ -218,10 +228,10 @@
 				// 根据当前的用户标识选择部分的功能显示(因为支持游客模式 所以只有登录状态下的管理员才能展示全部功能)
 				// 超级管理员
 				if(this.$basejs.ifloginflag() && this.user.type === 0){
-					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem,logisticitem]
+					elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem,logisticitem,wishlistitem]
 				}
 				else{
-					elements = [scanitem,typeitem,goodsitem,customeritem,personalitem,logisticitem]
+					elements = [scanitem,typeitem,goodsitem,customeritem,personalitem,logisticitem,wishlistitem]
 				}
 				
 				this.elements = elements

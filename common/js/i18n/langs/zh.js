@@ -70,6 +70,7 @@ const zh = {
 		persondetail: "个人资料",
 		logistic: "物流管理",
 		checklogistic: "物流查询",
+		wishlist: "心愿单",
 	},
 	
 	// 提示
