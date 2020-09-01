@@ -345,11 +345,11 @@ const zh = {
 		expectamount: "期望数量",
 		hurrylevel: "紧急程度",
 		hurryleveldata: {
-			level1: "一级(3天内)",
-			level2: "二级(1周内)",
+			level1: "一级(无限制)",
+			level2: "二级(1个月内)",
 			level3: "三级(2周内)",
-			level4: "四级(1个月内)",
-			level5: "五级(无限制)"
+			level4: "四级(1周内)",
+			level5: "五级(3天内)"
 		},
 		uploadimg: "图片上传",
 	},

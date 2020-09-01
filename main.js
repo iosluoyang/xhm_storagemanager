@@ -29,6 +29,11 @@ Vue.component('cu-custom',cuCustom)
 import loading from '@/components/base/loading.vue'
 Vue.component('loading',loading)
 
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
+import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
+Vue.component('mescroll-body', MescrollBody)
+Vue.component('mescroll-uni', MescrollUni)
+
 Vue.mixin({
 	
 	data() {

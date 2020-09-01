@@ -42,16 +42,11 @@
 	
 	var _this
 	
-	import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js" // 引入mescroll-mixins.js
 	
 	export default {
 		
 		mixins: [MescrollMixin], // 使用mixin
-		
-		components: {
-			MescrollBody,
-		},
 		
 		data() {
 			return {
@@ -73,7 +68,7 @@
 			
 		},
 		
-		destroyed() {
+		onUnload() {
 			uni.$off('updatenoticelist')
 		},
 		

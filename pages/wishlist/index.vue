@@ -17,13 +17,17 @@
 			</view>
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-green">
-					<view class="text-lg">已实现</view>
-					<view class="margin-top-sm text-Abc">Achieved</view>
+				<view class="padding radius text-center shadow-blur shadow-warp bg-green" @tap.stop="checkwishlist">
+					<view class="text-lg">查看心愿单</view>
+					<view class="margin-top-sm text-Abc">Check Wishlist</view>
 				</view>
 			</view>
 			
 		</view>
+		
+		
+		
+		
 		
 		
 	</view>
@@ -42,7 +46,14 @@
 			// 新增心愿单
 			addwish() {
 				uni.navigateTo({
-					url: '/pages/wishlist/addwish'
+					url: '/pages/wishlist/handlewish?type=add'
+				});
+			},
+			
+			// 查看心愿单
+			checkwishlist() {
+				uni.navigateTo({
+					url: '/pages/wishlist/wishlist'
 				});
 			},
 			

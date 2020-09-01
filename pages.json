@@ -148,17 +148,45 @@
 				"navigationBarTitleText":"查询物流"
 			}
         }
-        ,{
-            "path" : "pages/wishlist/index",
-            "style" : {
-				"navigationBarTitleText":"心愿单"
-			}
-        }
-        ,{
-            "path" : "pages/wishlist/addwish",
-            "style" : {}
-        }
     ],
+	"subPackages": [
+		// 心愿单分包
+		{
+			"root":"pages/wishlist",
+			"pages": [
+				{
+					"path":"index",
+					"style": {
+						"navigationBarTitleText":"心愿单"
+					}
+				},
+				{
+					"path":"handlewish",
+					"style": {
+						"navigationBarTitleText":"许下心愿"
+					}
+				},
+				{
+					"path":"wishlist",
+					"style": {
+						"navigationBarTitleText":"心愿清单"
+					}
+				}
+			    ,{
+                    "path" : "wishdetail",
+                    "style" : {
+						"navigationBarTitleText":"心愿详情"
+					}
+                }
+            ]
+		}
+	],
+	"preloadRule": {
+		"pages/home/index": {
+			"network":"all",
+			"packages": ["pages/wishlist"]
+		}
+	},
 	"globalStyle": {
 		"navigationStyle": "custom",
 		"backgroundColor": "#FFFFFF",

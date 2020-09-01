@@ -1,4 +1,6 @@
 'use strict';
+const {getcurrenttimestr} = require('hello-common')
+
 const db = uniCloud.database()
 
 exports.main = async (event, context) => {
@@ -23,7 +25,9 @@ exports.main = async (event, context) => {
 	// edit 编辑心愿单
 	else if(type == 'edit') {
 		let docid = info._id
-		let res = await collection.doc(docid).update({...info});
+		let updateinfo = {...info}
+		delete updateinfo._id // 删除_id属性 不能更新_id字段
+		let res = await collection.doc(docid).update(updateinfo);
 		return res
 	}
 	

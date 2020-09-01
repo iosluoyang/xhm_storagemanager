@@ -1,7 +1,7 @@
 <template>
 	<view class="content addwishview">
 		
-		<cu-custom isBack bgColor="bg-gradual-pink">
+		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -61,7 +61,7 @@
 				<view class="title">{{i18n.wishlist.hurrylevel}}</view>
 				<picker :range="hurrylevelDataArr" range-key="name" :value="hurryLevel - 1" @change="hurrylevelchange">
 					<view class="picker">
-						<text v-for="item in (6-hurryLevel)" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
+						<text v-for="item in hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
 						<text class="margin-left-sm">{{ hurrylevelDataArr[hurryLevel - 1].name }}</text>
 					</view>
 				</picker>
@@ -110,6 +110,7 @@
 			return {
 				
 				type: 'add', // 页面状态 add新增 edit编辑
+				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
 				platformPrice: '', // 源网站价格
@@ -126,9 +127,17 @@
 			};
 		},
 		
-		onLoad() {
+		onLoad(option) {
 			
 			_this = this
+			
+			this.type = option.type // add 新增  edit编辑
+			this.id = option.id // 心愿详情id
+			
+			// 如果是编辑状态则获取心愿详情
+			if(this.type === 'edit') {
+				this.getwishdetail()
+			}
 			
 			// 加载紧急程度数据源数组
 			let hurrylevelDataArr = [
@@ -160,6 +169,40 @@
 		
 		methods: {
 			
+			// 获取心愿详情
+			getwishdetail() {
+				
+				uniCloud.callFunction({
+					name: 'wishlist',
+					data: {
+						type: 'getdetail',
+						info: {
+							_id: this.id
+						}
+					}
+				}).then(response => {
+					// 获取数据成功
+					let info = response.result.data[0]
+					
+					this.productTitle = info.productTitle // 商品标题
+					this.sourceLink = info.sourceLink // 源网站链接
+					this.platformPrice = info.platformPrice // 源网站价格
+					this.platformmoneytype = info.platformmoneytype // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+					this.expectPrice = info.expectPrice // 期望价格
+					this.expectmoneytype = info.expectmoneytype // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
+					this.expectAmount = info.expectAmount // 期望数量
+					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
+					this.imgArr = info.imgs.split(',') // 图片数组
+					
+				}).catch(error => {
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
 			// 源网站价格币种选择
 			platformmoneytypechange(e) {
 				this.platformmoneytype = e.detail.value
@@ -172,7 +215,7 @@
 			
 			// 紧急程度更改
 			hurrylevelchange(e) {
-				this.hurryLevel = e.detail.value + 1
+				this.hurryLevel = Number(e.detail.value) + 1
 			},
 			
 			// 添加图片
@@ -277,11 +320,11 @@
 														
 							// 上传图片成功
 							_this.ifloading = false // 结束加载动画
-							let copymainimgArr = [..._this.mainimgArr]
+							let copyimgArr = [..._this.imgArr]
 							imgUrls.forEach((imgUrl, index) => {
-								copymainimgArr.splice(needtoindexArr[index], 1, imgUrl)
+								copyimgArr.splice(needtoindexArr[index], 1, imgUrl)
 							})
-							let imgs = copymainimgArr.join(',')
+							let imgs = copyimgArr.join(',')
 							resolve(imgs)
 						
 						}).catch(error => {
@@ -322,11 +365,11 @@
 				
 				// 其余项均为选填项
 				
-				// 开始上传图片
+				// 开始上传图片(包含新增和编辑)
 				this.uploadpic(this.imgArr).then(imgs => {
-					
 					// 上传图片成功 开始上传所有数据
 					let info = {
+						_id: _this.id, // 当前心愿的id
 						productTitle: _this.productTitle, // 商品标题
 						sourceLink: _this.sourceLink, // 源网站链接
 						platformPrice: _this.platformPrice, // 源网站价格
@@ -338,33 +381,68 @@
 						imgs: imgs, // 图片字符串集合
 					}
 					
-					// 开始上传云函数
-					uniCloud.callFunction({
-						name: 'wishlist',
-						data: {
-							type: 'add',
-							info: info
-						}
-					}).then(response => {
-						// 发布成功
-						uni.$emit('updatewishlist')
-						uni.showToast({
-							title: _this.i18n.tip.addsuccess,
-							icon: 'none',
-							duration: 1500
-						});
+					// 新增
+					if(_this.type == 'add') {
 						
-						setTimeout(function() {
-							uni.navigateBack();
-						}, 1500);
-					}).catch(error => {
-						// 发布失败
-						uni.showToast({
-							title: _this.i18n.error.adderror,
-							icon: 'none'
-						});
-					})
-
+						// 开始上传云函数
+						uniCloud.callFunction({
+							name: 'wishlist',
+							data: {
+								type: 'add',
+								info: info
+							}
+						}).then(response => {
+							// 发布成功
+							uni.$emit('updatewishlist')
+							uni.showToast({
+								title: _this.i18n.tip.addsuccess,
+								icon: 'none',
+								duration: 1500
+							});
+							
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1500);
+						}).catch(error => {
+							// 发布失败
+							uni.showToast({
+								title: _this.i18n.error.adderror,
+								icon: 'none'
+							});
+						})
+						
+					}
+					// 编辑
+					else if(_this.type == 'edit') {
+						// 开始上传云函数
+						uniCloud.callFunction({
+							name: 'wishlist',
+							data: {
+								type: 'edit',
+								info: info
+							}
+						}).then(response => {
+							// 发布成功
+							uni.$emit('updatewishlist')
+							uni.$emit('updatewishdetail')
+							uni.showToast({
+								title: _this.i18n.tip.fixsuccess,
+								icon: 'none',
+								duration: 1500
+							});
+							
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1500);
+						}).catch(error => {
+							// 发布失败
+							uni.showToast({
+								title: _this.i18n.error.fixerror,
+								icon: 'none'
+							});
+						})
+					}
+				
 					
 				}).catch(error => {
 					console.log(`上传失败`);
