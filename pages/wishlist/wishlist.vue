@@ -8,37 +8,45 @@
 		
 		<mescroll-body ref="mescrollRef" @init="mescrollInit" @down="downCallback" @up="upCallback">
 			
-			<view class="eachwish" v-for="(wishitem, index) in datalist" :key="index" @tap.stop="wishdetail(wishitem)">
+			<view class="eachwish" v-if="wishitem" v-for="(wishitem, index) in datalist" :key="index" @tap.stop="wishdetail(wishitem)">
 				
 				<view class="cu-card case no-card">
 					<view class="cu-item shadow">
 						
-						<!-- 图片区域 -->
+						<!-- 卡片上方-图片区域 -->
 						<view class="image">
-							<image :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg' " mode="widthFix"></image>
-							<view class="cu-tag bg-pink text-white">实现中</view>
-							<view class="cu-bar bg-shadeBottom">
+							<image :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg' " mode="aspectFill"></image>
+							<view class="cu-tag text-white" :class="[wishitem.ifachieve == 1 ? 'bg-green' : 'bg-pink']">{{wishitem.ifachieve == 1 ? '已实现' : '未实现'}}</view>
+							<view class="cu-bar bg-shadeBottom flex-direction align-start">
 								
-								<text class="text-bold text-sl text-cut">
-									{{wishitem.productTitle}}
-									<text class="text-red text-xxl margin-right-sm">{{ `${wishitem.expectmoneytype === 'RMB' ? '¥' : wishitem.expectmoneytype === 'THB' ? '฿' : ''}${wishitem.expectPrice}` }}</text>
-									<text class="text-gray text-xl">{{ `${wishitem.platformmoneytype === 'RMB' ? '¥' : wishitem.platformmoneytype === 'THB' ? '฿' : ''}${wishitem.platformPrice}` }}</text>
-								</text>
+								<!-- 商品标题 -->
+								<view class="text-bold text-xl">{{wishitem.productTitle}}</view>
+								<!-- 商品价格 -->
+								<view class="priceview margin-top-sm">
+									<text class="text-red text-xl margin-right">{{ `${wishitem.expectmoneytype === 'RMB' ? '¥' : wishitem.expectmoneytype === 'THB' ? '฿' : ''}${wishitem.expectPrice}` }}</text>
+									<text class="text-gray text-df">{{ `${wishitem.platformmoneytype === 'RMB' ? '¥' : wishitem.platformmoneytype === 'THB' ? '฿' : ''}${wishitem.platformPrice}` }}</text>
+								</view>
 								
 							</view>
 						</view>
-						<!-- 列表区域 -->
+						<!-- 卡片下方-内容区域 -->
 						<view class="cu-list menu-avatar">
 							<view class="cu-item">
 								
 								<!-- 头像 -->
-								<image class="cu-avatar round lg" src="https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg"></image>
+								<template>
+									<image v-if="wishitem.user && wishitem.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishitem.user.avatar"></image>
+									<view v-else class="cu-avatar round lg">
+										<text class="cuIcon-people"></text>
+									</view>
+								</template>
+								
 								
 								<!-- 内容 -->
 								<view class="content flex-sub">
 									
 									<!-- 上方发布人昵称 -->
-									<view class="text-grey">发布人昵称</view>
+									<view class="text-grey">{{wishitem.user && wishitem.user.userName ? wishitem.user.userName : 'XXX'}}</view>
 									
 									<!-- 内容区域 -->
 									<view class="flex justify-between">
@@ -75,7 +83,7 @@
 <script>
 	
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
-	
+	var moment = require('moment');
 	var _this
 	
 	export default {

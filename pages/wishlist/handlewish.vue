@@ -11,13 +11,13 @@
 			<!-- 商品标题 -->
 			<view class="cu-form-group margin-top">
 				<view class="title">{{i18n.wishlist.producttitle}} :</view>
-				<input type="text" v-model="productTitle" />
+				<input type="text" confirm-type="next" v-model="productTitle" />
 			</view>
 			
 			<!-- 源网站链接 -->
 			<view class="cu-form-group margin-top">
 				<view class="title">{{i18n.wishlist.sourcelink}} :</view>
-				<input type="text" v-model="sourceLink" />
+				<input type="text" confirm-type="next" v-model="sourceLink" />
 			</view>
 			
 			<!-- 源网站价格 -->
@@ -379,6 +379,7 @@
 						expectAmount: _this.expectAmount, // 期望数量
 						hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 						imgs: imgs, // 图片字符串集合
+						user: _this.$store.getters.user, // 当前发布人的信息
 					}
 					
 					// 新增

@@ -1,11 +1,14 @@
 'use strict';
-const {getcurrenttimestr} = require('hello-common')
+var moment = require('moment')
 
 const db = uniCloud.database()
 
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	console.log('客户端上传到的参数为: ', event)
+	
+	// 当前时间字符串
+	let currenttimestr = moment().format('YYYY-MM-DD HH:mm:ss')
 	
 	//获取集合对象
 	const collection = db.collection('wishlist')
@@ -17,7 +20,12 @@ exports.main = async (event, context) => {
 	// add 新增心愿单
 	if(type == 'add') {
 		// 写入心愿单集合数据
-		let data = {...info}
+		let otherdata = {
+			ifachieve: 0, // 设置心愿单完成状态为否  ifachieve  0未完成 1已完成
+			creatTime: currenttimestr, // 当前新增的时间字符串
+		}
+		
+		let data = {...info,...otherdata}
 		let res = await collection.add(data)
 		return res
 	}
@@ -25,7 +33,12 @@ exports.main = async (event, context) => {
 	// edit 编辑心愿单
 	else if(type == 'edit') {
 		let docid = info._id
-		let updateinfo = {...info}
+		// 编辑心愿单集合数据
+		let otherdata = {
+			ifachieve: 0, // 设置心愿单完成状态为否  ifachieve  0未完成 1已完成
+			creatTime: currenttimestr, // 当前新增的时间字符串
+		}
+		let updateinfo = {...info,...otherdata}
 		delete updateinfo._id // 删除_id属性 不能更新_id字段
 		let res = await collection.doc(docid).update(updateinfo);
 		return res
@@ -55,7 +68,7 @@ exports.main = async (event, context) => {
 		
 		let res = await collection.orderBy("_id", "desc").skip(skipdataNum).limit(pageSize).get()
 		// 如果date有值则返回原先date的值 如果date没有值则返回当前的时间字符串
-		let newdate = date ? date : getcurrenttimestr(true)
+		let newdate = date ? date : currenttimestr
 		res.date = newdate
 		return res
 		

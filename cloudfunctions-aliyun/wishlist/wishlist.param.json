@@ -1,8 +1,24 @@
 // 本文件中的json内容将在云函数【运行】时作为参数传给云函数。
 // 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
 {
-	// "type": "add",
-	// "info": {"productTitle":"宠物狗","sourceLink":"www.baidu.com","platformPrice":"100","platformmoneytype":"RMB","expectPrice":"20","expectmoneytype":"RMB","expectAmount":"200","hurryLevel":3,"imgs":"xhm_img/test/common/xhm_w800_h8008XrXGjeehbCTDHFDSGPidZSfEaw4475G.jpeg,xhm_img/test/common/xhm_w477_h600PFBmm3nMzN7KyjiWMsRhRjj5dYccQyym.jpg,xhm_img/test/common/xhm_w200_h200iTjpYn2T3BSdHcsjMRRSkthZ5FBwPXys.jpg,xhm_img/test/common/xhm_w667_h100068pEC8TarD6hMpe6Q8S2EW68jQ6FQXDb.jpg,xhm_img/test/common/xhm_w2000_h2000cB5YyJtPYzMrhcEJJxFsS3JWhYpFmmjm.png"}
-	"type": "getlist",
-	"info": {"pageSize":10, "pageNum":1,"date":""}
+	"type": "add",
+	"info": {
+		"productTitle":"宠物狗进口量法手机放跨三级放冷库",
+		"sourceLink":"www.baidu.com",
+		"platformPrice":"100",
+		"platformmoneytype":"RMB",
+		"expectPrice":"20",
+		"expectmoneytype":"RMB",
+		"expectAmount":"200",
+		"hurryLevel":3,
+		"imgs":"xhm_img/test/common/xhm_w800_h8008XrXGjeehbCTDHFDSGPidZSfEaw4475G.jpeg,xhm_img/test/common/xhm_w477_h600PFBmm3nMzN7KyjiWMsRhRjj5dYccQyym.jpg,xhm_img/test/common/xhm_w200_h200iTjpYn2T3BSdHcsjMRRSkthZ5FBwPXys.jpg,xhm_img/test/common/xhm_w667_h100068pEC8TarD6hMpe6Q8S2EW68jQ6FQXDb.jpg,xhm_img/test/common/xhm_w2000_h2000cB5YyJtPYzMrhcEJJxFsS3JWhYpFmmjm.png",
+		"ifachieve": 0,
+		"user": {
+				"userName": "超人",
+				"avatar": "xhm_img/test/common/xhm_w800_h800AeXh6TYFPBjFFYZGt6sSz3NttbJ2NyWn.jpeg"
+			}
+		}
+		
+	// "type": "getlist",
+	// "info": {"pageSize":10, "pageNum":1,"date":""}
 }
