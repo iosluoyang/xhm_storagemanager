@@ -67,7 +67,7 @@
 </template>
 
 <script>
-	
+	import moment from 'moment'
 	var _this
 	
 	export default {
@@ -104,7 +104,10 @@
 		computed: {
 			
 			currentlanguage() {
-				return this._i18n.locale
+				let currentlanguage = this._i18n.locale
+				let momentlanguage = currentlanguage == 'zh' ? 'zh-cn' : currentlanguage
+				moment.locale(momentlanguage) // 设置moment的国际化
+				return currentlanguage
 			},
 			
 			showlanguagestr() {

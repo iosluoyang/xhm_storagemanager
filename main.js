@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import i18n from '@/common/js/i18n/i18n.js'
 
+
 Vue.config.productionTip = false
 
 App.mpType = 'app'

@@ -90,7 +90,6 @@
 					},
 					
 				}).then(response => {
-					console.log(`当前获取的数据为:${JSON.stringify(response)}`);
 					// 加载成功
 					let date = response.result.data.date
 					let curdatalist = response.result.data || []

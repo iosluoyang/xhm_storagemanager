@@ -25,11 +25,6 @@
 			
 		</view>
 		
-		
-		
-		
-		
-		
 	</view>
 </template>
 

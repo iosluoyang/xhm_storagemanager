@@ -52,13 +52,12 @@
 									<view class="flex justify-between">
 										<!-- 发布时间 -->
 										<view class="text-gray text-sm">
-											三天前
+											{{showtimestr(wishitem.creatTime)}}
 										</view>
 										<!-- 点赞浏览区域 -->
 										<view class="text-gray text-sm">
-											<text class="cuIcon-attentionfill margin-lr-xs"></text> 10
-											<text class="cuIcon-appreciatefill margin-lr-xs"></text> 20
-											<text class="cuIcon-messagefill margin-lr-xs"></text> 30
+											<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishitem.previewCount || 0}}
+											<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishitem.commentCount || 0}}
 										</view>
 									</view>
 									
@@ -132,7 +131,6 @@
 						}
 					}
 				}).then(response => {
-					console.log(`当前获取的数据为:${JSON.stringify(response)}`);
 					if(response.success) {
 						// 加载成功
 						let date = response.result.data.date
@@ -163,6 +161,15 @@
 					// 失败隐藏下拉加载状态
 					_this.mescroll.endErr()
 				})
+			},
+			
+			// 显示时间字符串
+			showtimestr(creatTime) {
+				let nowmoment = new moment()
+				let creatmoment = new moment(creatTime)
+				let duration = moment.duration(nowmoment.diff(creatTime))
+				let difftimestr = duration.humanize()
+				return difftimestr
 			},
 			
 			// 点击查看详情
