@@ -29,13 +29,14 @@
 </template>
 
 <script>
+	
 	export default {
 		data() {
 			return {
-				
+
 			};
 		},
-		
+				
 		methods: {
 			
 			// 新增心愿单
@@ -45,7 +46,7 @@
 				});
 			},
 			
-			// 查看心愿单
+			// 查看心愿列表
 			checkwishlist() {
 				uni.navigateTo({
 					url: '/pages/wishlist/wishlist'

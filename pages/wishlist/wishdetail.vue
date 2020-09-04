@@ -9,90 +9,83 @@
 		<!-- 详情区域 -->
 		<view class="detailview">
 			
-			<view class="cu-card dynamic">
+			<!-- 基本信息区域 -->
+			<view v-if="wishinfo" class="cu-item shadow bg-white">
 				
-				<view v-if="wishinfo" class="cu-item shadow">
-					
-					<!-- 发布人区域 -->
-					<view v-if="wishinfo.user" class="cu-list menu-avatar">
-						<view class="cu-item">
-							
-							<!-- 头像 -->
-							<template>
-								<image v-if="wishinfo.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishinfo.user.avatar"></image>
-								<view v-else class="cu-avatar round lg">
-									<text class="cuIcon-people"></text>
-								</view>
-							</template>
-							<!-- 昵称和时间 -->
-							<view class="content flex-sub">
-								<view>{{wishinfo.user.userName}}</view>
-								<view class="text-gray text-sm flex justify-between">
-									{{ wishinfo.creatTime }}
-								</view>
+				<!-- 发布人区域 -->
+				<view v-if="wishinfo.user" class="cu-list menu-avatar">
+					<view class="cu-item">
+						
+						<!-- 头像 -->
+						<template>
+							<image v-if="wishinfo.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishinfo.user.avatar"></image>
+							<view v-else class="cu-avatar round lg">
+								<text class="cuIcon-people"></text>
 							</view>
-							
+						</template>
+						<!-- 昵称和时间 -->
+						<view class="content flex-sub">
+							<view>{{wishinfo.user.userName}}</view>
+							<view class="text-gray text-sm flex justify-between">
+								{{ wishinfo.creatTime }}
+							</view>
 						</view>
-
+						
 					</view>
+			
+				</view>
+				
+				<!-- 商品图片区域 -->
+				<swiper class="card-swiper round-dot" indicator-dots circular
+				 autoplay :duration="300" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
+				 indicator-active-color="#0081ff">
+					<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
+						<view class="swiper-item">
+							<image :src="completeimg" mode="aspectFill"></image>
+						</view>
+					</swiper-item>
+				</swiper>
+				
+				<!-- 商品标题和备注区域 -->
+				<view class="text-content padding-sm">
 					
-					<!-- 商品标题区域 -->
-					<view class="text-content text-bold text-xxl">
+					<view class="text-bold text-xxl">
 						{{wishinfo.productTitle}}
 					</view>
 					
-					<!-- 商品图片区域 -->
-					<swiper class="screen-swiper round-dot" indicator-dots circular
-					 autoplay :duration="300" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
-					 indicator-active-color="#0081ff">
-						<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
-							<image :src="completeimg" mode="aspectFill"></image>
-						</swiper-item>
-					</swiper>
-					
-					<!-- 浏览次数和评论次数 -->
-					<view class="text-gray text-sm text-right padding">
-						<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishinfo.previewCount || 0}}
-						<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishinfo.commentCount || 0}}
-					</view>
-					
-					<!-- 评论区域 -->
-					<view v-if="false" class="cu-list menu-avatar comment solid-top">
-						<view class="cu-item">
-							<image class="cu-avatar round lg" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
-							<view class="content margin-left">
-								
-								<view class="text-grey">
-									<view class="text-gray text-content text-df">
-										{{`我是评论的内容`}}
-									</view>
-								</view>
-								
-								<view class="bg-grey padding-sm radius margin-top-sm text-sm">
-									<view class="flex">
-										<view>{{`回复人昵称`}}: </view>
-										<view class="flex-sub">{{`回复的内容`}}</view>
-									</view>
-								</view>
-								
-								<view class="margin-top-sm flex justify-between">
-									<view class="text-gray text-df">{{`评论时间`}}</view>
-									<view>
-										<text class="cuIcon-messagefill text-gray margin-left-sm"></text>
-									</view>
-								</view>
-								
-							</view>
-						</view>
+					<!-- 商品备注 -->
+					<view v-if="wishinfo.remark" class="bg-gray radius margin-sm padding-sm">
+						{{ wishinfo.remark }}
 					</view>
 					
 				</view>
 				
+				<!-- 操作区域 -->
+				<view class="flex align-center justify-between padding-sm">
+					
+					<view class="btnsview flex align-center">
+						
+						<!-- 更新按钮 -->
+						<button class="cu-btn radius bg-gradual-pink margin-right-sm" @tap.stop="updatewishtimeline">更新</button>
+						
+						<!-- 编辑按钮 -->
+						<button class="cu-btn radius line-gray margin-right-sm" @tap.stop="editwish">编辑</button>
+						
+						<!-- 删除按钮 -->
+						<button class="cu-btn radius line-red" @tap.stop="deletewish">删除</button>
+					</view>
+					
+					<view class="staticview text-gray text-sm text-right">
+						<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishinfo.previewCount || 0}}
+						<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishinfo.commentCount || 0}}
+					</view>
+					
+				</view>
+								
 			</view>
 			
-			
 			<!-- 时间轴 -->
-			<view class="cu-timeline">
+			<view v-if="false" class="cu-timeline">
 				
 				<view class="cu-time">{{ `发布动态时间` }}</view>
 				
@@ -113,12 +106,6 @@
 				</view>
 			</view>
 			
-		</view>
-			
-		
-		<view class="padding-xl">
-			<button class="cu-btn radius bg-gradual-pink block" @tap.stop="editwish">{{i18n.base.edit}}</button>
-			<button class="cu-btn radius line-red block margin-top-sm" @tap.stop="deletewish">{{i18n.base.del}}</button>
 		</view>
 		
 	</view>
@@ -142,7 +129,7 @@
 			_this = this
 			
 			let id = option.id
-			id = `5f51af0d2805da0001892767`
+			id = id || `5f51af0d2805da0001892767`
 			this.id = id
 			
 			if(this.id) {
@@ -219,6 +206,11 @@
 				})
 			},
 			
+			// 更新心愿时间轴进度
+			updatewishtimeline() {
+				console.log(`开始更新时间轴内容`);
+			},
+			
 			// 编辑心愿
 			editwish() {
 				uni.navigateTo({
@@ -272,8 +264,6 @@
 				})
 				
 			},
-			
-			
 			
 		},
 	}

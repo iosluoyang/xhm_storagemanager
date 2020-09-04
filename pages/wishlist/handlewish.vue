@@ -87,6 +87,12 @@
 				</view>
 			</view>
 			
+			<!-- 备注 -->
+			<view class="cu-form-group margin-top">
+				<textarea maxlength="-1" v-model="remark" :placeholder="i18n.wishlist.remark" />
+			</view>
+			
+			
 			<!-- 确定按钮 -->
 			<view class="padding-xl" style="bottom: 0;position: fixed; left: 0; right: 0;">
 				<button class="cu-btn block bg-gradual-pink lg" @tap.stop="uploaddata">
@@ -123,6 +129,7 @@
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
+				remark: '', // 备注
 				
 			};
 		},
@@ -193,6 +200,7 @@
 					this.expectAmount = info.expectAmount // 期望数量
 					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
 					this.imgArr = info.imgs.split(',') // 图片数组
+					this.remark = info.remark // 备注信息
 					
 				}).catch(error => {
 					uni.showToast({
@@ -378,6 +386,7 @@
 						expectmoneytype: _this.expectmoneytype, // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 						expectAmount: _this.expectAmount, // 期望数量
 						hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
+						remark: _this.remark, // 备注信息
 						imgs: imgs, // 图片字符串集合
 						user: _this.$store.getters.user, // 当前发布人的信息
 					}

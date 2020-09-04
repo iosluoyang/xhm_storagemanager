@@ -352,6 +352,7 @@ const zh = {
 			level5: "五级(3天内)"
 		},
 		uploadimg: "图片上传",
+		remark: "备注",
 	},
 	
 	
