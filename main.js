@@ -24,6 +24,10 @@ Vue.prototype.$api = api
 import jwxjs from '@/common/js/jwxjs.js'
 Vue.prototype.$jwxjs = jwxjs
 
+// 引入moment库
+import moment from 'moment'
+Vue.prototype.$moment = moment
+
 import cuCustom from '@/colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
 

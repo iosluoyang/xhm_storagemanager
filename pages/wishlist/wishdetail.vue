@@ -8,8 +8,113 @@
 		
 		<!-- 详情区域 -->
 		<view class="detailview">
-			{{JSON.stringify(wishinfo)}}
+			
+			<view class="cu-card dynamic">
+				
+				<view v-if="wishinfo" class="cu-item shadow">
+					
+					<!-- 发布人区域 -->
+					<view v-if="wishinfo.user" class="cu-list menu-avatar">
+						<view class="cu-item">
+							
+							<!-- 头像 -->
+							<template>
+								<image v-if="wishinfo.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishinfo.user.avatar"></image>
+								<view v-else class="cu-avatar round lg">
+									<text class="cuIcon-people"></text>
+								</view>
+							</template>
+							<!-- 昵称和时间 -->
+							<view class="content flex-sub">
+								<view>{{wishinfo.user.userName}}</view>
+								<view class="text-gray text-sm flex justify-between">
+									{{ wishinfo.creatTime }}
+								</view>
+							</view>
+							
+						</view>
+
+					</view>
+					
+					<!-- 商品标题区域 -->
+					<view class="text-content text-bold text-xxl">
+						{{wishinfo.productTitle}}
+					</view>
+					
+					<!-- 商品图片区域 -->
+					<swiper class="screen-swiper round-dot" indicator-dots circular
+					 autoplay :duration="300" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
+					 indicator-active-color="#0081ff">
+						<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
+							<image :src="completeimg" mode="aspectFill"></image>
+						</swiper-item>
+					</swiper>
+					
+					<!-- 浏览次数和评论次数 -->
+					<view class="text-gray text-sm text-right padding">
+						<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishinfo.previewCount || 0}}
+						<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishinfo.commentCount || 0}}
+					</view>
+					
+					<!-- 评论区域 -->
+					<view v-if="false" class="cu-list menu-avatar comment solid-top">
+						<view class="cu-item">
+							<image class="cu-avatar round lg" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
+							<view class="content margin-left">
+								
+								<view class="text-grey">
+									<view class="text-gray text-content text-df">
+										{{`我是评论的内容`}}
+									</view>
+								</view>
+								
+								<view class="bg-grey padding-sm radius margin-top-sm text-sm">
+									<view class="flex">
+										<view>{{`回复人昵称`}}: </view>
+										<view class="flex-sub">{{`回复的内容`}}</view>
+									</view>
+								</view>
+								
+								<view class="margin-top-sm flex justify-between">
+									<view class="text-gray text-df">{{`评论时间`}}</view>
+									<view>
+										<text class="cuIcon-messagefill text-gray margin-left-sm"></text>
+									</view>
+								</view>
+								
+							</view>
+						</view>
+					</view>
+					
+				</view>
+				
+			</view>
+			
+			
+			<!-- 时间轴 -->
+			<view class="cu-timeline">
+				
+				<view class="cu-time">{{ `发布动态时间` }}</view>
+				
+				<view class="cu-item">
+					<view class="content">
+						<view class="cu-item flex align-center">
+							<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
+							<view class="text-gray text-df">
+								{{wishinfo.user.userName}}
+							</view>
+						</view>
+						<view class="margin-top">
+							{{
+								`我是评论的内容，这个东西有点贵，我希望找到最便宜的一个`
+							}}
+						</view>
+					</view>
+				</view>
+			</view>
+			
 		</view>
+			
 		
 		<view class="padding-xl">
 			<button class="cu-btn radius bg-gradual-pink block" @tap.stop="editwish">{{i18n.base.edit}}</button>
@@ -28,6 +133,8 @@
 			return {
 				id: null, // 当前心愿详情id
 				wishinfo: null, // 当前心愿详情
+				swiperCur: 0, // 当前轮播图索引
+				imgsArr: [], // 轮播图的图片数组索引
 			};
 		},
 		
@@ -35,6 +142,7 @@
 			_this = this
 			
 			let id = option.id
+			id = `5f51af0d2805da0001892767`
 			this.id = id
 			
 			if(this.id) {
@@ -47,7 +155,7 @@
 					icon: 'none'
 				});
 				setTimeout(function() {
-					uni.navigateBack();
+					// uni.navigateBack();
 				}, 1500);
 			}
 			
@@ -78,6 +186,17 @@
 					// 获取心愿详情数据成功
 					let info = response.result.data[0]
 					_this.wishinfo = info
+					
+					// 设置轮播图的图片数组
+					let imgsArr = []
+					if(_this.wishinfo && _this.wishinfo.imgs) {
+						_this.wishinfo.imgs.split(',').forEach(img => {
+							let completeimg = _this.imgUrl + img
+							imgsArr.push(completeimg)
+						})
+					}
+					_this.imgsArr = imgsArr
+					
 				}).catch(error => {
 					uni.showToast({
 						title: _this.i18n.error.loaderror,
@@ -85,6 +204,19 @@
 					});
 				})
 				
+			},
+			
+			// 切换轮播图
+			changeSwiper(e) {
+				this.swiperCur = e.detail.current
+			},
+			
+			// 查看大图
+			previewImgs(index) {
+				uni.previewImage({
+					current:index,
+					urls: _this.imgsArr
+				})
 			},
 			
 			// 编辑心愿
@@ -140,6 +272,7 @@
 				})
 				
 			},
+			
 			
 			
 		},

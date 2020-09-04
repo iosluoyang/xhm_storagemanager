@@ -74,15 +74,12 @@
 			
 		</mescroll-body>
 		
-		
-		
 	</view>
 </template>
 
 <script>
 	
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
-	var moment = require('moment');
 	var _this
 	
 	export default {
@@ -165,6 +162,7 @@
 			
 			// 显示时间字符串
 			showtimestr(creatTime) {
+				let moment = this.$moment
 				let nowmoment = new moment()
 				let creatmoment = new moment(creatTime)
 				let duration = moment.duration(nowmoment.diff(creatTime))

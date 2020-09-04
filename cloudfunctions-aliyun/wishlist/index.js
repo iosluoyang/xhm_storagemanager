@@ -57,9 +57,10 @@ exports.main = async (event, context) => {
 	// getdetail 获取心愿单详情
 	else if(type == 'getdetail') {
 		let docid = info._id
-		let res = await collection.doc(docid).update({
+		await collection.doc(docid).update({
 			previewCount: dbCmd.inc(1) // 将该心愿单的浏览次数自增1返回
 		})
+		let res = await collection.doc(docid).get()
 		return res
 	}
 	
