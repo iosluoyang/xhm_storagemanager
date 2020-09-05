@@ -40,6 +40,9 @@
 		<view class="foundview solid-top">
 			
 			<form>
+				<view class="cu-form-group">
+					
+				</view>
 			</form>
 			
 		</view>
