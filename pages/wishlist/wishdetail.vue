@@ -41,7 +41,7 @@
 				 indicator-active-color="#0081ff">
 					<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
 						<view class="swiper-item">
-							<image :src="completeimg" mode="aspectFill"></image>
+							<image :src="completeimg" mode="aspectFit"></image>
 						</view>
 					</swiper-item>
 				</swiper>
@@ -85,25 +85,36 @@
 			</view>
 			
 			<!-- 时间轴 -->
-			<view v-if="false" class="cu-timeline">
+			<view class="timelineview solid-top">
 				
-				<view class="cu-time">{{ `发布动态时间` }}</view>
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<text class="cuIcon-titles text-green"></text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.timeline }}</text>
+					</view>
+				</view>
 				
-				<view class="cu-item">
-					<view class="content">
-						<view class="cu-item flex align-center">
-							<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
-							<view class="text-gray text-df">
-								{{wishinfo.user.userName}}
+				<view class="cu-timeline">
+					
+					<view class="cu-time">{{ `发布动态时间` }}</view>
+					
+					<view class="cu-item">
+						<view class="content">
+							<view class="cu-item flex align-center">
+								<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
+								<view class="text-gray text-df">
+									{{wishinfo.user.userName}}
+								</view>
 							</view>
-						</view>
-						<view class="margin-top">
-							{{
-								`我是评论的内容，这个东西有点贵，我希望找到最便宜的一个`
-							}}
+							<view class="margin-top">
+								{{
+									`我是评论的内容，这个东西有点贵，我希望找到最便宜的一个`
+								}}
+							</view>
 						</view>
 					</view>
 				</view>
+				
 			</view>
 			
 		</view>
@@ -122,6 +133,7 @@
 				wishinfo: null, // 当前心愿详情
 				swiperCur: 0, // 当前轮播图索引
 				imgsArr: [], // 轮播图的图片数组索引
+				
 			};
 		},
 		

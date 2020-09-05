@@ -5,6 +5,46 @@
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
+		<!-- 商品详情信息 -->
+		<view class="wishdetailview bg-white padding-sm">
+			
+			<view class="cu-bar">
+				<view class="action">
+					<text class="cuIcon-titles text-green"></text>
+					<text class="text-bold text-black">{{i18n.wishlist.wishdetail}}</text>
+				</view>
+			</view>
+			
+			<!-- 心愿商品基本信息 -->
+			<view class="prodetailview padding-sm flex align-center">
+				
+				<!-- 商品轮播图 -->
+				<swiper class="screen-swiper square-dot" indicator-dots circular
+				 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;">
+					<swiper-item class="radius" v-for="(img,index) in imgArr" :key="index">
+						<image :src="imgUrl + img" mode="aspectFill"></image>
+					</swiper-item>
+				</swiper>
+				
+				<!-- 商品标题和备注 -->
+				<view class="procontentview flex-sub margin-left-sm">
+					<view class="text-bold">{{ productTitle }}</view>
+					<view class="tipsview bg-gray padding-sm text-sm text-light">{{remark}}</view>
+				</view>
+				
+			</view>
+		
+		</view>
+		
+		<!-- 已找到的相关信息 -->
+		<view class="foundview solid-top">
+			
+			<form>
+			</form>
+			
+		</view>
+		
+		
 		<!-- 填写的表单信息 -->
 		<form>
 			
@@ -115,7 +155,7 @@
 		data() {
 			return {
 				
-				type: 'add', // 页面状态 add新增 edit编辑
+				type: 'add', // 页面状态 add新增 edit编辑 found已找到
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接

@@ -353,6 +353,11 @@ const zh = {
 		},
 		uploadimg: "图片上传",
 		remark: "备注",
+		timeline: "时间轴",
+		found: "已找到",
+		addcomment: "更新",
+		wishdetail: "心愿详情"
+		
 	},
 	
 	
