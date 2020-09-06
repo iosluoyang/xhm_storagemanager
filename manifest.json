@@ -153,6 +153,11 @@
             "maps" : {}
         },
         "domain" : "https://jxc.xiaohemu.net",
-        "title" : "XHM_Storage"
+        "title" : "XHM_Storage",
+        "optimization" : {
+            "treeShaking" : {
+                "enable" : true
+            }
+        }
     }
 }

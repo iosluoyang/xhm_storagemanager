@@ -3,7 +3,7 @@
 // {
 // 	"type": "add",
 // 	"info": {
-// 		"productTitle":"宠物狗进口量法手机放跨三级放冷库",
+// 		"productTitle":"测试时间轴的心愿单",
 // 		"sourceLink":"www.baidu.com",
 // 		"platformPrice":"100",
 // 		"platformmoneytype":"RMB",
@@ -16,19 +16,21 @@
 // 		"user": {
 // 				"userName": "超人",
 // 				"avatar": "xhm_img/test/common/xhm_w800_h800AeXh6TYFPBjFFYZGt6sSz3NttbJ2NyWn.jpeg"
-// 			}
+// 			},
+// 		"remark": "我是心愿的备注"
 // 		}
-// },
-
-// {
-// 	"type": "getlist",
-// 	"info": {"pageSize":10, "pageNum":1,"date":""}
+		
 // }
 
 {
-	"type": "getdetail",
-	"info": {
-		"_id": "5f51af0d2805da0001892767"
-	}
+	"type": "getlist",
+	"info": {"pageSize":10, "pageNum":1,"date":""}
 }
+
+// {
+// 	"type": "getdetail",
+// 	"info": {
+// 		"_id": "5f51af0d2805da0001892767"
+// 	}
+// }
 

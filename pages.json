@@ -178,6 +178,12 @@
 						"navigationBarTitleText":"心愿详情"
 					}
                 }
+                ,{
+                    "path" : "handletimeline",
+                    "style" : {
+						"navigationBarTitleText":"时间轴"
+					}
+                }
             ]
 		}
 	],

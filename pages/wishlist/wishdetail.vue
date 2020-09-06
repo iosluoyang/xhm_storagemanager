@@ -36,13 +36,11 @@
 				</view>
 				
 				<!-- 商品图片区域 -->
-				<swiper class="card-swiper round-dot" indicator-dots circular
+				<swiper class="screen-swiper round-dot" indicator-dots circular
 				 autoplay :duration="300" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
 					<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
-						<view class="swiper-item">
-							<image :src="completeimg" mode="aspectFit"></image>
-						</view>
+						<image :src="completeimg" mode="aspectFit"></image>
 					</swiper-item>
 				</swiper>
 				
@@ -52,12 +50,7 @@
 					<view class="text-bold text-xxl">
 						{{wishinfo.productTitle}}
 					</view>
-					
-					<!-- 商品备注 -->
-					<view v-if="wishinfo.remark" class="bg-gray radius margin-sm padding-sm">
-						{{ wishinfo.remark }}
-					</view>
-					
+
 				</view>
 				
 				<!-- 操作区域 -->
@@ -85,31 +78,29 @@
 			</view>
 			
 			<!-- 时间轴 -->
-			<view class="timelineview solid-top">
+			<view v-if="timelinelist && timelinelist.length > 0 " class="timelineview solid-top">
 				
 				<view class="cu-bar bg-white">
 					<view class="action">
 						<text class="cuIcon-titles text-green"></text>
-						<text class="text-xl text-bold">{{ i18n.wishlist.timeline }}</text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.timeline.title }}</text>
 					</view>
 				</view>
 				
-				<view class="cu-timeline">
+				<view class="cu-timeline"  v-for="(timelineitem, index) in timelinelist" :key="index">
 					
-					<view class="cu-time">{{ `发布动态时间` }}</view>
+					<view class="cu-time">{{ $moment(timelineitem.creatTime).format('DD/MM HH:mm:ss') }}</view>
 					
 					<view class="cu-item">
 						<view class="content">
 							<view class="cu-item flex align-center">
-								<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + wishinfo.user.avatar" mode="aspectFill"></image>
+								<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
 								<view class="text-gray text-df">
-									{{wishinfo.user.userName}}
+									{{timelineitem.user.userName}}
 								</view>
 							</view>
 							<view class="margin-top">
-								{{
-									`我是评论的内容，这个东西有点贵，我希望找到最便宜的一个`
-								}}
+								{{timelineitem.content}}
 							</view>
 						</view>
 					</view>
@@ -131,6 +122,7 @@
 			return {
 				id: null, // 当前心愿详情id
 				wishinfo: null, // 当前心愿详情
+				timelinelist: [], // 心愿时间轴数据
 				swiperCur: 0, // 当前轮播图索引
 				imgsArr: [], // 轮播图的图片数组索引
 				
@@ -147,6 +139,9 @@
 			if(this.id) {
 				// 开始加载心愿详情数据
 				this.loaddetaildata()
+				
+				// 加载心愿时间轴数据
+				this.loadtimelinedata()
 			}
 			else {
 				uni.showToast({
@@ -181,20 +176,29 @@
 							_id: this.id
 						}
 					}
-				}).then(response => {
+				}).then(res => {
 					// 获取心愿详情数据成功
-					let info = response.result.data[0]
-					_this.wishinfo = info
-					
-					// 设置轮播图的图片数组
-					let imgsArr = []
-					if(_this.wishinfo && _this.wishinfo.imgs) {
-						_this.wishinfo.imgs.split(',').forEach(img => {
-							let completeimg = _this.imgUrl + img
-							imgsArr.push(completeimg)
-						})
+					if(res.success) {
+						
+						let info = res.result.data[0]
+						_this.wishinfo = info
+						
+						// 设置轮播图的图片数组
+						let imgsArr = []
+						if(_this.wishinfo && _this.wishinfo.imgs) {
+							_this.wishinfo.imgs.split(',').forEach(img => {
+								let completeimg = _this.imgUrl + img
+								imgsArr.push(completeimg)
+							})
+						}
+						_this.imgsArr = imgsArr
 					}
-					_this.imgsArr = imgsArr
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
 					
 				}).catch(error => {
 					uni.showToast({
@@ -203,6 +207,35 @@
 					});
 				})
 				
+			},
+			
+			// 加载心愿时间轴数据
+			loadtimelinedata() {
+				uniCloud.callFunction({
+					name:'wishlisttimeline',
+					data: {
+						type: 'getlist',
+						info: {
+							wishid: _this.id
+						}
+					}
+				}).then(res => {
+					if(res.success) {
+						let timelinelist = res.result.data
+						_this.timelinelist = timelinelist
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				}).catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
 			},
 			
 			// 切换轮播图
@@ -220,7 +253,9 @@
 			
 			// 更新心愿时间轴进度
 			updatewishtimeline() {
-				console.log(`开始更新时间轴内容`);
+				uni.navigateTo({
+					url: `/pages/wishlist/handletimeline?wishid=${this.id}`
+				});
 			},
 			
 			// 编辑心愿

@@ -29,8 +29,21 @@ exports.main = async (event, context) => {
 		}
 		
 		let data = {...info,...otherdata}
-		let res = await collection.add(data)
-		return res
+		let wishlistres = await collection.add(data)
+		// 添加心愿单时间轴的第一条数据
+		const wishlisttimelinecollecton = db.collection('wishlisttimeline')
+		let timelinedata = {
+			wishid: wishlistres.id,
+			creatTime: currenttimestr,
+			user: info.user,
+			content: info.remark || '',
+			imgs: '',
+			type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新  2心愿单待确认  3心愿单确认通过  4心愿单确认拒绝  5心愿单完成
+		}
+		await wishlisttimelinecollecton.add(timelinedata)
+		
+		
+		return wishlistres
 	}
 	
 	// edit 编辑心愿单
