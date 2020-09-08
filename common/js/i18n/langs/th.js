@@ -13,6 +13,8 @@ const th = {
 		del: "Delete",
 		save: "บันทึก",
 		add: "เพิ่ม",
+		copy: "Copy",
+		paste: "Paste",
 		preview: "แสดงผล",
 		select: "โปรดเลือก",
 		cancel: "ยกเลิก",

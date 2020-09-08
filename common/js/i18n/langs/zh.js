@@ -13,6 +13,8 @@ const zh = {
 		del: "删除",
 		save: "保存",
 		add: "新增",
+		copy: "复制",
+		paste: "粘贴",
 		preview: "预览",
 		select: "请选择",
 		cancel: "取消",
@@ -340,9 +342,10 @@ const zh = {
 		
 		producttitle: "商品标题",
 		sourcelink: "源网站链接",
+		targetlink: "网站链接",
 		sourceprice: "源网站价格",
-		expectprice: "期望价格",
-		expectamount: "期望数量",
+		targetprice: "期望价格",
+		targetamount: "期望数量",
 		hurrylevel: "紧急程度",
 		hurryleveldata: {
 			level1: "一级(无限制)",
@@ -353,11 +356,12 @@ const zh = {
 		},
 		uploadimg: "图片上传",
 		remark: "备注",
-		found: "已找到",
-		addcomment: "更新",
+		found: "我发现",
 		wishdetail: "心愿详情",
 		timeline: {
-			title: "时间轴"
+			title: "时间轴",
+			updatetimeline: "更新时间轴",
+			targetpriceerror: "请输入目标价格",
 		},
 		
 		

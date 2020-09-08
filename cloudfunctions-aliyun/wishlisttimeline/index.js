@@ -23,10 +23,13 @@ exports.main = async (event, context) => {
 	if(type == 'add') {
 		
 		let data = {
-			wishlistid: info.wishid,
+			wishid: info.wishid,
 			creatTime: currenttimestr,
 			user: info.user,
 			content: info.content,
+			link: info.link, // 链接地址
+			price: info.price, // 价格
+			moneytype: info.moneytype, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 			imgs: info.imgs,
 			type: info.type, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新  2心愿单待确认  3心愿单确认通过  4心愿单确认拒绝  5心愿单完成
 		}

@@ -1,5 +1,5 @@
 <template>
-	<view class="content addwishview">
+	<view class="content addwishview bg-gray">
 		
 		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
 			<block slot="content">{{i18n.nav.wishlist}}</block>
@@ -8,16 +8,24 @@
 		<!-- 填写的表单信息 -->
 		<form>
 			
+			<!-- 我发现 -->
+			<view class="cu-bar bg-white margin-top">
+				<view class="action">
+					<text class="cuIcon cuIcon-titles text-green"></text>
+					<text class="text-xl text-bold">I Found</text>
+				</view>
+			</view>
 			<!-- 商品标题 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.producttitle}} :</view>
 				<input type="text" confirm-type="next" v-model="productTitle" />
 			</view>
 			
 			<!-- 源网站链接 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.sourcelink}} :</view>
 				<input type="text" confirm-type="next" v-model="sourceLink" />
+				<button class="cu-btn bg-cyan shadow" @tap.stop="pastesourelink('sourceLink')">{{i18n.base.paste}}</button>
 			</view>
 			
 			<!-- 源网站价格 -->
@@ -25,39 +33,53 @@
 				
 				<view class="title">{{i18n.wishlist.sourceprice}} :</view>
 				
-				<input type="digit" class="borderCDCDCD" v-model="platformPrice" />
+				<input type="digit" class="borderCDCDCD" v-model="sourcePrice" />
 				
-				<!-- 货币种类选择 -->
+				<!-- 源网站货币种类选择 -->
 				<view class="flex align-center margin-left">
-					<button class="cu-btn sm round margin-right" :class="platformmoneytype === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="platformmoneytype='RMB'">¥</button>
-					<button class="cu-btn sm round " :class="platformmoneytype === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="platformmoneytype='THB'">฿</button>
+					<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
+					<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
 				</view>
 
 			</view>
 			
-			<!-- 期望价格 -->
-			<view class="cu-form-group margin-top">
+			
+			<!-- 我想要 -->
+			<view class="cu-bar bg-white margin-top">
+				<view class="action">
+					<text class="cuIcon cuIcon-titles text-pink"></text>
+					<text class="text-xl text-bold">I Want</text>
+				</view>
+			</view>
+			
+			<!-- 目标价格 -->
+			<view class="cu-form-group">
 				
-				<view class="title">{{i18n.wishlist.expectprice}} :</view>
+				<view class="title">{{i18n.wishlist.targetprice}} :</view>
 				
-				<input type="digit" class="borderCDCDCD" v-model="expectPrice" />
+				<input type="digit" class="borderCDCDCD" v-model="targetPrice" />
 				
-				<!-- 货币种类选择 -->
+				<!-- 目标货币种类选择 -->
 				<view class="flex align-center margin-left">
-					<button class="cu-btn sm round margin-right" :class="expectmoneytype === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="expectmoneytype='RMB'">¥</button>
-					<button class="cu-btn sm round " :class="expectmoneytype === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="expectmoneytype='THB'">฿</button>
+					<button class="cu-btn sm round margin-right" :class="targetMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="targetMoneyType='RMB'">¥</button>
+					<button class="cu-btn sm round " :class="targetMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="targetMoneyType='THB'">฿</button>
 				</view>
 				
 			</view>
 			
-			<!-- 期望数量 -->
+			<!-- 目标数量 -->
+			<view class="cu-form-group solid-bottom">
+				<view class="title">{{i18n.wishlist.targetamount}} :</view>
+				<input type="text" v-model="targetAmount" />
+			</view>
+			
+			<!-- 备注 -->
 			<view class="cu-form-group">
-				<view class="title">{{i18n.wishlist.expectamount}} :</view>
-				<input type="text" v-model="expectAmount" />
+				<textarea maxlength="-1" v-model="remark" :placeholder="i18n.wishlist.remark" />
 			</view>
 			
 			<!-- 紧急程度 -->
-			<view class="cu-form-group">
+			<view class="cu-form-group solid-bottom">
 				<view class="title">{{i18n.wishlist.hurrylevel}}</view>
 				<picker :range="hurrylevelDataArr" range-key="name" :value="hurryLevel - 1" @change="hurrylevelchange">
 					<view class="picker">
@@ -87,22 +109,15 @@
 				</view>
 			</view>
 			
-			<!-- 备注 -->
-			<view class="cu-form-group margin-top">
-				<textarea maxlength="-1" v-model="remark" :placeholder="i18n.wishlist.remark" />
-			</view>
-			
-			
-			<!-- 确定按钮 -->
-			<view class="padding-xl" style="bottom: 0;position: fixed; left: 0; right: 0;">
-				<button class="cu-btn block bg-gradual-pink lg" @tap.stop="uploaddata">
-					<text v-if="ifloading" class="cuIcon-loading2 cuIconfont-spin"></text>
-					<text>{{ ifloading ? `${i18n.tip.loadingstr}` : `${i18n.base.confirm}` }}</text>
-				</button>
-			</view>
-			
-			
 		</form>
+		
+		<!-- 确定按钮 -->
+		<view class="cu-bar btn-group margin">
+			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
+		</view>
+		
+		<!-- 加载条 -->
+		<loading :loadModal="ifloading"></loading>
 		
 	</view>
 </template>
@@ -119,11 +134,11 @@
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
-				platformPrice: '', // 源网站价格
-				platformmoneytype: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-				expectPrice: '', // 期望价格
-				expectmoneytype: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
-				expectAmount: '', // 期望数量
+				sourcePrice: '', // 源网站价格
+				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+				targetPrice: '', // 目标价格
+				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
+				targetAmount: '', // 目标数量
 				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 5, // 图片上传的数量限制
@@ -179,6 +194,8 @@
 			// 获取心愿详情
 			getwishdetail() {
 				
+				_this.ifloading = true // 开始缓冲动画
+				
 				uniCloud.callFunction({
 					name: 'wishlist',
 					data: {
@@ -188,21 +205,27 @@
 						}
 					}
 				}).then(response => {
+					
+					_this.ifloading = false // 结束缓冲动画
+					
 					// 获取数据成功
 					let info = response.result.data[0]
 					
 					this.productTitle = info.productTitle // 商品标题
 					this.sourceLink = info.sourceLink // 源网站链接
-					this.platformPrice = info.platformPrice // 源网站价格
-					this.platformmoneytype = info.platformmoneytype // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-					this.expectPrice = info.expectPrice // 期望价格
-					this.expectmoneytype = info.expectmoneytype // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
-					this.expectAmount = info.expectAmount // 期望数量
+					this.sourcePrice = info.sourcePrice // 源网站价格
+					this.sourceMoneyType = info.sourceMoneyType // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+					this.targetPrice = info.targetPrice // 目标价格
+					this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
+					this.targetAmount = info.targetAmount // 目标数量
 					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
 					this.imgArr = info.imgs.split(',') // 图片数组
 					this.remark = info.remark // 备注信息
 					
 				}).catch(error => {
+					
+					_this.ifloading = false // 结束缓冲动画
+					
 					uni.showToast({
 						title: this.i18n.error.loaderror,
 						icon: 'none'
@@ -211,14 +234,16 @@
 				
 			},
 			
-			// 源网站价格币种选择
-			platformmoneytypechange(e) {
-				this.platformmoneytype = e.detail.value
-			},
-			
-			// 期望价格币种选择
-			expectmoneytypechange(e) {
-				this.expectmoneytype = e.detail.value
+			// 粘贴源网站链接
+			pastesourelink(datatype) {
+				uni.getClipboardData({
+					success(res) {
+						let content = res.data
+						if(content) {
+							_this[datatype] = content
+						}
+					}
+				})
 			},
 			
 			// 紧急程度更改
@@ -380,15 +405,15 @@
 						_id: _this.id, // 当前心愿的id
 						productTitle: _this.productTitle, // 商品标题
 						sourceLink: _this.sourceLink, // 源网站链接
-						platformPrice: _this.platformPrice, // 源网站价格
-						platformmoneytype: _this.platformmoneytype, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-						expectPrice: _this.expectPrice, // 期望价格
-						expectmoneytype: _this.expectmoneytype, // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
-						expectAmount: _this.expectAmount, // 期望数量
+						sourcePrice: _this.sourcePrice, // 源网站价格
+						sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+						targetPrice: _this.targetPrice, // 目标价格
+						targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
+						targetAmount: _this.targetAmount, // 目标数量
 						hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 						remark: _this.remark, // 备注信息
 						imgs: imgs, // 图片字符串集合
-						user: _this.$store.getters.user, // 当前发布人的信息
+						user: _this.user, // 当前发布人的信息
 					}
 					
 					// 新增
@@ -471,7 +496,5 @@
 </script>
 
 <style lang="scss" scoped>
-	.content{
-		padding-bottom: 90px;
-	}
+	
 </style>

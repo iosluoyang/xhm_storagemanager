@@ -5,14 +5,14 @@
 // 	"info": {
 // 		"productTitle":"测试时间轴的心愿单",
 // 		"sourceLink":"www.baidu.com",
-// 		"platformPrice":"100",
-// 		"platformmoneytype":"RMB",
-// 		"expectPrice":"20",
-// 		"expectmoneytype":"RMB",
-// 		"expectAmount":"200",
+// 		"sourcePrice":"100",
+// 		"ourceMoneyType":"RMB",
+// 		"targetPrice":"20",
+// 		"targetMoneyType":"RMB",
+// 		"targetAmount":"200",
 // 		"hurryLevel":3,
 // 		"imgs":"xhm_img/test/common/xhm_w800_h8008XrXGjeehbCTDHFDSGPidZSfEaw4475G.jpeg,xhm_img/test/common/xhm_w477_h600PFBmm3nMzN7KyjiWMsRhRjj5dYccQyym.jpg,xhm_img/test/common/xhm_w200_h200iTjpYn2T3BSdHcsjMRRSkthZ5FBwPXys.jpg,xhm_img/test/common/xhm_w667_h100068pEC8TarD6hMpe6Q8S2EW68jQ6FQXDb.jpg,xhm_img/test/common/xhm_w2000_h2000cB5YyJtPYzMrhcEJJxFsS3JWhYpFmmjm.png",
-// 		"ifachieve": 0,
+// 		"achieveFlag": 0,
 // 		"user": {
 // 				"userName": "超人",
 // 				"avatar": "xhm_img/test/common/xhm_w800_h800AeXh6TYFPBjFFYZGt6sSz3NttbJ2NyWn.jpeg"

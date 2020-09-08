@@ -10,25 +10,28 @@
 			
 			<view class="eachwish" v-if="wishitem" v-for="(wishitem, index) in datalist" :key="index" @tap.stop="wishdetail(wishitem)">
 				
-				<view class="cu-card case no-card">
+				<!-- 每一个卡片的内容 -->
+				<view class="cu-card case">
+					
 					<view class="cu-item shadow">
 						
 						<!-- 卡片上方-图片区域 -->
 						<view class="image">
-							<image :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg' " mode="aspectFill"></image>
-							<view class="cu-tag text-white" :class="[wishitem.ifachieve == 1 ? 'bg-green' : 'bg-pink']">{{wishitem.ifachieve == 1 ? '已实现' : '未实现'}}</view>
+							<image :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFill"></image>
+							<view class="cu-tag text-white" :class="[wishitem.achieveFlag == 1 ? 'bg-green' : 'bg-pink']">{{wishitem.achieveFlag == 1 ? '已实现' : '未实现'}}</view>
 							<view class="cu-bar bg-shadeBottom flex-direction align-start">
 								
 								<!-- 商品标题 -->
-								<view class="text-bold text-xl">{{wishitem.productTitle}}</view>
+								<view class="text-bold text-xl margin-top-sm">{{wishitem.productTitle}}</view>
 								<!-- 商品价格 -->
 								<view class="priceview margin-top-sm">
-									<text class="text-red text-xl margin-right">{{ `${wishitem.expectmoneytype === 'RMB' ? '¥' : wishitem.expectmoneytype === 'THB' ? '฿' : ''}${wishitem.expectPrice}` }}</text>
-									<text class="text-gray text-df">{{ `${wishitem.platformmoneytype === 'RMB' ? '¥' : wishitem.platformmoneytype === 'THB' ? '฿' : ''}${wishitem.platformPrice}` }}</text>
+									<text class="text-red text-xl margin-right">{{ `${wishitem.targetMoneyType === 'RMB' ? '¥' : wishitem.targetMoneyType === 'THB' ? '฿' : ''}${wishitem.targetPrice}` }}</text>
+									<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishitem.sourceMoneyType === 'RMB' ? '¥' : wishitem.sourceMoneyType === 'THB' ? '฿' : ''}${wishitem.sourcePrice}` }}</text>
 								</view>
 								
 							</view>
 						</view>
+						
 						<!-- 卡片下方-内容区域 -->
 						<view class="cu-list menu-avatar">
 							<view class="cu-item">
@@ -40,7 +43,6 @@
 										<text class="cuIcon-people"></text>
 									</view>
 								</template>
-								
 								
 								<!-- 内容 -->
 								<view class="content flex-sub">
@@ -56,6 +58,10 @@
 										</view>
 										<!-- 点赞浏览区域 -->
 										<view class="text-gray text-sm">
+											<!-- 紧急程度 -->
+											<text class="hurryleveltext margin-right-sm">
+												<text v-for="item in wishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
+											</text>
 											<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishitem.previewCount || 0}}
 											<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishitem.commentCount || 0}}
 										</view>
@@ -86,6 +92,7 @@
 		
 		data() {
 			return {
+				
 				pageSize: 10, // 每页条数
 				
 				datalist: [], // 数据源

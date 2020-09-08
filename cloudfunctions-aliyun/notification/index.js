@@ -1,12 +1,15 @@
 'use strict';
 
-const {getcurrenttimestr} = require('hello-common')
+var moment = require('moment')
 const db = uniCloud.database()
 
 exports.main = async (event, context) => {
 	
 	//event为客户端上传的参数
 	console.log('客户端上传到的参数为: ', event)
+	
+	// 当前时间字符串
+	let currenttimestr = moment().add(8,'h').format('YYYY-MM-DD HH:mm:ss') // 注意服务器时间要比客户端时间晚8个小时 所以这里要增加8个小时
 	
 	//获取集合对象
 	const collection = db.collection('notification')
@@ -20,7 +23,7 @@ exports.main = async (event, context) => {
 		// 写入公告集合数据
 		let data = {
 			content: info.content,
-			createDate: getcurrenttimestr()
+			createDate: currenttimestr
 		}
 		let res = await collection.add(data)
 		return res
@@ -59,7 +62,7 @@ exports.main = async (event, context) => {
 		
 		let res = await collection.orderBy("_id", "desc").skip(skipdataNum).limit(pageSize).get()
 		// 如果date有值则返回原先date的值 如果date没有值则返回当前的时间字符串
-		let newdate = date ? date : getcurrenttimestr(true)
+		let newdate = date ? date : currenttimestr
 		res.date = newdate
 		return res
 		

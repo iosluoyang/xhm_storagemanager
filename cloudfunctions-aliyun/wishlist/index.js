@@ -51,7 +51,7 @@ exports.main = async (event, context) => {
 		let docid = info._id
 		// 编辑心愿单集合数据
 		let otherdata = {
-			achieveFlag: 0, // 设置心愿单完成状态为否  ifachieve  0未完成 1已完成
+			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0未完成 1已完成
 			creatTime: currenttimestr, // 更新当前心愿单的创造时间为最新的当前时间
 		}
 		let updateinfo = {...info,...otherdata}
