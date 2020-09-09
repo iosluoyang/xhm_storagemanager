@@ -23,7 +23,7 @@ exports.main = async (event, context) => {
 	if(type == 'add') {
 		
 		let data = {
-			wishid: info.wishid,
+			wishId: info.wishid,
 			creatTime: currenttimestr,
 			user: info.user,
 			content: info.content,
@@ -31,7 +31,7 @@ exports.main = async (event, context) => {
 			price: info.price, // 价格
 			moneytype: info.moneytype, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 			imgs: info.imgs,
-			type: info.type, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新  2心愿单待确认  3心愿单确认通过  4心愿单确认拒绝  5心愿单完成
+			type: info.type, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 		}
 		let res = await collection.add(data)
 		
@@ -61,9 +61,9 @@ exports.main = async (event, context) => {
 	// gettimelinelist 获取某个心愿id下的所有时间轴数据(按照时间倒叙展示)
 	else if(type == 'getlist') {
 		
-		let wishid = info.wishid
+		let wishId = info.wishId
 		let res = await collection.where({
-			wishid: wishid
+			wishId: wishId
 		}).orderBy('creatTime','desc').get()
 		
 		return res

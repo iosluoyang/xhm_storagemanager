@@ -344,8 +344,8 @@ const zh = {
 		sourcelink: "源网站链接",
 		targetlink: "网站链接",
 		sourceprice: "源网站价格",
-		targetprice: "期望价格",
-		targetamount: "期望数量",
+		targetprice: "目标价格",
+		targetamount: "目标数量",
 		hurrylevel: "紧急程度",
 		hurryleveldata: {
 			level1: "一级(无限制)",

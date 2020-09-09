@@ -15,17 +15,28 @@
 					<text class="text-xl text-bold">I Found</text>
 				</view>
 			</view>
+			
 			<!-- 商品标题 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.producttitle}} :</view>
-				<input type="text" confirm-type="next" v-model="productTitle" />
+				<!-- <input type="text" confirm-type="next" v-model="productTitle" /> -->
+				<textarea v-model="productTitle" :placeholder="i18n.error.lackgoodstitle"
+				auto-height
+				:show-confirm-bar="false" 
+				disable-default-padding
+				/>
+				<!-- #ifndef H5 -->
+				<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pastesourelink('productTitle')">{{i18n.base.paste}}</button>
+				<!-- #endif -->
 			</view>
 			
 			<!-- 源网站链接 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.sourcelink}} :</view>
 				<input type="text" confirm-type="next" v-model="sourceLink" />
+				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow" @tap.stop="pastesourelink('sourceLink')">{{i18n.base.paste}}</button>
+				<!-- #endif -->
 			</view>
 			
 			<!-- 源网站价格 -->
@@ -33,7 +44,10 @@
 				
 				<view class="title">{{i18n.wishlist.sourceprice}} :</view>
 				
-				<input type="digit" class="borderCDCDCD" v-model="sourcePrice" />
+				<view class="content flex-sub flex align-center">
+					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
+					<input type="digit" class="borderCDCDCD radius" v-model="sourcePrice" />
+				</view>
 				
 				<!-- 源网站货币种类选择 -->
 				<view class="flex align-center margin-left">
@@ -42,7 +56,6 @@
 				</view>
 
 			</view>
-			
 			
 			<!-- 我想要 -->
 			<view class="cu-bar bg-white margin-top">
@@ -57,7 +70,10 @@
 				
 				<view class="title">{{i18n.wishlist.targetprice}} :</view>
 				
-				<input type="digit" class="borderCDCDCD" v-model="targetPrice" />
+				<view class="content flex-sub flex align-center">
+					<text :class="[ targetMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ targetMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
+					<input type="digit" class="borderCDCDCD radius" v-model="targetPrice" />
+				</view>
 				
 				<!-- 目标货币种类选择 -->
 				<view class="flex align-center margin-left">
@@ -75,7 +91,7 @@
 			
 			<!-- 备注 -->
 			<view class="cu-form-group">
-				<textarea maxlength="-1" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding v-model="remark" :placeholder="i18n.wishlist.remark" />
 			</view>
 			
 			<!-- 紧急程度 -->
@@ -481,6 +497,7 @@
 					
 				}).catch(error => {
 					console.log(`上传失败`);
+					console.log(JSON.stringify(error));
 					// 上传图片失败
 					uni.showToast({
 						title: this.i18n.error.uploaderror,

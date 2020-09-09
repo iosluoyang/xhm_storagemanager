@@ -30,18 +30,25 @@ exports.main = async (event, context) => {
 		
 		let data = {...info,...otherdata}
 		let wishlistres = await collection.add(data)
-		// 添加心愿单时间轴的第一条数据
+		// 添加心愿单时间轴的两条数据
 		const wishlisttimelinecollecton = db.collection('wishlisttimeline')
-		let timelinedata = {
-			wishid: wishlistres.id,
+		// 1.心愿单开始
+		let timelinestartdata = {
+			wishId: wishlistres.id,
+			creatTime: currenttimestr,
+			user: info.user,
+			content: '',
+			type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+		// 2.心愿单第一条评论(取备注字段)
+		let timelinenoramldata = {
+			wishId: wishlistres.id,
 			creatTime: currenttimestr,
 			user: info.user,
 			content: info.remark || '',
 			imgs: '',
-			type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新  2心愿单待确认  3心愿单确认通过  4心愿单确认拒绝  5心愿单完成
+			type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 		}
-		await wishlisttimelinecollecton.add(timelinedata)
-		
+		await wishlisttimelinecollecton.add([timelinestartdata,timelinenoramldata])
 		
 		return wishlistres
 	}

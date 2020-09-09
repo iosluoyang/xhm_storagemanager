@@ -121,19 +121,33 @@
 				
 				<view class="cu-time">{{ $moment(timelinekey).format('DD/MM') }}</view>
 				
-				<view class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex">
-					<view class="content">
-						<view class="cu-item flex align-center">
-							<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
-							<view class="text-gray text-df">
-								{{timelineitem.user.userName}}
-							</view>
-						</view>
-						<view class="margin-top">
-							{{timelineitem.content}}
+				<block v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex">
+					
+					<!-- 心愿开始类型  type=0 -->
+					<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
+						<view class="content bg-pink shadow-blur">
+							<text>{{ $moment(timelineitem.creatTime).format('HH:MM:SS') }}</text>
+							<text class="margin-left">{{ `The wish is start` }}</text>
 						</view>
 					</view>
-				</view>
+					
+					<view v-if="timelineitem.type == 1" class="cu-item">
+						<view class="content">
+							<view class="cu-item flex align-center">
+								<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+								<view class="text-gray text-df">
+									{{timelineitem.user.userName}}
+								</view>
+							</view>
+							<view class="margin-top">
+								{{timelineitem.content}}
+							</view>
+						</view>
+					</view>
+					
+				</block>
+				
+				
 				
 				<!-- <view class="cu-item">
 					<view class="content">
@@ -314,7 +328,7 @@
 					data: {
 						type: 'getlist',
 						info: {
-							wishid: _this.id
+							wishId: _this.id
 						}
 					}
 				}).then(res => {

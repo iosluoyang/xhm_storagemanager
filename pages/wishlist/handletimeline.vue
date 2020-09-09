@@ -28,7 +28,7 @@
 				
 				<!-- 商品标题和备注 -->
 				<view class="procontentview flex-sub margin-left-sm">
-					<view class="text-bold margin-bottom-sm">{{ wishinfo.productTitle }}</view>
+					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
 					<view class="tipsview radius bg-gray padding-sm text-sm text-light">{{wishinfo.remark}}</view>
 					<view class="priceview">
 						<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
@@ -58,14 +58,17 @@
 					
 					<view class="title">{{i18n.wishlist.targetprice}} :</view>
 					
-					<input type="digit" class="borderCDCDCD" v-model="targetPrice" />
+					<view class="content flex-sub flex align-center">
+						<text :class="[ targetMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ targetMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
+						<input type="digit" class="borderCDCDCD radius" v-model="targetPrice" />
+					</view>
 					
-					<!-- 货币种类选择 -->
+					<!-- 目标货币种类选择 -->
 					<view class="flex align-center margin-left">
 						<button class="cu-btn sm round margin-right" :class="targetMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="targetMoneyType='RMB'">¥</button>
 						<button class="cu-btn sm round " :class="targetMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="targetMoneyType='THB'">฿</button>
 					</view>
-				
+					
 				</view>
 				
 				<!-- 目标网站链接 -->
@@ -82,8 +85,8 @@
 				</view>
 				
 				<!-- 备注 -->
-				<view class="cu-form-group solid-bottom">
-					<textarea maxlength="-1" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<view class="cu-form-group">
+					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding v-model="remark" :placeholder="i18n.wishlist.remark" />
 				</view>
 				
 				<!-- 图片上传 -->
