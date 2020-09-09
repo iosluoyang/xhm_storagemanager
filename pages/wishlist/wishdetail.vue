@@ -353,6 +353,9 @@
 							}
 						})
 						_this.timelinearrdic = newtimelinearrdic
+						
+						console.log(JSON.stringify(timelinearrdic));
+						
 					}
 					else {
 						uni.showToast({

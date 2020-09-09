@@ -39,6 +39,7 @@ exports.main = async (event, context) => {
 			user: info.user,
 			content: '',
 			type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+		}
 		// 2.心愿单第一条评论(取备注字段)
 		let timelinenoramldata = {
 			wishId: wishlistres.id,
