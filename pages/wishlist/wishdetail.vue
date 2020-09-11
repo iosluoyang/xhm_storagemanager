@@ -85,7 +85,7 @@
 						
 						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
 						<!-- #ifndef H5 -->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copysourcelink"></button>
+						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copytoclipboard(wishinfo.sourceLink)"></button>
 						<!-- #endif -->
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
@@ -126,22 +126,60 @@
 					<!-- 心愿开始类型  type=0 -->
 					<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
 						<view class="content bg-pink shadow-blur">
-							<text>{{ $moment(timelineitem.creatTime).format('HH:MM:SS') }}</text>
-							<text class="margin-left">{{ `The wish is start` }}</text>
+							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YY HH:MM:SS') }}</text>
+							<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
 						</view>
 					</view>
 					
+					<!-- 心愿单普通时间轴类型 type=1 -->
 					<view v-if="timelineitem.type == 1" class="cu-item">
 						<view class="content">
+							
+							<!-- 评论人头像昵称 -->
 							<view class="cu-item flex align-center">
-								<image class="cu-avatar round lg margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
-								<view class="text-gray text-df">
-									{{timelineitem.user.userName}}
+								<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+								<view class="flex flex-direction text-df">
+									<text class="text-df">{{timelineitem.user.userName}}</text>
+									<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('hh:mm:ss')}}</text>
 								</view>
 							</view>
-							<view class="margin-top">
+							
+							<!-- 评论文本内容 -->
+							<view v-if="timelineitem.content" class="margin-top-sm">
 								{{timelineitem.content}}
 							</view>
+							
+							<!-- 评论图片区域 -->
+							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
+								
+								<view class="grid col-3 grid-square">
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + imgUrl + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+								</view>
+								
+							</view>
+							
+							<!-- 价格区域 -->
+							<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+								
+								<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+								<text class="text-red text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
+								
+							</view>
+							
+							<!-- 评论链接区域 -->
+							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
+								
+								<text class="cuIcon cuIcon-link text-green"></text>
+								<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
+								<!-- 粘贴按钮 -->
+								<!-- #ifndef H5 -->
+								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.paste}}</button>
+								<!-- #endif -->
+								
+							</view>
+							
+							<!--  -->
+							
 						</view>
 					</view>
 					
@@ -216,7 +254,6 @@
 			_this = this
 			
 			let id = option.id
-			id = id || `5f55a657c07b7700015e8e65`
 			this.id = id
 			
 			if(this.id) {
@@ -304,14 +341,13 @@
 				
 			},
 			
-			// 点击复制源网站链接
-			copysourcelink() {
-				let sourcelink = this.wishinfo.sourceLink
+			// 点击复制到剪贴板
+			copytoclipboard(data) {
 				uni.setClipboardData({
-					data: sourcelink,
+					data: data,
 					success() {
 						uni.showToast({
-							title: `copy ${sourcelink} succeed !`,
+							title: `copy succeed !`,
 							icon: 'none'
 						});
 					}
@@ -337,7 +373,7 @@
 					
 					if(res.success) {
 						let timelinelist = res.result.data
-						
+												
 						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
 						let newtimelinearrdic = {}
 						timelinelist.forEach((timelineitem, index) => {
@@ -353,9 +389,7 @@
 							}
 						})
 						_this.timelinearrdic = newtimelinearrdic
-						
-						console.log(JSON.stringify(timelinearrdic));
-						
+
 					}
 					else {
 						uni.showToast({
@@ -390,7 +424,7 @@
 			// 更新心愿时间轴进度
 			updatewishtimeline() {
 				uni.navigateTo({
-					url: `/pages/wishlist/handletimeline?wishid=${this.id}`
+					url: `/pages/wishlist/handletimeline?wishId=${this.id}`
 				});
 			},
 			
@@ -447,6 +481,20 @@
 				})
 				
 			},
+			
+			// 查看评论图片
+			previewcommentimg(imgs, index) {
+				let previewArr = []
+				imgs.split(',').forEach((imgurl) => {
+					previewArr.push(_this.imgUrl + imgurl)
+				})
+				uni.previewImage({
+					urls: previewArr,
+					current:index
+				})
+			},
+			
+			//
 			
 		},
 	}

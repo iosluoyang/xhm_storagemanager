@@ -133,7 +133,7 @@
 		data() {
 			return {
 				type: 'add', // 页面类型  目前暂时只有add一种类型
-				wishid: null, // 当前时间轴的心愿id
+				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
 				
 				swiperimgArr: [], // 轮播图片数组
@@ -154,8 +154,8 @@
 			
 			_this = this
 			
-			let wishid = option.wishid
-			_this.wishid = wishid || '5f549a632805da0001929aaf'
+			let wishId = option.wishId
+			_this.wishId = wishId
 			
 			// 获取当前心愿的详情
 			_this.getwishdetail()
@@ -174,7 +174,7 @@
 					data: {
 						type: 'getdetail',
 						info: {
-							_id: this.wishid
+							_id: this.wishId
 						}
 					}
 				}).then(response => {
@@ -362,13 +362,13 @@
 					return false
 				}
 				// 检查是否有图片
-				else if(this.imgArr.length == 0) {
-					uni.showToast({
-						title: this.i18n.error.lackgoodsmainpic,
-						icon: 'none'
-					});
-					return false
-				}
+				// else if(this.imgArr.length == 0) {
+				// 	uni.showToast({
+				// 		title: this.i18n.error.lackgoodsmainpic,
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				
 				// 其余项均为选填项
 				
@@ -376,14 +376,14 @@
 				this.uploadpic(this.imgArr).then(imgs => {
 					// 上传图片成功 开始上传所有数据
 					let info = {
-						wishid: _this.wishid, // 当前心愿的id
+						wishId: _this.wishId, // 当前心愿的id
 						user: _this.user, // 当前发布人的信息
 						content: _this.remark, // 内容信息
 						link: _this.targetLink, // 链接地址
 						price: _this.targetPrice, // 价格
-						moneytype: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
+						moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 						imgs: imgs, // 图片字符串集合
-						type: 2, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新  2心愿单待确认  3心愿单确认通过  4心愿单确认拒绝  5心愿单完成
+						type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 					}
 					
 					// 新增

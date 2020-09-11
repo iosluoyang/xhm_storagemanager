@@ -41,9 +41,11 @@ exports.main = async (event, context) => {
 			type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 		}
 		// 2.心愿单第一条评论(取备注字段)
+		//注意这里新增心愿单的时候将时间轴开始时间+1秒作为第一个普通评论的时间轴,否则会造成查询结果有误
+		let firsttimelinenormaldatacreatetime = moment(currenttimestr).add(1,'s').format('YYYY-MM-DD HH:mm:ss')
 		let timelinenoramldata = {
 			wishId: wishlistres.id,
-			creatTime: currenttimestr,
+			creatTime: firsttimelinenormaldatacreatetime,
 			user: info.user,
 			content: info.remark || '',
 			imgs: '',

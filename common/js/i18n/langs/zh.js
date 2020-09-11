@@ -362,6 +362,7 @@ const zh = {
 			title: "时间轴",
 			updatetimeline: "更新时间轴",
 			targetpriceerror: "请输入目标价格",
+			startsign: "心愿单开始"
 		},
 		
 		
