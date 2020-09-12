@@ -36,8 +36,8 @@
 					
 					<view class="headerrightview flex align-center justify-end">
 						
-						<view class="cu-tag" :class="[ wishinfo.achieveFlag == 0 ? 'bg-pink' : 'bg-gradual-green' ]">
-							{{ wishinfo.achieveFlag == 0 ? '未实现' : '已实现' }}
+						<view class="cu-tag" :class="[ wishinfo.achieveFlag == 2 ? 'bg-green' : wishinfo.achieveFlag == 1 ? 'bg-orange' : 'bg-pink' ]">
+							{{wishinfo.achieveFlag == 2 ? i18n.wishlist.achieveFlag.finish : wishinfo.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}
 						</view>
 						
 					</view>
@@ -119,14 +119,19 @@
 			
 			<view class="cu-timeline"  v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
 				
-				<view class="cu-time">{{ $moment(timelinekey).format('DD/MM') }}</view>
+				<view class="cu-time">{{ $moment(timelinekey).format('Do/MMM') }}</view>
 				
+				<!-- 
+				时间轴类型  
+					0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认
+					4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+				-->
 				<block v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex">
 					
 					<!-- 心愿开始类型  type=0 -->
 					<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
 						<view class="content bg-pink shadow-blur">
-							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YY HH:MM:SS') }}</text>
+							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
 							<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
 						</view>
 					</view>
@@ -140,7 +145,7 @@
 								<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
 								<view class="flex flex-direction text-df">
 									<text class="text-df">{{timelineitem.user.userName}}</text>
-									<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('hh:mm:ss')}}</text>
+									<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 								</view>
 							</view>
 							
@@ -171,9 +176,9 @@
 								
 								<text class="cuIcon cuIcon-link text-green"></text>
 								<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
-								<!-- 粘贴按钮 -->
+								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.paste}}</button>
+								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 								<!-- #endif -->
 								
 							</view>
@@ -183,45 +188,69 @@
 						</view>
 					</view>
 					
-				</block>
-				
-				
-				
-				<!-- <view class="cu-item">
-					<view class="content">
-						
-						<view class="cu-list menu-avatar comment solids-top">
+					<!-- 新商品发现待确认 拒绝状态 type=3 type=5 -->
+					<view v-if="timelineitem.type == 3 || timelineitem.type == 5" class="cu-item">
+						<view class="content" :class="[timelineitem.type == 3 ? 'bg-gradual-orange' : timelineitem.type == 5 ? 'bg-gray' : 'bg-white']">
 							
-							<view class="cu-item">
-								<view class="cu-avatar round" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg);"></view>
-								<view class="content">
-									<view class="text-grey">凯尔</view>
-									<view class="text-gray text-content text-df">
-										妹妹，如果不是为了飞翔，我们要这翅膀有什么用?
-									</view>
-									<view class="bg-grey padding-sm radius margin-top-sm  text-sm">
-										<view class="flex">
-											<view>莫甘娜：</view>
-											<view class="flex-sub">如果不能立足于大地，要这双脚又有何用?</view>
-										</view>
-									</view>
-									<view class="margin-top-sm flex justify-between">
-										<view class="text-gray text-df">2018年12月4日</view>
-										<view>
-											<text class="cuIcon-appreciate text-gray"></text>
-											<text class="cuIcon-messagefill text-gray margin-left-sm"></text>
-										</view>
-									</view>
+							<!-- 评论人头像昵称 -->
+							<view class="cu-item flex align-center">
+								<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+								<view class="flex flex-direction text-df">
+									<text class="text-df">{{timelineitem.user.userName}}</text>
+									<text class="commenttime text-sm text-grey">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 								</view>
 							</view>
+							
+							<!-- 评论文本内容 -->
+							<view v-if="timelineitem.content" class="margin-top-sm text-black">
+								{{timelineitem.content}}
+							</view>
+							
+							<!-- 评论图片区域 -->
+							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
+								
+								<view class="grid col-3 grid-square">
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + imgUrl + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+								</view>
+								
+							</view>
+							
+							<!-- 价格区域 -->
+							<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+								
+								<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+								<text class="text-black text-bold text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
+								
+							</view>
+							
+							<!-- 评论链接区域 -->
+							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
+								
+								<text class="cuIcon cuIcon-link text-green"></text>
+								<text class="text-sm text-black margin-left-sm">{{ timelineitem.link }}</text>
+								<!-- 复制按钮 -->
+								<!-- #ifndef H5 -->
+								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+								<!-- #endif -->
+								
+							</view>
+							
+							<!-- 按钮操作区域 -->
+							<view class="btnview flex align-center margin-top-sm padding-top-sm solid-top">
+								<button v-if="timelineitem.type==3" class="cu-btn round bg-red margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+								<button v-if="timelineitem.type==5" disabled class="cu-btn round margin-right">{{ i18n.base.refuse }}</button>
+								<button v-if="timelineitem.type==3" class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+							</view>
+							
 						</view>
 					</view>
 					
-				</view> -->
+				</block>
 				
 			</view>
 			
 		</view>
+		
 		
 		<!-- 添加按钮 悬浮 -->
 		<view class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
@@ -246,6 +275,7 @@
 				timelinearrdic: {}, // 心愿时间轴数据
 				swiperCur: 0, // 当前轮播图索引
 				imgsArr: [], // 轮播图的图片数组索引
+				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
 		},
@@ -294,7 +324,7 @@
 			// 获取心愿详情
 			loaddetaildata() {
 				
-				_this.ifloading = true // 开始缓冲动画
+				// _this.ifloading = true // 开始缓冲动画
 				
 				uniCloud.callFunction({
 					name: 'wishlist',
@@ -305,7 +335,7 @@
 						}
 					}
 				}).then(res => {
-					_this.ifloading = false // 结束缓冲动画
+					// _this.ifloading = false // 结束缓冲动画
 					// 获取心愿详情数据成功
 					if(res.success) {
 						
@@ -492,6 +522,60 @@
 					urls: previewArr,
 					current:index
 				})
+			},
+			
+			// 拒绝时间轴商品发现
+			refusetimeline(timelineitem) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始拒绝
+							uniCloud.callFunction({
+								name: 'wishlisttimeline',
+								data: {
+									type: 'refuse',
+									info: timelineitem
+								}
+							})
+							.then(res => {
+								if(res.success) {
+									// 拒绝成功 手动将状态数据变更
+									timelineitem.type = 5
+									_this.wishinfo.achieveFlag = 0
+									// 更新心愿列表数据
+									uni.$emit('updatewishlist')
+								}
+								else{
+									uni.showToast({
+										title: _this.i18n.error.loaderror,
+										icon: 'none'
+									});
+								}
+							})
+							.catch(error => {
+								// 拒绝失败
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							})
+						}
+					},
+				})
+				
+			},
+			
+			// 同意时间轴商品发现
+			agreetimeline(timelineitem) {
+				uni.showToast({
+					title: '跳转同意确认订单页面',
+					icon: 'none'
+				});
 			},
 			
 			//

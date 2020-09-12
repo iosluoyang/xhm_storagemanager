@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
 	if(type == 'add') {
 		// 写入心愿单集合数据
 		let otherdata = {
-			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0未完成 1已完成
+			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0进行中 1待确认 2已完成
 			previewCount: 1, // 设置浏览数量为1
 			commentCount: 0, // 设置评论数量为0
 			creatTime: currenttimestr, // 当前新增的时间字符串
@@ -61,7 +61,7 @@ exports.main = async (event, context) => {
 		let docid = info._id
 		// 编辑心愿单集合数据
 		let otherdata = {
-			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0未完成 1已完成
+			achieveFlag: 0, // achieveFlag  0进行中 1待确认 2已完成
 			creatTime: currenttimestr, // 更新当前心愿单的创造时间为最新的当前时间
 		}
 		let updateinfo = {...info,...otherdata}

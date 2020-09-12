@@ -91,7 +91,7 @@
 			
 			<!-- 备注 -->
 			<view class="cu-form-group">
-				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
 			</view>
 			
 			<!-- 紧急程度 -->

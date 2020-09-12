@@ -2,11 +2,11 @@
 	<view class="handletimelineview content">
 		
 		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
-			<block slot="content">{{i18n.wishlist.found}}</block>
+			<block slot="content">{{ type === 'found' ? i18n.wishlist.found : type === 'addcomment' ? i18n.wishlist.timeline.updatetimeline : i18n.wishlist.title }}</block>
 		</cu-custom>
 		
 		<!-- 该心愿详情信息 -->
-		<view class="wishdetailview bg-white padding-sm">
+		<view class="wishdetailview bg-white padding-sm solid-bottom">
 			
 			<view class="cu-bar">
 				<view class="action">
@@ -50,11 +50,20 @@
 				</view>
 			</view>
 			
-			<!-- 表单区域  填写相关数据 -->
+			<!-- 选择更新时间轴的类型 -->
+			<view class="cu-bar btn-group">
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">新增评论</button>
+				<text class="text-gray">/</text>
+				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink' ]" @tap.stop="type='found'">发现新商品</button>
+			</view>
+			
+			<!-- 表单区域 -->
 			<form>
 				
-				<!-- 目标价格 -->
-				<view class="cu-form-group">
+				<!-- 目标价格 仅当发现新商品时才有 -->
+				<view v-if="type==='found'" class="cu-form-group">
+					
+					<text class="cuIcon cuIcon-moneybag text-red"></text>
 					
 					<view class="title">{{i18n.wishlist.targetprice}} :</view>
 					
@@ -71,8 +80,10 @@
 					
 				</view>
 				
-				<!-- 目标网站链接 -->
-				<view class="cu-form-group ">
+				<!-- 目标网站链接 仅当发现新商品时才有 -->
+				<view v-if="type==='found'" class="cu-form-group ">
+					
+					<text class="cuIcon cuIcon-link text-green"></text>
 					
 					<view class="title">{{i18n.wishlist.targetlink}} :</view>
 					<input type="text" confirm-type="next" v-model="targetLink" />
@@ -85,8 +96,8 @@
 				</view>
 				
 				<!-- 备注 -->
-				<view class="cu-form-group">
-					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<view class="cu-form-group solid-bottom">
+					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
 				</view>
 				
 				<!-- 图片上传 -->
@@ -132,7 +143,8 @@
 	export default {
 		data() {
 			return {
-				type: 'add', // 页面类型  目前暂时只有add一种类型
+				type: "addcomment", // 页面类型 found 发现新商品 addcomment 添加普通评论
+				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add 目前仅支持add
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
 				
@@ -293,7 +305,7 @@
 					}
 										
 					// 区分新增和编辑状态
-					if(_this.type === 'add') {
+					if(_this.pagetype === 'add') {
 						
 						_this.ifloading = true // 开始加载动画
 						// 开始上送图片
@@ -310,7 +322,7 @@
 						})
 						
 					}
-					else if(_this.type === 'edit') {
+					else if(_this.pagetype === 'edit') {
 						// 编辑状态下
 						_this.ifloading = true // 开始加载动画
 						let needtoindexArr = []
@@ -353,14 +365,33 @@
 				
 				// 进行数据检查
 				
-				// 检查是否有目标价格
-				if(!this.targetPrice) {
-					uni.showToast({
-						title: this.i18n.wishlist.timeline.targetpriceerror,
-						icon: 'none'
-					});
-					return false
+				// 添加普通更新内容时
+				if(this.type === 'addcomment') {
+					
+					// 检查是否有评论内容
+					if(!this.remark) {
+						uni.showToast({
+							title: this.i18n.wishlist.timeline.timelinecontenterror,
+							icon: 'none'
+						});
+						return false
+					}
+					
 				}
+				// 添加发现新商品时
+				else if(this.type === 'found') {
+					
+					// 检查是否有目标价格
+					if(!this.targetPrice) {
+						uni.showToast({
+							title: this.i18n.wishlist.timeline.targetpriceerror,
+							icon: 'none'
+						});
+						return false
+					}
+					
+				}
+				
 				// 检查是否有图片
 				// else if(this.imgArr.length == 0) {
 				// 	uni.showToast({
@@ -375,50 +406,68 @@
 				// 开始上传图片(仅包含新增)
 				this.uploadpic(this.imgArr).then(imgs => {
 					// 上传图片成功 开始上传所有数据
-					let info = {
+					console.log(`获得的图片链接为${imgs}`);
+					// 根据当前页面类型选择更新的时间轴类型
+					let timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
+					
+					let commoninfo = {
 						wishId: _this.wishId, // 当前心愿的id
 						user: _this.user, // 当前发布人的信息
 						content: _this.remark, // 内容信息
-						link: _this.targetLink, // 链接地址
-						price: _this.targetPrice, // 价格
-						moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 						imgs: imgs, // 图片字符串集合
-						type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+						type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 					}
 					
-					// 新增
-					if(_this.type == 'add') {
-						
-						// 开始上传云函数
-						uniCloud.callFunction({
-							name: 'wishlisttimeline',
-							data: {
-								type: 'add',
-								info: info
-							}
-						}).then(response => {
-							// 发布成功
-							uni.$emit('updatetimeline')
-							uni.showToast({
-								title: _this.i18n.tip.addsuccess,
-								icon: 'none',
-								duration: 1500
-							});
-							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
-						}).catch(error => {
-							// 发布失败
-							uni.showToast({
-								title: _this.i18n.error.adderror,
-								icon: 'none'
-							});
-						})
-						
+					let foundinfo = {}
+					// 如果是发现新商品类型则添加价格和链接地址
+					if(_this.type === 'found') {
+						foundinfo = {
+							link: _this.targetLink, // 链接地址
+							price: _this.targetPrice, // 价格
+							moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
+						}
 					}
+					
+					let uploaddata = {...commoninfo,...foundinfo}
+					console.log(`即将上传的数据为${JSON.stringify(uploaddata)}`);
+					
+					// 开始上传云函数
+					uniCloud.callFunction({
+						name: 'wishlisttimeline',
+						data: {
+							type: 'add',
+							info: uploaddata
+						}
+					}).then(response => {
+						// 发布成功
+						// 更新事件轴数据
+						uni.$emit('updatetimeline')
+						
+						// 如果是待确认状态则更新心愿单列表和详情
+						if(uploaddata.type == 3) {
+							uni.$emit('updatewishlist')
+							uni.$emit('updatewishdetail')
+						}
+						
+						uni.showToast({
+							title: _this.i18n.tip.addsuccess,
+							icon: 'none',
+							duration: 1500
+						});
+						
+						setTimeout(function() {
+							uni.navigateBack();
+						}, 1500);
+					}).catch(error => {
+						// 发布失败
+						uni.showToast({
+							title: _this.i18n.error.adderror,
+							icon: 'none'
+						});
+					})
 					
 				}).catch(error => {
+					console.log(``);
 					console.log(`上传失败`);
 					// 上传图片失败
 					uni.showToast({

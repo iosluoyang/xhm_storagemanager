@@ -13,6 +13,8 @@ const en = {
 		del: "Delete",
 		save: "Save",
 		add: "Add",
+		refuse: "Refuse",
+		agree: "Agree",
 		copy: "Copy",
 		paste: "Paste",
 		preview: "Preview",

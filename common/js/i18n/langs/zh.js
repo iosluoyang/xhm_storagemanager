@@ -13,6 +13,8 @@ const zh = {
 		del: "删除",
 		save: "保存",
 		add: "新增",
+		refuse: "拒绝",
+		agree: "同意",
 		copy: "复制",
 		paste: "粘贴",
 		preview: "预览",
@@ -358,10 +360,16 @@ const zh = {
 		remark: "备注",
 		found: "我发现",
 		wishdetail: "心愿详情",
+		achieveFlag: {
+			finish: "已完成",
+			waittoconfirm: "待确认",
+			ing: "进行中",
+		},
 		timeline: {
 			title: "时间轴",
 			updatetimeline: "更新时间轴",
 			targetpriceerror: "请输入目标价格",
+			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始"
 		},
 		

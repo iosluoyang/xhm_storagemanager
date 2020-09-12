@@ -35,6 +35,14 @@ exports.main = async (event, context) => {
 		}
 		let res = await collection.add(data)
 		
+		// 如果时间轴type为3待确认 则将对应的心愿单状态更改为待确认
+		if(data.type == 3) {
+			const wishcollection = db.collection('wishlist')
+			await wishcollection.doc(data.wishId).update({
+				achieveFlag: 1 // achieveFlag  0进行中 1待确认 2已完成
+			})
+		}
+		
 		return res
 	}
 	
@@ -55,6 +63,21 @@ exports.main = async (event, context) => {
 	else if(type == 'delete') {
 		let docid = info._id
 		let res = await collection.doc(docid).remove()
+		return res
+	}
+	
+	// refuse 时间轴数据点击拒绝
+	else if(type == 'refuse') {
+		let docid = info._id
+		let res = await collection.doc(docid).update({
+			type: 5
+		})
+		// 当时间轴数据被拒绝的时候将对应的心愿单状态恢复为进行中
+		let wishId = info.wishId
+		const wishlistcollection = db.collection('wishlist')
+		await wishlistcollection.doc(wishId).update({
+			achieveFlag: 0
+		})
 		return res
 	}
 	
