@@ -188,25 +188,41 @@
 						</view>
 					</view>
 					
-					<!-- 新商品发现待确认 拒绝状态 type=3 type=5 -->
-					<view v-if="timelineitem.type == 3 || timelineitem.type == 5" class="cu-item">
-						<view class="content" :class="[timelineitem.type == 3 ? 'bg-gradual-orange' : timelineitem.type == 5 ? 'bg-gray' : 'bg-white']">
+					<!-- 心愿单发现新商品类型 包含待确认type=3、同意type=4、拒绝type=5等状态 -->
+					<view v-if="timelineitem.type == 3 || timelineitem.type == 4 || timelineitem.type == 5" class="cu-item">
+						
+						<view :class="[ timelineitem.type==3 ? 'bg-gradual-orange' : timelineitem.type==4 ? 'bg-pink' : timelineitem.type==5 ? 'bg-gray' : 'bg-grey' , 'content']">
 							
-							<!-- 评论人头像昵称 -->
-							<view class="cu-item flex align-center">
-								<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
-								<view class="flex flex-direction text-df">
-									<text class="text-df">{{timelineitem.user.userName}}</text>
-									<text class="commenttime text-sm text-grey">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+							<!-- 发布人头像昵称 -->
+							<view class="cu-item flex align-center justify-between">
+								
+								<!-- 左侧区域 -->
+								<view class="leftview flex-treble flex align-center">
+									<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+									<view class="flex flex-direction text-sm">
+										<text class="text-black">{{timelineitem.user.userName}}</text>
+										<text class="text-grey">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+									</view>
 								</view>
+								
+								<!-- 动态标识 -->
+								<view class="tagview flex-sub flex align-center justify-end">
+									<!-- type=3 待确认标识 -->
+									<view v-if="timelineitem.type==3" class="cu-tag bg-white radius">{{ i18n.base.waittoconfirm }}</view>
+									<!-- type=4 通过标识 -->
+									<view v-if="timelineitem.type==4" class="cu-tag bg-green radius">{{ i18n.base.agree }}</view>
+									<!-- type=5 拒绝标识 -->
+									<view v-if="timelineitem.type==5" class="cu-tag bg-grey radius">{{ i18n.base.refuse }}</view>
+								</view>
+								
 							</view>
 							
-							<!-- 评论文本内容 -->
+							<!-- 文本内容 -->
 							<view v-if="timelineitem.content" class="margin-top-sm text-black">
 								{{timelineitem.content}}
 							</view>
 							
-							<!-- 评论图片区域 -->
+							<!-- 图片区域 -->
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
@@ -223,7 +239,7 @@
 								
 							</view>
 							
-							<!-- 评论链接区域 -->
+							<!-- 链接区域 -->
 							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
 								
 								<text class="cuIcon cuIcon-link text-green"></text>
@@ -235,14 +251,70 @@
 								
 							</view>
 							
-							<!-- 按钮操作区域 -->
-							<view class="btnview flex align-center margin-top-sm padding-top-sm solid-top">
-								<button v-if="timelineitem.type==3" class="cu-btn round bg-red margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
-								<button v-if="timelineitem.type==5" disabled class="cu-btn round margin-right">{{ i18n.base.refuse }}</button>
-								<button v-if="timelineitem.type==3" class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+							<!-- 不同状态的区域 -->
+							<view class="optionview margin-top-sm padding-top-sm solid-top">
+								
+								<!-- 待确认状态 type=3 按钮操作区域 -->
+								<view v-if="timelineitem.type==3" class="btnview flex align-center">
+									<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+									<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+								</view>
+								
+								<!-- 同意状态 type=4 发布需求单 -->
+								<view v-if="timelineitem.type==4" class="agreeview margin-left-sm padding-left-sm">
+									
+									<!-- 同意人 -->
+									<view v-if="timelineitem.agreeUser" class="agreeUserview flex align-center">
+										<view class="leftview flex align-center">
+											<image class="cu-avatar round sm" :src="imgUrl + timelineitem.agreeUser.avatar" mode="aspectFill"></image>
+											<view class="flex margin-left-sm flex-direction text-sm">
+												<text class="usernameview text-white text-sm text-cut">{{ timelineitem.agreeUser.userName }}</text>
+												<text class="text-gray">{{timelineitem.agreeTime}}</text>
+											</view>
+										</view>
+									</view>
+									
+									<!-- 同意操作按钮区域 -->
+									<view class="btnsview solid-top padding-top-sm flex align-center">
+										
+										<!-- 小程序平台有分享按钮 -->
+										<!-- #ifdef MP-WEIXIN -->
+										<button class="cu-btn round bg-gradual-green margin-right" open-type="share">{{ i18n.wishlist.importproduct.importpro }}</button>
+										<!-- #endif -->
+										<!-- 非小程序平台为普通操作按钮 -->
+										<!-- #ifndef MP-WEIXIN -->
+										<button class="cu-btn round bg-gradual-green margin-right" @tap.stop="importproduct(timelineitem)">{{ i18n.wishlist.importproduct.importpro }}</button>
+										<!-- #endif -->
+									
+									</view>
+									
+								</view>
+								
+								<!-- 被拒绝状态  type=5 拒绝标识和拒绝理由 -->
+								<view v-if="timelineitem.type==5" class="refusereasonview margin-left-sm padding-left-sm">
+									
+									<!-- 拒绝人 -->
+									<view v-if="timelineitem.refuseUser" class="refuseUserview flex align-center">
+										
+										<view class="leftview flex align-center">
+											<image class="cu-avatar round sm" :src="imgUrl + timelineitem.refuseUser.avatar" mode="aspectFill"></image>
+											<view class="flex margin-left-sm flex-direction text-sm">
+												<text class="usernameview text-black text-sm text-cut">{{ timelineitem.refuseUser.userName }}</text>
+												<text class="text-grey">{{timelineitem.refuseTime}}</text>
+											</view>
+										</view>
+									</view>
+									
+									<!-- 拒绝原因 -->
+									<view class="bg-grey padding-sm margin-top-sm margin-left radius text-sm">
+										{{ timelineitem.refuseReason }}
+									</view>
+								</view>
+								
 							</view>
 							
 						</view>
+						
 					</view>
 					
 				</block>
@@ -251,14 +323,30 @@
 			
 		</view>
 		
-		
-		<!-- 添加按钮 悬浮 -->
-		<view class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<!-- 添加按钮 悬浮 愿望完成后不显示 -->
+		<view v-if=" wishinfo && wishinfo.achieveFlag!=2 " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100upx;"></text>
 		</view>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
+		
+		<!-- 输入弹出框 -->
+		<view class="cu-modal" :class="ifshowmodal?'show':''">
+			<view class="cu-dialog">
+				
+				<view class="cu-bar bg-white">
+					<view class="content">{{ i18n.wishlist.timeline.refusereason }}</view>
+				</view>
+				<view class="padding-sm text-left">
+					<textarea style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.inputrefusereason" v-model="refuseReason"></textarea>
+				</view>
+				<view class="cu-bar bg-white flex justify-around">
+					<button class="cu-btn round bg-gray text-grey" @tap.stop="ifshowmodal=false;refuseReason='';">{{i18n.base.cancel}}</button>
+					<button class="cu-btn round bg-gradual-orange" @tap.stop="confirmrefuse">{{i18n.base.confirm}}</button>
+				</view>
+			</view>
+		</view>
 		
 	</view>
 </template>
@@ -270,11 +358,16 @@
 	export default {
 		data() {
 			return {
+				
 				id: null, // 当前心愿详情id
 				wishinfo: null, // 当前心愿详情
 				timelinearrdic: {}, // 心愿时间轴数据
+				sharetimelineitem: null, // 要分享的时间轴数据
 				swiperCur: 0, // 当前轮播图索引
 				imgsArr: [], // 轮播图的图片数组索引
+				temptimelineitem: null, // 临时时间轴变量
+				refuseReason: '', // 拒绝原因
+				ifshowmodal: false, // 是否显示模态框
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
@@ -317,6 +410,25 @@
 		onUnload() {
 			uni.$off('updatewishdetail')
 			uni.$off('updatetimeline')
+		},
+		
+		onShareAppMessage(res) {
+			
+			console.log(`当前页面的分享来源为:${res.from === 'button' ? '页面内分享按钮' : '右上角分享按钮' }`);
+			
+			// 当前要分享出去的时间轴数据
+			let sharetimelineitem = this.sharetimelineitem
+			// 设置分享的内容
+			let title = `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
+			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}`
+			let imageUrl = sharetimelineitem ? this.imgUrl + sharetimelineitem.imgs.split(',')[0] : this.imgUrl + this.wishinfo.imgs.split(',')[0]
+			let shareobj = {
+				title: title,
+				path: path,
+				imageUrl: imageUrl
+			}
+			
+			return shareobj
 		},
 		
 		methods: {
@@ -428,7 +540,6 @@
 						});
 					}
 				}).catch(error => {
-					
 					_this.ifloading = false // 结束缓冲动画
 					
 					uni.showToast({
@@ -528,27 +639,114 @@
 			refusetimeline(timelineitem) {
 				
 				uni.showModal({
-					content: _this.i18n.tip.deleteconfirm,
+					content: _this.i18n.tip.optionconfirm,
 					showCancel: true,
 					cancelText: _this.i18n.base.cancel,
 					confirmText: _this.i18n.base.confirm,
 					success: res => {
 						if(res.confirm) {
-							// 开始拒绝
+							
+							// 填写拒绝理由
+							_this.temptimelineitem = timelineitem
+							_this.ifshowmodal = true
+							
+						}
+					},
+				})
+				
+			},
+			
+			// 拒绝发现操作
+			confirmrefuse() {
+				
+				if(!_this.refuseReason) {
+					uni.showToast({
+						title: _this.i18n.wishlist.timeline.inputrefusereason,
+						icon: 'none'
+					});
+					return
+				}
+				// 开始拒绝
+				let otherdata = {
+					refuseReason: _this.refuseReason,
+					refuseUser: _this.user
+				}
+				let timelineitem = _this.temptimelineitem
+				let uploaddata = {...timelineitem,...otherdata}
+				// 开始拒绝
+				uniCloud.callFunction({
+					name: 'wishlisttimeline',
+					data: {
+						type: 'refuse',
+						info: uploaddata
+					}
+				})
+				.then(res => {
+					if(res.success) {
+						// 拒绝成功 手动将状态数据变更
+						timelineitem.refuseReason = uploaddata.refuseReason
+						timelineitem.refuseUser = uploaddata.refuseUser
+						timelineitem.type = 5
+						_this.wishinfo.achieveFlag = 0
+						
+						// 清空拒绝理由 隐藏弹出框
+						_this.refuseReason = ''
+						_this.ifshowmodal = false
+						// 更新心愿列表数据
+						uni.$emit('updatewishlist')
+						
+					}
+					else{
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					// 拒绝失败
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 同意时间轴商品发现
+			agreetimeline(timelineitem) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 开始同意操作
+							let uploaddata = {
+								_id: timelineitem._id,
+								agreeUser: _this.user,
+								wishId: timelineitem.wishId
+							}
 							uniCloud.callFunction({
 								name: 'wishlisttimeline',
 								data: {
-									type: 'refuse',
-									info: timelineitem
+									type: 'agree',
+									info: uploaddata
 								}
 							})
 							.then(res => {
 								if(res.success) {
-									// 拒绝成功 手动将状态数据变更
-									timelineitem.type = 5
-									_this.wishinfo.achieveFlag = 0
+									// 同意成功 手动将状态数据变更
+									timelineitem.agreeUser = uploaddata.agreeUser
+									timelineitem.type = 4
+									_this.wishinfo.achieveFlag = 2
+			
 									// 更新心愿列表数据
 									uni.$emit('updatewishlist')
+									
 								}
 								else{
 									uni.showToast({
@@ -558,27 +756,23 @@
 								}
 							})
 							.catch(error => {
-								// 拒绝失败
+								// 同意失败
 								uni.showToast({
 									title: _this.i18n.error.loaderror,
 									icon: 'none'
 								});
 							})
+							
 						}
 					},
 				})
 				
 			},
 			
-			// 同意时间轴商品发现
-			agreetimeline(timelineitem) {
-				uni.showToast({
-					title: '跳转同意确认订单页面',
-					icon: 'none'
-				});
+			// 进货操作
+			importproduct(timelineitem) {
+				
 			},
-			
-			//
 			
 		},
 	}

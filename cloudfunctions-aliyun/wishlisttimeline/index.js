@@ -69,14 +69,36 @@ exports.main = async (event, context) => {
 	// refuse 时间轴数据点击拒绝
 	else if(type == 'refuse') {
 		let docid = info._id
-		let res = await collection.doc(docid).update({
-			type: 5
-		})
+		let updateinfo = {
+			type: 5,
+			refuseReason: info.refuseReason,
+			refuseUser: info.refuseUser,
+			refuseTime: currenttimestr,
+		}
+		let res = await collection.doc(docid).update(updateinfo)
 		// 当时间轴数据被拒绝的时候将对应的心愿单状态恢复为进行中
 		let wishId = info.wishId
 		const wishlistcollection = db.collection('wishlist')
 		await wishlistcollection.doc(wishId).update({
 			achieveFlag: 0
+		})
+		return res
+	}
+	
+	// agree 时间轴数据点击同意
+	else if(type == 'agree') {
+		let docid = info._id
+		let updateinfo = {
+			type: 4,
+			agreeUser: info.agreeUser,
+			agreeTime: currenttimestr,
+		}
+		let res = await collection.doc(docid).update(updateinfo)
+		// 当时间轴数据被拒绝的时候将对应的心愿单状态恢复为已完成
+		let wishId = info.wishId
+		const wishlistcollection = db.collection('wishlist')
+		await wishlistcollection.doc(wishId).update({
+			achieveFlag: 2
 		})
 		return res
 	}

@@ -98,6 +98,10 @@
 	font-weight: 300;
 }
 
+.cu-modal{
+	z-index: 200 !important;
+}
+
 @keyframes show {
 	0% {
 		transform: translateY(-50px);

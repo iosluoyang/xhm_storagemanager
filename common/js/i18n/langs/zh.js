@@ -13,6 +13,7 @@ const zh = {
 		del: "删除",
 		save: "保存",
 		add: "新增",
+		waittoconfirm: "待确认",
 		refuse: "拒绝",
 		agree: "同意",
 		copy: "复制",
@@ -95,6 +96,7 @@ const zh = {
 		freezeconfirm: "确定冻结/解冻该用户吗？",
 		deleteconfirm: "确定删除吗?",
 		resetconfirm: "确定重置吗?",
+		optionconfirm: "确定进行该操作吗?",
 		searchpeople: "输入成员名称进行搜索",
 		searchtype: "输入分类名称进行搜索",
 		searchproduct: "输入商品名称进行搜索",
@@ -370,8 +372,14 @@ const zh = {
 			updatetimeline: "更新时间轴",
 			targetpriceerror: "请输入目标价格",
 			timelinecontenterror: "请输入更新内容",
-			startsign: "心愿单开始"
+			startsign: "心愿单开始",
+			refusereason: "拒绝理由",
+			inputrefusereason: "请输入拒绝理由",
 		},
+		importproduct: {
+			importpro: "进货",
+			iwant: "我想要",
+		}
 		
 		
 	},
