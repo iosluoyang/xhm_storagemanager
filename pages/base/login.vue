@@ -12,12 +12,14 @@
 			<view class="main">
 				<wInput
 					v-model="account"
+					key="account"
 					type="text"
 					maxlength="11"
 					:placeholder="i18n.login.account"
 				></wInput>
 				<wInput
 					v-model="password"
+					key="password"
 					type="password"
 					maxlength="11"
 					:placeholder="i18n.login.password"
@@ -26,7 +28,7 @@
 			<wButton 
 				:text="i18n.login.loginstr"
 				:rotate="isRotate" 
-				@click.native="startLogin()"
+				@click.native="startLogin"
 			></wButton>
 						
 		</view>
@@ -68,16 +70,18 @@
 		
 		methods: {
 			
-			// 开始登录
-			startLogin(){
+			// 开始登录操作
+			startLogin() {
 				
 				const _this = this
+				
 				//登录
-				if(this.isRotate){
+				if(_this.isRotate){
 					//判断是否加载中，避免重复点击请求
 					return false;
 				}
-				if (this.account.length == "") {
+				
+				if (_this.account.length == "") {
 				     uni.showToast({
 				        icon: 'none',
 						position: 'bottom',
@@ -85,14 +89,14 @@
 				    });
 				    return;
 				}
-			    if (this.password.length < 6) {
-			        uni.showToast({
-			            icon: 'none',
+				if (_this.password.length < 6) {
+				    uni.showToast({
+				        icon: 'none',
 						position: 'bottom',
-			            title: _this.i18n.error.password
-			        });
-			        return;
-			    }
+				        title: _this.i18n.error.password
+				    });
+				    return;
+				}
 				
 				_this.isRotate=true // 按钮开始旋转
 				
@@ -126,8 +130,6 @@
 						icon: 'none'
 					});
 				})
-				
-				
 			}
 			
 		},

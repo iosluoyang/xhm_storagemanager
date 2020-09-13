@@ -1,6 +1,6 @@
 <template>
 	<view class="main-list oBorder">
-		<!-- 文本框 -->
+		<!-- 文本框 注意在搜狗输入法等用户未点击确认时会造成未获取到值 此时使用blue作为补充 -->
 		<input 
 			class="main-input" 
 			:value="value" 
@@ -9,6 +9,7 @@
 			:placeholder="placeholder" 
 			:password="type==='password'&&!showPassword" 
 			@input="onInput"
+			@blur="onBlur" 
 		/>
 		<!-- 是否可见密码 -->
 		<image 
@@ -84,6 +85,10 @@
 				this.showPassword = !this.showPassword
 			},
 			onInput(e) {
+				//传出值
+				this.$emit('input', e.target.value)
+			},
+			onBlur(e) {
 				//传出值
 				this.$emit('input', e.target.value)
 			},

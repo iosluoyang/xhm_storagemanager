@@ -187,12 +187,6 @@
             ]
 		}
 	],
-	"preloadRule": {
-		"pages/home/index": {
-			"network":"all",
-			"packages": ["pages/wishlist"]
-		}
-	},
 	"globalStyle": {
 		"navigationStyle": "custom",
 		"backgroundColor": "#FFFFFF",
