@@ -52,9 +52,9 @@
 			
 			<!-- 选择更新时间轴的类型 -->
 			<view class="cu-bar btn-group">
-				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">新增评论</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.updatetimeline }}</button>
 				<text class="text-gray">/</text>
-				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink' ]" @tap.stop="type='found'">发现新商品</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink' ]" @tap.stop="type='found'">{{ i18n.wishlist.found }}</button>
 			</view>
 			
 			<!-- 表单区域 -->
