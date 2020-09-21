@@ -58,7 +58,7 @@
 		methods: {
 			backPage() {
 				if(this.isBackConfirm) {
-					
+
 					uni.showModal({
 						content: this.i18n.tip.exitconfirm,
 						showCancel: true,

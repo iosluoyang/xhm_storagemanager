@@ -11,14 +11,14 @@
 			
 			<view class="padding-sm">
 				<view class="padding radius text-center shadow-blur shadow-warp bg-pink" @tap.stop="addwish">
-					<view class="text-lg">我想要</view>
+					<view class="text-lg cuIcon-magic text-white"></view>
 					<view class="margin-top-sm text-Abc">I want</view>
 				</view>
 			</view>
 			
 			<view class="padding-sm">
 				<view class="padding radius text-center shadow-blur shadow-warp bg-green" @tap.stop="checkwishlist">
-					<view class="text-lg">查看心愿单</view>
+					<view class="text-lg cuIcon-emojifill text-white"></view>
 					<view class="margin-top-sm text-Abc">Check Wishlist</view>
 				</view>
 			</view>
