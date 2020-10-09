@@ -2,7 +2,7 @@
 	<view class="content wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgImage="https://image.weilanwl.com/color2.0/plugin/wdh2236.jpg" isBack>
+		<cu-custom bgImage="https://image.weilanwl.com/color2.0/plugin/wdh2236.jpg" isBack isOwnBackPage @ownbackpage="ownBackPage">
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -70,10 +70,18 @@
 						
 					</view>
 					
-					<!-- 商品价格 -->
-					<view class="priceview margin-top-sm">
-						<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
-						<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+					<!-- 商品价格和数量 -->
+					<view class="priceandamountview margin-top-sm flex align-center justify-between">
+						
+						<view class="priceview flex-sub">
+							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
+							<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+						</view>
+						
+						<view class="amountview flex-sub t_right" v-if="wishinfo.targetAmount">
+							<text class="text-black text-sm"> {{ `${i18n.wishlist.targetamount}: ${wishinfo.targetAmount}` }}</text>
+						</view>
+						
 					</view>
 					
 				</view>
@@ -360,6 +368,7 @@
 			return {
 				
 				id: null, // 当前心愿详情id
+				ifShare: false, // 是否是分享来源
 				wishinfo: null, // 当前心愿详情
 				timelinearrdic: {}, // 心愿时间轴数据
 				sharetimelineitem: null, // 要分享的时间轴数据
@@ -378,6 +387,10 @@
 			
 			let id = option.id
 			this.id = id
+			
+			// 判断是否是分享的内容
+			let ifShare = option.ifShare == 'true'
+			this.ifShare = ifShare
 			
 			if(this.id) {
 				// 开始加载心愿详情数据
@@ -420,7 +433,7 @@
 			let sharetimelineitem = this.sharetimelineitem
 			// 设置分享的内容
 			let title = `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
-			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}`
+			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&ifShare=true`
 			let imageUrl = sharetimelineitem ? this.imgUrl + sharetimelineitem.imgs.split(',')[0] : this.imgUrl + this.wishinfo.imgs.split(',')[0]
 			let shareobj = {
 				title: title,
@@ -432,6 +445,20 @@
 		},
 		
 		methods: {
+			
+			// 返回事件
+			ownBackPage() {
+				if(this.ifShare) {
+					uni.reLaunch({
+						url: '/pages/home/index'
+					})
+				}
+				else {
+					uni.navigateBack({
+						delta: 1
+					});
+				}
+			},
 			
 			// 获取心愿详情
 			loaddetaildata() {

@@ -36,12 +36,17 @@ exports.main = async (event, context) => {
 		let res = await collection.add(data)
 		
 		// 如果时间轴type为3待确认 则将对应的心愿单状态更改为待确认
+		const wishcollection = db.collection('wishlist')
 		if(data.type == 3) {
-			const wishcollection = db.collection('wishlist')
 			await wishcollection.doc(data.wishId).update({
 				achieveFlag: 1 // achieveFlag  0进行中 1待确认 2已完成
 			})
 		}
+		
+		// 每增加一个评论数据就像对应的心愿单评论数据自增1
+		await wishcollection.doc(data.wishId).update({
+			commentCount: dbCmd.inc(1) // 将该心愿单的评论数量自增1
+		})
 		
 		return res
 	}

@@ -50,6 +50,11 @@
 				type: Boolean,
 				default: false
 			},
+			// 是否需要自行处理返回事件  默认为否
+			isOwnBackPage: {
+				type: Boolean,
+				default: false
+			},
 			bgImage: {
 				type: String,
 				default: ''
@@ -57,25 +62,32 @@
 		},
 		methods: {
 			backPage() {
-				if(this.isBackConfirm) {
-					
-					uni.showModal({
-						content: this.i18n.tip.exitconfirm,
-						showCancel: true,
-						cancelText: this.i18n.base.cancel,
-						confirmText: this.i18n.base.confirm,
-						success: res => {
-							if(res.confirm) {
-								uni.navigateBack();
-							}
-						}
-					});
-					
+				// 如果需要自行处理返回事件
+				if(this.isOwnBackPage) {
+					this.$emit('ownbackpage')
+					return
 				}
-				else{
-					uni.navigateBack({
-						delta: 1
-					});
+				else {
+					if(this.isBackConfirm) {
+						
+						uni.showModal({
+							content: this.i18n.tip.exitconfirm,
+							showCancel: true,
+							cancelText: this.i18n.base.cancel,
+							confirmText: this.i18n.base.confirm,
+							success: res => {
+								if(res.confirm) {
+									uni.navigateBack();
+								}
+							}
+						});
+						
+					}
+					else{
+						uni.navigateBack({
+							delta: 1
+						});
+					}
 				}
 			}
 		}

@@ -24,7 +24,7 @@ exports.main = async (event, context) => {
 		let otherdata = {
 			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0进行中 1待确认 2已完成
 			previewCount: 1, // 设置浏览数量为1
-			commentCount: 0, // 设置评论数量为0
+			commentCount: 1, // 设置评论数量为1
 			creatTime: currenttimestr, // 当前新增的时间字符串
 		}
 		

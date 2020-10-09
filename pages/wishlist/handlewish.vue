@@ -33,7 +33,8 @@
 			<!-- 源网站链接 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.sourcelink}} :</view>
-				<input type="text" confirm-type="next" v-model="sourceLink" />
+				<!-- <input type="text" confirm-type="next" v-model="sourceLink" /> -->
+				<textarea auto-height :show-confirm-bar="false" v-model="sourceLink" />
 				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow" @tap.stop="pastesourelink('sourceLink')">{{i18n.base.paste}}</button>
 				<!-- #endif -->
@@ -46,7 +47,7 @@
 				
 				<view class="content flex-sub flex align-center">
 					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="digit" class="borderCDCDCD radius" v-model="sourcePrice" />
+					<input type="digit" class="borderCDCDCD radius" v-model="sourcePrice" @input="typesourcePrice" />
 				</view>
 				
 				<!-- 源网站货币种类选择 -->
@@ -262,6 +263,13 @@
 				})
 			},
 			
+			// 输入源网站价格
+			typesourcePrice(e) {
+				let sourcePrice = e.detail.value
+				this.targetPrice = sourcePrice
+				this.targetMoneyType = this.sourceMoneyType
+			},
+			
 			// 紧急程度更改
 			hurrylevelchange(e) {
 				this.hurryLevel = Number(e.detail.value) + 1
@@ -399,6 +407,22 @@
 				if(!this.productTitle) {
 					uni.showToast({
 						title: this.i18n.error.lackgoodstitle,
+						icon: 'none'
+					});
+					return false
+				}
+				// 检查是否有目标价格
+				else if(!this.targetPrice) {
+					uni.showToast({
+						title: this.i18n.wishlist.timeline.targetpriceerror,
+						icon: 'none'
+					});
+					return false
+				}
+				// 检查是否有目标数量
+				else if(!this.targetAmount) {
+					uni.showToast({
+						title: this.i18n.wishlist.targetamount,
 						icon: 'none'
 					});
 					return false
