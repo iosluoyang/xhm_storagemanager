@@ -3,54 +3,53 @@ const th = {
 	// 基础语言包
 	base: {
 		
-		hello: "สวัสดีครับ",	
-		tip: "เตือนภัย",
-		admin: "ผู้ดูแล",
-		normaladmin: "ผู้ดูแลทั่วไป",
-		female: "เพศหญิง",
-		male: "เพศชาย",
+		hello: "สวัสดี",
+		tip: "แจ้งเตือน",
+		admin: "ผุ้จัดการ",
+		normaladmin: "ลูกค้าทั่วไป",
+		female: "ผู้หญิง",
+		male: "ผู้ชาย",
 		edit: "แก้ไข",
-		del: "Delete",
+		del: "ลบ",
 		save: "บันทึก",
-		add: "เพิ่ม",
-		waittoconfirm: "To be Confirm",
-		refuse: "Refuse",
-		agree: "Agree",
-		copy: "Copy",
-		paste: "Paste",
-		preview: "แสดงผล",
+		add: "เพิ่มเติมใหม่",
+		waittoconfirm: "รอการยืนยัน",
+		refuse: "ปฏิเสธ",
+		agree: "ตกลง",
+		copy: "สำเนา", 
+		paste: "วาง",
+		preview: "ดูตัวอย่าง",
 		select: "โปรดเลือก",
-		cancel: "ยกเลิก",
-		confirm: "ยืนยัน",
-		print: "Print",
-		download: "DownLoad",
-		click: "Click",
-		here: "Here",
-		toaddmore: "to add more",
-		all: "ทั้งหมด",
+		cancel: "Cancel",
+		confirm: "Yes",
+		print: "พิมพ์",
+		download: "ดาวน์โหลด",
+		click: "คลิก",
+		here: "ณ ที่นี้",
+		toaddmore: "ไปเพิ่มจำนวนมากกว่านี้",
 		other: "อื่นๆ",
 		search: "ค้นหา",
 		scrollto: "เลื่อนไปที่",
 		success: "สำเร็จ",
-		fail: "ผิดพลาด",
-		needtowait: "โปรดรอสักครู่……",
-		choosable: "Optional",
-		all: "All",
-		other: "Other",
-		onekeyclone: "Clone",
-		fix: "Fix",
+		fail: "ล้มเหลว",
+		needtowait: "มีความจำเป็นต้องรอก่อน……",
+		choosable: "เลือกได้",
+		all: "ทั้งหมด",
+		other: "อื่นๆ",
+		onekeyclone: "โคลนคีย์เดียว",
+		fix: "แก้ไข",
 		week: {
-			Monday: "Monday",
-			Tuesday: "Tuesday",
-			Wednesday: "Wednesday",
-			Thursday: "Thursday",
-			Friday: "Friday",
-			Saturday: "Saturday",
-			Sunday: "Sunday"
+			Monday: "วันจันทร์",
+			Tuesday: "วันอังคาร",
+			Wednesday: "วันพุธ",
+			Thursday: "วันพฤหัสบดี",
+			Friday: "วันศุกร์",
+			Saturday: "วันเสาร์",
+			Sunday: "วันอาทิตย์"
 		},
 		time: {
-			everyday: "Every Day",
-			workingday: "Working Day",
+			everyday: "ทุกวัน",
+			workingday: "วันทำงาน",
 		},
 		
 	
@@ -58,131 +57,131 @@ const th = {
 	
 	// 导航栏主分类
 	nav: {
-		homepage: "หน้าหลัก",
+		homepage: "หน้าแรก",
 		scan: "สแกน",
-		goodstype: "ประเภท",
+		goodstype: "ประเภทการจัดการ",
 		goodslist: "รายการสินค้า",
-		goodsdetail: "ข้อมูลสินค้า",
-		handlerpriceandstock: "Edit Price",
+		goodsdetail: "รายละเอียดสินค้า",
+		handlerpriceandstock: "แก้ไขราคา",
 		addgoods: "เพิ่มสินค้า",
 		editgoods: "แก้ไขสินค้า",
-		stock: "จัดการคลังสินค้า",
-		customer: "Customer",
-		addcustomer: "เพิ่มผู้ดูแล",
-		editcustomer: "เพิ่มผู้ดูแล",
-		operationlog: "ประวัติการเข้าใช้งาน",
-		me: "ฉัน",
-		resetpwd: "ตั้งค่า",
-		persondetail: "ข้อมูลส่วนตัว",
+		stock: "สต๊อกสินค้า",
+		customer: "ลูกค้า",
+		addcustomer: "เพิ่มลูกค้า",
+		editcustomer: "ปรับตัวลูกค้า",
+		operationlog: "บันทึกการทำงาน",
+		me: "ส่วนบุคคล",
+		resetpwd: "แก้ไขรหัส",
+		persondetail: "ประวัติส่วนตัว",
 		logistic: "โลจิสติกส์",
-		checklogistic: "โลจิสติกส",
-		wishlist: "Wish List",
+		checklogistic: "สอบถาบโลจิสติกส์",
+		wishlist: "รายการที่ต้องการ",
 	},
 	
 	// 提示
 	tip: {
 		
-		useinapp: "โปรดเข้าใช้งานในแอปพลิเคชั่น",
-		loadingstr: "โปรดรอระบบกำลังทำงาน",
-		loginsuccess: "การเข้าใช้งานสำเร็จ",
-		logoutsuccess: "การออกจากระบบสำเร็จ",
-		addsuccess: "การเพิ่มสำเร็จ",
-		fixsuccess: "การแก้ไขสำเร็จ",
-		savesuccess: "save success",
-		deletesuccess: "การลบข้อมูลเสร็จสิ้น",
-		resetsuccess: "การเริ่มต้นใหม่เสร็จสิ้น",
-		pleaselogin: "กรุณาเข้าสู่ระบบ",
-		defaultusername: "ผู้ใช้ทั่วไป",
-		exitconfirm: "คุณแน่ใจว่า ต้องการจะออกจากระบบ",
-		freezeconfirm: "คุณแน่ใจว่าต้องการระงับ/ ยกเลิกการระงับผู้ใช้งาน",
-		deleteconfirm: "คุณต้องการยืนยันการลบข้อมูล",
-		resetconfirm: "คุณต้องการยืนยันการรีเซ็ต",
-		optionconfirm: "Are you sure?",
-		searchpeople: "ค้นหาจาก ชื่อผู้ใช้งาน",
-		searchtype: "ค้นหาจาก ประเภทสินค้า",
-		searchproduct: "ค้นหาจาก ชื่อสินค้า",
-		deletetypecontent: "สินค้าที่ถูกจัดในหมวดนี้จะถูกย้ายไปในหมวดอื่น คุณสามารถตั้งค่าประเภทได้ภายหลัง",
-		pleaseselectgoodstype: "โปรดเลือกประเภทสินค้า",
-		lackstocktip: "Please click preview button and fill up the stock and price infos",
-		pleaseselectgoodspec: "กรุณาเลือกรายละเอียดสินค้า",
-		pleasescangoodsbarcode: "Please scan the QR Code",
-		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
-		findnewversion: "New Version coming , Download now ?",
-		notinworkingtime: "You are not in the working time",
-		loginotherplace: "You've logined in other platform, please login again",
-		pleaseselectpricetype: "Select price type  (Select when stock out)",
-		
+		useinapp: "โปรดใช้ฟังค์ชั่นนี้จากApp",
+		loadingstr: "กำลังดาวน์โหลด",
+		loginsuccess: "เข้าสู่ระบบสำเร็จ",
+		logoutsuccess: "เข้าสู่ระบบสำเร็จ",
+		addsuccess: "เพิ่มสำเร็จ",
+		fixsuccess: "แก้ไขสำเร็จ",
+		savesuccess: "บันทึกสำเร็จ",
+		deletesuccess: "ลบสำเร็จ",
+		resetsuccess: "ตั้งค่าใหม่สำเร็จ",
+		pleaselogin: "เข้าสู่ระบบ",
+		defaultusername: "ชื่อผู้ใช้เริ่มต้น",
+		exitconfirm: "ต้องการออกจากระบบไหม?",
+		freezeconfirm: "แน่ใจว่าจะบล็อกผู้ใช้รายนี้？",
+		deleteconfirm: "แน่ใจหรือเปล่าว่าจะลบทิ้ง?",
+		resetconfirm: "แน่ใจหรือเปล่าว่าจะเริ่มต้นใหม่?",
+		optionconfirm: "แน่ใจหรือเปล่าว่าจะเริ่มเข้าสู่กระบวนการนี้?",
+		searchpeople: "ป้อนชื่อสมาชิกเพื่อค้นหา",
+		searchtype: "ป้อนชื่อหมวดหมู่เพื่อค้นหา",
+		searchproduct: "ป้อนชื่อผลิตภัณฑ์ที่ต้องการค้นหา",
+		deletetypecontent: "หลังจากลบหมวดหมู่สินค้าทั้งหมดในหมวดหมู่นั้นจะถูกแปลงเป็นหมวดหมู่อื่นโดยอัตโนมัติและคุณต้องตั้งค่าด้วยตนเองในภายหลัง",
+		pleaseselectgoodstype: "กรุณาเลือกหมวดหมู่สินค้า",
+		lackstocktip: "กรุณาคลิกเพื่อดูตัวอย่างและเพิ่มราคาสินค้าและข้อมูลสินค้าคงคลัง",
+		pleaseselectgoodspec: "โปรดเลือกข้อมูลจำเพาะของผลิตภัณฑ์ก่อน",
+		pleasescangoodsbarcode: "โปรดสแกนคิวอาร์โค้ดบนผลิตภัณฑ์",
+		ifsuretofixstock: "แน่ใจหรือว่าจะดำเนินการขาออก / ขาเข้า",
+		findnewversion: "New Version Coming !!!",
+		notinworkingtime: "คุณไม่อยู่ในเวลาทำการ",
+		loginotherplace: "บัญชีของคุณเข้าสู่ระบบที่อื่นแล้วโปรดเข้าสู่ระบบอีกครั้ง",
+		pleaseselectpricetype: "ประเภทราคา",
 	},
 	
-	// 错误提示
+	// 错误提示แจ้งเตือนข้อผิดพลาด
 	error: {
-		networkerror: "เครือข่ายอินเตอร์เน็ตขัดข้อง",
-		loaderror: "การโหลดขัดข้อง",
-		configerror: "การดึงแฟ้มข้อมูลขัดข้อง",
-		picuploaderror: "การเพิ่มภาพขัดข้อง",
-		chooseimgovererror: "ภาพเกินจำนวนที่กำหนด",
-		scanerror: "หาข้อมูลไม่พบ",
-		qrcodewithoutgoods: "ไม่พบผลิตภัณฑ์",
-		adderror: "การเพิ่มขัดข้อง",
-		fixerror: "การแก้ไขขัดข้อง",
-		deleteerror: "การลบข้อมูลขัดข้อง",
-		reseterror: "การรีเซ็ตขัดข้อง",
-		account: "กรุณาใส่ข้อมูลบัญชีผู้ใช้",
-		password: "กรุณาใส่พาสเวิร์ด",
-		oldpwd: "กรุณาใส่พาสเวิร์ดเก่า",
-		newpwd: "กรุณาใส่พาสเวิร์ดใหม่",
-		newpwdagain: "รหัสไม่ตรงกัน",
-		loginerror: "การเข้าระบบขัดข้อง",
-		logouterror: "การออกจากระบบขัดข้อง",
-		getmemberlisterror: "การดึงข้อมูลรายชื่อผู้ใช้งานขัดข้อง",
-		deleteusererror: "การลบรายชื่อผู้ใช้ขัดข้อง",
-		getgoodstypeerror: "การดึงข้อมูลจากประเภทขัดข้อง",
-		lacktypenameerror: "ไม่มีข้อมูลที่ค้นหา",
-		lacktyperemarkerror: "ไม่มีข้อมูลที่ค้นหา",
-		lackspec: "ไม่มีข้อมูลที่ค้นหา",
-		getspecserror: "การค้นหาแบบเจาะจง ขัดข้อง",
-		lackgoodsmainpic: "โปรดเพิ่มข้อมูลรูปภาพ",
-		lackgoodstitle: "กรุณาใส่ชื่อสินค้า",
-		lackgoodstype: "กรุณาเลือกประเภทสินค้า",
-		lackgoodsdes: "Please enter the description",
-		uploaderror: "การเพิ่มข้อมูลขัดข้อง",
-		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
-		overtimeerror: "Start time cannot later then End time",
+		networkerror: "ข้อผิดพลาดของเครือข่าย",
+		loaderror: "ล้มเหลว",
+		configerror: "ไม่สามารถรับไฟล์ได้",
+		picuploaderror: "อัปโหลดรูปภาพไม่สำเร็จ",
+		chooseimgovererror: "จำนวนรูปภาพเกินขีด จำกัด",
+		scanerror: "การสแกนล้มเหลวยังไม่ได้รับเนื้อหาที่ถูกต้อง",
+		qrcodewithoutgoods: "รหัส QR ไม่เกี่ยวข้องกับผลิตภัณฑ์",
+		adderror: "การเพิ่มล้มเหลว",
+		fixerror: "ไม่สามารถแก้ไขได้",
+		deleteerror: "ลบไม่สำเร็จ",
+		reseterror: "การลองใหม่ล้มเหลว",
+		account: "กรุณากรอกบัญชีที่ถูกต้อง",
+		password: "กรุณากรอกรหัสผ่านที่ถูกต้อง",
+		oldpwd: "กรุณากรอกรหัสผ่านเดิมที่ถูกต้อง",
+		newpwd: "โปรดป้อนรหัสผ่านใหม่ที่ถูกต้อง",
+		newpwdagain: "รายการรหัสผ่านสองรายการไม่สอดคล้องกัน",
+		loginerror: "เข้าสู่ระบบล้มเหลว",
+		logouterror: "การออกจากระบบล้มเหลว",
+		getmemberlisterror: "ไม่สามารถรับรายชื่อสมาชิก",
+		deleteusererror: "ลบบุคลากรไม่สำเร็จ",
+		getgoodstypeerror: "ไม่สามารถรับการจัดประเภท",
+		lacktypenameerror: "ไม่มีชื่อหมวดหมู่",
+		lacktyperemarkerror: "ไม่มีคำอธิบายการจัดหมวดหมู่",
+		lackspec: "ข้อมูลจำเพาะของผลิตภัณฑ์ขาดหายไป",
+		getspecserror: "ไม่สามารถรับข้อมูลจำเพาะของผลิตภัณฑ์",
+		lackgoodsmainpic: "กรุณาอัพโหลดรูปภาพสินค้า",
+		lackgoodstitle: "โปรดป้อนชื่อผลิตภัณฑ์",
+		lackgoodstype: "กรุณาเลือกหมวดหมู่สินค้า",
+		lackgoodsdes: "กรุณากรอกรายละเอียดสินค้า",
+		uploaderror: "การอัพโหลดล้มเหลว",
+		lackemail: "คุณยังไม่ได้เพิ่มที่อยู่อีเมลของคุณ?",
+		overtimeerror: "เวลาเริ่มต้นต้องไม่เกินเวลาสิ้นสุด",
+		
 		
 	},
 	
-	// 业务相关
+	// 业务相关ที่เกี่ยวข้องกับธุรกิจ
 	
 	// 登录页面
 	login: {
-		account: "ชื่อบัญชี",
+		account: "บัญชีผู้ใช้",
 		password: "รหัส",
-		loginstr: "เข้าระบบ",
+		loginstr: "เข้าสู่ระบบ",
 	},
 	
 	// 首页
 	homepage: {
-		title: "หน้าหลัก",
+		title: "Home",
 	},
 	
-	// 成员管理
+	// 成员管理การจัดการสมาชิก
 	managepeople: {
 		
 		handlemember: {
-			addmember: "เพิ่มผู้ดูแล",
-			editmember: "แก้ไขรายชื่อ",
-			name: "ชื่อผู้ใช้",
-			account: "ชื่อบัญชี",
-			remark: "ตำแหน่ง",
-			remarkplaceholder: "คำอธิบายเพิ่มเติม",
-			freezemember: "ระงับผู้ใช้งาน",
-			freeze: "ระงับ",
-			unfreeze: "ยกเลิกการระงับ",
-			userfreeze: " ผู้ใช้ไม่สามารถเข้าใช้งานได้",
-			userunfreeze: "ยกเลิกการระงับ",
-			resetmemberpwd: "ตั้งค่ารหัสผู้ใช้งาน",
-			resetmemberpwdtip: "รหัสใช้งานคือ 123456 หลังจากที่คุณตั้งค่าผู้ใช้งาน ผู้ใช้งานจะสามารถเปลี่ยนรหัสผ่าน",
-			deleteuser: "ลบผู้ใช้งาน",
+			addmember: "เพิ่มสมาชิก",
+			editmember: "แก้ไขสมาชิก",
+			name: "รายชื่อสมาชิก",
+			account: "ญชีผู้ใช้",
+			remark: "หมายเหตุ",
+			remarkplaceholder: "โปรดอธิบายความรับผิดชอบและบทบาทของบุคคลนี้",
+			freezemember: "บล็อกผู้ใช้",
+			freeze: "บล็อก",
+			unfreeze: "unfreeze",
+			userfreeze: "ถูกบล็อก ผู้ใช้ไม่สามารถดำเนินการทั้งหมดได้",
+			userunfreeze: "ไม่โดนบล็อก ผู้ใช้สามารถใช้งานได้",
+			resetmemberpwd: "รีเซ็ตรหัสผ่านผู้ใช้",
+			resetmemberpwdtip: "หลังจากรีเซ็ตรหัสผ่านสำหรับเข้าสู่ระบบของบุคคลนั้นคือรหัสผ่านเริ่มต้น 123456 และบุคคลนั้นสามารถแก้ไขรหัสผ่านได้ด้วยตัวเองหลังจากรีเซ็ต",
+			deleteuser: "ลบผู้ใช้",
 		},
 		
 	},
@@ -190,168 +189,210 @@ const th = {
 	// 我的
 	me: {
 		
-		appversion: "รุ่น",
-		exit: "ออก",
+		appversion: "หมายเลขรุ่น",
+		exit: "ออกจากระบบ",
 		
 		panel: {
-			proqrcode: "QR Code",
-			mytask: "งานของฉัน",
-			managepeople: "รายการชื่อผู้ดูแล",
-			feedback: "การตอบรับ",
-			workingtime: "Working Time",
-			notice: "Notification",
-			more: "……"
+			proqrcode: "รหัส QR ของผลิตภัณฑ์",
+			mytask: "หน้าที่ของฉัน",
+			managepeople: "การจัดการบุคคลกร",
+			feedback: "ย้อนกลับ",
+			workingtime: "เวลาทำงาน",
+			notice: "กระดานข่าว",
+			more: "มากกว่า",
 		},
 		
-		// 修改密码
+		// 修改密码แก้ไขรหัส
 		resetpwd: {
 			oldpwd: "รหัสเก่า",
-			newpwd: "รหัสใหม่",
-			newpwdagain: "ยืนยันรหัสใหม่"
+			newpwd: "โปรดป้อนรหัสใหม่",
+			newpwdagain: "ยืนยันรหัสผ่านใหม่"
 		},
 		
 		persondetail: {
-			avatar: "ภาพแทน",
+			avatar: "รูปโปรไฟร์",
 			nickname: "ชื่อเล่น",
 			realname: "ชื่อจริง",
 			account: "บัญชีผู้ใช้",
-			phone: "เบอร์โทรศัพท์",
+			phone: "เบอร์โทร",
 			email: "อีเมล",
 			gender: "เพศ",
-			usertype: "ประเภทผู้ใช้งาน",
-			signature: "ลายเซ็น",
+			usertype: "เลขบัตรประจำตัว",
+			signature: "รายละเอียดส่วนบุคคล",
 		},
 		
 		buildqrcode: {
-			qrcodenum: "QR code amount",
+			qrcodenum: "จำนวนรหัส QR",
 			tips: "Please enter the amounts of the qrcode which you want to build , we will soon send to your Email",
 		},
 		
 		workingtime: {
-			starttime: "Start Time",
-			endtime: "End Time",
+			starttime: "เวลาเริ่มต้น",
+			endtime: "เวลาสิ้นสุด",
 		},
 		
 		customer: {
-			customerId: "Customer ID",
-			customerimg: "Avatar",
-			customername: "Name",
-			customerremark: "Remark",
-			customerremarkplaceholder: "You can enter some remark for this customer",
-			companyname: "Company Name",
-			customerphone: "Phone",
-			deletecustomer: "Delete Customer",
+			customerId: "ไอดีลูกค้า",
+			customerimg: "รูปโปรไฟร์ลูกค้า",
+			customername: "ชื่อลูกค้า",
+			customerremark: "หมายเหตุ",
+			customerremarkplaceholder: "สามารถเพิ่มหมายตุของลูกค้าได้ที่นี่",
+			companyname: "นามบริษัท",
+			customerphone: "เบอร์ติดต่อลูกค้า",
+			deletecustomer: "ลบลูกค้ารายนี้",
 		},
 		
 		notice: {
-			publishnotice: "Add Notification",
-			editnotice: "Edit Notification",
-			noticeplaceholder: "Please enter the notification content"
+			publishnotice: "ประกาศแจ้งให้ทราบ",
+			editnotice: "แก้ไขประกาศ",
+			noticeplaceholder: "โปรดป้อนเนื้อหาประกาศ สมาชิกทั้งหมดสามารถมองเห็นได้หลังจากโพสต์"
 		}
 		
 	},
 	
-	// 商品分类相关
+	// 商品分类相关การจำแนกประเภทสินค้าที่เกี่ยวข้อง
 	goodstype: {
-		currenttype: "ประเภทในปัจจุบัน",
-		addtype: "เพิ่มประเภท",
-		edittype: "Edit Classification",
-		addtypenametitle: "ชื่อประเภท",
-		addtypenameplaceholder: "กรุณาใส่ชื่อประเภท",
-		addtypedesplaceholder: "กรุณาใส่คำอธิบายประเภทของสินค้า",
+		currenttype: "หมวดหมู่ที่เลือกในปัจจุบัน",
+		addtype: "เพิ่มหมวดหมู่",
+		edittype: "แก้ไขหมวดหมู่",
+		addtypenametitle: "ชื่อหมวดหมู่",
+		addtypenameplaceholder: "กรุณากรอกชื่อหมวดหมู่สินค้า",
+		addtypedesplaceholder: "โปรดอธิบายประเภทผลิตภัณฑ์",
 	},
 	
-	// 商品相关
+	// 商品相关สินค้าที่เกี่ยวข้อง
 	goods: {
+		pricestr: "ราคา",
+		costprice: "ราคาต้นทุน",
+		price: "ราคาแพลตฟอร์ม",
+		agentprice: "ราคาหน่วยงาน",
+		creditprice: "ราคาเครดิต",
 		
-		pricestr: "Price",
-		costprice: "ราคาทุน",
-		price: "ราคาขาย",
-		agentprice: "Agent Price",
-		creditprice: "Credit Price",
+		stock: "สต๊อก",
+		sellnum: "ยอดขายรายวัน",
+		specindex: "ดัชนีข้อมูลจำเพาะ",
+		// filter: {
+		// 	goodstype: "商品分类",
+		// 	sortway: "排序方式",รูปแบบเรียงตามลำดับ
+		// 	defaultsort: "默认排序",การจัดเรียงเริ่มต้น
+		// 	stockascend: "按库存量升序",เรียงลำดับจากสินค้าปริมาณจากน้อยไปมาก
+		// 	stockdecrease: "按库存量降序",เรียงลำดับจากสินค้าปริมาณจากมากไปน้อย
 
-		stock: "จำนวนในคลัง",
-		sellnum: "จำนวนที่ขาย",
-		specindex: "ดัชนี",
+		// 	sellnumascend: "按销量升序",นับจากยอดขายน้อยไปมาก
+		// 	sellnumdecrease: "按销量降序"นับจากยอกขายมากไปน้อย
+		// },
 		filter: {
-			goodstype: "ประเภทสินค้า",
-			sortway: "จัดการรายการ",
-			defaultsort: "รายการตั้งต้น",
-			stockascend: "จำนวนในคลัง น้อย - มาก",
-			stockdecrease: "จำวนวนในคลัง มาก - น้อย",
-			sellnumascend: "จำนวนยอดขาย น้อย - มาก",
-			sellnumdecrease: "จำนวนยอดขาย มาก - น้อย"
+			goodstype: "หมวดหมู่สินค้า",
+			sortway: "Sort Order",
+			defaultsort: "Default",
+			stockascend: "Stock Number Ascending",
+			stockdecrease: "Stock Number Decreasing",
+			sellnumascend: "Selling Number Ascending",
+			sellnumdecrease: "Selling Number Decreasing"
 		},
 		
 		handlegoods: {
-			goodspic: "ภาพ",
-			goodstitle: "ชื่อสินค้า",
-			goodsdes: "คำอธิบาย",
-			goodsdesplaceholder: "กรุณาใส่คำบรรยายสินค้า",
-			goodsbarcode: "บาร์โค้ด",
-			goodstype: "ประเภท",
-			goodsspec: "ลักษณะจำเพาะ",
-			goodsspeclist: "รายการลักษณะจำเพาะ",
-			addspecname: "เพิ่มลักษณะจำเพาะ",
-			addspecnameholder: "เช่น สี, ขนาด, วัสดุ",
-			addspecvalueholder: "เช่น สีแดง",
-			tabletip: "เลื่อนไปทางซ้าย เพื่อตรวจสอบข้อมูลให้ครบถ้วน",
-			clonetip: "Click clone and copy the first data to others",
-			deletegoods: "ลบสินค้าตัวนี้",
+			goodspic: "รูปสินค้า",
+			goodstitle: "ชื่อผลิตภัณฑ์",
+			goodsdes: "รายละเอียดสินค้า",
+			goodsdesplaceholder: "โปรดอธิบายลักษณะและเนื้อหาของผลิตภัณฑ์โดยสังเขป",
+			goodsbarcode: "รหัสประจำตัวสินค้า",
+			goodstype: "หมวดหมู่สินค้า",
+			goodsspec: "ข้อมูลจำเพาะของผลิตภัณฑ์",
+			goodsspeclist: "รายการข้อมูลจำเพาะ",
+			addspecname: "ข้อกำหนดใหม่",
+			addspecnameholder: "ชื่อคุณสมบัติเช่น สี",
+			addspecvalueholder: "ค่าคุณสมบัติ เช่น สีแดง",
+			tabletip: "ปัดไปทางซ้ายเพื่อดูข้อมูลทั้งหมด",
+			clonetip: "คลิกcloneเพื่อคัดลอกข้อมูลข้อกำหนดแรกไปยังข้อกำหนดอื่น",
+			deletegoods: "ลบสินค้า",
 			
 		},
 		
 		goodsdetail: {
-			selected: "Selected",
-			fixcostprice: "Edit CostPrice",
-			fixprice: "Edit Price",
-			stockrecord: "Stock Record",
-		},
+			selected: "เลือกแล้ว",
+			fixcostprice: "แก้ไขราคาต้นทุน",
+			fixprice: "ปรับเปลี่ยนราคาขาย",
+			stockrecord: "บันทึกสินค้าคงคลัง",
+			
+		}
 		
 	},
 	
-	// 库存相关
+	// 库存相关สินค้าคงคลังที่เกี่ยวข้อง
 	stock: {
-		todaystocksituation: "Stock Data Today",
-		recentlystocksituation: "Stock Data Recently",
-		until: "Until",
-		protitle: "Title",
-		amount: "Amount",
-		customer: "Customer",
-		pricetype: "Price Type",
-		operatime: "Time",
-		operapeople: "Employee",
+		todaystocksituation: "ข้อมูลสินค้าเข้าและออกวันนี้",
+		recentlystocksituation: "ข้อมูลสินค้าคงคลังล่าสุด",
+		until: "จนถึง",
+		protitle: "ชื่อผลิตภัณฑ์",
+		amount: "จำนวน",
+		customer: "ข้อมูลลูกค้า",
+		pricetype: "ประเภทราคา",
+		operatime: "เวลาทำการ",
+		operapeople: "ผู้ดำเนินการ",
 		
-		typestocknumplacholder: "Please enter the Amount",
-		stockin: "Stock In",
-		stockout: "Stock Out",
+		typestocknumplacholder: "กรุณากรอกจำนวนสินค้าข้า / ออก",
+		stockin: "สินค้าเข้า",
+		stockout: "สินค้าออก",
 	},
 	
-	// 数据汇总相关
+	// 数据汇总相关ข้อมูลที่เกี่ยวข้อง
 	report: {
 		
-		// 库存相关数据汇总
+		// 库存相关数据汇总สรุปข้อมูลที่เกี่ยวข้องกับสินค้าคงคลัง
 		stockreport: {
-			outstockcount: "Stock Out",
-			instockcount: "Stock In",
-			paytotalnum: "Money Out",
-			earntotalnum: "Money In"
+			outstockcount: "จำนวนสินค้าออก",
+			instockcount: "จำนวนสินค้าเข้า",
+			paytotalnum: "รายการออกทั้งหมด",
+			earntotalnum: "รายการเข้าทั้งหมด",
+			
 		},
+		
 		
 	},
 	
 	// 心愿单相关
 	wishlist: {
 		
-		producttitle: "Product Title",
-		sourcelink: "Source Link",
-		sourceprice: "Source Price",
-		expectprice: "Expect Price",
-		expectamount: "Expect Amount",
-		hurrylevel: "Emergency Level",
+		producttitle: "ชื่อผลิตภัณฑ์",
+		sourcelink: "ลิงค์เว็บไซต์ที่มา",
+		targetlink: "ลิงค์เว็บไซต์",
+		sourceprice: "ที่มาเว็บไซต์ราคา",
+		targetprice: "ราคาเป้าหมาย",
+		targetamount: "จำนวนเป้าหมาย",
+		hurrylevel: "ฉุกเฉิน",
+		hurryleveldata: {
+			level1: "ระดับ 1 (ไม่ จำกัด )",
+			level2: "ระดับ 2 (ภายใน 1 เดือน)",
+			level3: "ระดับ 3 (ภายใน 2 สัปดาห์)",
+			level4: "ระดับ 4 (ภายใน 1 สัปดาห์)",
+			level5: "ระดับ 5 (ภายใน 3 วัน)"
+		},
+		uploadimg: "อัปโหลดรูปภาพ",
+		remark: "หมายเหตุ",
+		found: "ค้นพบ",
+		wishdetail: "รายละเอียดที่ต้องการ",
+		achieveFlag: {
+			finish: "สำเร็จแล้ว",
+			waittoconfirm: "รอการตอบรับ",
+			ing: "กำลังเข้าสู่กระบวนการ",
+		},
+		timeline: {
+			title: "ไทม์ไลน์",
+			updatetimeline: "อัปเดตไทม์ไลน์",
+			targetpriceerror: "โปรดป้อนราคาเป้าหมาย",
+			timelinecontenterror: "โปรดป้อนเนื้อหาที่อัปเดต",
+			startsign: "เริ่มต้นรายการที่ต้องการ",
+			refusereason: "เหตุผลที่ปฏิเสธ",
+			inputrefusereason: "โปรดป้อนเหตุผลในการปฏิเสธ",
+		},
+		importproduct: {
+			importpro: "จัดซื้อสินค้า",
+			iwant: "ฉันต้องการ",
+		}
+		
 		
 	},
-	
 	
 	
 }

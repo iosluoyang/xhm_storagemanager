@@ -348,12 +348,43 @@ const en = {
 	// 心愿单相关
 	wishlist: {
 		
-		producttitle: "Product Title",
+		producttitle: "Title",
 		sourcelink: "Source Link",
+		targetlink: "Link",
 		sourceprice: "Source Price",
-		expectprice: "Expect Price",
-		expectamount: "Expect Amount",
-		hurrylevel: "Emergency Level",
+		targetprice: "Target Price",
+		targetamount: "Target Amount",
+		hurrylevel: "Hurry Level",
+		hurryleveldata: {
+			level1: "Level 1 (No limited)",
+			level2: "Level 2 (One month)",
+			level3: "Level 3 (Two weeks)",
+			level4: "Level 4 (One week)",
+			level5: "Level 5 (Three days)"
+		},
+		uploadimg: "Upload picture",
+		remark: "Remark",
+		found: "I found",
+		wishdetail: "Wish Detail",
+		achieveFlag: {
+			finish: "Finished",
+			waittoconfirm: "WaittoConfirm",
+			ing: "Ing",
+		},
+		timeline: {
+			title: "Time Line",
+			updatetimeline: "Update timeline",
+			targetpriceerror: "please enter the target price",
+			timelinecontenterror: "Please enter the updated content",
+			startsign: "Wish Start",
+			refusereason: "Refuse Reason",
+			inputrefusereason: "Please enter the refuse reason",
+		},
+		importproduct: {
+			importpro: "Buy Product",
+			iwant: "I want",
+		}
+		
 		
 	},
 	
