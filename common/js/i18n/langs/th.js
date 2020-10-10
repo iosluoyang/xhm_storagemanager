@@ -385,6 +385,8 @@ const th = {
 			startsign: "เริ่มต้นรายการที่ต้องการ",
 			refusereason: "เหตุผลที่ปฏิเสธ",
 			inputrefusereason: "โปรดป้อนเหตุผลในการปฏิเสธ",
+			share: "แบ่งปัน",
+			setshareparam: "ตั้งค่าเนื้อหาที่ใช้ร่วมกัน",
 		},
 		importproduct: {
 			importpro: "จัดซื้อสินค้า",

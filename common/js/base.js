@@ -359,6 +359,16 @@ export function scanQR() {
 	return scanpromise
 }
 
+// 休眠
+export function sleep(sleeptime) {
+	var start = new Date().getTime();
+	while (true) {
+	    if (new Date().getTime() - start > sleeptime) {
+	        break;
+	    }
+	}
+}
+
 export default {
 	storeName, // 返回供应商名称  用于生成二维码的前缀
 	ifwxH5, // 是否是微信H5环境
@@ -370,4 +380,5 @@ export default {
 	chooseImage, //完善之后的获取图片方法
 	fileToUrl, //将获取本地文件的url 仅H5端生效
 	scanQR, // 开始扫描二维码
+	sleep, // js休眠
 }

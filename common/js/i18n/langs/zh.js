@@ -375,6 +375,8 @@ const zh = {
 			startsign: "心愿单开始",
 			refusereason: "拒绝理由",
 			inputrefusereason: "请输入拒绝理由",
+			share: "分享内容",
+			setshareparam: "设置分享内容",
 		},
 		importproduct: {
 			importpro: "进货",

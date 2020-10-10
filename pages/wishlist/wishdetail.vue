@@ -96,6 +96,11 @@
 						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copytoclipboard(wishinfo.sourceLink)"></button>
 						<!-- #endif -->
 						
+						<!-- 分享按钮 小程序平台有 -->
+						<!-- #ifdef MP -->
+						<button class="cu-btn round line-orange cuIcon-share margin-right-sm" open-type="share"></button>
+						<!-- #endif -->
+						
 						<!-- 编辑按钮 仅自己可编辑 -->
 						<button v-if="wishinfo.user.uid == user.uid" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
@@ -149,12 +154,22 @@
 						<view class="content">
 							
 							<!-- 评论人头像昵称 -->
-							<view class="cu-item flex align-center">
-								<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
-								<view class="flex flex-direction text-df">
-									<text class="text-df">{{timelineitem.user.userName}}</text>
-									<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+							<view class="cu-item flex align-center justify-between">
+								<view class="leftview flex align-center">
+									<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+									<view class="flex flex-direction text-df">
+										<text class="text-df">{{timelineitem.user.userName}}</text>
+										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+									</view>
 								</view>
+								
+								<!-- #ifdef MP -->
+								<!-- 小程序下有分享按钮 -->
+								<view class="rightview">
+									<button class="cuIcon-share sm" @tap.stop="sharetimeline(timelineitem)"></button>
+								</view>
+								<!-- #endif -->
+								
 							</view>
 							
 							<!-- 评论文本内容 -->
@@ -344,14 +359,25 @@
 			<view class="cu-dialog">
 				
 				<view class="cu-bar bg-white">
-					<view class="content">{{ i18n.wishlist.timeline.refusereason }}</view>
+					<template>
+						<view v-if="modalType=='refuse'" class="content">{{ i18n.wishlist.timeline.refusereason }}</view>
+						<view v-if="modalType=='share'" class="content">{{ i18n.wishlist.timeline.share }}</view>
+					</template>
+					
 				</view>
 				<view class="padding-sm text-left">
-					<textarea style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.inputrefusereason" v-model="refuseReason"></textarea>
+					<template>
+						<textarea v-if="modalType == 'refuse'" style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.inputrefusereason" v-model="refuseReason"></textarea>
+						<textarea v-if="modalType == 'share'" style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
+					</template>
+					
 				</view>
 				<view class="cu-bar bg-white flex justify-around">
-					<button class="cu-btn round bg-gray text-grey" @tap.stop="ifshowmodal=false;refuseReason='';">{{i18n.base.cancel}}</button>
-					<button class="cu-btn round bg-gradual-orange" @tap.stop="confirmrefuse">{{i18n.base.confirm}}</button>
+					<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
+					<template>
+						<button v-if="modalType=='refuse'" class="cu-btn round bg-gradual-orange" @tap.stop="confirmrefuse">{{i18n.base.confirm}}</button>
+						<button v-if="modalType=='share'" open-type="share" class="cu-btn cuIcon-share round bg-gradual-orange">{{i18n.base.confirm}}</button>
+					</template>
 				</view>
 			</view>
 		</view>
@@ -376,6 +402,8 @@
 				imgsArr: [], // 轮播图的图片数组索引
 				temptimelineitem: null, // 临时时间轴变量
 				refuseReason: '', // 拒绝原因
+				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
+				sharecontent: '', // 分享内容文本
 				ifshowmodal: false, // 是否显示模态框
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
@@ -430,16 +458,20 @@
 			console.log(`当前页面的分享来源为:${res.from === 'button' ? '页面内分享按钮' : '右上角分享按钮' }`);
 			
 			// 当前要分享出去的时间轴数据
-			let sharetimelineitem = this.sharetimelineitem
+			let sharetimelineitem = this.temptimelineitem
 			// 设置分享的内容
-			let title = `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
+			let title = this.sharecontent && this.sharecontent.length > 0 ? this.sharecontent : `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
 			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&ifShare=true`
-			let imageUrl = sharetimelineitem ? this.imgUrl + sharetimelineitem.imgs.split(',')[0] : this.imgUrl + this.wishinfo.imgs.split(',')[0]
+			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? this.imgUrl + sharetimelineitem.imgs.split(',')[0] : this.imgUrl + this.wishinfo.imgs.split(',')[0]
 			let shareobj = {
 				title: title,
 				path: path,
 				imageUrl: imageUrl
 			}
+			
+			this.ifshowmodal = false
+			this.temptimelineitem = null
+			this.sharecontent = ''
 			
 			return shareobj
 		},
@@ -576,6 +608,31 @@
 				})
 			},
 			
+			// 弹出框点击取消
+			modalcancel() {
+				
+				this.ifshowmodal=false;
+				this.temptimelineitem = null
+				
+				// 如果是拒绝类型则清空拒绝原因  如果是分享类型则清空分享内容
+				if(this.modalType == 'refuse') {
+					this.refuseReason='';
+				}
+				else if(this.modalType == 'share') {
+					this.sharecontent = ''
+				}
+				
+			},
+			
+			// 点击分享时间轴
+			sharetimeline(timelineitem) {
+				this.temptimelineitem = timelineitem
+				this.sharecontent = timelineitem.content || ''
+				// 弹出输入框
+				this.modalType = 'share'
+				this.ifshowmodal = true
+			},
+			
 			// 切换轮播图
 			changeSwiper(e) {
 				this.swiperCur = e.detail.current
@@ -675,6 +732,7 @@
 							
 							// 填写拒绝理由
 							_this.temptimelineitem = timelineitem
+							_this.modalType = 'refuse'
 							_this.ifshowmodal = true
 							
 						}

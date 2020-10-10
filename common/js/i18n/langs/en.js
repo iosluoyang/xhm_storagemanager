@@ -379,6 +379,8 @@ const en = {
 			startsign: "Wish Start",
 			refusereason: "Refuse Reason",
 			inputrefusereason: "Please enter the refuse reason",
+			share: "Share",
+			setshareparam: "Enter sharing content",
 		},
 		importproduct: {
 			importpro: "Buy Product",
