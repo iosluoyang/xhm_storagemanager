@@ -162,7 +162,6 @@
 										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 									</view>
 								</view>
-	
 							</view>
 							
 							<!-- 评论文本内容 -->
@@ -200,14 +199,14 @@
 							</view>
 							
 							<!-- 操作按钮区域 -->
-							<view class="optionview margin-top-sm flex align-center">
+							<view class="optionview margin-top-sm flex align-center justify-end">
+								
+								<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
 								
 								<!-- 小程序下有分享按钮 -->
 								<!-- #ifdef MP -->
-								<button class="cuIcon-share sm" @tap.stop="sharetimeline(timelineitem)"></button>
+								<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
 								<!-- #endif -->
-								
-								<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
 								
 							</view>
 							
@@ -327,7 +326,7 @@
 											<!-- #endif -->
 										</view>
 										
-										<view class="righview flex align-center">
+										<view class="rightview flex align-center">
 											<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
 										</view>
 										
@@ -369,8 +368,8 @@
 			
 		</view>
 		
-		<!-- 添加按钮 悬浮 愿望完成后不显示 -->
-		<view v-if=" wishinfo && wishinfo.achieveFlag!=2 " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<!-- 添加按钮 悬浮 -->
+		<view v-if=" wishinfo " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100upx;"></text>
 		</view>
 		
@@ -612,6 +611,7 @@
 								newtimelinearrdic[creatDate] = [timelineitem]
 							}
 						})
+						console.log(newtimelinearrdic)
 						_this.timelinearrdic = newtimelinearrdic
 
 					}

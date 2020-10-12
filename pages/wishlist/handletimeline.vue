@@ -212,17 +212,6 @@
 					let swiperimgArr = info.imgs.split(',') // 图片数组
 					this.swiperimgArr = swiperimgArr
 					
-					// this.productTitle = info.productTitle // 商品标题
-					// this.sourceLink = info.sourceLink // 源网站链接
-					// this.platformPrice = info.platformPrice // 源网站价格
-					// this.platformmoneytype = info.platformmoneytype // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-					// this.expectPrice = info.expectPrice // 期望价格
-					// this.expectmoneytype = info.expectmoneytype // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
-					// this.expectAmount = info.expectAmount // 期望数量
-					// this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
-					// this.imgArr = info.imgs.split(',') // 图片数组
-					// this.remark = info.remark // 备注信息
-					
 				}).catch(error => {
 					
 					_this.ifloading = false // 结束加载动画
@@ -245,7 +234,7 @@
 					data: {
 						type: 'getdetail',
 						info: {
-							_id: this.timelineId
+							_id: _this.timelineId
 						}
 					}
 				}).then(response => {
@@ -255,7 +244,15 @@
 					// 获取数据成功
 					let info = response.result.data[0]
 					
-					this.timelineInfo = info
+					// 时间轴类型
+					// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+					let type = info.type
+					_this.type = type == 1 ? 'addcomment' : 'found'
+					_this.remark = info.content || ''
+					_this.imgArr = info.imgs && info.imgs.length > 0 ? info.imgs.split(',') : []
+					_this.targetMoneyType = info.moneyType || 'RMB'
+					_this.targetPrice = info.price || ''
+					_this.targetLink = info.link || ''
 					
 				}).catch(error => {
 					
@@ -447,7 +444,7 @@
 				
 				// 其余项均为选填项
 				
-				// 开始上传图片(仅包含新增)
+				// 开始上传图片
 				this.uploadpic(this.imgArr).then(imgs => {
 					// 上传图片成功 开始上传所有数据
 					console.log(`获得的图片链接为${imgs}`);
@@ -456,6 +453,7 @@
 					
 					let commoninfo = {
 						wishId: _this.wishId, // 当前心愿的id
+						_id: _this.pagetype == 'edit' ? _this.timelineId : null,
 						user: _this.user, // 当前发布人的信息
 						content: _this.remark, // 内容信息
 						imgs: imgs, // 图片字符串集合
@@ -479,7 +477,7 @@
 					uniCloud.callFunction({
 						name: 'wishlisttimeline',
 						data: {
-							type: 'add',
+							type: _this.pagetype == 'add' ? 'add' : 'edit',
 							info: uploaddata
 						}
 					}).then(response => {
