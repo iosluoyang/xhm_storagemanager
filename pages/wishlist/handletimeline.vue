@@ -144,9 +144,11 @@
 		data() {
 			return {
 				type: "addcomment", // 页面类型 found 发现新商品 addcomment 添加普通评论
-				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add 目前仅支持add
+				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
+				timelineId: null, // 当前时间轴id
+				timelineInfo: null, // 时间轴数据
 				
 				swiperimgArr: [], // 轮播图片数组
 				
@@ -171,6 +173,14 @@
 			
 			// 获取当前心愿的详情
 			_this.getwishdetail()
+			
+			// 如果是编辑状态则获取时间轴数据
+			if(option.type == 'edit') {
+				_this.pagetype = 'edit'
+				let timelineId = option.timelineId
+				_this.timelineId = timelineId
+				_this.gettimelinedetail()
+			}
 			
 		},
 		
@@ -212,6 +222,40 @@
 					// this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
 					// this.imgArr = info.imgs.split(',') // 图片数组
 					// this.remark = info.remark // 备注信息
+					
+				}).catch(error => {
+					
+					_this.ifloading = false // 结束加载动画
+					
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 获取时间轴详情
+			gettimelinedetail() {
+				
+				_this.ifloading = true // 开始加载动画
+				
+				uniCloud.callFunction({
+					name: 'wishlisttimeline',
+					data: {
+						type: 'getdetail',
+						info: {
+							_id: this.timelineId
+						}
+					}
+				}).then(response => {
+					
+					_this.ifloading = false // 结束加载动画
+					
+					// 获取数据成功
+					let info = response.result.data[0]
+					
+					this.timelineInfo = info
 					
 				}).catch(error => {
 					

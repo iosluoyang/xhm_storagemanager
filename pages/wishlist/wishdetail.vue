@@ -162,14 +162,7 @@
 										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 									</view>
 								</view>
-								
-								<!-- #ifdef MP -->
-								<!-- 小程序下有分享按钮 -->
-								<view class="rightview">
-									<button class="cuIcon-share sm" @tap.stop="sharetimeline(timelineitem)"></button>
-								</view>
-								<!-- #endif -->
-								
+	
 							</view>
 							
 							<!-- 评论文本内容 -->
@@ -206,7 +199,17 @@
 								
 							</view>
 							
-							<!--  -->
+							<!-- 操作按钮区域 -->
+							<view class="optionview margin-top-sm flex align-center">
+								
+								<!-- 小程序下有分享按钮 -->
+								<!-- #ifdef MP -->
+								<button class="cuIcon-share sm" @tap.stop="sharetimeline(timelineitem)"></button>
+								<!-- #endif -->
+								
+								<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
+								
+							</view>
 							
 						</view>
 					</view>
@@ -229,13 +232,15 @@
 								</view>
 								
 								<!-- 动态标识 -->
-								<view class="tagview flex-sub flex align-center justify-end">
+								<view class="rightview flex-sub flex align-center justify-end">
+									
 									<!-- type=3 待确认标识 -->
 									<view v-if="timelineitem.type==3" class="cu-tag bg-white radius">{{ i18n.base.waittoconfirm }}</view>
 									<!-- type=4 通过标识 -->
 									<view v-if="timelineitem.type==4" class="cu-tag bg-green radius">{{ i18n.base.agree }}</view>
 									<!-- type=5 拒绝标识 -->
 									<view v-if="timelineitem.type==5" class="cu-tag bg-grey radius">{{ i18n.base.refuse }}</view>
+									
 								</view>
 								
 							</view>
@@ -278,9 +283,20 @@
 							<view class="optionview margin-top-sm padding-top-sm solid-top">
 								
 								<!-- 待确认状态 type=3 按钮操作区域 -->
-								<view v-if="timelineitem.type==3" class="btnview flex align-center">
-									<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
-									<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+								<view v-if="timelineitem.type==3" class="btnview flex align-center justify-between">
+									
+									<view class="leftview flex align-center">
+										<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+										<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+									</view>
+									
+									<view class="rightview flex align-center">
+										<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
+										<!-- #ifdef MP -->
+										<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
+										<!-- #endif -->
+									</view>
+									
 								</view>
 								
 								<!-- 同意状态 type=4 发布需求单 -->
@@ -298,17 +314,23 @@
 									</view>
 									
 									<!-- 同意操作按钮区域 -->
-									<view class="btnsview solid-top padding-top-sm flex align-center">
+									<view class="btnsview solid-top padding-top-sm flex align-center justify-between">
 										
-										<!-- 小程序平台有分享按钮 -->
-										<!-- #ifdef MP-WEIXIN -->
-										<button class="cu-btn round bg-gradual-green margin-right" open-type="share">{{ i18n.wishlist.importproduct.importpro }}</button>
-										<!-- #endif -->
-										<!-- 非小程序平台为普通操作按钮 -->
-										<!-- #ifndef MP-WEIXIN -->
-										<button class="cu-btn round bg-gradual-green margin-right" @tap.stop="importproduct(timelineitem)">{{ i18n.wishlist.importproduct.importpro }}</button>
-										<!-- #endif -->
-									
+										<view class="leftview flex align-center">
+											<!-- 小程序平台有分享按钮 -->
+											<!-- #ifdef MP-WEIXIN -->
+											<button class="cu-btn round bg-gradual-green margin-right" open-type="share">{{ i18n.wishlist.importproduct.importpro }}</button>
+											<!-- #endif -->
+											<!-- 非小程序平台为普通操作按钮 -->
+											<!-- #ifndef MP-WEIXIN -->
+											<button class="cu-btn round bg-gradual-green margin-right" @tap.stop="importproduct(timelineitem)">{{ i18n.wishlist.importproduct.importpro }}</button>
+											<!-- #endif -->
+										</view>
+										
+										<view class="righview flex align-center">
+											<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
+										</view>
+										
 									</view>
 									
 								</view>
@@ -332,6 +354,7 @@
 									<view class="bg-grey padding-sm margin-top-sm margin-left radius text-sm">
 										{{ timelineitem.refuseReason }}
 									</view>
+									
 								</view>
 								
 							</view>
@@ -717,6 +740,13 @@
 					urls: previewArr,
 					current:index
 				})
+			},
+			
+			// 编辑时间轴数据
+			edittimeline(timelineitem) {
+				uni.navigateTo({
+					url: `/pages/wishlist/handletimeline?wishId=${timelineitem.wishId}&timelineId=${timelineitem._id}&type=edit`
+				});
 			},
 			
 			// 拒绝时间轴商品发现

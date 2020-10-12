@@ -119,4 +119,10 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	else if(type == 'getdetail') {
+		let docid = info._id
+		let res = await collection.doc(docid).get()
+		return res
+	}
+	
 };
