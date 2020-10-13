@@ -56,7 +56,7 @@ exports.main = async (event, context) => {
 		let docid = info._id
 		// 编辑时间轴集合数据
 		let otherdata = {
-			creatTime: currenttimestr, // 更新当前时间轴的创造时间为最新的当前时间
+			editTime: currenttimestr, // 更新当前时间轴的编辑时间为最新的当前时间
 		}
 		let updateinfo = {...info,...otherdata}
 		delete updateinfo._id // 删除_id属性 不能更新_id字段
@@ -92,6 +92,29 @@ exports.main = async (event, context) => {
 	
 	// agree 时间轴数据点击同意
 	else if(type == 'agree') {
+		
+		// 对应的心愿单表
+		const wishlistcollection = db.collection('wishlist')
+		let wishId = info.wishId
+		
+		// 新增一条时间轴完成记录
+		let data = {
+			wishId: info.wishId,
+			creatTime: currenttimestr,
+			user: info.agreeUser,
+			type: 6, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+		}
+		await collection.add(data)
+		
+		await wishcollection.doc(info.wishId).update({
+			commentCount: dbCmd.inc(1) // 将该心愿单的评论数量自增1
+		})
+		
+		await wishlistcollection.doc(wishId).update({
+			achieveFlag: 2
+		})
+		
+		// 更新当前的时间轴数据 变更为确认通过
 		let docid = info._id
 		let updateinfo = {
 			type: 4,
@@ -99,12 +122,7 @@ exports.main = async (event, context) => {
 			agreeTime: currenttimestr,
 		}
 		let res = await collection.doc(docid).update(updateinfo)
-		// 当时间轴数据被拒绝的时候将对应的心愿单状态恢复为已完成
-		let wishId = info.wishId
-		const wishlistcollection = db.collection('wishlist')
-		await wishlistcollection.doc(wishId).update({
-			achieveFlag: 2
-		})
+		
 		return res
 	}
 	

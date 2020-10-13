@@ -51,23 +51,38 @@ exports.main = async (event, context) => {
 			imgs: '',
 			type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 		}
-		await wishlisttimelinecollecton.add([timelinestartdata,timelinenoramldata])
+		// 当第一条时间轴数据有内容时才进行添加 否则不进行添加
+		let adddataArr = timelinenoramldata.content == '' ? [timelinestartdata] : [timelinestartdata,timelinenoramldata]
+		await wishlisttimelinecollecton.add(adddataArr)
 		
 		return wishlistres
 	}
 	
 	// edit 编辑心愿单
 	else if(type == 'edit') {
+		
 		let docid = info._id
+		
+		// 新增一条编辑时间轴记录
+		const wishlisttimelinecollecton = db.collection('wishlisttimeline')
+		let edittimelinedata = {
+			wishId: docid,
+			editUser: info.user,
+			creatTime: currenttimestr,
+			type: 2
+		}
+		await wishlisttimelinecollecton.add(edittimelinedata)
+		
 		// 编辑心愿单集合数据
 		let otherdata = {
 			achieveFlag: 0, // achieveFlag  0进行中 1待确认 2已完成
-			creatTime: currenttimestr, // 更新当前心愿单的创造时间为最新的当前时间
+			editTime: currenttimestr, // 更新当前心愿单的编辑时间为最新的当前时间
 		}
 		let updateinfo = {...info,...otherdata}
 		delete updateinfo._id // 删除_id属性 不能更新_id字段
 		let res = await collection.doc(docid).update(updateinfo);
 		return res
+		
 	}
 	
 	// edit 删除心愿单

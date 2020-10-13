@@ -383,6 +383,7 @@ const th = {
 			targetpriceerror: "โปรดป้อนราคาเป้าหมาย",
 			timelinecontenterror: "โปรดป้อนเนื้อหาที่อัปเดต",
 			startsign: "เริ่มต้นรายการที่ต้องการ",
+			finishsign: "สำเร็จแล้ว",
 			refusereason: "เหตุผลที่ปฏิเสธ",
 			inputrefusereason: "โปรดป้อนเหตุผลในการปฏิเสธ",
 			share: "แบ่งปัน",

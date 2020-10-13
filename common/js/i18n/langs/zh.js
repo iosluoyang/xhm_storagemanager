@@ -373,6 +373,7 @@ const zh = {
 			targetpriceerror: "请输入目标价格",
 			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始",
+			finishsign: "心愿单完成",
 			refusereason: "拒绝理由",
 			inputrefusereason: "请输入拒绝理由",
 			share: "分享内容",
