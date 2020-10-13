@@ -93,28 +93,7 @@ exports.main = async (event, context) => {
 	// agree 时间轴数据点击同意
 	else if(type == 'agree') {
 		
-		// 对应的心愿单表
-		const wishlistcollection = db.collection('wishlist')
-		let wishId = info.wishId
-		
-		// 新增一条时间轴完成记录
-		let data = {
-			wishId: info.wishId,
-			creatTime: currenttimestr,
-			user: info.agreeUser,
-			type: 6, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-		}
-		await collection.add(data)
-		
-		await wishcollection.doc(info.wishId).update({
-			commentCount: dbCmd.inc(1) // 将该心愿单的评论数量自增1
-		})
-		
-		await wishlistcollection.doc(wishId).update({
-			achieveFlag: 2
-		})
-		
-		// 更新当前的时间轴数据 变更为确认通过
+		// 首先更新当前时间轴数据为已通过
 		let docid = info._id
 		let updateinfo = {
 			type: 4,
@@ -123,6 +102,22 @@ exports.main = async (event, context) => {
 		}
 		let res = await collection.doc(docid).update(updateinfo)
 		
+		// 然后新增一条时间轴完成记录
+		let donedata = {
+			wishId: info.wishId,
+			creatTime: currenttimestr,
+			user: info.agreeUser,
+			type: 6, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+		}
+		await collection.add(donedata)
+		
+		// 将对应的该心愿评论数据+1 然后变更该心愿为已完成状态
+		const wishlistcollection = db.collection('wishlist')
+		await wishlistcollection.doc(info.wishId).update({
+			commentCount: dbCmd.inc(1), // 将该心愿单的评论数量自增1
+			achieveFlag: 2
+		})
+
 		return res
 	}
 	

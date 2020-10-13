@@ -26,13 +26,21 @@
 					</swiper-item>
 				</swiper>
 				
-				<!-- 商品标题和备注 -->
+				<!-- 商品标题和备注 链接 -->
 				<view class="procontentview flex-sub margin-left-sm">
 					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-					<view class="tipsview radius bg-gray padding-sm text-sm text-light">{{wishinfo.remark}}</view>
-					<view class="priceview">
-						<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
-						<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light">{{wishinfo.remark}}</view>
+					<view class="bottomview margin-top-sm flex justify-between align-center">
+						<view class="priceview flex align-center">
+							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
+							<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+							<text v-if="wishinfo.targetAmount" class="text-black text-df margin-left">{{ `(${wishinfo.targetAmount})` }}</text>
+						</view>
+						
+						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+						<!-- #ifndef H5 -->
+						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copytoclipboard(wishinfo.sourceLink)"></button>
+						<!-- #endif -->
 					</view>
 				</view>
 				
@@ -243,6 +251,7 @@
 					
 					// 获取数据成功
 					let info = response.result.data[0]
+					_this.timelineInfo = info
 					
 					// 时间轴类型
 					// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
@@ -264,6 +273,19 @@
 					});
 				})
 				
+			},
+			
+			// 点击复制到剪贴板
+			copytoclipboard(data) {
+				uni.setClipboardData({
+					data: data,
+					success() {
+						uni.showToast({
+							title: `copy succeed !`,
+							icon: 'none'
+						});
+					}
+				})
 			},
 			
 			// 粘贴源网站链接
@@ -448,9 +470,15 @@
 				this.uploadpic(this.imgArr).then(imgs => {
 					// 上传图片成功 开始上传所有数据
 					console.log(`获得的图片链接为${imgs}`);
-					// 根据当前页面类型选择更新的时间轴类型
-					let timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
-					
+					// 根据当前页面类型和新增编辑类型选择更新的时间轴类型
+					let timelinetype = 1 // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+					// 如果是新增的话 根据是时间轴更新还是发现商品选择不同的类型
+					if(_this.pagetype == 'add') {
+						timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
+					}
+					else if(_this.pagetype == 'edit') {
+						timelinetype = _this.timelineInfo.type
+					}
 					let commoninfo = {
 						wishId: _this.wishId, // 当前心愿的id
 						_id: _this.pagetype == 'edit' ? _this.timelineId : null,
