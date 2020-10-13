@@ -166,7 +166,7 @@
 							</view>
 							
 							<!-- 评论文本内容 -->
-							<view v-if="timelineitem.content" class="margin-top-sm">
+							<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
 								{{timelineitem.content}}
 							</view>
 							
@@ -191,26 +191,39 @@
 							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
 								
 								<text class="cuIcon cuIcon-link text-green"></text>
-								<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
+								<text class="text-sm text-gray margin-left-sm t_oneline">{{ timelineitem.link }}</text>
 								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 								<!-- #endif -->
 								
 							</view>
 							
-							<!-- 操作按钮区域 -->
-							<view class="optionview margin-top-sm flex align-center">
+							<!-- 按钮操作区域 -->
+							<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center justify-between">
 								
-								<!-- 小程序下有分享按钮 -->
-								<!-- #ifdef MP -->
-								<button class="cuIcon-share sm" @tap.stop="sharetimeline(timelineitem)"></button>
-								<!-- #endif -->
+								<view class="leftview flex align-center">
+									
+								</view>
 								
-								<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
+								<view class="righview flex align-center">
+									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+									<!-- #ifdef MP -->
+									<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
+									<!-- #endif -->
+								</view>
 								
 							</view>
 							
+						</view>
+					</view>
+					
+					<!-- 心愿单编辑类型  type=2 -->
+					<view v-if="timelineitem.type == 2" class="cu-item cuIcon-evaluate_fill text-gray">
+						<view class="content bg-gray shadow-blur">
+							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
+							<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.userName : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 						</view>
 					</view>
 					
@@ -246,8 +259,8 @@
 							</view>
 							
 							<!-- 文本内容 -->
-							<view v-if="timelineitem.content" class="margin-top-sm text-black">
-								{{timelineitem.content}}
+							<view v-if="timelineitem.content" class="margin-top-sm text-black t_wrap">
+								{{ timelineitem.content }}
 							</view>
 							
 							<!-- 图片区域 -->
@@ -271,16 +284,16 @@
 							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
 								
 								<text class="cuIcon cuIcon-link text-green"></text>
-								<text class="text-sm text-black margin-left-sm">{{ timelineitem.link }}</text>
+								<text class="text-sm text-black margin-left-sm t_oneline">{{ timelineitem.link }}</text>
 								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 								<!-- #endif -->
 								
 							</view>
 							
-							<!-- 不同状态的区域 -->
-							<view class="optionview margin-top-sm padding-top-sm solid-top">
+							<!-- 不同状态的差异化区域 -->
+							<view class="differentview margin-top-sm padding-top-sm solid-top">
 								
 								<!-- 待确认状态 type=3 按钮操作区域 -->
 								<view v-if="timelineitem.type==3" class="btnview flex align-center justify-between">
@@ -291,10 +304,7 @@
 									</view>
 									
 									<view class="rightview flex align-center">
-										<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
-										<!-- #ifdef MP -->
-										<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
-										<!-- #endif -->
+										
 									</view>
 									
 								</view>
@@ -312,27 +322,7 @@
 											</view>
 										</view>
 									</view>
-									
-									<!-- 同意操作按钮区域 -->
-									<view class="btnsview solid-top padding-top-sm flex align-center justify-between">
-										
-										<view class="leftview flex align-center">
-											<!-- 小程序平台有分享按钮 -->
-											<!-- #ifdef MP-WEIXIN -->
-											<button class="cu-btn round bg-gradual-green margin-right" open-type="share">{{ i18n.wishlist.importproduct.importpro }}</button>
-											<!-- #endif -->
-											<!-- 非小程序平台为普通操作按钮 -->
-											<!-- #ifndef MP-WEIXIN -->
-											<button class="cu-btn round bg-gradual-green margin-right" @tap.stop="importproduct(timelineitem)">{{ i18n.wishlist.importproduct.importpro }}</button>
-											<!-- #endif -->
-										</view>
-										
-										<view class="righview flex align-center">
-											<button class="cu-btn cuIcon-edit round bg-white" @tap.stop="edittimeline(timelineitem)"></button>
-										</view>
-										
-									</view>
-									
+								
 								</view>
 								
 								<!-- 被拒绝状态  type=5 拒绝标识和拒绝理由 -->
@@ -359,8 +349,33 @@
 								
 							</view>
 							
+							<!-- 按钮操作区域 -->
+							<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center justify-between">
+								
+								<view class="leftview flex align-center">
+									
+								</view>
+								
+								<view class="righview flex align-center">
+									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+									<!-- #ifdef MP -->
+									<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
+									<!-- #endif -->
+								</view>
+								
+							</view>
+							
 						</view>
 						
+					</view>
+					
+					<!-- 心愿完成类型  type=6 -->
+					<view v-if="timelineitem.type == 6" class="cu-item cuIcon-evaluate_fill text-green">
+						<view class="content bg-green shadow-blur">
+							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
+							<text class="margin-left">{{ i18n.wishlist.timeline.finishsign }}</text>
+						</view>
 					</view>
 					
 				</block>
@@ -647,6 +662,54 @@
 				
 			},
 			
+			// 删除时间轴
+			deletetimeline(timelineitem,timelinekey,timelineitemindex) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始删除
+							
+							uniCloud.callFunction({
+								name: 'wishlisttimeline',
+								data: {
+									type: 'delete',
+									info: {
+										_id: timelineitem._id
+									}
+								}
+							}).then(response => {
+								// 删除成功
+								uni.showToast({
+									title: _this.i18n.tip.deletesuccess,
+									icon: 'none'
+								});
+								
+								// 首先找到对应的日期数组
+								let datearr = _this.timelinearrdic[timelinekey]
+								// 然后删除该数组中的数据
+								datearr.splice(timelineitemindex,1)
+								// 强制更新
+								_this.$forceUpdate()
+								
+							}).catch(error => {
+								// 删除失败
+								uni.showToast({
+									title: _this.i18n.error.deleteerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					},
+				})
+				
+			},
+			
 			// 点击分享时间轴
 			sharetimeline(timelineitem) {
 				this.temptimelineitem = timelineitem
@@ -854,11 +917,10 @@
 							})
 							.then(res => {
 								if(res.success) {
-									// 同意成功 手动将状态数据变更
-									timelineitem.agreeUser = uploaddata.agreeUser
-									timelineitem.type = 4
-									_this.wishinfo.achieveFlag = 2
-			
+									// 同意成功 刷新当前数据
+									_this.loaddetaildata()
+									_this.loadtimelinedata()
+									
 									// 更新心愿列表数据
 									uni.$emit('updatewishlist')
 									

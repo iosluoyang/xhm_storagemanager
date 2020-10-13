@@ -377,6 +377,7 @@ const en = {
 			targetpriceerror: "please enter the target price",
 			timelinecontenterror: "Please enter the updated content",
 			startsign: "Wish Start",
+			finishsign: "Wish Achieve",
 			refusereason: "Refuse Reason",
 			inputrefusereason: "Please enter the refuse reason",
 			share: "Share",
