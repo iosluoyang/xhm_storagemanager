@@ -135,7 +135,7 @@
 						}
 					}
 				}).then(response => {
-					if(response.success) {
+					if(response) {
 						// 加载成功
 						let date = response.result.data.date
 						let curdatalist = response.result.data || []

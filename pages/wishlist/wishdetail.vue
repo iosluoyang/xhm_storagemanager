@@ -545,7 +545,7 @@
 				}).then(res => {
 					// _this.ifloading = false // 结束缓冲动画
 					// 获取心愿详情数据成功
-					if(res.success) {
+					if(res) {
 						
 						let info = res.result.data[0]
 						_this.wishinfo = info
@@ -609,7 +609,7 @@
 					
 					_this.ifloading = false // 结束缓冲动画
 					
-					if(res.success) {
+					if(res) {
 						let timelinelist = res.result.data
 												
 						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
@@ -860,7 +860,7 @@
 					}
 				})
 				.then(res => {
-					if(res.success) {
+					if(res) {
 						// 拒绝成功 手动将状态数据变更
 						timelineitem.refuseReason = uploaddata.refuseReason
 						timelineitem.refuseUser = uploaddata.refuseUser
@@ -916,7 +916,7 @@
 								}
 							})
 							.then(res => {
-								if(res.success) {
+								if(res) {
 									// 同意成功 刷新当前数据
 									_this.loaddetaildata()
 									_this.loadtimelinedata()

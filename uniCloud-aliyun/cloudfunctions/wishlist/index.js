@@ -121,6 +121,7 @@ exports.main = async (event, context) => {
 		.get() // 获取对应数据
 		
 		res.date = date // 将查询时间原样返回
+		console.log(`当前的云函数调用的结果为:${JSON.stringify(res)}`);
 		return res
 		
 	}

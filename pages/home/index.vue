@@ -330,7 +330,7 @@
 					}
 				}).then(response => {
 					// 获取公告成功
-					if(response.success) {
+					if(response) {
 						let noticeinfo = response.result.data[0]
 						this.homenotice = noticeinfo
 						
