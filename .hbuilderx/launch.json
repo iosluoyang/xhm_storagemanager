@@ -4,7 +4,7 @@
     "configurations": [{
      	"default" : 
      	{
-     		"launchtype" : "remote"
+     		"launchtype" : "local"
      	},
      	"h5" : 
      	{
