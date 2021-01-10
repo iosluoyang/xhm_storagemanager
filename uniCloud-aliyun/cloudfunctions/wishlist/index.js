@@ -6,8 +6,7 @@ const dbCmd = db.command // 数据库指令
 
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
-	console.log('客户端上传到的参数为: ', event)
-	
+		
 	// 当前时间字符串
 	let currenttimestr = moment().add(8,'h').format('YYYY-MM-DD HH:mm:ss') // 注意服务器时间要比客户端时间晚8个小时 所以这里要增加8个小时
 	
@@ -106,6 +105,9 @@ exports.main = async (event, context) => {
 	else if(type == 'getlist') {
 		
 		// 如果info.date有值则返回date的值 如果info.date没有值则返回当前的时间字符串
+		let achieveFlagArr = info.achieveFlagArr // 心愿状态数组(筛选项)
+		let hurryLevelArr = info.hurryLevelArr // 紧急程度状态数组(筛选项)
+		let sortType = info.sortType // 排序方式(筛选项) 
 		let date = info.date ? info.date : currenttimestr
 		let pageSize = info.pageSize
 		let pageNum = info.pageNum
@@ -113,15 +115,17 @@ exports.main = async (event, context) => {
 		
 		let res = await collection
 		.where({
-			creatTime: dbCmd.lte(date) // 找到创建时间小于当时请求时间的数据
+			achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
+			hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
+			creatTime: dbCmd.lte(date), // 找到创建时间小于当时请求时间的数据
 		})
+		.orderBy("hurryLevel", sortType == 1 ? 'asc' : 'desc' ) //  排序方式为1时为升序排序 否则均为降序排序
 		.orderBy("_id", "desc") // 倒序排列
 		.skip(skipdataNum) // 跳过已经查询过的条数
 		.limit(pageSize) // 设置查询的条数
 		.get() // 获取对应数据
 		
 		res.date = date // 将查询时间原样返回
-		console.log(`当前的云函数调用的结果为:${JSON.stringify(res)}`);
 		return res
 		
 	}

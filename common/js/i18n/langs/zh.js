@@ -278,7 +278,9 @@ const zh = {
 			stockascend: "按库存量升序",
 			stockdecrease: "按库存量降序",
 			sellnumascend: "按销量升序",
-			sellnumdecrease: "按销量降序"
+			sellnumdecrease: "按销量降序",
+			hurrylevelascend: "按紧急程度升序",
+			hurryleveldecrease: "按紧急程度降序"
 		},
 		
 		handlegoods: {

@@ -1,5 +1,5 @@
 <template>
-	<view class="HMfilterDropdown" :style="{top: `${top}px`}" @touchmove.stop.prevent="discard" >
+	<view class="HMfilterDropdown" :class="{'setDropdownBottom':maskVisibility}" :style="{'top':menuTop+'rpx'}" @touchmove.stop.prevent="discard" @tap.stop="discard">
 		<view class="nav">
 			<block v-for="(item,index) in menu" :key="index">
 				<view class="first-menu" :class="{'on':showPage==index}" @tap="togglePage(index)">
@@ -105,9 +105,9 @@
 			}
 		},
 		props: {
-			top: {
-				value: [String, Number],
-				default: 0
+			menuTop:{
+				value: Number,
+				default: false
 			},
 			filterData: {
 				value: Array,
@@ -120,6 +120,10 @@
 			updateMenuName:{
 				value: Boolean,
 				default: true
+			},
+			dataFormat:{
+				value: String,
+				default: 'Array'
 			}
 		},
 		watch: {
@@ -129,20 +133,37 @@
 				},
 				immediate: true
 			},
-			defaultSelected(newVal) {
-				if(newVal.length==0){
-					return;
-				}
-				this.defaultActive = JSON.parse(JSON.stringify(newVal));
-				this.activeMenuArr = JSON.parse(JSON.stringify(newVal));
-				this.shadowActiveMenuArr = JSON.parse(JSON.stringify(newVal));
-				if(this.updateMenuName){
-					this.setMenuName();
-				}
+			defaultSelected: {
+				handler(newVal) {
+				
+					if(newVal && newVal.length==0){
+						return;
+					}
+					this.defaultActive = JSON.parse(JSON.stringify(newVal));
+					this.activeMenuArr = JSON.parse(JSON.stringify(newVal));
+					this.shadowActiveMenuArr = JSON.parse(JSON.stringify(newVal));
+					if(this.updateMenuName){
+						this.setMenuName();
+					}
+				},
+				immediate: true
 			}
+			// defaultSelected(newVal) {
+
+			// 	if(newVal.length==0){
+			// 		return;
+			// 	}
+			// 	this.defaultActive = JSON.parse(JSON.stringify(newVal));
+			// 	this.activeMenuArr = JSON.parse(JSON.stringify(newVal));
+			// 	this.shadowActiveMenuArr = JSON.parse(JSON.stringify(newVal));
+			// 	if(this.updateMenuName){
+			// 		this.setMenuName();
+			// 	}
+			// }
 		},
 		methods: {
 			initMenu() {
+
 				let tmpMenuActiveArr=[];
 				let tmpMenu=[];
 				for (let i = 0; i < this.filterData.length; i++) {
@@ -178,21 +199,18 @@
 			setMenuName(){
 				for(var i=0;i<this.activeMenuArr.length;i++){
 					let row = this.activeMenuArr[i];
-					if (typeof(row[0]) != 'object'){
-						var tmpsub = false;
-						if(row.length>0 && row[0]!=null){
-							tmpsub = this.subData[i].submenu[row[0]];
-							if(row.length>1 && row[1]!=null){
+					if(this.subData[i].type=='hierarchy'){
+						if (typeof(row[0]) == 'number'){
+							let tmpsub = this.subData[i].submenu[row[0]];
+							if(row.length>1){
 								tmpsub = tmpsub.submenu[row[1]];
-								if(row.length>2 && row[2]!=null){
+								if(row.length>2){
 									tmpsub = tmpsub.submenu[row[2]];
 								}
 							}
-						}else{
-							tmpsub = false;
-						}
-						if(tmpsub){
 							this.menu[i].name = tmpsub.name;
+						}else{
+							this.menu[i].name = this.subData[i].name;
 						}
 					}
 				}
@@ -264,7 +282,7 @@
 					this.subData[page_index].submenu[box_index].submenu[activeIndex].selected = false;
 					this.activeMenuArr[page_index][box_index][0] = null;
 				}else{
-					if(activeIndex!=null){
+					if(activeIndex!=null && activeIndex<this.subData[page_index].submenu[box_index].submenu.length){
 						this.subData[page_index].submenu[box_index].submenu[activeIndex].selected = false;
 					}
 					
@@ -333,14 +351,17 @@
 								});
 								item[j] = s;
 								s.forEach((v, k) => {
-									value[i][j][k] = this.subData[i].submenu[j].submenu[v].value;
+									value[i][j][k] = (v==null||v>=this.subData[i].submenu[j].submenu.length)?null:this.subData[i].submenu[j].submenu[v].value;
+									if(this.subData[i].type == 'radio' && value[i][j][k] == null){
+										value[i][j] = [];
+										index[i][j] = [];
+									}
 								});
 							}
 						});
 					}else{
 						let submenu = this.subData[i].submenu[item[0]];
 						value[i][0] = submenu.value;
-						console.log("value[i][0]: " + value[i][0]);
 						if(value[i].length>=2  && item[1]!=null){
 							if(submenu.submenu.length>0){
 								submenu = submenu.submenu[item[1]];
@@ -364,7 +385,7 @@
 				// 输出
 				this.$emit('confirm', {
 					index: index,
-					value:value
+					value: value
 				});
 			},
 			//show菜单页
@@ -438,7 +459,7 @@
 				if (tmpitem.type == 'hierarchy'&&tmpitem.hasOwnProperty('submenu')&&tmpitem.submenu.length>0) {
 					let level = this.getMaxFloor(tmpitem.submenu);
 					while (level > 0) {
-						tmpArr.push(0);
+						tmpArr.push(null);
 						level--;
 					}
 				} else if (tmpitem.type == 'filter') {
@@ -491,14 +512,20 @@
 	.HMfilterDropdown {
 		flex-shrink: 0;
 		width: 100%;
-		height: 44px;
 		position: fixed;
+		// position: sticky;
 		z-index: 997;
 		flex-wrap: nowrap;
 		display: flex;
 		flex-direction: row;
 		top: var(--window-top);
 		left:0;
+		// top:100px;
+		overflow-y: hidden;
+		&.setDropdownBottom{
+			// height: 345px;
+			bottom: 0;
+		}
 		view {
 			display: flex;
 			flex-wrap: nowrap;

@@ -27,7 +27,7 @@
 		</view>
 		
 		<!-- 筛选面板 -->
-		<HMfilterDropdown class="filterview" :top="customBarHeight" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
+		<HMfilterDropdown class="filterview" :menuTop="customBarHeight * 2" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
 		
 		<!-- 商品列表 -->
 		<mescroll-uni class="mescroll" :top=" customBarHeight + 44 + 'px' " @init="mescrollInit" :down="downOption" @down="downCallback" @up="loadproductlist">

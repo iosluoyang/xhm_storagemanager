@@ -283,7 +283,9 @@ const en = {
 			stockascend: "Stock Number Ascending",
 			stockdecrease: "Stock Number Decreasing",
 			sellnumascend: "Selling Number Ascending",
-			sellnumdecrease: "Selling Number Decreasing"
+			sellnumdecrease: "Selling Number Decreasing",
+			hurrylevelascend: "HurryLevel Ascending",
+			hurryleveldecrease: "HurryLevel Decreasing"
 		},
 		
 		handlegoods: {
