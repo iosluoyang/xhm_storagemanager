@@ -2,9 +2,9 @@
 	<view class="goodstypeview">
 		
 		<!-- 自定义导航栏 -->
-		<view class="customnav" :style="[{height:customBarHeight + 'px'}]">
+		<view class="customnav" :style="[{height:CustomBar + 'px'}]">
 			
-			<view class="fixed cu-bar search bg-gradual-red" :style="[{height: customBarHeight + 'px',paddingTop: statusBarHeight + 'px', minHeight: customBarHeight + 'px'}]">
+			<view class="fixed cu-bar search bg-gradual-red" :style="[{height: CustomBar + 'px',paddingTop: StatusBar + 'px', minHeight: CustomBar + 'px'}]">
 				
 				<view class="action" @tap.stop="pageBack">
 					<text class="cuIcon-back"></text>
@@ -12,65 +12,106 @@
 				
 				<view class="search-form round">
 					<text class="cuIcon-search"></text>
-					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchtype" v-model="searchTypeText" confirm-type="search"></input>
-				</view>
-				<view class="action">
-					
+					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchtype" v-model="searchText" confirm-type="search"></input>
 				</view>
 			</view>
 			
 		</view>
 		
-		<!-- 分类数量统计 -->
-		<view class="cu-bar bg-white padding">
-			<view class="action">
-				<text class="cuIcon-titles text-red"></text>
-				<text class="text-xl text-bold">{{`There are ${firsttypenum} Classifications and ${secondtypenum} Subclassifications`}}</text>
-			</view>
-		</view>
-		
-		<!-- 商品分类区域 -->
-		<ly-tree class="treeview radius"
-				:style="{top: customBarHeight + 100 + 'px' }"
-				ref="typelisttree"
-				:ready="treeisReady"
-				:treeStatus="ifedittree?'edit': 'normal'"
-				:tree-data="typelist"
-				:props="treeprops"
-				node-key="typeId"
-				:currentNodeKey="currentNodeKey"
-				:defaultExpandedKeys="expandedNodekeys"
-				:childVisibleForFilterNode="false"
-				:filter-node-method="treefiltermethod"
-				autoExpandParent
-				:showCheckbox="false"
-				:showRadio="false"
-				highlightCurrent
-				accordion
+		<!-- 左右两侧垂直滚动区域 -->
+		<view class="VerticalBox flex" :style="{height: `calc(100vh - ${CustomBar}px - 10px)` }">
+			
+			<!-- 左侧滚动区域 -->
+			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="NavScrollTop" style="height: 100%;">
 				
-				@node-expand="handleNodeExpand" 
-				@node-click="handleNodeClick"
-				@add-node="handleAddNode"
-				@edit-node="handleEditNode"
-				@delete-node="handleDeleteNode"
+				<!-- 正常的一级分类 -->
+				<view v-for="(typeinfo,index) in typelist" :key="index" 
+					:class="[ index === navCurIndex ?'text-red cur':'', 'cu-item' ]" 
+					@tap.stop="navTap"
+					:data-index="index">
+					<view class="text-cut text-sm">{{ typeinfo.typeName }}</view>
+				 </view>
 				
-		></ly-tree>
+				<!-- 添加分类的按钮 -->
+				<view class="cu-item">
+					<view class="addbtn text-xxl">
+						<text class="cuIcon cuIcon-add text-bold" @tap.stop="startaddgoodstype()"></text>
+					</view>
+				</view>
+			</scroll-view>
+			
+			<!-- 右侧滚动区域 -->
+			<scroll-view class="VerticalMain" scroll-y scroll-with-animation style="height: 100%;"
+				:scroll-into-view="'main-'+mainCurIndex"
+				@scroll="ScrollMainView">
+				
+				<view class="padding-top padding-lr" v-for="(typeinfo,index) in typelist" :key="index" :id=" 'main-' + index ">
+					
+					<!-- 标题头 -->
+					<view class="cu-bar solid-bottom bg-white">
+						<view class="action">
+							<text class="cuIcon-title text-red"></text>
+							<text>{{ typeinfo.typeName }}</text>
+						</view>
+						<view class="action" v-if="typeinfo.sysFlag === 0">
+							<button class="cu-btn bg-grey round cuIcon cuIcon-edit margin-right-sm" @tap.stop="starteditgoodstype(index, null)"></button>
+							<button class="cu-btn bg-red round cuIcon cuIcon-delete" @tap.stop="delgoodstype(index, null)"></button>
+						</view>
+					</view>
+					
+					<!-- 附属的二级分类 -->
+					<view class="cu-list menu-avatar">
+						
+						<view class="cu-item" :class="modalName=='move-box-'+ secondtypeinfo.typeId.toString() && secondtypeinfo.sysFlag === 0?'move-cur':''" 
+								v-for="(secondtypeinfo, secondindex) in typeinfo.childList" :key="secondindex"
+								@touchstart="ListTouchStart" 
+								@touchmove="ListTouchMove" 
+								@touchend="ListTouchEnd"
+								@tap.stop="jumptogoodslist(typeinfo.typeId, secondtypeinfo.typeId)"
+								:data-target="'move-box-' + secondtypeinfo.typeId.toString()">
+								
+							<view class="cu-avatar round lg secondtypeimgview"></view>
+							
+							<view class="content text-cut" style="width: calc(100% - 48px - 30px - 10px)">
+								
+								<view class="text-black text-light">{{ secondtypeinfo.typeName }}</view>
+								<view class="text-cut text-grey padding-left-sm padding-right-sm bg-gray radius" @longpress="showtypedes(secondtypeinfo)">{{ secondtypeinfo.remark }}</view>
+							
+							</view>
+							
+							<view class="move">
+								<view class="bg-grey" @tap.stop="starteditgoodstype(index, secondindex)">{{ i18n.base.edit }}</view>
+								<view class="bg-red" @tap.stop="delgoodstype(index, secondindex)">{{ i18n.base.del }}</view>
+							</view>
+							
+						</view>
+						
+						<!-- 给最后增加一个添加的按钮 系统一级分类下没有 -->
+						<view v-if="typeinfo.sysFlag === 0"
+								class="cu-item text-black text-xxl" 
+								style="justify-content: center;height: 40px;"
+								@tap.stop="startaddgoodstype(typeinfo)">
+							<text class="cuIcon cuIcon-add text-bold"></text>
+						</view>
+					
+					</view>
+				
+				</view>
+			</scroll-view>
 		
-		<view class="optionview cu-bar btn-group">
-			<button class="cu-btn bg-grey shadow-blur lg round" @tap.stop="ifedittree = !ifedittree">{{ifedittree ? i18n.base.confirm : i18n.base.edit}}</button>
-			<button class="cu-btn bg-gradual-red shadow-blur lg round" @tap.stop="handleAddNode(null)">{{i18n.base.add}}</button>
 		</view>
 		
 		<!-- 增加或者编辑分类弹出框 -->
 		<view class="cu-modal" :class="ifshowmodal?'show':''">
 			<view class="cu-dialog">
+				
 				<view class="cu-bar bg-white">
-					<view class="content">{{ optiontype === 'add' ? i18n.goodstype.addtypetype : i18n.goodstype.edittype }}</view>
+					<view class="content">{{ optiontype === 'add' ? i18n.goodstype.addtype : i18n.goodstype.edittype }}</view>
 				</view>
 				<view class="padding-xl text-left">
 					<view class="cu-form-group">
 						<view class="title">{{i18n.goodstype.addtypenametitle}}</view>
-						<input :placeholder="i18n.goodstype.addtypenameplaceholder" maxlength="20" v-model="addedtypeName"></input>
+						<input :placeholder="i18n.goodstype.addtypenameplaceholder" maxlength="50" v-model="addedtypeName"></input>
 					</view>
 					
 					<view class="cu-form-group margin-top">
@@ -79,108 +120,65 @@
 					
 				</view>
 				<view class="cu-bar bg-white flex justify-around">
-					<button class="cu-btn round bg-gray text-grey" @tap="cancelModal">{{i18n.base.cancel}}</button>
-					<button class="cu-btn round bg-gradual-red" @tap="confirmModal">{{i18n.base.confirm}}</button>
+					<button class="cu-btn round bg-gray text-grey" @tap.stop="ifshowmodal=false">{{i18n.base.cancel}}</button>
+					<button class="cu-btn round bg-gradual-red" @tap.stop="confirmModal">{{i18n.base.confirm}}</button>
 				</view>
 			</view>
 		</view>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifshowloading"></loading>
-		
 	</view>
 </template>
 
 <script>
 	
-	import LyTree from '@/components/ly-tree/ly-tree.vue'
 	import _ from 'lodash'
-	var _this;
-	
+	var _this
+	var distanceNum = 50 // 滑动cell的判断距离
 	
 	export default {
-		
-		components: {
-			LyTree,
-		},
-		
 		data() {
 			return {
+				StatusBar: this.StatusBar,
+				CustomBar: this.CustomBar,
+				searchText: '', // 搜索文本
 				
-				ifshowloading: false, // 是否显示加载条
+				typelist: [], // 分类数据列表
+				navCurIndex: 0,
+				mainCurIndex: 0,
+				NavScrollTop: 0, // 左侧导航区域滑动距离
+				calculatescrollview: true, // 是否计算右侧滑动内容区域的数值
 				
-				statusBarHeight: this.StatusBar,
-				customBarHeight: this.CustomBar,
+				optiontype: '', // 操作类型 add为新增分类  edit为编辑分类
+				ifshowmodal: false, // 是否显示新增或者编辑的弹出框
+				temptypeinfo: null, // 当前临时的分类数据
+				addedtypeName: '', // 临时分类名称
+				addedtypeRemark: '', // 临时分类描述
 				
-				firsttypenum: '', // 一级分类数量
-				secondtypenum: '', // 二级分类数量
-				
-				ifedittree: false, // 是否正在编辑分类树  默认为否
-				searchTypeText: '', // 分类的搜索文本
-				treeisReady: false, //为了确保页面加载完成后才去调用load方法，this指向正确
-				typelist: null, // 当前分类数据
-				currentNodeKey: null, // 当前选中的节点key
-				expandedNodekeys: new Array(1), // 当前展开的节点的key数组
-				treeprops: {
-					label: 'typeName',
-					children: 'childList',
-				}, // 分类数据数组属性名对象
-				ifshowmodal: false, // 是否显示添加弹出框  默认为否
-				optiontype: 'add', // 默认的弹框操作类型  为新增  edit为编辑
-				tempnodeobj: null, // 临时节点数据  即将增加的节点或者删除的节点
-				addedtypeName: '', // 当前新增分类的名称
-				addedtypeRemark: '', // 当前新增分类的描述
+				modalName: null,
+				listTouchStart: 0,
+				listTouchDirection: null,
+
 				
 			};
+		},
+		
+		watch: {
+			// 监听搜索文字的变更
+			searchText(searchText) {
+				this.searchgoodstype(searchText)
+			},
 		},
 		
 		onLoad() {
 			
 			_this = this
-			
+
 			// 加载分类数据
 			this.loadgoodstypelist()
 			
 		},
-		
-		watch: {
-			
-			// 监听搜索文字的变更
-			searchTypeText(searchtext) {
-				this.filtertree(searchtext)
-			},
-			
-			// 监听分类数据  计算分类数量
-			typelist: {
-				handler(newValue, oldValue) {
-					
-					if(newValue && newValue.length > 0) {
-						// 遍历分类 获取对应数量
-						let firsttypenum = 0
-						let secondtypenum = 0
-						
-						newValue.forEach((firsttypeinfo, firstindex) => {
-							// 全部分类不计入总数
-							if(firsttypeinfo.typeId !== -1) {
-								firsttypenum += 1
-								if(firsttypeinfo.childList && firsttypeinfo.childList.length > 0) {
-									firsttypeinfo.childList.forEach((secondtypeinfo, secondindex) => {
-										secondtypenum +=1
-									})
-								}
-							}
-						})
-						
-						this.firsttypenum = firsttypenum
-						this.secondtypenum = secondtypenum
-					}
-					
-				},
-				deep: true,
-				immediate: true
-			}
-		},
-		
 		methods: {
 			
 			// 导航栏返回
@@ -189,8 +187,6 @@
 					delta:1
 				})
 			},
-			
-			/****************商品分类相关***************/
 			
 			// 加载商品分类数据
 			loadgoodstypelist() {
@@ -206,7 +202,7 @@
 					let typelist = response.data.list
 					
 					let newtypelist = []
-					
+										
 					// 将系统添加的分类名称找到对应的国际化名称
 					typelist.forEach((firsttypeinfo, firstindex) => {
 						firsttypeinfo.typeName = firsttypeinfo.sysFlag === 1 ? _this.i18n.base[firsttypeinfo.typeName] : firsttypeinfo.typeName
@@ -220,7 +216,36 @@
 					
 					_this.typelist = newtypelist
 					
-					_this.treeisReady = true
+					// 初始化完成之后如果本地没有滑动过的标识则开始自动滑动
+					let alreadyswipercell = uni.getStorageSync('alreadyswipercell')
+
+					if(!alreadyswipercell) {
+						
+						_this.$nextTick(function(){
+							
+							// 在页面加载完毕之后自动滑动第一个可滑动的二级分类 1秒钟之后恢复原状
+							let autoswipersecondtypeid = null
+							let iffindautoswipercell = _this.typelist.some((firsttypeinfo, firstindex) => {
+								if(firsttypeinfo.childList && firsttypeinfo.childList.length > 0) {
+									return firsttypeinfo.childList.some((secondtypeinfo, secondtypeindex) => {
+										if(secondtypeinfo.sysFlag === 0) autoswipersecondtypeid = secondtypeinfo.typeId
+										return secondtypeinfo.sysFlag === 0
+									})
+								}
+								else {
+									return false
+								}
+							})
+							// 如果找到有符合条件的cell则1秒钟之后开始滑动
+							if(iffindautoswipercell) {
+								setTimeout(function() {
+									_this.autoswipercell(autoswipersecondtypeid)
+								}, 300);
+							}
+							
+						})
+						
+					}
 					
 				}).catch(error => {
 					
@@ -235,57 +260,162 @@
 				
 			},
 			
-			// 开始过滤节点树 带有函数防抖
-			filtertree: _.debounce(function(searchtext){
-				_this.$refs.typelisttree.filter(searchtext)
-			}, 300),
-			
-			// 过滤商品分类数据
-			treefiltermethod(searchtext, data) {
-				if (!searchtext) return true;
-				return data.typeName.indexOf(searchtext) !== -1;
-			},		
-			
-			// uni-app中emit触发的方法只能接受一个参数，所以会回传一个对象，打印对象即可见到其中的内容
-			handleNodeClick(obj) {
-				// console.log(`当前点击的节点数据为:${JSON.stringify(obj)}`);
-			},
-			handleNodeExpand(obj) {
-				// console.log(`当前展开的节点数据为:${JSON.stringify(obj)}`);
-			},
-			
-			// 新增节点树
-			handleAddNode(obj) {
-				// 有obj说明是添加已有节点的子节点  没有obj说明是添加根节点root的一级分类节点
-				this.tempnodeobj = obj
-				this.optiontype = 'add' // 操作类型为新增
-				this.ifshowmodal = true // 显示弹出框
-			},
-			
-			// 编辑节点树
-			handleEditNode(obj) {
-				this.tempnodeobj = obj
-				console.log(`当前即将编辑的节点数据为:${JSON.stringify(this.tempnodeobj)}`);
-				this.optiontype = 'edit' // 操作类型为编辑
-				this.ifshowmodal = true // 显示弹出框
+			// 自动左滑某个二级分类
+			autoswipercell(secondtypeid) {
 				
-				// 设置当前的数据
-				this.addedtypeName = obj.data.typeName
-				this.addedtypeRemark = obj.data.remark || ''
+				this.listTouchDirection = 'left'
+				this.modalName = 'move-box-' + secondtypeid.toString()
+				
+				setTimeout(function() {
+					_this.listTouchDirection = null
+					_this.modalName = null
+					// 滑动完之后记录在本地变量
+					uni.setStorageSync('alreadyswipercell', true)
+				}, 1000);
 				
 			},
 			
-			// 点击弹出框取消
-			cancelModal() {
-				// 隐藏弹出框  重置当前树节点
-				this.ifshowmodal = false
-				this.tempnodeobj = null
-				// 如果是编辑状态下则清空原先的数据
-				if(this.optiontype === 'edit') {
-					this.addedtypeName = ''
-					this.addedtypeRemark = ''
+			// 开始搜索
+			searchgoodstype: _.debounce(function(searchtext){
+				
+				console.log(`当前搜索文本是:${searchtext}`);
+				
+				let firstindex, secondindex
+				
+				// 开始搜索 由于考虑到一级分类不多 故搜索文本参考依据为二级分类的内容筛选
+				let findfirst = _this.typelist.some((firsttypeinfo, firsttypeindex) => {
+					if(firsttypeinfo.typeName.indexOf(searchtext) > -1) firstindex = firsttypeindex
+					return firsttypeinfo.typeName.indexOf(searchtext) > -1
+				})
+				// 找到了匹配的一级分类
+				
+				if(findfirst) {
+					_this.NavScrollTop = (firstindex - 1) * 50
+					_this.navCurIndex = firstindex
+					_this.mainCurIndex = firstindex
+				}
+				// 找不到一级分类的名称匹配 则开始匹配二级分类名称
+				else {
+					let findsecond = _this.typelist.some((firsttypeinfo, firsttypeindex) => {
+						if(firsttypeinfo.childList && firsttypeinfo.childList.length > -1) {
+							return firsttypeinfo.childList.some((secondtypeinfo, secondtypeindex) => {
+								// 找到有匹配的
+								if(secondtypeinfo.typeName.indexOf(searchtext) > -1) {
+									firstindex = firsttypeindex
+									secondindex = secondtypeindex
+								}
+								return secondtypeinfo.typeName.indexOf(searchtext) > -1
+							})
+						}
+						else {
+							return false
+						}
+					})
+					
+					// 找到了匹配的二级分类
+					if(findsecond) {
+						// 将该二级分类对应的一级分类赋值
+						_this.NavScrollTop = (firstindex - 1) * 50
+						_this.navCurIndex = firstindex
+						_this.mainCurIndex = firstindex
+					}
+					// 找不到匹配的二级分类
+					else{
+						// 不做任何操作
+					}
 				}
 				
+			}, 300),
+			
+			// 点击左侧导航区域
+			navTap(e) {
+				
+				let navindex = e.currentTarget.dataset.index
+				
+				this.NavScrollTop = (navindex - 1) * 50
+				this.navCurIndex = navindex
+				this.mainCurIndex = navindex
+			},
+			
+			// 滑动右侧内容区域
+			ScrollMainView(e) {
+				// #ifdef MP-ALIPAY
+				   return false  //支付宝小程序暂时不支持双向联动 
+				// #endif
+				let that = this;
+				
+				if (this.calculatescrollview) {
+					// 计算内容区域每一个view的top和bottom
+					this.calculateeachmainviewposition()
+					this.calculatescrollview = false // 计算完一次之后就不再进行计算 否则影响性能
+				}
+				
+				let scrollTop = e.detail.scrollTop + 10;
+				for (let i = 0; i < this.typelist.length; i++) {
+					if (scrollTop > this.typelist[i].top && scrollTop < this.typelist[i].bottom) {
+						
+						this.NavScrollTop = (i-1) * 50
+						this.navCurIndex = i
+						return false
+					}
+				}
+			},
+			
+			// 计算内容区域每一个view的top和bottom
+			calculateeachmainviewposition() {
+				
+				let tabHeight = 0;
+				// 给内容区域每一个view增加top和bottom
+				for (let i = 0; i < this.typelist.length; i++) {
+					let view = uni.createSelectorQuery().select("#main-" + i);
+					view.fields({
+						size: true
+					}, data => {
+						this.typelist[i].top = tabHeight;
+						tabHeight = tabHeight + data.height;
+						this.typelist[i].bottom = tabHeight;
+					}).exec();
+				}
+								
+			},
+			
+			// 点击添加商品分类
+			startaddgoodstype(firsttypeinfo) {
+				
+				this.addedtypeName = ''
+				this.addedtypeRemark = ''
+				this.temptypeinfo = firsttypeinfo
+				
+				this.optiontype = 'add'
+				this.ifshowmodal = true
+				
+			},
+			
+			// 点击编辑商品分类
+			starteditgoodstype(firstindex, secondindex) {
+				
+				console.log(`当前编辑的一级分类索引为:${firstindex}----二级分类索引为:${secondindex}`);
+				let temptypeinfo = null // 临时变量
+				
+				// 有二级索引 代表编辑的是二级分类
+				if(secondindex !== null) {
+					temptypeinfo = this.typelist[firstindex].childList[secondindex]
+					temptypeinfo.selectfirstIndex = firstindex
+					temptypeinfo.selectsecondIndex = secondindex
+					this.temptypeinfo = temptypeinfo
+				}
+				// 没有二级索引 代表编辑的是一级分类
+				else {
+					temptypeinfo = this.typelist[firstindex]
+					temptypeinfo.selectfirstIndex = firstindex
+					this.temptypeinfo = temptypeinfo
+				}
+				this.addedtypeName = this.temptypeinfo.typeName
+				this.addedtypeRemark = this.temptypeinfo.remark
+				
+				// 显示弹框
+				this.optiontype = 'edit'
+				this.ifshowmodal = true
 			},
 			
 			// 点击弹出框确认
@@ -315,38 +445,30 @@
 				
 				// 新增操作
 				if(this.optiontype === 'add') {
-					let addparentId = this.tempnodeobj && this.tempnodeobj.data.typeId && this.tempnodeobj.data.typeId !== '' ? parseInt(this.tempnodeobj.data.typeId) : 0
-					// 开始创建
-					_this.starttoAddNode(addtypename, addtyperemark, addparentId)
+					let parentId = this.temptypeinfo ? this.temptypeinfo.typeId : 0 // 有临时分类变量则为增加二级分类 取当前所属一级分类的id 否则为0 代表新增一级分类
+					this.addgoodstype(parentId)
 				}
 				// 编辑操作
 				else if(this.optiontype === 'edit') {
-					// 开始编辑
-					_this.starttoEditNode(addtypename, addtyperemark, this.tempnodeobj)
+					let selfinfo = this.temptypeinfo
+					this.editgoodstype(selfinfo)
 				}
-				
 				
 			},
 			
-			// 开始创建节点
-			starttoAddNode(addtypename, addtyperemark, addparentId) {
+			// 添加分类
+			addgoodstype(parentId) {
 				
 				// 开始上送数据
 				let data = {
-					typeName: addtypename,
-					remark: addtyperemark,
-					parentId: addparentId
+					typeName: this.addedtypeName,
+					remark: this.addedtypeRemark,
+					parentId: parentId
 				}
 				
 				this.$api.goodsapi.addtype(data).then(response => {
 					// 添加成功
 					uni.$emit('updategoodstype') // 发送更新事件
-					
-					// 隐藏弹出框  清空输入内容
-					this.addedtypeName = ''
-					this.addedtypeRemark = ''
-					this.tempnodeobj = null
-					this.ifshowmodal = false
 					
 					// 获取添加的分类id
 					let addtypeid = response.data.typeId
@@ -358,27 +480,39 @@
 						subtypeinfo.typeName = _this.i18n.base[subtypeinfo.typeName]
 					}
 					
-					// 新增树节点数据
-					let treedata = {
+					// 新增分类的数据
+					let newtypedata = {
 						typeId: addtypeid,
-						typeName: addtypename,
-						sysFlag: 0,
+						typeName: data.typeName,
+						remark: data.remark,
+						sysFlag: 0, // 是否是系统分类 默认为否
 						childList: subtypeinfo ? [subtypeinfo] : [] // 有返回的subtypeinfo的说明后面需要增加他的子分类
 					}
 					
 					// 代表添加的是一级分类 添加到最后一个分类(其他分类的前面) 然后再自动帮用户创建一个该一级分类下面的子分类
 					if(data.parentId === 0) {
-						this.typelist.splice(-1, 0, treedata)
-						this.expandedNodekeys = [treedata.typeId]
+						this.typelist.splice(-1, 0, newtypedata)
 					}
 					// 添加的是二级分类 直接添加到父节点的最后面
 					else{
-						this.$refs.typelisttree.append(treedata, data.parentId)
-						// 展开当前添加的节点
-						this.expandedNodekeys = [data.parentId]
-						// this.$set(this.expandedNodekeys, 0, data.parentId)
+						// 找到当前的一级分类
+						let firsttypeinfo = this.temptypeinfo
+						if(firsttypeinfo) {
+							let secondtypelist = firsttypeinfo.childList
+							secondtypelist.splice(-1, 0, newtypedata)
+						}
 					}
 					
+					// 隐藏弹出框  清空临时变量
+					this.addedtypeName = ''
+					this.addedtypeRemark = ''
+					this.temptypeinfo = null
+					this.ifshowmodal = false
+					
+					// 渲染完之后重新计算右侧内容区域的滑动高度
+					this.$nextTick(function(){
+						this.calculateeachmainviewposition()
+					})
 					
 				}).catch(error => {
 					// 添加失败
@@ -387,45 +521,76 @@
 						icon: 'none',
 					});
 				})
-			
+				
 			},
 			
-			// 开始编辑节点
-			starttoEditNode(edittypename, edittyperemark, editobj) {
+			// 编辑分类
+			editgoodstype(selfinfo) {
 				
-				
+				// 开始上送数据
 				let data = {
-					typeName: edittypename,
-					remark: edittyperemark,
-					typeId: editobj.data.typeId
+					typeName: this.addedtypeName,
+					remark: this.addedtypeRemark,
+					typeId: selfinfo.typeId
 				}
 				
 				this.$api.goodsapi.updatetype(data).then(response => {
-					// 编辑成功
+					// 添加成功
 					uni.$emit('updategoodstype') // 发送更新事件
+				
+					let firsttypeindex = selfinfo.selectfirstIndex
+					let secondtypeindex = selfinfo.selectsecondIndex
 					
-					// 隐藏弹出框  清空输入内容
-					_this.addedtypeName = ''
-					_this.addedtypeRemark = ''
-					_this.tempnodeobj = null
-					_this.ifshowmodal = false
+					// 编辑的是二级分类
+					if(secondtypeindex === 0 || secondtypeindex) {
+						// 找到对应的一级分类
+						let firsttypeinfo = this.typelist[firsttypeindex]
+						// 找到对应的二级分类
+						let secondtypeinfo = firsttypeinfo.childList[secondtypeindex]
+						secondtypeinfo = {...secondtypeinfo, ...data}
+						// 更新数据(注意此处数据的强制更新)
+						this.$set(firsttypeinfo.childList, secondtypeindex, secondtypeinfo)
+						this.$set(this.typelist, firsttypeindex, firsttypeinfo)
+					}
+					// 编辑的是一级分类
+					else{
+						// 找到对应的一级分类
+						let firsttypeinfo = this.typelist[firsttypeindex]
+						// 更新数据
+						firsttypeinfo = {...firsttypeinfo, ...data}
+						this.$set(this.typelist, firsttypeindex, firsttypeinfo)
+					}
 					
-					// 修改之前的数据
-					editobj.data.typeName = data.typeName
-					editobj.label = data.typeName // 重要！！！ tree组件是要靠lable显示的 所以也要修改label的值
-					editobj.data.remark = data.remark
+					// 隐藏弹出框  清空临时变量
+					this.addedtypeName = ''
+					this.addedtypeRemark = ''
+					this.temptypeinfo = null
+					this.ifshowmodal = false
 					
 				}).catch(error => {
-					// 编辑失败
+					// 添加失败
 					uni.showToast({
 						title: this.i18n.error.fixerror,
 						icon: 'none',
 					});
 				})
+				
 			},
 			
-			// 删除节点树
-			handleDeleteNode(obj) {
+			// 删除分类
+			delgoodstype(firstindex, secondindex) {
+				
+				console.log(`当前删除的一级分类索引为:${firstindex}----二级分类索引为:${secondindex}`);
+				
+				let deltypeinfo = null
+				// 有二级索引 代表删除的是二级分类
+				if(secondindex === 0 || secondindex) {
+					deltypeinfo = this.typelist[firstindex].childList[secondindex]
+				}
+				// 没有二级索引 代表删除的是一级分类
+				else {
+					deltypeinfo = this.typelist[firstindex]
+				}
 				
 				// 二次确认
 				uni.showModal({
@@ -437,27 +602,29 @@
 					success: res => {
 						if(res.confirm) {
 							// 确定删除
-			
-							this.$api.goodsapi.deletetype({typeId: obj.data.typeId}).then(response => {
+							
+							this.$api.goodsapi.deletetype({typeId: deltypeinfo.typeId}).then(response => {
 								// 删除成功
 								uni.$emit('updategoodstype') // 发送更新事件
 								
-								// 如果是一级节点则直接删除数据源
-								if(obj.level === 1) {
-									let selectindex = _this.typelist.findIndex((typedic, index) => {
-										return typedic.typeId === obj.data.typeId
-									})
-									if(selectindex > -1) {
-										let temptypelist = [..._this.typelist]
-										temptypelist.splice(selectindex, 1)
-										_this.typelist = temptypelist
-										// _this.typelist.splice(selectindex, 1)
-									}
+								// 删除的是二级分类
+								if(secondindex === 0 || secondindex) {
+									// 找到对应的一级分类
+									let firsttypeinfo = this.typelist[firstindex]
+									// 更新数据(注意此处数据的强制更新)
+									firsttypeinfo.childList.splice(secondindex, 1)
+									// this.$set(this.typelist, firstindex, firsttypeinfo)
 								}
-								else if(obj.level !== 1) {
-									// 使用删除节点方式
-									_this.$refs.typelisttree.remove(obj.data)
+								// 删除的是一级分类
+								else{
+									this.typelist.splice(firstindex, 1)
 								}
+								
+								// 渲染完之后重新计算右侧内容区域的滑动高度
+								this.$nextTick(function(){
+									this.calculateeachmainviewposition()
+								})
+								
 								
 							}).catch(error => {
 								// 删除失败
@@ -472,41 +639,117 @@
 				
 			},
 			
+			// 查看分类描述
+			showtypedes(typeinfo) {
+				uni.showModal({
+					title: typeinfo.typeName,
+					content: typeinfo.remark,
+					showCancel: false,
+					cancelText: '',
+					confirmText: this.i18n.base.confirm
+				});
+			},
+			
+			// 点击跳转特定的商品列表页
+			jumptogoodslist(firstTypeId, secondTypeId) {
+				uni.navigateTo({
+					url: `/pages/goods/goodslist?firstTypeId=${firstTypeId}&secondTypeId=${secondTypeId}`
+				})
+			},
+			
+			// ListTouch触摸开始
+			ListTouchStart(e) {
+				this.listTouchStart = e.touches[0].pageX
+			},
+			
+			// ListTouch计算方向
+			ListTouchMove(e) {
+				let curmovepointX = e.touches[0].pageX
+				let earlymovepointX = this.listTouchStart
+				let distance = Math.abs(curmovepointX - earlymovepointX)
+				
+				// 根据滑动的距离判断滑动方向
+				let listTouchDirection = 'not move'
+				if(curmovepointX < earlymovepointX && distance > distanceNum) {
+					listTouchDirection = 'left'
+				}
+				else if(curmovepointX > earlymovepointX && distance > distanceNum) {
+					listTouchDirection = 'right'
+				}
+				
+				this.listTouchDirection = listTouchDirection
+			},
+			
+			// ListTouch计算滚动
+			ListTouchEnd(e) {
+				if (this.listTouchDirection == 'left') {
+					this.modalName = e.currentTarget.dataset.target
+				} 
+				else {
+					this.modalName = null
+				}
+				this.listTouchDirection = null
+			},
+			
+			
 		},
-		
 	}
 </script>
 
 <style lang="scss" scoped>
 	
-	.goodstypeview{
+	page{
+		padding-top: 5px;
+	}
+	
+	.VerticalBox{
 		
-		/deep/.treeview{
-			position: fixed;
-			left: 0;
-			right: 0;
-			overflow: scroll;
-			bottom: 150upx;
+		.VerticalNav {
 			
-			.lytree{
+			width: 200upx;
+			white-space: initial;
+			
+			.cu-item{
 				width: 100%;
-				height: 100%;
-				overflow: scroll;
+				text-align: center;
+				background-color: #fff;
+				margin: 0;
+				border: none;
+				height: 50px;
+				position: relative;
+				
+				&.cur{
+						
+					&::after{
+						
+						content: "";
+						width: 8upx;
+						height: 30upx;
+						border-radius: 10upx 0 0 10upx;
+						position: absolute;
+						background-color: currentColor;
+						top: 0;
+						right: 0upx;
+						bottom: 0;
+						margin: auto;
+						
+					}
+				}
 			}
+		
 		}
 		
-		.optionview{
-			position: fixed;
-			left: 0;
-			right: 0;
-			bottom: 30upx;
+		.VerticalMain {
+			background-color: #F1F1F1;
+			flex: 1;
 			
-		}
-		
-		.cu-modal{
-			z-index: 66; // 修改modal的z-index  比toast要小
+			.secondtypeimgview{
+				background-image: url('~@/static/publicicon/logo.png');
+			}
+			
 		}
 		
 	}
-
+	
+	
 </style>

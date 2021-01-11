@@ -164,7 +164,7 @@
 					name: 'Different Types',
 					color: 'red',
 					cuIcon: 'sort',
-					url: '/pages/goodstype/newindex'
+					url: '/pages/goodstype/index'
 				}
 				
 				// 商品功能

@@ -278,7 +278,7 @@
 			// 点击去编辑商品分类
 			editgoodstype() {
 				uni.navigateTo({
-					url: '/pages/goodstype/newindex'
+					url: '/pages/goodstype/index'
 				});
 			},
 			

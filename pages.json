@@ -15,12 +15,6 @@
 		,{
 		    "path" : "pages/goodstype/index",
 		    "style" : {
-				"navigationBarTitleText":"商品分类"
-			}
-		}
-		,{
-		    "path" : "pages/goodstype/newindex",
-		    "style" : {
 				"navigationBarTitleText":"商品分类",
 				"navigationStyle":"custom"
 			}
@@ -191,7 +185,7 @@
 		"navigationStyle": "custom",
 		"backgroundColor": "#FFFFFF",
 		"usingComponents": {
-			"ly-tree-node": "/components/ly-tree/ly-tree-node" // 加载tree组件 否则小程序和APP不显示
+			
 		}
 	},
 	"condition" : { //模式配置，仅开发期间生效
