@@ -26,11 +26,11 @@
 			
 		</view>
 		
-		<!-- 筛选面板 -->
-		<HMfilterDropdown class="filterview" :menuTop="customBarHeight * 2" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
+		<!-- 筛选面板 高度为44px -->
+		<HMfilterDropdown class="filterview" :menuTop="customBarHeight" :filterData="filterData" :defaultSelected ="filterDropdownValue" @confirm="confirmfilter"></HMfilterDropdown>
 		
 		<!-- 商品列表 -->
-		<mescroll-uni class="mescroll" :top=" customBarHeight + 44 + 'px' " @init="mescrollInit" :down="downOption" @down="downCallback" @up="loadproductlist">
+		<mescroll-uni class="mescroll" :top=" (Number(customBarHeight) + 44) + 'px' " @init="mescrollInit" :down="downOption" @down="downCallback" @up="loadproductlist">
 			
 			<view class="goodslistview">
 				
@@ -181,13 +181,6 @@
 		
 		methods: {
 			
-			// 导航栏返回
-			pageBack() {
-				uni.navigateBack({
-					delta:1
-				})
-			},
-			
 			/****************商品分类相关***************/
 			
 			// 加载商品分类数据
@@ -319,6 +312,7 @@
 				
 				// 设置默认选中的筛选面板的值
 				this.filterDropdownValue = filterDropdownValue
+
 				/*
 				
 				this.filterDropdownValue = [

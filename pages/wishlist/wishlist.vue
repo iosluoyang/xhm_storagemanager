@@ -1,85 +1,40 @@
 <template>
 	<view class="content wishlistview">
 		
-		<!-- 导航栏 -->
-		<cu-custom bgImage="https://image.weilanwl.com/color2.0/plugin/wdh2236.jpg" isBack>
-			<block slot="content">{{i18n.nav.wishlist}}</block>
-		</cu-custom>
-		
-		<!-- 筛选面板 -->
-		<HMfilterDropdown class="filterview" :menuTop="customBarHeight * 2" :filterData="filterData" :defaultSelected ="defaultSelected" @confirm="confirmfilter"></HMfilterDropdown>
-		
-		<!-- 数据列表 -->
-		<mescroll-body ref="mescrollRef" :top=" customBarHeight + 'px' " :down="downOption" @init="mescrollInit" @down="downCallback" @up="upCallback">
+		<!-- 自定义导航栏 -->
+		<view class="customnav" :style="[{height:customBarHeight + 'px'}]">
 			
-			<view class="eachwish" v-if="wishitem" v-for="(wishitem, index) in datalist" :key="index" @tap.stop="wishdetail(wishitem)">
+			<view class="fixed cu-bar search bg-gradual-blue" :style="[{height: customBarHeight + 'px',paddingTop: statusBarHeight + 'px', minHeight: customBarHeight + 'px'}]">
 				
-				<!-- 每一个卡片的内容 -->
-				<view class="cu-card case">
-					
-					<view class="cu-item shadow">
-						
-						<!-- 卡片上方-图片区域 -->
-						<view class="image">
-							<image :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFill"></image>
-							<view class="cu-tag text-white" :class="[wishitem.achieveFlag == 2 ? 'bg-green' : wishitem.achieveFlag == 1 ? 'bg-orange' : 'bg-pink']">{{wishitem.achieveFlag == 2 ? i18n.wishlist.achieveFlag.finish : wishitem.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}</view>
-							<view class="cu-bar bg-shadeBottom flex-direction align-start">
-								
-								<!-- 商品标题 -->
-								<view class="text-bold text-xl margin-top-sm">{{wishitem.productTitle}}</view>
-								<!-- 商品价格 -->
-								<view class="priceview margin-top-sm">
-									<text class="text-red text-xl margin-right">{{ `${wishitem.targetMoneyType === 'RMB' ? '¥' : wishitem.targetMoneyType === 'THB' ? '฿' : ''}${wishitem.targetPrice}` }}</text>
-									<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishitem.sourceMoneyType === 'RMB' ? '¥' : wishitem.sourceMoneyType === 'THB' ? '฿' : ''}${wishitem.sourcePrice}` }}</text>
-								</view>
-								
-							</view>
-						</view>
-						
-						<!-- 卡片下方-内容区域 -->
-						<view class="cu-list menu-avatar">
-							<view class="cu-item">
-								
-								<!-- 头像 -->
-								<template>
-									<image v-if="wishitem.user && wishitem.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishitem.user.avatar"></image>
-									<view v-else class="cu-avatar round lg">
-										<text class="cuIcon-people"></text>
-									</view>
-								</template>
-								
-								<!-- 内容 -->
-								<view class="content flex-sub">
-									
-									<!-- 上方发布人昵称 -->
-									<view class="text-grey">{{wishitem.user && wishitem.user.userName ? wishitem.user.userName : 'XXX'}}</view>
-									
-									<!-- 内容区域 -->
-									<view class="flex justify-between">
-										<!-- 发布时间 -->
-										<view class="text-gray text-sm">
-											{{showtimestr(wishitem.creatTime)}}
-										</view>
-										<!-- 点赞浏览区域 -->
-										<view class="text-gray text-sm">
-											<!-- 紧急程度 -->
-											<text class="hurryleveltext margin-right-sm">
-												<text v-for="item in wishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-											</text>
-											<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishitem.previewCount || 0}}
-											<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishitem.commentCount || 0}}
-										</view>
-									</view>
-									
-								</view>
-								
-							</view>
-						</view>
-						
-					</view>
-					
+				<view class="action" @tap.stop="pageBack">
+					<text class="cuIcon-back"></text>
 				</view>
 				
+				<view class="search-form round">
+					<text class="cuIcon-search"></text>
+					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchwish" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
+				</view>
+				
+				<!-- 微信小程序中没有右侧该按钮 -->
+				<!-- #ifndef MP-WEIXIN -->
+				<view class="action">
+					<button class="cu-btn bg-blue shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
+				</view>
+				<!-- #endif -->
+				
+			</view>
+			
+		</view>
+		
+		<!-- 筛选面板 -->
+		<HMfilterDropdown class="filterview" :menuTop="customBarHeight" :filterData="filterData" :defaultSelected ="defaultSelected" @confirm="confirmfilter"></HMfilterDropdown>
+		
+		<!-- 数据列表 -->
+		<mescroll-body ref="mescrollRef" top="44px" :down="downOption" @init="mescrollInit" @down="downCallback" @up="upCallback">
+			
+			<!-- 心愿单列表 -->
+			<view class="wishlist" v-if="datalist && datalist.length > 0" >
+				<wishlistitem class="eachwish" v-for="(wishitem, index) in datalist" :key="index" :wishitem="wishitem"></wishlistitem>
 			</view>
 			
 		</mescroll-body>
@@ -90,7 +45,10 @@
 <script>
 	
 	import HMfilterDropdown from '@/components/HM-filterDropdown/HM-filterDropdown.vue'
-	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
+	import wishlistitem from '@/components/wishlistitem/wishlistitem.vue'
+	
+	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js"
+	
 	var _this
 	
 	export default {
@@ -101,6 +59,7 @@
 				statusBarHeight: this.StatusBar,
 				customBarHeight: this.CustomBar,
 				
+				
 				filterData: [], // 筛选面板的数据源
 				defaultSelected: null, // 默认选中的筛选面板数组
 				filterDropdownValue: null, // 默认选中的筛选面板数据源
@@ -109,6 +68,8 @@
 				downOption: {
 					auto: false, // 是否自动执行下拉刷新 
 				},
+				
+				searchText: '', // 搜索文本
 				pageSize: 10, // 每页条数
 				datalist: [], // 数据源
 				
@@ -118,7 +79,9 @@
 		mixins: [MescrollMixin],
 		
 		components: {
-			HMfilterDropdown
+			HMfilterDropdown,
+			wishlistitem,
+			
 		},
 		
 		onLoad(option) {
@@ -140,12 +103,17 @@
 		
 		methods: {
 			
+			// 搜索心愿 开始刷新数据
+			searchwishlist() {
+				this.mescroll.resetUpScroll(true)
+			},
+			
 			// 加载筛选面板数据
 			loadfilterdata() {
 				
 				let filterdata = [
 					{
-						"name":'筛选',
+						"name":this.i18n.base.choose,
 						"type": 'filter',
 						"submenu": [{
 								"name": "心愿状态/Status",
@@ -222,6 +190,10 @@
 				// 	[[0],[1],[1]]			//单选菜单选中 第一个筛选的第0项，第二个筛选的第1项，第三个筛选的第1项
 				// ];
 				
+				// 设置筛选面板的top值(rpx)
+				let filterMenuTopPx = parseInt(this.customBarHeight/(uni.upx2px(this.customBarHeight)/this.customBarHeight));
+				this.filterMenuTop = filterMenuTopPx
+				
 				this.$nextTick(function(){
 					// 设置完默认筛选项后根据进行数据请求
 					this.mescroll.resetUpScroll(true)
@@ -248,6 +220,8 @@
 				let pageSize = this.pageSize // 页长, 默认每页10条
 				let date = page.date // 请求时间
 				
+				let searchText = this.searchText // 搜索文本
+				
 				// 获取筛选项的字段内容
 				console.log(`当前的筛选项数组为:`);
 				console.log(JSON.stringify(this.filterDropdownValue));
@@ -273,6 +247,7 @@
 							achieveFlagArr: achieveFlagArr,
 							hurryLevelArr: hurryLevelArr,
 							sortType: sortType,
+							searchText: searchText,
 							date: date,
 							pageSize: pageSize,
 							pageNum: pageNum
@@ -287,10 +262,12 @@
 						if(page.num == 1) {
 							this.datalist = []; //如果是第一页需手动置空列表
 							page.date = date
+							_this.mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
 						} 
 						this.datalist = this.datalist.concat(curdatalist); //追加新数据
 						let hasNext = curdatalist.length === page.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
 						_this.mescroll.endSuccess(curdatalist.length,hasNext)
+
 					}
 					else {
 						uni.showToast({
@@ -311,22 +288,6 @@
 				})
 			},
 			
-			// 显示时间字符串
-			showtimestr(creatTime) {
-				let moment = this.$moment
-				let nowmoment = new moment()
-				let creatmoment = new moment(creatTime)
-				let duration = moment.duration(nowmoment.diff(creatTime))
-				let difftimestr = duration.humanize()
-				return difftimestr
-			},
-			
-			// 点击查看详情
-			wishdetail(wishitem) {
-				uni.navigateTo({
-					url: `/pages/wishlist/wishdetail?id=${wishitem._id}`
-				});
-			},
 			
 		},
 		

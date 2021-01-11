@@ -102,7 +102,7 @@
 		</view>
 		
 		<!-- 增加或者编辑分类弹出框 -->
-		<view class="cu-modal" :class="ifshowmodal?'show':''">
+		<view v-if="ifshowmodal" class="cu-modal" :class="ifshowmodal?'show':''">
 			<view class="cu-dialog">
 				
 				<view class="cu-bar bg-white">

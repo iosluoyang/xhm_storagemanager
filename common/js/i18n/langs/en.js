@@ -39,6 +39,7 @@ const en = {
 		other: "Other",
 		onekeyclone: "Clone",
 		fix: "Fix",
+		choose: "Choose",
 		week: {
 			Monday: "Monday",
 			Tuesday: "Tuesday",
@@ -103,6 +104,7 @@ const en = {
 		searchpeople: "Search by the User Name",
 		searchtype: "Search by the Classification",
 		searchproduct: "Search by the Product Name",
+		searchwish: "Search Wish",
 		deletetypecontent: "the products which belong to this classification will be moved to the other classification, you can set their classification later",
 		pleaseselectgoodstype: "Please select the product type",
 		lackstocktip: "Please click preview button and fill up the stock and price infos",

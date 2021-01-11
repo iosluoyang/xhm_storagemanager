@@ -108,6 +108,7 @@ exports.main = async (event, context) => {
 		let achieveFlagArr = info.achieveFlagArr // 心愿状态数组(筛选项)
 		let hurryLevelArr = info.hurryLevelArr // 紧急程度状态数组(筛选项)
 		let sortType = info.sortType // 排序方式(筛选项) 
+		let searchText = info.searchText // 搜索文本
 		let date = info.date ? info.date : currenttimestr
 		let pageSize = info.pageSize
 		let pageNum = info.pageNum
@@ -115,6 +116,7 @@ exports.main = async (event, context) => {
 		
 		let res = await collection
 		.where({
+			productTitle: new RegExp(searchText, 'i'), // 找到商品标题包含搜索关键字的数据 i代表不区分大小写
 			achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
 			hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
 			creatTime: dbCmd.lte(date), // 找到创建时间小于当时请求时间的数据

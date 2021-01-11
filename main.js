@@ -28,12 +28,15 @@ Vue.prototype.$jwxjs = jwxjs
 import moment from 'moment'
 Vue.prototype.$moment = moment
 
+// 自定义导航栏组件
 import cuCustom from '@/colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
 
+// 加载动画组件
 import loading from '@/components/base/loading.vue'
 Vue.component('loading',loading)
 
+// 上拉加载下拉刷新组件
 import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
 import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
 Vue.component('mescroll-body', MescrollBody)
@@ -83,6 +86,11 @@ Vue.mixin({
 	},
 	
 	methods: {
+		
+		// 导航栏返回
+		pageBack() {
+			uni.navigateBack()
+		},
 		
 	},
 });

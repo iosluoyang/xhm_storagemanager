@@ -38,6 +38,7 @@ const zh = {
 		other: "其他",
 		onekeyclone: "一键克隆",
 		fix: "修改",
+		choose: "选择",
 		week: {
 			Monday: "周一",
 			Tuesday: "周二",
@@ -100,6 +101,7 @@ const zh = {
 		searchpeople: "输入成员名称进行搜索",
 		searchtype: "输入分类名称进行搜索",
 		searchproduct: "输入商品名称进行搜索",
+		searchwish: "搜索心愿",
 		deletetypecontent: "删除分类后该分类下的所有商品将自动转为其他分类,后续需要您手动设置",
 		pleaseselectgoodstype: "请选择商品分类",
 		lackstocktip: "请点击预览并补充商品的价格和库存信息",
