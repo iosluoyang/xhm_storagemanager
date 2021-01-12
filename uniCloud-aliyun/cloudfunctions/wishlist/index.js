@@ -105,8 +105,9 @@ exports.main = async (event, context) => {
 	else if(type == 'getlist') {
 		
 		// 如果info.date有值则返回date的值 如果info.date没有值则返回当前的时间字符串
-		let achieveFlagArr = info.achieveFlagArr // 心愿状态数组(筛选项)
-		let hurryLevelArr = info.hurryLevelArr // 紧急程度状态数组(筛选项)
+		// let achieveFlagArr = info.achieveFlagArr // 心愿状态数组(筛选项)
+		// let hurryLevelArr = info.hurryLevelArr // 紧急程度状态数组(筛选项)
+		let achieveFlag = info.achieveFlag == null ? -1 : info.achieveFlag  // 心愿状态 -1为全部 0进行中 1待确认 2已完成 默认为-1
 		let sortType = info.sortType // 排序方式(筛选项) 
 		let searchText = info.searchText // 搜索文本
 		let date = info.date ? info.date : currenttimestr
@@ -117,8 +118,9 @@ exports.main = async (event, context) => {
 		let res = await collection
 		.where({
 			productTitle: new RegExp(searchText, 'i'), // 找到商品标题包含搜索关键字的数据 i代表不区分大小写
-			achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
-			hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
+			// achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
+			// hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
+			achieveFlag: achieveFlag == -1 ? dbCmd.exists(true) : dbCmd.eq(achieveFlag), // 找到符合achieveFlag的数据
 			creatTime: dbCmd.lte(date), // 找到创建时间小于当时请求时间的数据
 		})
 		.orderBy("hurryLevel", sortType == 1 ? 'asc' : 'desc' ) //  排序方式为1时为升序排序 否则均为降序排序

@@ -1,0 +1,323 @@
+<template>
+	<view class="contentview wishlistview">
+		
+		<!-- 自定义导航栏 -->
+		<view class="customnav" :style="[{height:CustomBar + 'px'}]">
+			
+			<view class="fixed cu-bar search bg-gradual-pink" :style="[{height: CustomBar + 'px',paddingTop: StatusBar + 'px', minHeight: CustomBar + 'px'}]">
+				
+				<view class="action" @tap.stop="pageBack">
+					<text class="cuIcon-back"></text>
+				</view>
+				
+				<view class="search-form round">
+					<text class="cuIcon-search"></text>
+					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchwish" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
+				</view>
+				
+				<!-- 微信小程序中没有右侧该按钮 -->
+				<!-- #ifndef MP-WEIXIN -->
+				<view class="action">
+					<button class="cu-btn bg-pink shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
+				</view>
+				<!-- #endif -->
+				
+			</view>
+			
+		</view>
+		
+		<!-- 选项卡 -->
+		<view class="u-tabs-box">
+			<u-tabs ref="tabs" :list="tabArr" :current="current" :is-scroll="false" active-color="#e03997" @change="changetap"></u-tabs>
+		</view>
+		
+		<!-- swiper视图 -->
+		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 40px )'}" :current="current" @transition="transition" @animationfinish="animationfinish" @change="changeswiper">
+			
+			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
+				
+				<mescroll-uni class="mescroll" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
+					
+					<view class="wishlist">
+						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishindex" :wishitem="wishitem"></wishlistitem>
+					</view>
+					
+				</mescroll-uni>
+				
+			</swiper-item>
+			
+		</swiper>
+		
+	</view>
+</template>
+
+<script>
+	
+	var _this	
+	
+	// 引入mescroll-mixins.js
+	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
+
+	import wishlistitem from '@/components/wishlistitem/wishlistitem.vue'
+	
+	export default {
+		data() {
+			return {
+				
+				currentStatus: 0, // 默认选中的状态为进行中的状态
+				searchText: '', // 搜索文本
+				current: 0, // 当前选项卡的索引 默认为0
+				tabArr:[], // 选项卡数组
+				mescrollArr: [], // mescroll组件数组  数量和tabArr保持一致
+				
+				//下拉刷新配置
+				downOption: {
+					use: true, // 是否启用下拉刷新; 默认true
+					auto: false, // 是否在初始化完毕之后自动执行下拉刷新的回调; 默认true
+					isLock: true, // 是否锁定
+				},
+				
+			};
+		},
+		
+		mixins: [MescrollMixin], // 使用mixin
+		
+		components: {
+			wishlistitem,
+		},
+		
+		onLoad(option) {
+			
+			_this = this
+			
+			// 选中状态
+			let currentStatus = option.status
+			if(currentStatus != null) {
+				this.currentStatus = currentStatus
+			}
+			
+			// 初始化选项卡数组数据
+			this.initTabArr()
+			
+		},
+		
+		methods: {
+			
+			// 搜索心愿 开始刷新数据
+			searchwishlist() {
+				this.starttorefresh()
+			},
+			
+			// 初始化选项卡数据
+			initTabArr() {
+				
+				let tabArr = [
+					{
+						name: this.i18n.base.all,
+						status: -1
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.ing,
+						status: 0
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.waittoconfirm,
+						status: 1
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.finish,
+						status: 2
+					}
+				]
+				
+				tabArr.forEach((eachtab, index) => {
+					
+					if(_this.currentStatus == eachtab.status) {
+						_this.current = index
+					}
+					
+					// 设置加载标识为false
+					eachtab.loaded = false
+					// 设置空的数据源
+					eachtab.dataArr = []
+					// 设置各种状态的角标数量
+					
+					// 全部
+					if(eachtab.status == -1) {
+						eachtab.count = 0
+					}
+					// 进行中
+					else if(eachtab.status == 0) {
+						eachtab.count = 0
+					}
+					// 待确认
+					else if(eachtab.status == 1) {
+						eachtab.count = 0
+					}
+					// 已完成
+					else if(eachtab.status == 2) {
+						eachtab.count = 0
+					}
+					
+				})
+				
+				this.tabArr = tabArr
+				
+				// 更新完视图后进行手动刷新
+				this.$nextTick(()=>{
+					this.starttorefresh()
+				})
+				
+			},
+			
+			// 切换tap
+			changetap(index) {
+				this.current = index
+			},
+			
+			// 切换swiper
+			changeswiper(e) {
+				let current = e.detail.current
+				this.current = current
+			},
+			
+			// swiper移动 使用refs更改跟随视图  暂时屏蔽
+			transition({ detail: { dx } }) {
+				// this.$refs.tabs.setDx(dx);
+			},
+			
+			// swiper切换结束
+			animationfinish({ detail: { current } }) {
+				// this.$refs.tabs.setFinishCurrent(current);
+				
+				//第一次切换tab，动画结束后需要加载数据
+				let tabItem = _this.tabArr[current]
+				this.current = current
+				
+				//如果没有加载过该选项的数据  则进行下拉刷新的操作
+				if(!tabItem.loaded){
+					//第一次进入到该tab的话要进行数据的加载
+					_this.starttorefresh()
+				}
+				
+			},
+			
+			// 初始化mescroll 将其加入mescrollArr中
+			mescrollInit(mescroll) {
+				this.mescrollArr.push(mescroll)
+			},
+			
+			//开始手动下拉刷新
+			starttorefresh(){
+				let mescroll = this.mescrollArr[this.current]
+				mescroll.resetUpScroll()
+			},
+			
+			/*上拉加载的回调*/
+			upCallback(mescroll) {
+	
+				let pageNum = mescroll.num; // 页码, 默认从1开始
+				let pageSize = mescroll.size; // 页长, 默认每页10条
+				let date = pageNum === 1 ? '' : mescroll.date // 请求时间标识
+				let currenttabitem = this.tabArr[this.current]
+				let dataArr = [...currenttabitem.dataArr]
+				
+				
+				// 获取当前要请求的心愿状态
+				let achieveFlag = currenttabitem.status
+				// 排序方式
+				let sortType = 0
+				// 当前搜索文本
+				let searchText = this.searchText
+				
+				// 开始进行接口请求
+				uniCloud.callFunction({
+					name: 'wishlist',
+					data: {
+						type: 'getlist',
+						info: {
+							achieveFlag: achieveFlag,
+							sortType: sortType,
+							searchText: searchText,
+							date: date,
+							pageSize: pageSize,
+							pageNum: pageNum
+						}
+					}
+				}).then(response => {
+					if(response) {
+						// 加载成功
+						let date = response.result.data.date
+						// 列表
+						let list = response.result.data || []
+						
+						if(pageNum == 1) {
+							dataArr = [] //清空数据源
+							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
+							mescroll.date = date
+						} 
+						//将请求的数据添加至现有数据源中
+						dataArr = dataArr.concat(list)
+						//无法检测数组对象长度的变更 故使用$set方法进行变更
+						_this.$set(currenttabitem,'dataArr',dataArr)
+						_this.$set(currenttabitem,'loaded',true)
+						
+						// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
+						_this.$nextTick(()=>{
+							let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
+							mescroll.endSuccess(list.length,hasNext)
+						})
+				
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+						// 失败隐藏下拉加载状态
+						mescroll.endErr()
+					}
+					
+				}).catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+					// 失败隐藏下拉加载状态
+					mescroll.endErr()
+				})
+				
+			},
+			
+			//
+			
+		},
+	}
+</script>
+
+<style lang="scss" scoped>
+	page{
+		
+		height: 100%;
+		
+		.wishlistview{
+			height: 100%;
+			
+			.swiper-box{
+				
+				.swiper-item{
+					width: 100%;
+					height: 100%;
+					
+					.mescroll{
+						width: 100%;
+						height: 100%;
+					}
+				}
+				
+			}
+		}
+		
+	}
+
+</style>

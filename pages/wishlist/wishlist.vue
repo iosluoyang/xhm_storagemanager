@@ -4,7 +4,7 @@
 		<!-- 自定义导航栏 -->
 		<view class="customnav" :style="[{height:customBarHeight + 'px'}]">
 			
-			<view class="fixed cu-bar search bg-gradual-blue" :style="[{height: customBarHeight + 'px',paddingTop: statusBarHeight + 'px', minHeight: customBarHeight + 'px'}]">
+			<view class="fixed cu-bar search bg-gradual-pink" :style="[{height: customBarHeight + 'px',paddingTop: statusBarHeight + 'px', minHeight: customBarHeight + 'px'}]">
 				
 				<view class="action" @tap.stop="pageBack">
 					<text class="cuIcon-back"></text>
@@ -18,7 +18,7 @@
 				<!-- 微信小程序中没有右侧该按钮 -->
 				<!-- #ifndef MP-WEIXIN -->
 				<view class="action">
-					<button class="cu-btn bg-blue shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
+					<button class="cu-btn bg-pink shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
 				</view>
 				<!-- #endif -->
 				
@@ -298,3 +298,4 @@
 <style lang="scss" scoped>
 
 </style>
+

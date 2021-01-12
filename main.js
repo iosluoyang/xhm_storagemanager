@@ -28,6 +28,10 @@ Vue.prototype.$jwxjs = jwxjs
 import moment from 'moment'
 Vue.prototype.$moment = moment
 
+// 引入uview库
+import uView from "uview-ui";
+Vue.use(uView);
+
 // 自定义导航栏组件
 import cuCustom from '@/colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
@@ -52,6 +56,13 @@ Vue.mixin({
 	
 	onLoad() {
 		
+	},
+	
+	data() {
+		return {
+			StatusBar: this.StatusBar,
+			CustomBar: this.CustomBar,
+		}
 	},
 	
 	computed: {

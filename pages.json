@@ -178,6 +178,14 @@
 						"navigationBarTitleText":"时间轴"
 					}
                 }
+                ,{
+                    "path" : "newwishlist",
+                    "style" : {
+						"navigationBarTitleText": "心愿单列表新",
+						"enablePullDownRefresh": false
+					}
+                
+                }
             ]
 		}
 	],
@@ -197,5 +205,8 @@
 				"query": "" //启动参数，在页面的onLoad函数里面得到
 			}
 		]
+	},
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	}
 }

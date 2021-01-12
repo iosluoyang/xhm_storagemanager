@@ -2,7 +2,7 @@
 	<view class="wishlistview content">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgImage="https://image.weilanwl.com/color2.0/plugin/wdh2236.jpg" isBack>
+		<cu-custom bgColor="bg-gradual-pink" isBack>
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -48,8 +48,11 @@
 			
 			// 查看心愿列表
 			checkwishlist() {
+				// uni.navigateTo({
+				// 	url: '/pages/wishlist/wishlist'
+				// });
 				uni.navigateTo({
-					url: '/pages/wishlist/wishlist'
+					url: '/pages/wishlist/newwishlist'
 				});
 			},
 			

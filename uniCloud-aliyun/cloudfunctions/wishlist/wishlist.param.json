@@ -25,8 +25,9 @@
 {
 	"type": "getlist",
 	"info": {
-		"achieveFlagArr": [0,1],
-		"hurryLevelArr": [1,2,3,4,5],
+		// "achieveFlagArr": [0,1],
+		// "hurryLevelArr": [1,2,3,4,5],
+		"achieveFlag": 0,
 		"sortType": 0,
 		"searchText": "",
 		"pageSize":10,

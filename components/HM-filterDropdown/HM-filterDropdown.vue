@@ -136,7 +136,7 @@
 			defaultSelected: {
 				handler(newVal) {
 				
-					if(newVal && newVal.length==0){
+					if(!newVal || newVal.length==0){
 						return;
 					}
 					this.defaultActive = JSON.parse(JSON.stringify(newVal));

@@ -137,6 +137,6 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	@import "@/common/style/index.scss";
 </style>
