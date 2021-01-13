@@ -63,6 +63,10 @@
 	white-space: pre-wrap;
 }
 
+.text-light {
+	font-weight: 300;
+}
+
 .borderCDCDCD{
 	border: #CDCDCD 1upx solid;
 	box-sizing: border-box;
@@ -88,3 +92,20 @@
 	border-radius: 30upx;
 }
 
+
+.pos-relative{
+	position: relative !important;
+}
+.pos-absolute{
+	position: absolute !important;
+}
+.pos-static{
+	position: static !important;
+}
+
+.width100{
+	width: 100%;
+}
+.height100{
+	height: 100%;
+}

@@ -2,43 +2,40 @@
 	<view class="contentview wishlistview">
 		
 		<!-- 自定义导航栏 -->
-		<view class="customnav" :style="[{height:CustomBar + 'px'}]">
+		<cu-custom class="customnav" bgColor="bg-gradual-pink" isBack>
 			
-			<view class="fixed cu-bar search bg-gradual-pink" :style="[{height: CustomBar + 'px',paddingTop: StatusBar + 'px', minHeight: CustomBar + 'px'}]">
-				
-				<view class="action" @tap.stop="pageBack">
-					<text class="cuIcon-back"></text>
-				</view>
-				
-				<view class="search-form round">
-					<text class="cuIcon-search"></text>
-					<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchwish" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
-				</view>
-				
-				<!-- 微信小程序中没有右侧该按钮 -->
-				<!-- #ifndef MP-WEIXIN -->
-				<view class="action">
-					<button class="cu-btn bg-pink shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
-				</view>
-				<!-- #endif -->
-				
+			<view slot="content" class="search-form round">
+				<text class="cuIcon-search"></text>
+				<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchwish" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
 			</view>
 			
-		</view>
+			<!-- 小程序中没有右侧搜索按钮 -->
+			<!-- #ifndef MP -->
+			<view slot="right" class="action">
+				<button class="cu-btn bg-pink shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
+			</view>
+			<!-- #endif -->
+			
+		</cu-custom>
 		
 		<!-- 选项卡 -->
-		<view class="u-tabs-box">
-			<u-tabs ref="tabs" :list="tabArr" :current="current" :is-scroll="false" active-color="#e03997" @change="changetap"></u-tabs>
-		</view>
+		<scroll-view scroll-x class="bg-white nav">
+			<view class="flex text-center">
+				<view class="cu-item flex-sub" :class=" index==current ? 'text-pink' : '' " v-for="(tabitem,index) in tabArr" :key="index" @tap="changetap" :data-index="index">
+					<text>{{ tabitem.name }}</text>
+					<view v-if="tabitem.count > 0" class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
+				</view>
+			</view>
+		</scroll-view>
 		
 		<!-- swiper视图 -->
-		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 40px )'}" :current="current" @transition="transition" @animationfinish="animationfinish" @change="changeswiper">
+		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 45px )'}" :current="current" @animationfinish="animationfinish">
 			
 			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
 				
 				<mescroll-uni class="mescroll" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
 					
-					<view class="wishlist">
+					<view class="wishlistview">
 						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishindex" :wishitem="wishitem"></wishlistitem>
 					</view>
 					
@@ -57,10 +54,10 @@
 	
 	// 引入mescroll-mixins.js
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
-
 	import wishlistitem from '@/components/wishlistitem/wishlistitem.vue'
 	
 	export default {
+		
 		data() {
 			return {
 				
@@ -132,6 +129,7 @@
 				
 				tabArr.forEach((eachtab, index) => {
 					
+					// 根据选中的状态选择默认选中的索引
 					if(_this.currentStatus == eachtab.status) {
 						_this.current = index
 					}
@@ -171,24 +169,19 @@
 			},
 			
 			// 切换tap
-			changetap(index) {
+			changetap(e) {
+				let index = e.currentTarget.dataset.index
 				this.current = index
 			},
 			
 			// 切换swiper
-			changeswiper(e) {
-				let current = e.detail.current
-				this.current = current
-			},
-			
-			// swiper移动 使用refs更改跟随视图  暂时屏蔽
-			transition({ detail: { dx } }) {
-				// this.$refs.tabs.setDx(dx);
-			},
+			// changeswiper(e) {
+			// 	let current = e.detail.current
+			// 	this.current = current
+			// },
 			
 			// swiper切换结束
 			animationfinish({ detail: { current } }) {
-				// this.$refs.tabs.setFinishCurrent(current);
 				
 				//第一次切换tab，动画结束后需要加载数据
 				let tabItem = _this.tabArr[current]
@@ -220,8 +213,7 @@
 				let pageSize = mescroll.size; // 页长, 默认每页10条
 				let date = pageNum === 1 ? '' : mescroll.date // 请求时间标识
 				let currenttabitem = this.tabArr[this.current]
-				let dataArr = [...currenttabitem.dataArr]
-				
+				let dataArr = currenttabitem.dataArr
 				
 				// 获取当前要请求的心愿状态
 				let achieveFlag = currenttabitem.status
@@ -247,7 +239,7 @@
 				}).then(response => {
 					if(response) {
 						// 加载成功
-						let date = response.result.data.date
+						let date = response.result.date
 						// 列表
 						let list = response.result.data || []
 						
@@ -301,6 +293,7 @@
 		height: 100%;
 		
 		.wishlistview{
+			
 			height: 100%;
 			
 			.swiper-box{
@@ -318,6 +311,11 @@
 			}
 		}
 		
+		/deep/.mescroll{
+			.mescroll-empty{
+				text-align: center;
+			}
+		}
 	}
 
 </style>

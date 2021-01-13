@@ -84,9 +84,7 @@
 						
 					}
 					else{
-						uni.navigateBack({
-							delta: 1
-						});
+						uni.navigateBack();
 					}
 				}
 			}
