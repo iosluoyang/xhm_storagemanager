@@ -2,13 +2,13 @@
 <template>
 	
 	<!-- 每一个心愿单卡片的内容 -->
-	<view v-if="wishitem" class="wishlistview contentview cu-card case" @tap.stop="gotowishdetail">
+	<view v-if="wishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow">
+		<view class="cu-item shadow " @tap.stop="gotowishdetail">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
-				<image style="height: 300rpx;" :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFill"></image>
+				<image style="height: 300rpx;" :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
 				<view class="cu-tag text-white" :class="[wishitem.achieveFlag == 2 ? 'bg-green' : wishitem.achieveFlag == 1 ? 'bg-orange' : 'bg-pink']">{{wishitem.achieveFlag == 2 ? i18n.wishlist.achieveFlag.finish : wishitem.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					

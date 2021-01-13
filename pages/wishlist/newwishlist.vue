@@ -33,12 +33,12 @@
 			
 			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
 				
-				<mescroll-uni class="mescroll" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
+				<mescroll-uni class="mescroll bg-gray" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
 					
 					<view class="wishlistview">
 						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishindex" :wishitem="wishitem"></wishlistitem>
 					</view>
-					
+										
 				</mescroll-uni>
 				
 			</swiper-item>
@@ -96,6 +96,15 @@
 			// 初始化选项卡数组数据
 			this.initTabArr()
 			
+			// 开始加载数据
+			uni.$on('updatewishlist', function() {
+				_this.starttorefresh()
+			})
+			
+		},
+		
+		onUnload() {
+			uni.$off('updatewishlist')
 		},
 		
 		methods: {

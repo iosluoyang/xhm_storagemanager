@@ -2586,7 +2586,7 @@ swiper.round-dot .uni-swiper-dot.uni-swiper-dot-active {
 	display: block;
 	height: 100%;
 	margin: 0;
-	pointer-events: none;
+	pointer-events: auto;
 }
 
 .card-swiper {
