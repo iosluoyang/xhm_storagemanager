@@ -2,7 +2,7 @@
 	<view class="content wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgImage="https://image.weilanwl.com/color2.0/plugin/wdh2236.jpg" isBack isOwnBackPage @ownbackpage="ownBackPage">
+		<cu-custom bgColor="bg-gradual-pink" isBack :title="i18n.nav.wishlist" isOwnBackPage @ownbackpage="ownBackPage">
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -37,7 +37,7 @@
 					<view class="headerrightview flex align-center justify-end">
 						
 						<view class="cu-tag" :class="[ wishinfo.achieveFlag == 2 ? 'bg-green' : wishinfo.achieveFlag == 1 ? 'bg-orange' : 'bg-pink' ]">
-							{{wishinfo.achieveFlag == 2 ? i18n.wishlist.achieveFlag.finish : wishinfo.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}
+							{{wishinfo.achieveFlag == 2 ? i18n.wishlist.achieveFlag.makeorder : wishinfo.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}
 						</view>
 						
 					</view>

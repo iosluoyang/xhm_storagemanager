@@ -371,9 +371,10 @@ const en = {
 		found: "I found",
 		wishdetail: "Wish Detail",
 		achieveFlag: {
-			finish: "Finished",
-			waittoconfirm: "WaittoConfirm",
 			ing: "Ing",
+			waittoconfirm: "WaittoConfirm",
+			makeorder: "MakeOrder",
+			finish: "Finished",
 		},
 		timeline: {
 			title: "Time Line",

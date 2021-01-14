@@ -367,9 +367,10 @@ const zh = {
 		found: "我发现",
 		wishdetail: "心愿详情",
 		achieveFlag: {
-			finish: "已完成",
-			waittoconfirm: "待确认",
 			ing: "进行中",
+			waittoconfirm: "待确认",
+			makeorder: "待下单",
+			finish: "已完成"
 		},
 		timeline: {
 			title: "时间轴",

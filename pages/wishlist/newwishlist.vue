@@ -131,8 +131,12 @@
 						status: 1
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.finish,
+						name: this.i18n.wishlist.achieveFlag.makeorder,
 						status: 2
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.finish,
+						status: 3
 					}
 				]
 				

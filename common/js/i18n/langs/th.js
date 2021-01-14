@@ -377,9 +377,10 @@ const th = {
 		found: "ค้นพบ",
 		wishdetail: "รายละเอียดที่ต้องการ",
 		achieveFlag: {
-			finish: "สำเร็จแล้ว",
-			waittoconfirm: "รอการตอบรับ",
 			ing: "กำลังเข้าสู่กระบวนการ",
+			waittoconfirm: "รอการตอบรับ",
+			makeorder: "สั่งงาน",
+			finish: "เสร็จสิ้น"
 		},
 		timeline: {
 			title: "ไทม์ไลน์",

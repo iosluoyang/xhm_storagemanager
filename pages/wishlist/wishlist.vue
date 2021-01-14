@@ -126,7 +126,7 @@
 										"value": 1
 									},
 									{
-										"name": this.i18n.wishlist.achieveFlag.finish,
+										"name": this.i18n.wishlist.achieveFlag.makeorder,
 										"value": 2
 									}
 								]
