@@ -46,7 +46,7 @@
 			"description":"创建者user对象"
 		},
 		"achieveFlag": {
-			"description":"心愿单完成标识 0进行中 1待确认 2已完成"
+			"description":"心愿单完成标识 -1全部 0进行中 1待确认 2待下单 3已完成 4已关闭"
 		},
 		"previewCount": {
 			"description":"浏览次数"

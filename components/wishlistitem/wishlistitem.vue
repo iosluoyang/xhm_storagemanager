@@ -2,22 +2,22 @@
 <template>
 	
 	<!-- 每一个心愿单卡片的内容 -->
-	<view v-if="wishitem" class="contentview cu-card case">
+	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow " @tap.stop="gotowishdetail">
+		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longpress="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
-				<image style="height: 300rpx;" :src="wishitem.imgs ? imgUrl + wishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
-				<view class="cu-tag text-white" :class="[wishitem.achieveFlag == 2 ? 'bg-green' : wishitem.achieveFlag == 1 ? 'bg-orange' : 'bg-pink']">{{wishitem.achieveFlag == 2 ? i18n.wishlist.achieveFlag.makeorder : wishitem.achieveFlag == 1 ? i18n.wishlist.achieveFlag.waittoconfirm : i18n.wishlist.achieveFlag.ing}}</view>
+				<image style="height: 300rpx;" :src="ownwishitem.imgs ? imgUrl + ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
+				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
 					<!-- 商品标题 -->
-					<view class="text-bold text-xl margin-top-sm">{{wishitem.productTitle}}</view>
+					<view class="text-bold text-xl margin-top-sm">{{ownwishitem.productTitle}}</view>
 					<!-- 商品价格 -->
 					<view class="priceview margin-top-sm">
-						<text class="text-red text-xl margin-right">{{ `${wishitem.targetMoneyType === 'RMB' ? '¥' : wishitem.targetMoneyType === 'THB' ? '฿' : ''}${wishitem.targetPrice}` }}</text>
-						<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishitem.sourceMoneyType === 'RMB' ? '¥' : wishitem.sourceMoneyType === 'THB' ? '฿' : ''}${wishitem.sourcePrice}` }}</text>
+						<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.targetPrice}` }}</text>
+						<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text>
 					</view>
 					
 				</view>
@@ -29,7 +29,7 @@
 					
 					<!-- 头像 -->
 					<template>
-						<image v-if="wishitem.user && wishitem.user.avatar" class="cu-avatar round lg" :src="imgUrl + wishitem.user.avatar"></image>
+						<image v-if="ownwishitem.user && ownwishitem.user.avatar" class="cu-avatar round lg" :src="imgUrl + ownwishitem.user.avatar"></image>
 						<view v-else class="cu-avatar round lg">
 							<text class="cuIcon-people"></text>
 						</view>
@@ -39,22 +39,22 @@
 					<view class="content flex-sub">
 						
 						<!-- 上方发布人昵称 -->
-						<view class="text-grey">{{wishitem.user && wishitem.user.userName ? wishitem.user.userName : 'XXX'}}</view>
+						<view class="text-grey">{{ownwishitem.user && ownwishitem.user.userName ? ownwishitem.user.userName : 'XXX'}}</view>
 						
 						<!-- 内容区域 -->
 						<view class="flex justify-between">
 							<!-- 发布时间 -->
 							<view class="text-gray text-sm">
-								{{showtimestr(wishitem.creatTime)}}
+								{{showtimestr(ownwishitem.creatTime)}}
 							</view>
 							<!-- 点赞浏览区域 -->
 							<view class="text-gray text-sm">
 								<!-- 紧急程度 -->
 								<text class="hurryleveltext margin-right-sm">
-									<text v-for="item in wishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
+									<text v-for="item in ownwishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
 								</text>
-								<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishitem.previewCount || 0}}
-								<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishitem.commentCount || 0}}
+								<text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
+								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}}
 							</view>
 						</view>
 						
@@ -91,14 +91,64 @@
 			data() {
 				return {
 					
-					
+					ownwishitem: this.wishitem,
 					
 				}
 			},
 			
 			computed: {
 				
-			
+				// 心愿单的背景颜色  根据不同的状态返回不同的颜色
+				// 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
+				wishbgcolor() {
+					
+					let achieveFlag = this.ownwishitem.achieveFlag
+					switch (achieveFlag){
+						case 0:
+							return 'bg-pink'
+							break;
+						case 1:
+							return 'bg-orange'
+							break;
+						case 2:
+							return 'bg-blue'
+							break;
+						case 3:
+							return 'bg-green'
+							break;
+						case 4:
+							return 'bg-grey'
+							break;
+						default:
+							break;
+					}
+				
+				},
+				
+				// 心愿单的tag名称
+				wishtagtext() {
+					let achieveFlag = this.ownwishitem.achieveFlag
+					switch (achieveFlag){
+						case 0:
+							return this.i18n.wishlist.achieveFlag.ing
+							break;
+						case 1:
+							return this.i18n.wishlist.achieveFlag.waittoconfirm
+							break;
+						case 2:
+							return this.i18n.wishlist.achieveFlag.makeorder
+							break;
+						case 3:
+							return this.i18n.wishlist.achieveFlag.finish
+							break;
+						case 4:
+							return this.i18n.wishlist.achieveFlag.closed
+							break;
+						default:
+							break;
+					}
+				},
+				
 			},
 			
 			created() {
@@ -121,8 +171,83 @@
 				// 跳转心愿详情
 				gotowishdetail() {
 					uni.navigateTo({
-						url: `/pages/wishlist/wishdetail?id=${this.wishitem._id}`
+						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});
+				},
+				
+				// 长按更改心愿单状态
+				changewishliststatus() {
+					const _this = this
+					
+					console.log(`触发长按事件`);
+					/*
+					this.i18n.wishlist.achieveFlag.ing,
+					this.i18n.wishlist.achieveFlag.waittoconfirm,
+					this.i18n.wishlist.achieveFlag.makeorder,
+					this.i18n.wishlist.achieveFlag.finish,
+					this.i18n.wishlist.achieveFlag.closed
+					*/
+				   let optionList = []
+				   if(this.ownwishitem.achieveFlag == 0 || this.ownwishitem.achieveFlag == 1 || this.ownwishitem.achieveFlag == 2) {
+					   
+					   optionList = [
+							{
+								name: this.i18n.wishlist.achieveFlag.finish,
+								color: '#39b54a',
+								achieveFlag: 3
+							},
+							{
+								name: this.i18n.wishlist.achieveFlag.closed,
+								color: '#8799a3',
+								achieveFlag: 4
+							}
+					   	]
+					   
+				   }
+				   else {
+					   return false
+					}
+					
+					let itemList = []
+					let itemColorList = []
+					
+					optionList.forEach((eachitem,index) => {
+						itemList.push(eachitem.name)
+						itemColorList.push(eachitem.color)
+					})
+					
+					uni.showActionSheet({
+						itemList: itemList,
+						itemColor: '#000000',
+						success(res) {
+							let tapindex = res.tapIndex
+							let achieveFlag = optionList[tapindex].achieveFlag
+							// 设置该心愿单的状态为切换状态
+							
+							uniCloud.callFunction({
+								name:'wishlist',
+								data: {
+									type: 'changestatus',
+									info: {
+										_id: _this.ownwishitem._id,
+										achieveFlag: achieveFlag
+									}
+								}
+							}).then(response => {
+								// 切换成功
+								// 将心愿单列表数据置空(消失) 然后发送响应事件
+								_this.ownwishitem = null
+								
+							}).catch(error => {
+								// 切换失败
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							})
+						}
+					})
+				   
 				},
 				
 			},

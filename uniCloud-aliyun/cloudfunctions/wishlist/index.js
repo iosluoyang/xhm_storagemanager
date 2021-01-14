@@ -134,4 +134,14 @@ exports.main = async (event, context) => {
 		
 	}
 	
+	// changestatus 切换心愿单的状态
+	else if(type == 'changestatus') {
+		let docid = info._id
+		let changeachieveflag = info.achieveFlag
+		let res = await collection.doc(docid).update({
+			achieveFlag: changeachieveflag
+		})
+		return res
+	}
+	
 };

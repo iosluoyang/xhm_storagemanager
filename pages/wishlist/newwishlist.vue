@@ -19,7 +19,7 @@
 		</cu-custom>
 		
 		<!-- 选项卡 -->
-		<scroll-view scroll-x class="bg-white nav">
+		<scroll-view scroll-x scroll-with-animation :scroll-left="scrollLeft" class="bg-white nav">
 			<view class="flex text-center">
 				<view class="cu-item flex-sub" :class=" index==current ? 'text-pink' : '' " v-for="(tabitem,index) in tabArr" :key="index" @tap="changetap" :data-index="index">
 					<text>{{ tabitem.name }}</text>
@@ -64,6 +64,7 @@
 				currentStatus: 0, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本
 				current: 0, // 当前选项卡的索引 默认为0
+				scrollLeft: 0, // 选项卡左侧滑动的距离
 				tabArr:[], // 选项卡数组
 				mescrollArr: [], // mescroll组件数组  数量和tabArr保持一致
 				
@@ -137,6 +138,10 @@
 					{
 						name: this.i18n.wishlist.achieveFlag.finish,
 						status: 3
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.closed,
+						status: 4
 					}
 				]
 				
@@ -165,8 +170,16 @@
 					else if(eachtab.status == 1) {
 						eachtab.count = 0
 					}
-					// 已完成
+					// 待下单
 					else if(eachtab.status == 2) {
+						eachtab.count = 0
+					}
+					// 已完成
+					else if(eachtab.status == 3) {
+						eachtab.count = 0
+					}
+					// 已关闭
+					else if(eachtab.status == 4) {
 						eachtab.count = 0
 					}
 					
@@ -185,13 +198,8 @@
 			changetap(e) {
 				let index = e.currentTarget.dataset.index
 				this.current = index
+				this.scrollLeft = (index - 1) * 60
 			},
-			
-			// 切换swiper
-			// changeswiper(e) {
-			// 	let current = e.detail.current
-			// 	this.current = current
-			// },
 			
 			// swiper切换结束
 			animationfinish({ detail: { current } }) {
@@ -199,6 +207,7 @@
 				//第一次切换tab，动画结束后需要加载数据
 				let tabItem = _this.tabArr[current]
 				this.current = current
+				this.scrollLeft = (current - 1) * 60
 				
 				//如果没有加载过该选项的数据  则进行下拉刷新的操作
 				if(!tabItem.loaded){
@@ -326,7 +335,9 @@
 		
 		/deep/.mescroll{
 			.mescroll-empty{
-				text-align: center;
+				.empty-icon{
+					display: inline-block;
+				}
 			}
 		}
 	}

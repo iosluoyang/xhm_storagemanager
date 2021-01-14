@@ -375,6 +375,7 @@ const en = {
 			waittoconfirm: "WaittoConfirm",
 			makeorder: "MakeOrder",
 			finish: "Finished",
+			closed: "Closed",
 		},
 		timeline: {
 			title: "Time Line",

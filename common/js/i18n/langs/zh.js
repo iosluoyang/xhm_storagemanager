@@ -370,7 +370,8 @@ const zh = {
 			ing: "进行中",
 			waittoconfirm: "待确认",
 			makeorder: "待下单",
-			finish: "已完成"
+			finish: "已完成",
+			closed: "已关闭",
 		},
 		timeline: {
 			title: "时间轴",

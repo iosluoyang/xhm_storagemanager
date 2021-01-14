@@ -380,7 +380,8 @@ const th = {
 			ing: "กำลังเข้าสู่กระบวนการ",
 			waittoconfirm: "รอการตอบรับ",
 			makeorder: "สั่งงาน",
-			finish: "เสร็จสิ้น"
+			finish: "เสร็จสิ้น",
+			closed: "ปิดกล้อง",
 		},
 		timeline: {
 			title: "ไทม์ไลน์",
