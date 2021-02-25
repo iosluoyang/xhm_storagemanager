@@ -72,7 +72,7 @@
 				downOption: {
 					use: true, // 是否启用下拉刷新; 默认true
 					auto: false, // 是否在初始化完毕之后自动执行下拉刷新的回调; 默认true
-					isLock: true, // 是否锁定
+					isLock: false, // 是否锁定
 				},
 				
 			};
@@ -187,9 +187,50 @@
 				
 				this.tabArr = tabArr
 				
+				// 获取角标数量
+				this.getbadgenum()
+				
 				// 更新完视图后进行手动刷新
 				this.$nextTick(()=>{
 					this.starttorefresh()
+				})
+				
+			},
+			
+			// 获取操作条上的角标数量
+			getbadgenum() {
+				
+				uniCloud.callFunction({
+					name: 'wishlist',
+					data: {
+						type: 'getbadgenum',
+						info: {}
+					}
+				}).then(response => {
+					// 获取操作数量成功
+					if(response.result) {
+						let ingnum = response.result.ingnum
+						let needtoconfirmnum = response.result.needtoconfirmnum
+						let needtoordernum = response.result.needtoordernum
+						// 找到tabArr的数组更改其中的数据
+						let tabArr = this.tabArr
+						tabArr.forEach((eachtab, index) => {
+							if(eachtab.status == 0) {
+								eachtab.count = ingnum
+							}
+							else if(eachtab.status == 1) {
+								eachtab.count = needtoconfirmnum
+							}
+							else if(eachtab.status == 2) {
+								eachtab.count = needtoordernum
+							}
+						})
+						
+						this.tabArr = tabArr
+						
+					}
+				}).catch(error => {
+					// 获取操作数量失败
 				})
 				
 			},
@@ -224,8 +265,17 @@
 			
 			//开始手动下拉刷新
 			starttorefresh(){
+				// 获取角标
+				this.getbadgenum()
+				// 刷新当前数据
 				let mescroll = this.mescrollArr[this.current]
 				mescroll.resetUpScroll()
+			},
+			
+			// 下拉刷新的回调
+			downCallback(mescroll) {
+				// 手动刷新当前的mescroll数据
+				this.starttorefresh()
 			},
 			
 			/*上拉加载的回调*/

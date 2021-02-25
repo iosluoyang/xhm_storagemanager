@@ -46,7 +46,7 @@
 				
 				<!-- 商品图片区域 -->
 				<swiper class="screen-swiper round-dot" indicator-dots circular
-				 autoplay :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
+				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
 					<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
 						<image :src="completeimg" mode="aspectFit"></image>
@@ -436,6 +436,7 @@
 				timelinearrdic: {}, // 心愿时间轴数据
 				sharetimelineitem: null, // 要分享的时间轴数据
 				swiperCur: 0, // 当前轮播图索引
+				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
 				temptimelineitem: null, // 临时时间轴变量
 				refuseReason: '', // 拒绝原因
@@ -488,6 +489,16 @@
 		onUnload() {
 			uni.$off('updatewishdetail')
 			uni.$off('updatetimeline')
+		},
+		
+		// 页面显示时开始自动播放轮播图
+		onShow() {
+			this.swiperautoplay = true
+		},
+		
+		// 页面隐藏时关闭自动播放轮播图
+		onHide() {
+			this.swiperautoplay = false
 		},
 		
 		onShareAppMessage(res) {

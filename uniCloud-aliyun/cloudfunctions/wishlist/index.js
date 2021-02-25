@@ -101,13 +101,37 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	// getbadgenum 获取不同状态下(进行中  待确认  待下单)的心愿数量
+	else if(type == 'getbadgenum') {
+		// 分别获取进行中0 待确认1 和待下单2的心愿数量
+		let ingnum = await collection.where({
+			achieveFlag: 0
+		}).count()
+		
+		let needtoconfirmnum = await collection.where({
+			achieveFlag: 1
+		}).count()
+		
+		let needtoordernum = await collection.where({
+			achieveFlag: 2
+		}).count()
+		
+		let res = {
+			ingnum: ingnum.total,
+			needtoconfirmnum: needtoconfirmnum.total,
+			needtoordernum: needtoordernum.total
+		}
+		return res
+		
+	}
+	
 	// getlist 分页查询所有的心愿单列表
 	else if(type == 'getlist') {
 		
 		// 如果info.date有值则返回date的值 如果info.date没有值则返回当前的时间字符串
 		// let achieveFlagArr = info.achieveFlagArr // 心愿状态数组(筛选项)
 		// let hurryLevelArr = info.hurryLevelArr // 紧急程度状态数组(筛选项)
-		let achieveFlag = info.achieveFlag == null ? -1 : info.achieveFlag  // 心愿状态 -1为全部 0进行中 1待确认 2已完成 默认为-1
+		let achieveFlag = info.achieveFlag == null ? -1 : info.achieveFlag  // 心愿状态 -1为全部 0进行中 1待确认 2待下单 3已完成 4已关闭 默认为-1
 		let sortType = info.sortType // 排序方式(筛选项) 
 		let searchText = info.searchText // 搜索文本
 		let date = info.date ? info.date : currenttimestr

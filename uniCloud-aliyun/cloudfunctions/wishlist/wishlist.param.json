@@ -22,19 +22,19 @@
 		
 // }
 
-{
-	"type": "getlist",
-	"info": {
-		// "achieveFlagArr": [0,1],
-		// "hurryLevelArr": [1,2,3,4,5],
-		"achieveFlag": 0,
-		"sortType": 0,
-		"searchText": "",
-		"pageSize":10,
-		"pageNum":1,
-		"date":""
-	}
-}
+// {
+// 	"type": "getlist",
+// 	"info": {
+// 		// "achieveFlagArr": [0,1],
+// 		// "hurryLevelArr": [1,2,3,4,5],
+// 		"achieveFlag": 0,
+// 		"sortType": 0,
+// 		"searchText": "",
+// 		"pageSize":10,
+// 		"pageNum":1,
+// 		"date":""
+// 	}
+// }
 
 // {
 // 	"type": "getdetail",
@@ -42,4 +42,9 @@
 // 		"_id": "5f51af0d2805da0001892767"
 // 	}
 // }
+
+{
+	"type": "getbadgenum",
+	"info": {}
+}
 
