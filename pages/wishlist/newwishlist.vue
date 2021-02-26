@@ -29,14 +29,14 @@
 		</scroll-view>
 		
 		<!-- swiper视图 -->
-		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 45px )'}" :current="current" @animationfinish="animationfinish">
+		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 45px )'}" :current="current" disable-touch  @animationfinish="animationfinish">
 			
 			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
 				
 				<mescroll-uni class="mescroll bg-gray" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
 					
 					<view class="wishlistview">
-						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishindex" :wishitem="wishitem"></wishlistitem>
+						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
 					</view>
 										
 				</mescroll-uni>
@@ -97,15 +97,19 @@
 			// 初始化选项卡数组数据
 			this.initTabArr()
 			
-			// 开始加载数据
+			// 监听更新事件
 			uni.$on('updatewishlist', function() {
 				_this.starttorefresh()
+			})
+			uni.$on('updatebadgenum', function() {
+				_this.getbadgenum()
 			})
 			
 		},
 		
 		onUnload() {
 			uni.$off('updatewishlist')
+			uni.$off('updatebadgenum')
 		},
 		
 		methods: {
@@ -269,7 +273,7 @@
 				this.getbadgenum()
 				// 刷新当前数据
 				let mescroll = this.mescrollArr[this.current]
-				mescroll.resetUpScroll()
+				mescroll.resetUpScroll(true)
 			},
 			
 			// 下拉刷新的回调

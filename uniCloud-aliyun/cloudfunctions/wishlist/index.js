@@ -139,19 +139,38 @@ exports.main = async (event, context) => {
 		let pageNum = info.pageNum
 		let skipdataNum = pageSize * (pageNum - 1)
 		
-		let res = await collection
-		.where({
+		// let res = await collection
+		// .where({
+		// 	productTitle: new RegExp(searchText, 'i'), // 找到商品标题包含搜索关键字的数据 i代表不区分大小写
+		// 	// achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
+		// 	// hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
+		// 	achieveFlag: achieveFlag == -1 ? dbCmd.exists(true) : dbCmd.eq(achieveFlag), // 找到符合achieveFlag的数据
+		// 	creatTime: dbCmd.lte(date), // 找到创建时间小于当时请求时间的数据
+		// })
+		// // 对结果进行排序  如果是进行中和待确认和待下单则按照紧急程度进行排序  其余状态下不进行排序
+		// .orderBy( "hurryLevel", sortType == 1 ? 'asc' : 'desc' ) //  排序方式为1时为升序排序 否则均为降序排序
+		// .orderBy("_id", "desc") // 倒序排列
+		// .skip(skipdataNum) // 跳过已经查询过的条数
+		// .limit(pageSize) // 设置查询的条数
+		// .get() // 获取对应数据
+		
+		// 聚合操作  根据不同的状态进行筛选排序查询
+		// 排序对象  如果是状态为012的则根据hurryLevel进行排序 否则不用
+		// 1 代表升序排列（从小到大）-1 代表降序排列（从大到小）
+		let sort_hurrylevel = achieveFlag == 0 || achieveFlag == 1 || achieveFlag == 2 ? {'hurryLevel': -1} : {}
+		let sort_id = {'_id': -1}
+		let sortInfo = Object.assign({}, sort_hurrylevel, sort_id)
+		let res = await collection.aggregate()
+		.match({
 			productTitle: new RegExp(searchText, 'i'), // 找到商品标题包含搜索关键字的数据 i代表不区分大小写
 			// achieveFlag: dbCmd.in(achieveFlagArr), // 找到心愿状态在筛选项中的数据
 			// hurryLevel: dbCmd.in(hurryLevelArr), // 找到紧急程度在筛选项中的数据
 			achieveFlag: achieveFlag == -1 ? dbCmd.exists(true) : dbCmd.eq(achieveFlag), // 找到符合achieveFlag的数据
 			creatTime: dbCmd.lte(date), // 找到创建时间小于当时请求时间的数据
 		})
-		.orderBy("hurryLevel", sortType == 1 ? 'asc' : 'desc' ) //  排序方式为1时为升序排序 否则均为降序排序
-		.orderBy("_id", "desc") // 倒序排列
-		.skip(skipdataNum) // 跳过已经查询过的条数
-		.limit(pageSize) // 设置查询的条数
-		.get() // 获取对应数据
+		// 排序
+		.sort(sortInfo)
+		.end()
 		
 		res.date = date // 将查询时间原样返回
 		return res

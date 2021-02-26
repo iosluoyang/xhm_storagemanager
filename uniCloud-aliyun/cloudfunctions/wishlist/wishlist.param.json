@@ -22,19 +22,22 @@
 		
 // }
 
-// {
-// 	"type": "getlist",
-// 	"info": {
-// 		// "achieveFlagArr": [0,1],
-// 		// "hurryLevelArr": [1,2,3,4,5],
-// 		"achieveFlag": 0,
-// 		"sortType": 0,
-// 		"searchText": "",
-// 		"pageSize":10,
-// 		"pageNum":1,
-// 		"date":""
-// 	}
-// }
+
+{
+	"type": "getlist",
+	"info": {
+		// "achieveFlagArr": [0,1],
+		// "hurryLevelArr": [1,2,3,4,5],
+		"achieveFlag": 4,
+		"sortType": 0,
+		"searchText": "",
+		"pageSize":10,
+		"pageNum":1,
+		"date":""
+	}
+}
+
+
 
 // {
 // 	"type": "getdetail",
@@ -43,8 +46,8 @@
 // 	}
 // }
 
-{
-	"type": "getbadgenum",
-	"info": {}
-}
+// {
+// 	"type": "getbadgenum",
+// 	"info": {}
+// }
 

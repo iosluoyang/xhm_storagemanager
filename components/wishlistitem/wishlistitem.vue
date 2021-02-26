@@ -102,51 +102,66 @@
 				// 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
 				wishbgcolor() {
 					
-					let achieveFlag = this.ownwishitem.achieveFlag
-					switch (achieveFlag){
-						case 0:
-							return 'bg-pink'
-							break;
-						case 1:
-							return 'bg-orange'
-							break;
-						case 2:
-							return 'bg-blue'
-							break;
-						case 3:
-							return 'bg-green'
-							break;
-						case 4:
-							return 'bg-grey'
-							break;
-						default:
-							break;
+					if(this.ownwishitem) {
+						
+						let achieveFlag = this.ownwishitem.achieveFlag
+						switch (achieveFlag){
+							case 0:
+								return 'bg-pink'
+								break;
+							case 1:
+								return 'bg-orange'
+								break;
+							case 2:
+								return 'bg-blue'
+								break;
+							case 3:
+								return 'bg-green'
+								break;
+							case 4:
+								return 'bg-grey'
+								break;
+							default:
+								return ''
+								break;
+						}
+						
 					}
-				
+					else {
+						return ''
+					}
 				},
 				
 				// 心愿单的tag名称
 				wishtagtext() {
-					let achieveFlag = this.ownwishitem.achieveFlag
-					switch (achieveFlag){
-						case 0:
-							return this.i18n.wishlist.achieveFlag.ing
-							break;
-						case 1:
-							return this.i18n.wishlist.achieveFlag.waittoconfirm
-							break;
-						case 2:
-							return this.i18n.wishlist.achieveFlag.makeorder
-							break;
-						case 3:
-							return this.i18n.wishlist.achieveFlag.finish
-							break;
-						case 4:
-							return this.i18n.wishlist.achieveFlag.closed
-							break;
-						default:
-							break;
+					
+					if(this.ownwishitem) {
+						let achieveFlag = this.ownwishitem.achieveFlag
+						switch (achieveFlag){
+							case 0:
+								return this.i18n.wishlist.achieveFlag.ing
+								break;
+							case 1:
+								return this.i18n.wishlist.achieveFlag.waittoconfirm
+								break;
+							case 2:
+								return this.i18n.wishlist.achieveFlag.makeorder
+								break;
+							case 3:
+								return this.i18n.wishlist.achieveFlag.finish
+								break;
+							case 4:
+								return this.i18n.wishlist.achieveFlag.closed
+								break;
+							default:
+								return ''
+								break;
+						}
 					}
+					else {
+						return ''
+					}
+					
 				},
 				
 			},
@@ -237,6 +252,8 @@
 								// 切换成功
 								// 将心愿单列表数据置空(消失) 然后发送响应事件
 								_this.ownwishitem = null
+								
+								uni.$emit('updatebadgenum')
 								
 							}).catch(error => {
 								// 切换失败
