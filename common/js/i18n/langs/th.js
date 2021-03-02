@@ -398,7 +398,8 @@ const th = {
 		importproduct: {
 			importpro: "จัดซื้อสินค้า",
 			iwant: "ฉันต้องการ",
-		}
+		},
+		buyagain: 'ซื้อใหม่',
 		
 		
 	},

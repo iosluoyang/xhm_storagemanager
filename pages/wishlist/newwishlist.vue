@@ -98,7 +98,11 @@
 			this.initTabArr()
 			
 			// 监听更新事件
-			uni.$on('updatewishlist', function() {
+			uni.$on('updatewishlist', function(data) {
+				// 如果为拷贝心愿则切换到进行中
+				if(data && data.type && data.type == 'copywish') {
+					_this.currentStatus = 0
+				}
 				_this.starttorefresh()
 			})
 			uni.$on('updatebadgenum', function() {

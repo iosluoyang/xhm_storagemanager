@@ -388,7 +388,8 @@ const zh = {
 		importproduct: {
 			importpro: "进货",
 			iwant: "我想要",
-		}
+		},
+		buyagain: '再次购买',
 		
 		
 	},

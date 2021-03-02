@@ -101,6 +101,9 @@
 						<button class="cu-btn round line-orange cuIcon-share margin-right-sm" open-type="share"></button>
 						<!-- #endif -->
 						
+						<!-- 再次购买按钮 -->
+						<button class="cu-btn round line-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+						
 						<!-- 编辑按钮 仅自己可编辑 -->
 						<button v-if="wishinfo.user.uid == user.uid" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
@@ -749,6 +752,14 @@
 					url: `/pages/wishlist/handletimeline?wishId=${this.id}`
 				});
 			},
+			
+			// 再次购买
+			buyagain(wishitem) {
+				// replace到新增心愿页面
+				uni.redirectTo({
+					url: `/pages/wishlist/handlewish?type=copy&id=${wishitem._id}`
+				});
+			}, 
 			
 			// 编辑心愿
 			editwish() {

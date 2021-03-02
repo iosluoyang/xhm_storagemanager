@@ -392,7 +392,8 @@ const en = {
 		importproduct: {
 			importpro: "Buy Product",
 			iwant: "I want",
-		}
+		},
+		buyagain: 'Buy Again',
 		
 		
 	},

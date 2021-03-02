@@ -147,7 +147,7 @@
 		data() {
 			return {
 				
-				type: 'add', // 页面状态 add新增 edit编辑
+				type: 'add', // 页面状态 add新增 edit编辑 
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
@@ -170,11 +170,11 @@
 			
 			_this = this
 			
-			this.type = option.type // add 新增  edit编辑
-			this.id = option.id // 心愿详情id
+			this.type = option.type // add 新增  edit编辑 copy拷贝
+			this.id = option.id // 心愿详情id(编辑或者拷贝的原心愿id)
 			
-			// 如果是编辑状态则获取心愿详情
-			if(this.type === 'edit') {
+			// 如果是编辑或者拷贝状态则获取心愿详情
+			if(this.type === 'edit' || this.type === 'copy') {
 				this.getwishdetail()
 			}
 			
@@ -342,7 +342,7 @@
 						return
 					}
 										
-					// 区分新增和编辑状态
+					// 区分新增和编辑以及拷贝状态
 					if(_this.type === 'add') {
 						
 						_this.ifloading = true // 开始加载动画
@@ -360,7 +360,7 @@
 						})
 						
 					}
-					else if(_this.type === 'edit') {
+					else if(_this.type === 'edit' || _this.type === 'copy') {
 						// 编辑状态下
 						_this.ifloading = true // 开始加载动画
 						let needtoindexArr = []
@@ -401,7 +401,7 @@
 			// 上传数据
 			uploaddata() {
 				
-				// 进行数据检查
+				// 进行数据检查			
 				
 				// 检查是否有商品标题
 				if(!this.productTitle) {
@@ -436,13 +436,13 @@
 					return false
 				}
 				
-				// 其余项均为选填项
+				// 其余项均为选填项				
 				
 				// 开始上传图片(包含新增和编辑)
 				this.uploadpic(this.imgArr).then(imgs => {
+					
 					// 上传图片成功 开始上传所有数据
 					let info = {
-						_id: _this.id, // 当前心愿的id
 						productTitle: _this.productTitle, // 商品标题
 						sourceLink: _this.sourceLink, // 源网站链接
 						sourcePrice: _this.sourcePrice, // 源网站价格
@@ -489,6 +489,9 @@
 					}
 					// 编辑
 					else if(_this.type == 'edit') {
+						
+						info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
+						
 						// 开始上传云函数
 						uniCloud.callFunction({
 							name: 'wishlist',
@@ -517,7 +520,36 @@
 							});
 						})
 					}
-				
+					// 拷贝
+					else if(_this.type == 'copy') {
+						// 开始上传云函数
+						uniCloud.callFunction({
+							name: 'wishlist',
+							data: {
+								type: 'add',
+								info: info
+							}
+						}).then(response => {
+							// 发布成功
+							uni.$emit('updatewishlist', {type: 'copywish'})
+							uni.showToast({
+								title: _this.i18n.tip.addsuccess,
+								icon: 'none',
+								duration: 1500
+							});
+							
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1500);
+						}).catch(error => {
+							// 发布失败
+							uni.showToast({
+								title: _this.i18n.error.adderror,
+								icon: 'none'
+							});
+						})
+					}
+					
 					
 				}).catch(error => {
 					console.log(`上传失败`);

@@ -185,6 +185,7 @@
 	
 				// 跳转心愿详情
 				gotowishdetail() {
+					console.log(this.ownwishitem);
 					uni.navigateTo({
 						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});
@@ -208,14 +209,18 @@
 					   optionList = [
 							{
 								name: this.i18n.wishlist.achieveFlag.finish,
-								color: '#39b54a',
+								type: 'changetag',
 								achieveFlag: 3
 							},
 							{
 								name: this.i18n.wishlist.achieveFlag.closed,
-								color: '#8799a3',
+								type: 'changetag',
 								achieveFlag: 4
-							}
+							},
+							{
+								name: this.i18n.wishlist.buyagain,
+								type: 'buyagain',
+							},
 					   	]
 					   
 				   }
@@ -228,7 +233,6 @@
 					
 					optionList.forEach((eachitem,index) => {
 						itemList.push(eachitem.name)
-						itemColorList.push(eachitem.color)
 					})
 					
 					uni.showActionSheet({
@@ -236,32 +240,54 @@
 						itemColor: '#000000',
 						success(res) {
 							let tapindex = res.tapIndex
-							let achieveFlag = optionList[tapindex].achieveFlag
-							// 设置该心愿单的状态为切换状态
-							
-							uniCloud.callFunction({
-								name:'wishlist',
-								data: {
-									type: 'changestatus',
-									info: {
-										_id: _this.ownwishitem._id,
-										achieveFlag: achieveFlag
+							let tapItem = optionList[tapindex]
+							switch (tapItem.type){
+								
+								// 更改状态
+								case 'changetag':
+									{
+										let achieveFlag = tapItem.achieveFlag
+										// 设置该心愿单的状态为切换状态
+										
+										uniCloud.callFunction({
+											name:'wishlist',
+											data: {
+												type: 'changestatus',
+												info: {
+													_id: _this.ownwishitem._id,
+													achieveFlag: achieveFlag
+												}
+											}
+										}).then(response => {
+											// 切换成功
+											// 将心愿单列表数据置空(消失) 然后发送响应事件
+											_this.ownwishitem = null
+											
+											uni.$emit('updatebadgenum')
+											
+										}).catch(error => {
+											// 切换失败
+											uni.showToast({
+												title: _this.i18n.error.loaderror,
+												icon: 'none'
+											});
+										})
 									}
-								}
-							}).then(response => {
-								// 切换成功
-								// 将心愿单列表数据置空(消失) 然后发送响应事件
-								_this.ownwishitem = null
-								
-								uni.$emit('updatebadgenum')
-								
-							}).catch(error => {
-								// 切换失败
-								uni.showToast({
-									title: _this.i18n.error.loaderror,
-									icon: 'none'
-								});
-							})
+									break;
+									
+								// 再次购买
+								case 'buyagain':
+									{
+										let copyId = _this.ownwishitem._id
+										uni.navigateTo({
+											url: `/pages/wishlist/handlewish?type=copy&id=${copyId}`
+										});
+									}
+									break;
+								default:
+									break;
+							}
+							
 						}
 					})
 				   
