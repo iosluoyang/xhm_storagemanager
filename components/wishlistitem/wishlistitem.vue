@@ -4,7 +4,7 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longpress="changewishliststatus">
+		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longtap="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
@@ -53,8 +53,9 @@
 								<text class="hurryleveltext margin-right-sm">
 									<text v-for="item in ownwishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
 								</text>
-								<text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
-								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}}
+								<!-- <text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
+								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}} -->
+								<button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button>
 							</view>
 						</view>
 						
@@ -191,6 +192,16 @@
 					});
 				},
 				
+				// 再次购买
+				buyagain() {
+					
+					let copyId = this.ownwishitem._id
+					uni.navigateTo({
+						url: `/pages/wishlist/handlewish?type=copy&id=${copyId}`
+					});
+					
+				},
+				
 				// 长按更改心愿单状态
 				changewishliststatus() {
 					const _this = this
@@ -203,36 +214,41 @@
 					this.i18n.wishlist.achieveFlag.finish,
 					this.i18n.wishlist.achieveFlag.closed
 					*/
-				   let optionList = []
-				   if(this.ownwishitem.achieveFlag == 0 || this.ownwishitem.achieveFlag == 1 || this.ownwishitem.achieveFlag == 2) {
-					   
-					   optionList = [
-							{
-								name: this.i18n.wishlist.achieveFlag.finish,
-								type: 'changetag',
-								achieveFlag: 3
-							},
-							{
-								name: this.i18n.wishlist.achieveFlag.closed,
-								type: 'changetag',
-								achieveFlag: 4
-							},
-							{
-								name: this.i18n.wishlist.buyagain,
-								type: 'buyagain',
-							},
-					   	]
-					   
-				   }
-				   else {
-					   return false
-					}
+				   let optionList = [
+						{
+							name: this.i18n.wishlist.achieveFlag.ing,
+							type: 'changetag',
+							achieveFlag: 0
+						},
+						{
+							name: this.i18n.wishlist.achieveFlag.waittoconfirm,
+							type: 'changetag',
+							achieveFlag: 1
+						},
+						{
+							name: this.i18n.wishlist.achieveFlag.makeorder,
+							type: 'changetag',
+							achieveFlag: 2
+						},
+						{
+							name: this.i18n.wishlist.achieveFlag.finish,
+							type: 'changetag',
+							achieveFlag: 3
+						},
+						{
+							name: this.i18n.wishlist.achieveFlag.closed,
+							type: 'changetag',
+							achieveFlag: 4
+						}
+					]
 					
 					let itemList = []
 					let itemColorList = []
 					
 					optionList.forEach((eachitem,index) => {
-						itemList.push(eachitem.name)
+						if(eachitem.achieveFlag !== _this.ownwishitem.achieveFlag) {
+							itemList.push(eachitem.name)
+						}
 					})
 					
 					uni.showActionSheet({
@@ -241,53 +257,32 @@
 						success(res) {
 							let tapindex = res.tapIndex
 							let tapItem = optionList[tapindex]
-							switch (tapItem.type){
-								
-								// 更改状态
-								case 'changetag':
-									{
-										let achieveFlag = tapItem.achieveFlag
-										// 设置该心愿单的状态为切换状态
-										
-										uniCloud.callFunction({
-											name:'wishlist',
-											data: {
-												type: 'changestatus',
-												info: {
-													_id: _this.ownwishitem._id,
-													achieveFlag: achieveFlag
-												}
-											}
-										}).then(response => {
-											// 切换成功
-											// 将心愿单列表数据置空(消失) 然后发送响应事件
-											_this.ownwishitem = null
-											
-											uni.$emit('updatebadgenum')
-											
-										}).catch(error => {
-											// 切换失败
-											uni.showToast({
-												title: _this.i18n.error.loaderror,
-												icon: 'none'
-											});
-										})
-									}
-									break;
-									
-								// 再次购买
-								case 'buyagain':
-									{
-										let copyId = _this.ownwishitem._id
-										uni.navigateTo({
-											url: `/pages/wishlist/handlewish?type=copy&id=${copyId}`
-										});
-									}
-									break;
-								default:
-									break;
-							}
+							let achieveFlag = tapItem.achieveFlag
+							// 设置该心愿单的状态为切换状态
 							
+							uniCloud.callFunction({
+								name:'wishlist',
+								data: {
+									type: 'changestatus',
+									info: {
+										_id: _this.ownwishitem._id,
+										achieveFlag: achieveFlag
+									}
+								}
+							}).then(response => {
+								// 切换成功
+								// 将心愿单列表数据置空(消失) 然后发送响应事件
+								_this.ownwishitem = null
+								
+								uni.$emit('updatebadgenum')
+								
+							}).catch(error => {
+								// 切换失败
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							})
 						}
 					})
 				   
