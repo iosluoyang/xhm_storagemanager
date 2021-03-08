@@ -137,6 +137,7 @@
 				wishtagtext() {
 					
 					if(this.ownwishitem) {
+						// 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
 						let achieveFlag = this.ownwishitem.achieveFlag
 						switch (achieveFlag){
 							case 0:
@@ -214,6 +215,7 @@
 					this.i18n.wishlist.achieveFlag.finish,
 					this.i18n.wishlist.achieveFlag.closed
 					*/
+				   // 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
 				   let optionList = [
 						{
 							name: this.i18n.wishlist.achieveFlag.ing,
@@ -243,11 +245,12 @@
 					]
 					
 					let itemList = []
-					let itemColorList = []
+					let finalOptionList= []
 					
 					optionList.forEach((eachitem,index) => {
 						if(eachitem.achieveFlag !== _this.ownwishitem.achieveFlag) {
 							itemList.push(eachitem.name)
+							finalOptionList.push(eachitem)
 						}
 					})
 					
@@ -256,7 +259,7 @@
 						itemColor: '#000000',
 						success(res) {
 							let tapindex = res.tapIndex
-							let tapItem = optionList[tapindex]
+							let tapItem = finalOptionList[tapindex]
 							let achieveFlag = tapItem.achieveFlag
 							// 设置该心愿单的状态为切换状态
 							
