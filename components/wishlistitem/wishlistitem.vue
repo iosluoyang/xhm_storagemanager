@@ -4,7 +4,7 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longtap="changewishliststatus">
+		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
