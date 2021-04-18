@@ -2,7 +2,7 @@
 	<view class="content wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom :bgColor=" wishinfo ? $basejs.getwishtagbgcolorclassname(wishinfo.achieveFlag) : 'bg-gradual-pink' " isBack :title="i18n.nav.wishlist" isOwnBackPage @ownbackpage="ownBackPage">
+		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-gradual-pink' " isBack :title="i18n.nav.wishlist" isOwnBackPage @ownbackpage="ownBackPage">
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -36,8 +36,8 @@
 					
 					<view class="headerrightview flex align-center justify-end">
 						
-						<view class="cu-tag" :class="$basejs.getwishtagbgcolorclassname(wishinfo.achieveFlag)">
-							{{ $basejs.getwishtagname(wishinfo.achieveFlag) }}
+						<view class="cu-tag" :class="wishbgcolor">
+							{{ wishtagtext }}
 						</view>
 						
 					</view>
@@ -449,6 +449,35 @@
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
+		},
+		
+		computed: {
+			// 心愿单的背景颜色  根据不同的状态返回不同的颜色
+			wishbgcolor() {
+				if(this.wishinfo) {
+					
+					let achieveFlag = this.wishinfo.achieveFlag
+					let bgColor = this.$basejs.getwishtagbgcolorclassname(achieveFlag)
+					return bgColor
+				}
+				else {
+					return ''
+				}
+			},
+			
+			// 心愿单的tag名称
+			wishtagtext() {
+				
+				if(this.wishinfo) {
+					let achieveFlag = this.wishinfo.achieveFlag
+					let tagName = this.$basejs.getwishtagname(achieveFlag)
+					return tagName
+				}
+				else {
+					return ''
+				}
+				
+			},
 		},
 		
 		onLoad(option) {

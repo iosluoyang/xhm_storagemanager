@@ -478,6 +478,21 @@
 							setTimeout(function() {
 								uni.navigateBack();
 							}, 1500);
+							
+							// 增加订阅模板消息的功能(非强制)
+							uni.requestSubscribeMessage({
+								tmplIds: ['dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'],
+								success (res){
+									let errMsg = res.errMsg
+									if(errMsg == 'requestSubscribeMessage:ok') {
+										// 订阅成功
+										console.log(`用户订阅成功`);
+									}
+									else {
+										console.log(`用户订阅失败`);
+									}
+								}
+							})
 						}).catch(error => {
 							// 发布失败
 							uni.showToast({

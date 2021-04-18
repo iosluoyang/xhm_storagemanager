@@ -9,7 +9,7 @@
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
 				<image style="height: 300rpx;" :src="ownwishitem.imgs ? imgUrl + ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
-				<view class="cu-tag text-white" :class="$basejs.getwishtagbgcolorclassname(ownwishitem.achieveFlag)">{{ $basejs.getwishtagname(ownwishitem.achieveFlag) }}</view>
+				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
 					<!-- 商品标题 -->
@@ -100,33 +100,12 @@
 			computed: {
 				
 				// 心愿单的背景颜色  根据不同的状态返回不同的颜色
-				// 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
 				wishbgcolor() {
-					
 					if(this.ownwishitem) {
 						
 						let achieveFlag = this.ownwishitem.achieveFlag
-						switch (achieveFlag){
-							case 0:
-								return 'bg-pink'
-								break;
-							case 1:
-								return 'bg-orange'
-								break;
-							case 2:
-								return 'bg-blue'
-								break;
-							case 3:
-								return 'bg-green'
-								break;
-							case 4:
-								return 'bg-grey'
-								break;
-							default:
-								return ''
-								break;
-						}
-						
+						let bgColor = this.$basejs.getwishtagbgcolorclassname(achieveFlag)
+						return bgColor
 					}
 					else {
 						return ''
@@ -137,28 +116,9 @@
 				wishtagtext() {
 					
 					if(this.ownwishitem) {
-						// 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
 						let achieveFlag = this.ownwishitem.achieveFlag
-						switch (achieveFlag){
-							case 0:
-								return this.i18n.wishlist.achieveFlag.ing
-								break;
-							case 1:
-								return this.i18n.wishlist.achieveFlag.waittoconfirm
-								break;
-							case 2:
-								return this.i18n.wishlist.achieveFlag.makeorder
-								break;
-							case 3:
-								return this.i18n.wishlist.achieveFlag.finish
-								break;
-							case 4:
-								return this.i18n.wishlist.achieveFlag.closed
-								break;
-							default:
-								return ''
-								break;
-						}
+						let tagName = this.$basejs.getwishtagname(achieveFlag)
+						return tagName
 					}
 					else {
 						return ''
