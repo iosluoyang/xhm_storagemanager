@@ -3,6 +3,7 @@ import store from '@/store'
 import md5 from 'js-md5'
 import defaultconfig from '@/common/config/base.js'
 import ossuploadjs from '@/common/js/upload/upload.js'
+import i18n from '@/common/js/i18n/i18n.js'
 
 // 返回供应商名称  用于生成二维码的前缀
 export function storeName() {
@@ -369,6 +370,59 @@ export function sleep(sleeptime) {
 	}
 }
 
+// 根据当前心愿单标识返回心愿单的背景颜色类名
+export function getwishtagbgcolorclassname(achieveFlag) {
+	switch (achieveFlag){
+		// 进行中
+		case 0:
+			return 'bg-pink'
+			break;
+		// 待确认
+		case 1:
+			return 'bg-orange'
+			break;
+		// 待下单
+		case 2:
+			return 'bg-blue'
+			break;
+		// 已完成
+		case 3:
+			return 'bg-green'
+			break;
+		// 已关闭
+		case 4:
+			return 'bg-grey'
+			break;
+		default:
+			return ''
+			break;
+	}
+}
+
+// 根据当前心愿单标识返回心愿单的tag名字
+export function getwishtagname(achieveFlag) {
+	switch (achieveFlag){
+		case 0:
+			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.ing
+			break;
+		case 1:
+			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.waittoconfirm
+			break;
+		case 2:
+			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.makeorder
+			break;
+		case 3:
+			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.finish
+			break;
+		case 4:
+			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.closed
+			break;
+		default:
+			return ''
+			break;
+	}
+}
+
 export default {
 	storeName, // 返回供应商名称  用于生成二维码的前缀
 	ifwxH5, // 是否是微信H5环境
@@ -381,4 +435,6 @@ export default {
 	fileToUrl, //将获取本地文件的url 仅H5端生效
 	scanQR, // 开始扫描二维码
 	sleep, // js休眠
+	getwishtagbgcolorclassname, // 获取心愿背景颜色
+	getwishtagname, // 获取心愿tag名称
 }

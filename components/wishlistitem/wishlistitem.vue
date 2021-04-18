@@ -9,7 +9,7 @@
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
 				<image style="height: 300rpx;" :src="ownwishitem.imgs ? imgUrl + ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
-				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
+				<view class="cu-tag text-white" :class="$basejs.getwishtagbgcolorclassname(ownwishitem.achieveFlag)">{{ $basejs.getwishtagname(ownwishitem.achieveFlag) }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
 					<!-- 商品标题 -->
@@ -55,7 +55,7 @@
 								</text>
 								<!-- <text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
 								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}} -->
-								<button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button>
+								<!-- <button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button> -->
 							</view>
 						</view>
 						
