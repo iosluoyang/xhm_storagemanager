@@ -3,6 +3,8 @@
 var moment = require('moment')
 const db = uniCloud.database()
 
+const { getWxAccessToken,sendWxMiniMsg } = require('hello-common')
+
 exports.main = async (event, context) => {
 	
 	//event为客户端上传的参数
@@ -54,6 +56,11 @@ exports.main = async (event, context) => {
 	
 	// getlist 分页查询所有的公告列表
 	else if(type == 'getlist') {
+		
+		let accesstoken = getWxAccessToken()
+		console.log(`accesstoken = ${accesstoken}`);
+		// 发送微信订阅消息
+		sendWxMiniMsg()
 		
 		let date = info.date
 		let pageSize = info.pageSize

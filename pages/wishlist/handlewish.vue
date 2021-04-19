@@ -136,6 +136,27 @@
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
 		
+		<!-- 订阅消息modal框 -->
+		<view class="cu-modal" :class=" showModal ? 'show' : '' ">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">{{ modalTitle }}</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl">
+					{{ modalContent }}
+				</view>
+				<view class="cu-bar bg-white justify-around">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">{{ i18n.base.cancel }}</button>
+						<button class="cu-btn bg-green margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
+					</view>
+				</view>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
@@ -162,6 +183,10 @@
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
 				remark: '', // 备注
+				
+				modalTitle: '弹框标题',
+				modalContent: '弹框内容',
+				showModal: false, // 是否显示modal
 				
 			};
 		},
@@ -469,30 +494,20 @@
 						}).then(response => {
 							// 发布成功
 							uni.$emit('updatewishlist')
-							uni.showToast({
-								title: _this.i18n.tip.addsuccess,
-								icon: 'none',
-								duration: 1500
-							});
 							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
+							this.modalTitle = this.i18n.tip.addsuccess
+							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+							this.showModal = true
+
+							// uni.showToast({
+							// 	title: _this.i18n.tip.addsuccess,
+							// 	icon: 'none',
+							// 	duration: 1500
+							// });
+							// setTimeout(function() {
+							// 	uni.navigateBack();
+							// }, 1500);
 							
-							// 增加订阅模板消息的功能(非强制)
-							uni.requestSubscribeMessage({
-								tmplIds: ['dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'],
-								success (res){
-									let errMsg = res.errMsg
-									if(errMsg == 'requestSubscribeMessage:ok') {
-										// 订阅成功
-										console.log(`用户订阅成功`);
-									}
-									else {
-										console.log(`用户订阅失败`);
-									}
-								}
-							})
 						}).catch(error => {
 							// 发布失败
 							uni.showToast({
@@ -518,15 +533,19 @@
 							// 发布成功
 							uni.$emit('updatewishlist')
 							uni.$emit('updatewishdetail')
-							uni.showToast({
-								title: _this.i18n.tip.fixsuccess,
-								icon: 'none',
-								duration: 1500
-							});
 							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
+							this.modalTitle = this.i18n.tip.fixsuccess
+							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+							this.showModal = true
+							
+							// uni.showToast({
+							// 	title: _this.i18n.tip.fixsuccess,
+							// 	icon: 'none',
+							// 	duration: 1500
+							// });
+							// setTimeout(function() {
+							// 	uni.navigateBack();
+							// }, 1500);
 						}).catch(error => {
 							// 发布失败
 							uni.showToast({
@@ -547,15 +566,20 @@
 						}).then(response => {
 							// 发布成功
 							uni.$emit('updatewishlist', {type: 'copywish'})
-							uni.showToast({
-								title: _this.i18n.tip.addsuccess,
-								icon: 'none',
-								duration: 1500
-							});
 							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
+							this.modalTitle = this.i18n.tip.addsuccess
+							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+							this.showModal = true
+							
+							// uni.showToast({
+							// 	title: _this.i18n.tip.addsuccess,
+							// 	icon: 'none',
+							// 	duration: 1500
+							// });
+							
+							// setTimeout(function() {
+							// 	uni.navigateBack();
+							// }, 1500);
 						}).catch(error => {
 							// 发布失败
 							uni.showToast({
@@ -564,7 +588,6 @@
 							});
 						})
 					}
-					
 					
 				}).catch(error => {
 					console.log(`上传失败`);
@@ -578,6 +601,46 @@
 				
 			},
 			
+			
+			hideModal() {
+				this.showModal = false
+				uni.navigateBack();
+			},
+			
+			confirmModal() {
+				this.showModal = false
+				
+				// 开始获取订阅
+				// 增加订阅模板消息的功能
+				let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
+				uni.requestSubscribeMessage({
+					tmplIds: [orderchangetmpId],
+					success(res){
+						let errMsg = res.errMsg
+						console.log(errMsg);
+						if(errMsg == 'requestSubscribeMessage:ok') {
+							console.log(res[orderchangetmpId]);
+							// 用户同意订阅
+							if(res[orderchangetmpId] == 'accept') {
+								console.log(`用户订阅消息成功`);
+							} else if(res[orderchangetmpId] == 'reject') {
+								console.log(`用户拒绝订阅消息`);
+							}
+						}
+						else {
+							console.log(`订阅消息失败`);
+						}
+					},
+					fail(err) {
+						console.log(`订阅消息失败`);
+						console.log(err.errMsg);
+					},
+					complete() {
+						console.log(`订阅消息接口完成`);
+						uni.navigateBack();
+					}
+				})
+			}
 			
 		},
 	}

@@ -106,6 +106,7 @@
 			
 			// 商品二维码
 			let qrcodeitem = {
+				id: 'qrcode',
 				cuIcon: 'qr_code',
 				color: 'blue',
 				badge: 0,
@@ -145,6 +146,7 @@
 			
 			// 重置密码
 			let resetpwditem = {
+				id: 'resetpwd',
 				cuIcon: 'settingsfill',
 				color: 'brown',
 				badge: 0,
@@ -154,14 +156,25 @@
 			
 			// 反馈
 			let feedbackitem = {
+				id: 'feedback',
 				cuIcon: 'markfill',
 				color: 'grey',
 				badge: 0,
 				name: this.i18n.me.panel.feedback
 			}
 			
+			// 订阅消息
+			let subscribeitem = {
+				id: 'subscribe',
+				cuIcon: 'timefill',
+				color: 'orange',
+				badge: 0,
+				name: '订阅消息'
+			}
+			
 			// 更多
 			let moreitem = {
+				id: 'more',
 				cuIcon: 'favorfill',
 				color: 'grey',
 				badge: 0,
@@ -171,11 +184,11 @@
 			let panelList = []
 			// 如果是超级管理员
 			if(this.user.type === 0) {
-				panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, moreitem]
+				panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, subscribeitem, moreitem]
 			}
 			// 如果是普通员工则有
 			else if(this.user.type === 1) {
-				panelList = [resetpwditem, moreitem]
+				panelList = [resetpwditem, subscribeitem, moreitem]
 			}
 			
 			this.panelList = panelList
@@ -234,6 +247,32 @@
 					});
 				}
 				else{
+					if(panelitem.id === 'subscribe') {
+						// 订阅消息
+						// 增加订阅模板消息的功能
+						let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
+						uni.requestSubscribeMessage({
+							tmplIds: [orderchangetmpId],
+							success(res){
+								let errMsg = res.errMsg
+								console.log(errMsg);
+								if(errMsg == 'requestSubscribeMessage:ok') {
+									console.log(res[orderchangetmpId]);
+									// 用户同意订阅
+									if(res[orderchangetmpId] == 'accept') {
+										console.log(`用户订阅消息成功`);
+									} else if(res[orderchangetmpId] == 'reject') {
+										console.log(`用户拒绝订阅消息`);
+									}
+								}
+								else {
+									console.log(`订阅消息失败`);
+								}
+								
+							}
+						})
+						return
+					}
 					uni.showToast({
 						title: this.i18n.base.needtowait,
 						icon: 'none'
