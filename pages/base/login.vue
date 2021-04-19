@@ -3,7 +3,8 @@
 		<!-- 返回按钮 -->
 		<cu-custom v-if="!ifforbidback" bgColor="transparent" isBack></cu-custom>
 		
-		<view class="content">
+		<view class="content flex flex-direction align-center">
+			
 			<!-- 头部logo -->
 			<view class="header">
 				<image class="bg-gray" :src="logoImage"></image>
@@ -30,6 +31,8 @@
 				:rotate="isRotate" 
 				@click.native="startLogin"
 			></wButton>
+			
+			<u-icon class="u-margin-top-80" name='weixin-fill' size="80" color="#1AB94E" @click="wxlogin"></u-icon>
 						
 		</view>
 		
@@ -130,7 +133,60 @@
 						icon: 'none'
 					});
 				})
-			}
+			},
+			
+			// 微信登录
+			wxlogin() {
+				
+				const _this = this
+				
+				uni.login({
+					provider: 'weixin',
+					success: function (res) {
+						console.log(res);
+						let code = res.code
+						// 获取到code之后调用接口获取openId
+						
+						// 注册
+						uniCloud.callFunction({
+						    name: 'user',
+						    data: {
+								type: 'wxlogin',
+								info: {
+									wxcode: code
+								}
+						    },
+						    success(res){
+						        if(res.result.code === 0) {
+						            // 2.8.0版本起调整为蛇形uni_id_token（调整后在一段时间内兼容驼峰uniIdToken）
+						            uni.setStorageSync('uni_id_token',res.result.token)
+						            uni.setStorageSync('uni_id_token_expired', res.result.tokenExpired)
+						            // 其他业务代码，如跳转到首页等
+									uni.showToast({
+										title: `欢迎你,${res.result.openid}`,
+										icon: 'none'
+									});
+						            
+						        } else {
+						            uni.showModal({
+						                content: res.result.message,
+						                showCancel: false
+						            })
+						        }
+						    },
+						    fail(){
+						        uni.showModal({
+						            content: '注册失败，请稍后再试',
+						            showCancel: false
+						        })
+						    }
+						})
+						
+					}
+				});
+			},
+			
+			
 			
 		},
 	}

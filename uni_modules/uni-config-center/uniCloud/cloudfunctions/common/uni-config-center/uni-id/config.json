@@ -1,0 +1,21 @@
+{
+    "passwordSecret": "passwordSecret-xhm_storagemanager",
+    "tokenSecret": "tokenSecret-xhm_storagemanager",
+    "tokenExpiresIn": 7200,
+    "tokenExpiresThreshold": 600,
+    "bindTokenToDevice": false, 
+    "passwordErrorLimit": 6,
+    "passwordErrorRetryTime": 3600,
+    "autoSetInviteCode": false,
+    "forceInviteCode": false,
+	"removePermissionAndRoleFromToken": false,
+    "mp-weixin": {
+        "tokenExpiresIn": 259200,
+        "oauth": {
+            "weixin": {
+                "appid": "wx5d219092292308d7",
+                "appsecret": "b9b84c4c83aa9a3219c610d83f0d9cb1"
+            }
+        }
+    }
+}
