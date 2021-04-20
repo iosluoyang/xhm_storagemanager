@@ -20,12 +20,24 @@ exports.main = async (event, context) => {
 		context: context
 	})
 	
+	let token = event.uniIdToken
 	// 根据不同的type区分不同的业务
 	let type = event.type
 	let info = event.info
 	
+	// 用户注册
+	if(type == 'register') {
+		const res = await uniIDIns.register({
+			username: info.account,
+			password: info.password
+		})
+		console.log(`user云函数中用户注册返回的数据为`);
+		console.log(res);
+		return res
+	}
+	
 	// 用户登录
-	if(type == 'login') {
+	else if(type == 'login') {
 		const res = await uniIDIns.login({
 			username: info.account,
 			password: info.password
@@ -34,6 +46,55 @@ exports.main = async (event, context) => {
 		console.log(res);
 		return res
 	}
+	
+	// 用户登出
+	else if(type == 'logout') {
+		const res = await uniIDIns.logout(token)
+		console.log(`user云函数中用户退出信息为`);
+		console.log(res);
+		return res
+	}
+	
+	// 获取微信openId
+	else if(type == 'getwxopenid') {
+		const res = await uniIDIns.code2SessionWeixin({
+			code: info.wxcode
+		})
+		console.log(`user云函数中获取到的微信openid信息为`);
+		console.log(res);
+		return res
+	}
+	
+	// 绑定微信
+	else if(type == 'bindwx') {
+		
+		// 用户token
+		let wxcode = info.wxcode
+		let uid = info.uid
+		const res = await uniIDIns.bindWeixin({
+			uid: uid,
+			code: wxcode
+		})
+		console.log(`user云函数中绑定微信的操作信息为`);
+		console.log(res);
+		return res
+		
+	}
+	
+	// 解绑微信
+	else if(type == 'unbindwx') {
+		
+		// 用户uid
+		let uid = info.uid
+		const res = await uniIDIns.unbindWeixin({
+			uid: uid
+		})
+		console.log(`user云函数中解绑微信的操作信息为`);
+		console.log(res);
+		return res
+		
+	}
+	
 	// 微信登录(未注册会自动注册)
 	else if(type == 'wxlogin') {
 		

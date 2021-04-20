@@ -4,6 +4,7 @@ import userapi from "@/api/user.js"
 
 const state = {
 	accessToken: uni.getStorageSync('accessToken'),
+	accessTokenExpiredDate: uni.getStorageSync('accessTokenExpiredDate'),
 	refreshToken: uni.getStorageSync('refreshToken'),
 	user: uni.getStorageSync('user'),
 }
@@ -13,10 +14,20 @@ const mutations = {
 		state.accessToken = accessToken
 		//如果accessToken存在则存储到本地 如果不存在则移除本地缓存
 		if(accessToken){
-			uni.setStorageSync('accessToken',accessToken)
+			uni.setStorageSync('uni_id_token',accessToken)
 		}
 		else{
-			uni.removeStorageSync('accessToken')
+			uni.removeStorageSync('uni_id_token')
+		}
+	},
+	SET_ACCESSTOKENEXPIREDDATE: (state, accessTokenExpiredDate) => {
+		state.accessTokenExpiredDate = accessTokenExpiredDate
+		//如果accessTokenExpiredDate存在则存储到本地 如果不存在则移除本地缓存
+		if(accessTokenExpiredDate){
+			uni.setStorageSync('uni_id_token_expired',accessTokenExpiredDate)
+		}
+		else{
+			uni.removeStorageSync('uni_id_token_expired')
 		}
 	},
 	SET_REFRESHTOKEN: (state, refreshToken) => {
@@ -39,10 +50,40 @@ const mutations = {
 			uni.removeStorageSync('user')
 		}
 	},
-	
 }
 
 const actions = {
+	
+	// register
+	register({ commit }, data) {
+		return new Promise((resolve, reject) => {
+			// 调用云函数注册接口
+			uniCloud.callFunction({
+				name: 'user',
+				data: {
+					type: 'register',
+					info: {
+						account: data.account,
+						password: data.password
+					}
+				},
+				success(res) {
+					// 注册成功
+					if(res.result.code == 0) {
+						resolve(res.result)
+					}
+					// 注册出错
+					else {
+						reject(res.result)
+					}
+				},
+				fail(err) {
+					console.log(err);
+					reject(err)
+				}
+			})
+		})
+	},
 	
 	// login
 	login({ commit },data){
@@ -71,12 +112,103 @@ const actions = {
 					}
 				},
 				success(res) {
-					// 登录成功之后
-					console.log(res.result.data)
-					// 	commit('SET_ACCESSTOKEN',data.accessToken)
-					// 	commit('SET_REFRESHTOKEN',data.refreshToken)
-					// 	commit('SET_USER',data.user)
-					resolve(res.result.data)
+					// 登录成功
+					if(res.result.code == 0) {
+						let token = res.result.token
+						let tokenExpiredDate = res.result.tokenExpired
+						let userInfo = res.result.userInfo
+						commit('SET_ACCESSTOKEN',token)
+						commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
+						commit('SET_USER',{uid: res.result.uid})
+						resolve(res.result)
+					}
+					// 登录出错
+					else {
+						reject(res.result)
+					}
+				},
+				fail(err) {
+					console.log(err);
+					reject(err)
+				}
+			})
+		})
+	},
+	
+	// wxlogin
+	wxlogin({ commit },data){
+		return new Promise((resolve, reject) => {
+			
+			uni.login({
+				provider:'weixin',
+				success(res) {
+					let code = res.code
+					
+					// 调用云函数微信登录接口
+					uniCloud.callFunction({
+						name: 'user',
+						data: {
+							type: 'wxlogin',
+							info: {
+								wxcode: code,
+							}
+						},
+						success(res) {
+							// 登录成功
+							if(res.result.code == 0) {
+								let token = res.result.token
+								let tokenExpiredDate = res.result.tokenExpired
+								let userInfo = res.result.userInfo
+								commit('SET_ACCESSTOKEN',token)
+								commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
+								commit('SET_USER',{uid: res.result.uid})
+								resolve(res.result)
+							}
+							// 登录出错
+							else {
+								reject(res.result)
+							}
+						},
+						fail(err) {
+							console.log(err);
+							reject(err)
+						}
+					})
+					
+				}
+			})
+			
+		})
+	},
+	
+	// bindwx
+	bindwx({ commit }, data) {
+		return new Promise((resolve, reject) => {
+			// 调用云函数绑定微信接口
+			uniCloud.callFunction({
+				name: 'user',
+				data: {
+					type: 'register',
+					info: {
+						account: data.account,
+						password: data.password
+					}
+				},
+				success(res) {
+					// 注册成功之后
+					// 注册成功 返回用户信息相关的东西
+					if(res.result.code == 0) {
+						let token = res.result.token
+						let tokenExpiredDate = res.result.tokenExpired
+						let userInfo = res.result.userInfo
+						commit('SET_ACCESSTOKEN',token)
+						commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
+						resolve(res.result)
+					}
+					// 注册出错
+					else {
+						reject(res.result)
+					}
 				},
 				fail(err) {
 					console.log(err);
@@ -87,17 +219,42 @@ const actions = {
 	},
 	
 	// logout
-	logout({ commit }){
+	logout({state, commit }){
 		return new Promise((resolve, reject) => {
-			userapi.logout().then(() => {
+			// userapi.logout().then(() => {
 				
-				// 登出成功  清除本地用户信息数据
-				commit('SET_ACCESSTOKEN',null)
-				commit('SET_REFRESHTOKEN',null)
-				commit('SET_USER',null)
+			// 	// 登出成功  清除本地用户信息数据
+			// 	commit('SET_ACCESSTOKEN',null)
+			// 	commit('SET_REFRESHTOKEN',null)
+			// 	commit('SET_USER',null)
 				
-				resolve()
-			}).catch(error => {reject(error)})
+			// 	resolve()
+			// }).catch(error => {reject(error)})
+			
+			
+			// 调用云函数登出
+			uniCloud.callFunction({
+				name: 'user',
+				data: {
+					type: 'logout',
+					info: {}
+				},
+				success(res) {
+					// 登出成功
+					if(res.result.code == 0) {
+							// 登出成功  清除本地用户信息数据
+							commit('SET_ACCESSTOKEN',null)
+							commit('SET_REFRESHTOKEN',null)
+							commit('SET_USER',null)
+							resolve()
+					}
+					// 登出失败
+					else {
+						reject(res.result)
+					}
+				}
+			})
+			
 		})
 	},
 	
@@ -154,7 +311,6 @@ const actions = {
 		})
 		
 	},
-	
 	
 }
 

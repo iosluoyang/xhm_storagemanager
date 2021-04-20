@@ -56,7 +56,7 @@
 			_this= this
 			
 			// 根据页面参数获取是否可以后退的标识
-			let forbidback = option?.forbidback
+			let forbidback = option ? option.forbidback : null
 			if(forbidback && forbidback === 'true') {
 				this.ifforbidback = true
 			}
@@ -95,8 +95,171 @@
 				}
 				_this.$store.dispatch('user/login', data).then(res => {
 					console.log(`登录成功`);
-					console.log(res);
+					let userInfo = res.userInfo
+					console.log(JSON.stringify(userInfo));
+					
+					// 如果非微信小程序平台则直接判定为登录成功
+					// #ifndef MP-WEIXIN
+					uni.showToast({
+						title: '登录成功',
+						icon: 'none'
+					});
+					// #endif
+					
+					// 如果是在微信小程序环境则判断是否有绑定微信
+					// #ifdef MP-WEIXIN
+					
+					// 获取当前微信账号的openid
+					uni.login({
+						provider: 'weixin',
+						success(res) {
+							let code = res.code
+							// 调用云函数获取当前微信的openid
+							uniCloud.callFunction({
+								name: 'user',
+								data: {
+									type: 'getwxopenid',
+									info: {
+										wxcode: code
+									}
+								},
+								success(res) {
+									// 获取成功
+									if(res.result.code == 0) {
+										let openid = res.result.openid
+										// 如果当前userInfo存在有mp-weixin则代表已经绑定过了 此时要进行判断
+										if(userInfo.wx_openid && userInfo.wx_openid['mp-weixin']) {
+											let bindwxopenid = userInfo.wx_openid['mp-weixin']
+											// 判断是否相同
+											if(bindwxopenid == openid) {
+												// 当前登录账号的openid相同 说明是同一个微信进行登录
+												uni.showToast({
+													title: '当前账号与当前微信为同一账号,登录成功',
+													icon: 'none'
+												});
+												
+											}
+											// 当前登录微信的openid不同 说明该账号之前绑定过其他的微信 此时提示用户是否换绑微信
+											else {
+												uni.showModal({
+													content: '当前账号已经绑定过微信,继续操作将解绑原微信,绑定当前微信账号',
+													showCancel: true,
+													cancelText: _this.i18n.base.cancel,
+													confirmText: _this.i18n.base.confirm,
+													success: res => {
+														// 确认换绑
+														if(res.confirm) {
+															uniCloud.callFunction({
+																name: 'user',
+																data: {
+																	type: 'unbindwx',
+																	info: {
+																		uid: _this.$store.getters.user.uid
+																	}
+																},
+																success(res) {
+																	// 解绑成功
+																	if(res.result.code == 0) {
+																		// 开始绑定微信
+																		_this.bindwx()
+																	}
+																	// 解绑失败
+																	else {
+																		uni.showToast({
+																			title: res.message,
+																			icon: 'none'
+																		});
+																	}
+																}
+															})
+														}
+														// 暂时不换绑
+														else {
+															uni.showToast({
+																title: '暂不绑定当前微信,当前账号已经登录成功',
+																icon: 'none'
+															});
+														}
+													}
+												});
+											}
+										}
+										// 当前账号不存在openid 说明未绑定过微信
+										else {
+											uni.showModal({
+												content: '当前登录账号未绑定该微信,是否进行绑定?绑定后可直接通过微信登录无需输入账号密码,暂不绑定可能导致之后的消息通知无法通知到您',
+												showCancel: true,
+												cancelText: _this.i18n.base.cancel,
+												confirmText: _this.i18n.base.confirm,
+												success: res => {
+													// 确定绑定
+													if(res.confirm) {
+														// 开始绑定微信
+														_this.bindwx()
+													}
+													// 暂不绑定
+													else {
+														uni.showToast({
+															title: '暂不绑定微信,当前账号已经登录成功',
+															icon: 'none'
+														});
+													}
+												}
+											});
+										}
+									}
+									// 获取失败(此时账号已经登录)
+									else {
+										uni.showToast({
+											title: res.result,
+											icon: 'none'
+										});
+									}
+								}
+							})
+						}
+					})
+
+					// #endif
+					
+					
 				}).catch(err => {
+					// 用户不存在
+					if(err.code == 10002) {
+						uni.showModal({
+							title: '提示',
+							content: '您输入的账号用户不存在,是否进行注册?',
+							showCancel: true,
+							cancelText: _this.i18n.base.cancel,
+							confirmText: _this.i18n.base.confirm,
+							success: res => {
+								if(res.confirm) {
+									// 进行注册
+									_this.$store.dispatch('user/register', data).then(res => {
+										// 注册成功
+										uni.showToast({
+											title: '注册成功,正在为您自动登录',
+											icon: 'none'
+										});
+										// 进行自动登录
+										setTimeout(function() {_this.confirm()}, 1500);
+										
+									}).catch(err => {
+										uni.showModal({
+											content: err.message,
+											showCancel: false,
+										});
+									})
+								}
+							}
+						});
+					}
+					else {
+						uni.showModal({
+							content: err.message,
+							showCancel: false
+						});
+					}
 					console.log(err);
 				}).finally(() => {
 					_this.isLoading = false
@@ -104,52 +267,61 @@
 				
 		    },
 			
+			// 绑定微信
+			bindwx() {
+				
+				// 开始绑定微信
+				uni.login({
+					provider: 'weixin',
+					success(res) {
+						let code = res.code
+						// 开始绑定
+						uniCloud.callFunction({
+							name: 'user',
+							data: {
+								type: 'bindwx',
+								info: {
+									uid: _this.$store.getters.user.uid,
+									wxcode: code
+								}
+							},
+							success(res) {
+								if(res.result.code == 0) {
+									// 绑定成功
+									uni.showToast({
+										title: '微信绑定成功,该账号已经登录',
+										icon: 'none'
+									});
+								}
+								// 绑定失败
+								else {
+									uni.showToast({
+										title: `微信绑定失败:${res.result.message}`,
+										icon: 'none'
+									});
+								}
+							}
+						})
+					}
+				})
+				
+			},
+			
 			//微信登录
 			wxlogin() {
 				
-				uni.login({
-					provider: 'weixin',
-					success: function (res) {
-						
-						let code = res.code
-						// 获取到code之后进行登录(未注册会自动进行注册)
-						
-						uniCloud.callFunction({
-						    name: 'user',
-						    data: {
-								type: 'wxlogin',
-								info: {
-									wxcode: code
-								}
-						    },
-						    success(res){
-						        if(res.result.code === 0) {
-						            // 2.8.0版本起调整为蛇形uni_id_token（调整后在一段时间内兼容驼峰uniIdToken）
-						            uni.setStorageSync('uni_id_token',res.result.token)
-						            uni.setStorageSync('uni_id_token_expired', res.result.tokenExpired)
-						            // 其他业务代码，如跳转到首页等
-									uni.showToast({
-										title: `欢迎你,${res.result.openid}`,
-										icon: 'none'
-									});
-						            
-						        } else {
-						            uni.showModal({
-						                content: res.result.message,
-						                showCancel: false
-						            })
-						        }
-						    },
-						    fail(){
-						        uni.showModal({
-						            content: `${i18n.tip.error}`,
-						            showCancel: false
-						        })
-						    }
-						})
-						
-					}
-				});
+				_this.$store.dispatch('user/wxlogin').then(res => {
+					// 登录成功
+					uni.showToast({
+						title: '微信登录成功',
+						icon: 'none'
+					});
+				}).catch(err => {
+					uni.showToast({
+						title: err.msg,
+						icon: 'none'
+					});
+				})
 				
 			},
 		}
