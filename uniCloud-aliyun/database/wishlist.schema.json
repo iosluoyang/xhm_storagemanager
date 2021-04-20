@@ -13,49 +13,49 @@
 			"description": "ID，系统自动生成"
 		},
 		"productTitle": {
-			"description":"商品标题"
+			"description": "商品标题"
 		},
 		"sourceLink": {
-			"description":"原网址链接"
+			"description": "原网址链接"
 		},
 		"sourcePrice": {
-			"description":"原商品价格"
+			"description": "原商品价格"
 		},
 		"sourceMoneyType": {
-			"description":"原商品价格类型"
+			"description": "原商品价格类型"
 		},
 		"targetPrice": {
-			"description":"目标价格"
+			"description": "目标价格"
 		},
 		"targetMoneyType": {
-			"description":"目标价格类型"
+			"description": "目标价格类型"
 		},
 		"targetAmount": {
-			"description":"目标数量"
+			"description": "目标数量"
 		},
 		"hurryLevel": {
-			"description":"紧急程度 1 2 3 4 5"
+			"description": "紧急程度 1 2 3 4 5"
 		},
 		"remark": {
-			"description":"备注"
+			"description": "备注"
 		},
 		"imgs": {
-			"description":"图片字符串 逗号拼接"
+			"description": "图片字符串 逗号拼接"
 		},
 		"user": {
-			"description":"创建者user对象"
+			"description": "创建者user对象"
 		},
 		"achieveFlag": {
-			"description":"心愿单完成标识 -1全部 0进行中 1待确认 2待下单 3已完成 4已关闭"
+			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭"
 		},
 		"previewCount": {
-			"description":"浏览次数"
+			"description": "浏览次数"
 		},
 		"commentCount": {
-			"description":"评论数量"
+			"description": "评论数量"
 		},
 		"creatTime": {
-			"description":"创建时间"
+			"description": "创建时间"
 		}
 	}
 }

@@ -16,16 +16,26 @@ exports.main = async (event, context) => {
 	//获取集合对象
 	const collection = db.collection('uni-id-users')
 	
+	const uniIDIns = uniID.createInstance({ // 创建uni-id实例，其上方法同uniID
+		context: context
+	})
+	
 	// 根据不同的type区分不同的业务
 	let type = event.type
 	let info = event.info
 	
-	// register 注册用户
-	if(type == 'wxlogin') {
-		
-		const uniIDIns = uniID.createInstance({ // 创建uni-id实例，其上方法同uniID
-			context: context
+	// 用户登录
+	if(type == 'login') {
+		let res = uniIDIns.login({
+			userName: info.account,
+			password: info.password
 		})
+		console.log(`user云函数中获取到的用户信息为`);
+		console.log(res);
+		return res
+	}
+	// 微信登录(未注册会自动注册)
+	else if(type == 'wxlogin') {
 		
 		// 获取微信用户的openId
 		const res = uniIDIns.loginByWeixin({

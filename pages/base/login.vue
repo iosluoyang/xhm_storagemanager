@@ -1,90 +1,73 @@
 <template>
-	<view class="login">
+	<view class="content loginview">
+		
 		<!-- 返回按钮 -->
 		<cu-custom v-if="!ifforbidback" bgColor="transparent" isBack></cu-custom>
 		
-		<view class="content flex flex-direction align-center">
+		<view class="maincontent flex flex-direction align-center padding-xl">
 			
 			<!-- 头部logo -->
 			<view class="header">
-				<image class="bg-gray" :src="logoImage"></image>
+				<image class="img round" mode="aspectFit" src="/static/publicicon/logo.png"></image>
 			</view>
-			<!-- 主体表单 -->
-			<view class="main">
-				<wInput
-					v-model="account"
-					key="account"
-					type="text"
-					maxlength="11"
-					:placeholder="i18n.login.account"
-				></wInput>
-				<wInput
-					v-model="password"
-					key="password"
-					type="password"
-					maxlength="11"
-					:placeholder="i18n.login.password"
-				></wInput>
-			</view>
-			<wButton 
-				:text="i18n.login.loginstr"
-				:rotate="isRotate" 
-				@click.native="startLogin"
-			></wButton>
 			
-			<u-icon class="u-margin-top-80" name='weixin-fill' size="80" color="#1AB94E" @click="wxlogin"></u-icon>
-						
+			<!-- 输入内容区域 -->
+			<view class="inputview margin-top">
+				<uni-easyinput v-model="account" :placeholder="i18n.login.account" trim prefixIcon="person-filled" />
+				<uni-easyinput class="passwordinput" type="password" v-model="password" :placeholder="i18n.login.password" trim prefixIcon="locked-filled" />
+			</view>
+			
+			<!-- 登录按钮 -->
+			<button class="loginbtn cu-btn round lg margin-top-xl bg-gradual-pink" :disabled="isLoading" :loading="isLoading" @click.native="confirm">
+				{{ `${i18n.login.loginstr}/${i18n.login.registerstr}` }}
+			</button>
+			
+			<!-- 其他登录 -->
+			<view class="other_loginview width100 margin-top-xl flex align-center justify-center padding-top">
+				
+				<!-- #ifdef MP -->
+				<!-- 微信登录按钮 -->
+				<u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon>
+				<!-- #endif -->
+				
+			</view>
+			
 		</view>
-		
 	</view>
 </template>
 
 <script>
-	
-	import wInput from '@/components/login/watch-input.vue'
-	import wButton from '@/components/login/watch-button.vue'
-	import md5 from 'js-md5'
-	
+	let _this;
 	
 	export default {
-		
-		components: {
-			wInput,
-			wButton,
-		},
-		
 		data() {
 			return {
 				ifforbidback: false, // 是否禁止返回 默认为否 代表有导航栏 可以返回
-				logoImage: '/static/publicicon/logo.png',
-				account:'', //账号
+				account:'', //用户/电话
 				password:'', //密码
-				isRotate: false, // 是否正在加载中
+				isLoading: false, //是否正在加载
+				isFocus: false // 是否聚焦
 			};
 		},
-		
-		onLoad(option) {
+		components:{
+			
+		},
+		mounted(option) {
+			_this= this
+			
 			// 根据页面参数获取是否可以后退的标识
-			let forbidback = option.forbidback
+			let forbidback = option?.forbidback
 			if(forbidback && forbidback === 'true') {
 				this.ifforbidback = true
 			}
 		},
-		
 		methods: {
 			
 			// 开始登录操作
-			startLogin() {
+		    confirm(){
 				
-				const _this = this
-				
-				//登录
-				if(_this.isRotate){
-					//判断是否加载中，避免重复点击请求
-					return false;
-				}
-				
-				if (_this.account.length == "") {
+				// 校验规则
+				if (_this.account == "") {
 				     uni.showToast({
 				        icon: 'none',
 						position: 'bottom',
@@ -92,7 +75,7 @@
 				    });
 				    return;
 				}
-				if (_this.password.length < 6) {
+				else if (_this.password == '') {
 				    uni.showToast({
 				        icon: 'none',
 						position: 'bottom',
@@ -101,53 +84,36 @@
 				    return;
 				}
 				
-				_this.isRotate=true // 按钮开始旋转
+				// 开始登录
+				
+				_this.isLoading = true
 				
 				// 开始登录操作
 				let data = {
 					account: _this.account,
-					pwd: md5(_this.password)
+					password: _this.password
 				}
-				_this.$store.dispatch('user/login',data).then(response => {
-					
-					// 登录成功
-					_this.isRotate = false
-					
-					uni.showToast({
-						title: _this.i18n.tip.loginsuccess,
-						icon: 'none',
-						duration: 1500
-					});
-					
-					setTimeout(function() {
-						uni.reLaunch({
-							url: '/pages/home/index'
-						})
-					}, 1500);
-					
-				}).catch(error => {
-					// 登录失败
-					_this.isRotate = false
-					uni.showToast({
-						title: _this.i18n.error.loginerror,
-						icon: 'none'
-					});
+				_this.$store.dispatch('user/login', data).then(res => {
+					console.log(`登录成功`);
+					console.log(res);
+				}).catch(err => {
+					console.log(err);
+				}).finally(() => {
+					_this.isLoading = false
 				})
-			},
-			
-			// 微信登录
-			wxlogin() {
 				
-				const _this = this
+		    },
+			
+			//微信登录
+			wxlogin() {
 				
 				uni.login({
 					provider: 'weixin',
 					success: function (res) {
-						console.log(res);
-						let code = res.code
-						// 获取到code之后调用接口获取openId
 						
-						// 注册
+						let code = res.code
+						// 获取到code之后进行登录(未注册会自动进行注册)
+						
 						uniCloud.callFunction({
 						    name: 'user',
 						    data: {
@@ -176,7 +142,7 @@
 						    },
 						    fail(){
 						        uni.showModal({
-						            content: '注册失败，请稍后再试',
+						            content: `${i18n.tip.error}`,
 						            showCancel: false
 						        })
 						    }
@@ -184,95 +150,35 @@
 						
 					}
 				});
+				
 			},
-			
-			
-			
-		},
+		}
 	}
 </script>
 
-<style scoped>
-	.content {
-		display: flex;
-		flex-direction: column;
-		justify-content:center;
-		/* margin-top: 128upx; */
-	}
-	
-	/* 头部 logo */
-	.header {
-		width:161upx;
-		height:161upx;
-		box-shadow:0upx 0upx 60upx 0upx rgba(0,0,0,0.1);
-		border-radius:50%;
-		background-color: #000000; 
-		margin-top: 128upx;
-		margin-bottom: 72upx;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	.header image{
-		width:161upx;
-		height:161upx;
-		border-radius:50%;
-	}
-	
-	/* 主体 */
-	.main {
-		display: flex;
-		flex-direction: column;
-		padding-left: 70upx;
-		padding-right: 70upx;
-	}
-	.tips {
-		color: #999999;
-		font-size: 28upx;
-		margin-top: 64upx;
-		margin-left: 48upx;
-	}
-	
-	/* 其他登录方式 */
-	.other_login{
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-		margin-top: 256upx;
-		text-align: center;
-	}
-	.login_icon{
-		border: none;
-		font-size: 64upx;
-		margin: 0 64upx 0 64upx;
-		color: rgba(0,0,0,0.7)
-	}
-	.wechat_color{
-		color: #83DC42;
-	}
-	.weibo_color{
-		color: #F9221D;
-	}
-	.github_color{
-		color: #24292E;
-	}
-	
-	/* 底部 */
-	.footer{
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-		font-size: 28upx;
-		margin-top: 64upx;
-		color: rgba(0,0,0,0.7);
-		text-align: center;
-		height: 40upx;
-		line-height: 40upx;
-	}
-	.footer text{
-		font-size: 24upx;
-		margin-left: 15upx;
-		margin-right: 15upx;
+<style lang="scss" scoped>
+
+	.content{
+		.header{
+			.img{
+				width: 160rpx;
+				height: 160rpx;
+			}
+		}
+		
+		.inputview{
+			width: 80%;
+			
+			.passwordinput{
+				/deep/.uni-easyinput{
+					margin-top: 20px;
+				}
+			}
+			
+		}
+		
+		.loginbtn{
+			width: 60%;
+		}
 	}
 </style>

@@ -159,6 +159,7 @@ const zh = {
 		account: "账号",
 		password: "密码",
 		loginstr: "登录",
+		registerstr: "注册"
 	},
 	
 	// 首页

@@ -190,8 +190,6 @@
 	var _this
 	import goodspectable from '@/components/base/goodspectable.vue'
 	import goodstypepicker from '@/components/base/goodstypepicker.vue'
-	import uniCollapse from '@/components/uni-collapse/uni-collapse.vue'
-	import uniCollapseItem from '@/components/uni-collapse-item/uni-collapse-item.vue'
 	import pTable from '@/components/portrait-table/portrait-table.vue'
 	
 	export default {
@@ -199,8 +197,6 @@
 		components: {
 			goodspectable,
 			goodstypepicker,
-			uniCollapse,
-			uniCollapseItem,
 			pTable,
 		},
 		

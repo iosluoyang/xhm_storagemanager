@@ -159,6 +159,7 @@ const th = {
 		account: "บัญชีผู้ใช้",
 		password: "รหัส",
 		loginstr: "เข้าสู่ระบบ",
+		registerstr: "ลงทะเบียน"
 	},
 	
 	// 首页

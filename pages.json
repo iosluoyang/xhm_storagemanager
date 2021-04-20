@@ -10,8 +10,8 @@
             "path" : "pages/base/login",
             "style" : {
             	"navigationBarTitleText":"登录"
-            }
-        }
+			}
+		}
 		,{
 		    "path" : "pages/goodstype/index",
 		    "style" : {

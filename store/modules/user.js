@@ -47,18 +47,41 @@ const actions = {
 	// login
 	login({ commit },data){
 		return new Promise((resolve, reject) => {
-			userapi.login(data).then(response => {
+			// userapi.login(data).then(response => {
 				
-				//将获取到的用户数据存储到本地
-				const { data } = response
-				commit('SET_ACCESSTOKEN',data.accessToken)
-				commit('SET_REFRESHTOKEN',data.refreshToken)
-				commit('SET_USER',data.user)
+			// 	//将获取到的用户数据存储到本地
+			// 	const { data } = response
+			// 	commit('SET_ACCESSTOKEN',data.accessToken)
+			// 	commit('SET_REFRESHTOKEN',data.refreshToken)
+			// 	commit('SET_USER',data.user)
 				
-				resolve()
+			// 	resolve()
 				
-			}).catch(error => {
-				reject(error)
+			// }).catch(error => {
+			// 	reject(error)
+			// })
+			// 调用云函数登录接口
+			uniCloud.callFunction({
+				name: 'user',
+				data: {
+					type: 'login',
+					info: {
+						account: data.account,
+						password: data.password
+					}
+				},
+				success(res) {
+					// 登录成功之后
+					console.log(res.result.data)
+					// 	commit('SET_ACCESSTOKEN',data.accessToken)
+					// 	commit('SET_REFRESHTOKEN',data.refreshToken)
+					// 	commit('SET_USER',data.user)
+					relove(res.result.data)
+				},
+				fail(err) {
+					console.log(err);
+					reject(err)
+				}
 			})
 		})
 	},

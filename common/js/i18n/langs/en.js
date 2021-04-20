@@ -162,6 +162,7 @@ const en = {
 		account: "Account",
 		password: "Password",
 		loginstr: "Login",
+		registerstr: "Register"
 	},
 	
 	// 首页
