@@ -76,7 +76,7 @@ const actions = {
 					// 	commit('SET_ACCESSTOKEN',data.accessToken)
 					// 	commit('SET_REFRESHTOKEN',data.refreshToken)
 					// 	commit('SET_USER',data.user)
-					relove(res.result.data)
+					resolve(res.result.data)
 				},
 				fail(err) {
 					console.log(err);

@@ -26,8 +26,8 @@ exports.main = async (event, context) => {
 	
 	// 用户登录
 	if(type == 'login') {
-		let res = uniIDIns.login({
-			userName: info.account,
+		const res = await uniIDIns.login({
+			username: info.account,
 			password: info.password
 		})
 		console.log(`user云函数中获取到的用户信息为`);
@@ -38,7 +38,7 @@ exports.main = async (event, context) => {
 	else if(type == 'wxlogin') {
 		
 		// 获取微信用户的openId
-		const res = uniIDIns.loginByWeixin({
+		const res = await uniIDIns.loginByWeixin({
 			code: info.wxcode
 		})
 		
