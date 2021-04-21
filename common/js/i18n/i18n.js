@@ -45,18 +45,14 @@ if(localelang) {
 else{
 	// 检测用户当前语言环境
 	try {
-		let language = uni.getSystemInfoSync().language;  // 获取的为形如 zh-CN 或者en-US之类的标识 此处截取-前面的标识
-		if(language && language.split('-').length > 0) {
-			let shortlanguage = language.split('-')[0]
-			language = shortlanguage
-		}
+		let language = uni.getSystemInfoSync().language;  // 获取的为形如 zh_CN 或者en_US之类的标识 此处截取_前面的标识
+		console.log(`系统的语言为:${language}`)
 		
 		// 判断当前语言是否在语言包中
-		if(Object.keys(messages).find((lang) => {return lang ===language})) {
-			// 当前语言环境在语言包中  则使用当前语言环境
-			locale = language
+		let selectlanguage = Object.keys(messages).find((lang) => {return (language.indexOf(lang) > -1)})
+		if(selectlanguage) {
+			locale = selectlanguage
 		}
-		// 当前语言环境不在语言包中  使用默认的英文环境
 		
 	} catch (e) {
 		console.log(`获取用户语言环境失败,${JSON.stringify(e)}`)

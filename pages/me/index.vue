@@ -14,7 +14,7 @@
 				
 				<!-- 头像 -->
 				<template class="avatarview">
-					<view v-if="user && user.avatar" class="cu-avatar xl round margin-right" :style="{backgroundImage: 'url('+imgUrl+user.avatar+')'}"></view>
+					<view v-if="user && user.avatar" class="cu-avatar xl round margin-right" :style="{backgroundImage: 'url('+user.avatar+')'}"></view>
 					<view v-else class="cu-avatar xl round margin-right"><text class="cuIcon-people"></text></view>
 				</template>
 				
@@ -26,7 +26,7 @@
 						
 						<!-- 昵称 -->
 						<view class="username text-white text-bold text-xl margin-right-sm">
-							{{ iflogin ? user && user.userName ? user.userName : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
+							{{ iflogin ? user && user.username ? user.username : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
 						</view>
 						<!-- 标签 -->
 						<view v-if="iflogin" class="usertag">

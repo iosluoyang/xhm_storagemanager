@@ -95,11 +95,10 @@
 				}
 				_this.$store.dispatch('user/login', data).then(res => {
 					console.log(`登录成功`);
-					let userInfo = res.userInfo
-					console.log(JSON.stringify(userInfo));
 					
 					// 如果非微信小程序平台则直接判定为登录成功
 					// #ifndef MP-WEIXIN
+					uni.navigateBack();
 					uni.showToast({
 						title: '登录成功',
 						icon: 'none'
@@ -108,6 +107,9 @@
 					
 					// 如果是在微信小程序环境则判断是否有绑定微信
 					// #ifdef MP-WEIXIN
+					let userInfo = res.userInfo
+					let wxopenIdObj = userInfo['wx_openid']
+					console.log(`当前账号的微信openIdObj为${wxopenIdObj}`);
 					
 					// 获取当前微信账号的openid
 					uni.login({
@@ -128,16 +130,16 @@
 									if(res.result.code == 0) {
 										let openid = res.result.openid
 										// 如果当前userInfo存在有mp-weixin则代表已经绑定过了 此时要进行判断
-										if(userInfo.wx_openid && userInfo.wx_openid['mp-weixin']) {
-											let bindwxopenid = userInfo.wx_openid['mp-weixin']
+										if(wxopenIdObj && wxopenIdObj['mp-weixin']) {
+											let bindwxopenid = wxopenIdObj['mp-weixin']
 											// 判断是否相同
 											if(bindwxopenid == openid) {
+												uni.navigateBack();
 												// 当前登录账号的openid相同 说明是同一个微信进行登录
 												uni.showToast({
-													title: '当前账号与当前微信为同一账号,登录成功',
+													title: '登录成功',
 													icon: 'none'
 												});
-												
 											}
 											// 当前登录微信的openid不同 说明该账号之前绑定过其他的微信 此时提示用户是否换绑微信
 											else {
@@ -152,19 +154,17 @@
 															uniCloud.callFunction({
 																name: 'user',
 																data: {
-																	type: 'unbindwx',
-																	info: {
-																		uid: _this.$store.getters.user.uid
-																	}
+																	type: 'unbindwx'
 																},
 																success(res) {
 																	// 解绑成功
 																	if(res.result.code == 0) {
-																		// 开始绑定微信
+																		// 开始绑定当前微信
 																		_this.bindwx()
 																	}
 																	// 解绑失败
 																	else {
+																		uni.navigateBack();
 																		uni.showToast({
 																			title: res.message,
 																			icon: 'none'
@@ -175,6 +175,7 @@
 														}
 														// 暂时不换绑
 														else {
+															uni.navigateBack();
 															uni.showToast({
 																title: '暂不绑定当前微信,当前账号已经登录成功',
 																icon: 'none'
@@ -187,7 +188,7 @@
 										// 当前账号不存在openid 说明未绑定过微信
 										else {
 											uni.showModal({
-												content: '当前登录账号未绑定该微信,是否进行绑定?绑定后可直接通过微信登录无需输入账号密码,暂不绑定可能导致之后的消息通知无法通知到您',
+												content: '当前登录账号未绑定该微信,是否进行绑定?绑定后可直接通过该微信登录无需再次输入账号密码',
 												showCancel: true,
 												cancelText: _this.i18n.base.cancel,
 												confirmText: _this.i18n.base.confirm,
@@ -199,8 +200,9 @@
 													}
 													// 暂不绑定
 													else {
+														uni.navigateBack();
 														uni.showToast({
-															title: '暂不绑定微信,当前账号已经登录成功',
+															title: '账号登录成功',
 															icon: 'none'
 														});
 													}
@@ -228,7 +230,7 @@
 					if(err.code == 10002) {
 						uni.showModal({
 							title: '提示',
-							content: '您输入的账号用户不存在,是否进行注册?',
+							content: '该账号不存在,是否进行注册?',
 							showCancel: true,
 							cancelText: _this.i18n.base.cancel,
 							confirmText: _this.i18n.base.confirm,
@@ -281,22 +283,24 @@
 							data: {
 								type: 'bindwx',
 								info: {
-									uid: _this.$store.getters.user.uid,
-									wxcode: code
+									wxcode: code,
+									uid: _this.$store.getters.user.uid
 								}
 							},
 							success(res) {
 								if(res.result.code == 0) {
 									// 绑定成功
+									uni.navigateBack();
 									uni.showToast({
-										title: '微信绑定成功,该账号已经登录',
+										title: '微信绑定成功,登录成功',
 										icon: 'none'
 									});
 								}
 								// 绑定失败
 								else {
+									uni.navigateBack();
 									uni.showToast({
-										title: `微信绑定失败:${res.result.message}`,
+										title: `微信绑定失败:${res.result.message},您稍后可在个人中心进行绑定`,
 										icon: 'none'
 									});
 								}
@@ -312,6 +316,7 @@
 				
 				_this.$store.dispatch('user/wxlogin').then(res => {
 					// 登录成功
+					uni.navigateBack();
 					uni.showToast({
 						title: '微信登录成功',
 						icon: 'none'

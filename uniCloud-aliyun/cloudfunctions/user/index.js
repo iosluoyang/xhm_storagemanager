@@ -68,10 +68,17 @@ exports.main = async (event, context) => {
 	// 绑定微信
 	else if(type == 'bindwx') {
 		
-		// 用户token
+		// 用户wxcode
 		let wxcode = info.wxcode
-		let uid = info.uid
-		const res = await uniIDIns.bindWeixin({
+		// 获取用户uid
+		let uidres = await uniIDIns.checkToken(token)
+		// 获取返回错误的话直接返回该错误信息
+		if(uidres.code != 0) {
+			return uidres
+		}
+		let uid = uidres.uid
+		// let uid = info.uid
+		let res = await uniIDIns.bindWeixin({
 			uid: uid,
 			code: wxcode
 		})
@@ -84,8 +91,14 @@ exports.main = async (event, context) => {
 	// 解绑微信
 	else if(type == 'unbindwx') {
 		
-		// 用户uid
-		let uid = info.uid
+		// 获取用户uid
+		let uidres = await uniIDIns.checkToken(token)
+		// 获取返回错误的话直接返回该错误信息
+		if(uidres.code != 0) {
+			return uidres
+		}
+		let uid = uidres.uid
+		// let uid = info.uid
 		const res = await uniIDIns.unbindWeixin({
 			uid: uid
 		})

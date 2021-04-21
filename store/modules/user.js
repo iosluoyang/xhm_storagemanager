@@ -88,19 +88,7 @@ const actions = {
 	// login
 	login({ commit },data){
 		return new Promise((resolve, reject) => {
-			// userapi.login(data).then(response => {
-				
-			// 	//将获取到的用户数据存储到本地
-			// 	const { data } = response
-			// 	commit('SET_ACCESSTOKEN',data.accessToken)
-			// 	commit('SET_REFRESHTOKEN',data.refreshToken)
-			// 	commit('SET_USER',data.user)
-				
-			// 	resolve()
-				
-			// }).catch(error => {
-			// 	reject(error)
-			// })
+
 			// 调用云函数登录接口
 			uniCloud.callFunction({
 				name: 'user',
@@ -116,10 +104,12 @@ const actions = {
 					if(res.result.code == 0) {
 						let token = res.result.token
 						let tokenExpiredDate = res.result.tokenExpired
+						let uid = res.result.uid
 						let userInfo = res.result.userInfo
+						let newuser = Object.assign({}, userInfo, {uid})
 						commit('SET_ACCESSTOKEN',token)
 						commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
-						commit('SET_USER',{uid: res.result.uid})
+						commit('SET_USER',newuser)
 						resolve(res.result)
 					}
 					// 登录出错
@@ -158,10 +148,12 @@ const actions = {
 							if(res.result.code == 0) {
 								let token = res.result.token
 								let tokenExpiredDate = res.result.tokenExpired
+								let uid = res.result.uid
 								let userInfo = res.result.userInfo
+								let newuser = Object.assign({}, userInfo, {uid})
 								commit('SET_ACCESSTOKEN',token)
 								commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
-								commit('SET_USER',{uid: res.result.uid})
+								commit('SET_USER',newuser)
 								resolve(res.result)
 							}
 							// 登录出错
