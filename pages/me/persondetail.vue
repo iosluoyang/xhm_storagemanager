@@ -10,14 +10,25 @@
 		<form>
 			
 			<!-- 个人头像 -->
-			<view class="cu-form-group margin-top padding" @tap.stop="chooseimg">
-				<view class="title">{{i18n.me.persondetail.avatar}}</view>
-				<template>
-					<view v-if="(user && user.avatar) || avatarfile " class="cu-avatar round lg" :style="{backgroundImage: 'url('+(avatarfile ? avatarfile.path : (imgUrl + user.avatar))+')'}"></view>
+			<!-- <view class="cu-form-group margin-top padding" @tap.stop="chooseimg"> -->
+				<!-- <view class="title">{{i18n.me.persondetail.avatar}}</view> -->
+				<!-- <template> -->
+					<!-- <view v-if="(user && user.avatar) || avatarfile " class="cu-avatar round lg" :style="{backgroundImage: 'url('+(avatarfile ? avatarfile.path : (imgUrl + user.avatar))+')'}"></view>
 					<view v-else class="cu-avatar round lg">
 						<text class="cuIcon-people"></text>
-					</view>
-				</template>
+					</view> -->
+					<!-- <uni-file-picker 
+					    disable-preview
+					    :del-icon="false"
+					    return-type="object"
+					>选择头像</uni-file-picker> -->
+				<!-- </template> -->
+			<!-- </view> -->
+			
+			<!-- 账号 -->
+			<view class="cu-form-group">
+				<view class="title">{{i18n.me.persondetail.account}}</view>
+				<input type="text" disabled :value="username" />
 			</view>
 			
 			<!-- 昵称 -->
@@ -27,22 +38,24 @@
 			</view>
 			
 			<!-- 真实姓名 -->
-			<view class="cu-form-group">
+			<!-- <view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.realname}}</view>
 				<input type="text" v-model="realname" />
-				
-			</view>
+			</view> -->
 			
-			<!-- 账号 -->
+			<!-- 性别 -->
 			<view class="cu-form-group">
-				<view class="title">{{i18n.me.persondetail.account}}</view>
-				<input type="text" disabled :value="account" />
+				<view class="title">{{i18n.me.persondetail.gender}}</view>
+				<view class="content flex align-center">
+					<view class="margin-right">{{ gender===1 ? i18n.base.male : gender === 2 ? i18n.base.female : ''}}</view>
+					<switch class='switch-sex' @change="(e) => { this.gender = e.detail.value ? 1 : 2 }" :class="gender===1?'checked':''" :checked="gender===1"></switch>
+				</view>
 			</view>
 			
 			<!-- 手机号 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.phone}}</view>
-				<input type="number" v-model="phone" />
+				<input type="number" v-model="mobile" />
 			</view>
 			
 			<!-- 邮箱 -->
@@ -51,28 +64,19 @@
 				<input type="text" v-model="email" />
 			</view>
 			
-			<!-- 性别 -->
-			<view class="cu-form-group">
-				<view class="title">{{i18n.me.persondetail.gender}}</view>
-				<view class="content flex align-center">
-					<view class="margin-right">{{sex===0 ? i18n.base.female : i18n.base.male}}</view>
-					<switch class='switch-sex' @change="chooseGender" :class="sex===1?'checked':''" :checked="sex===1"></switch>
-				</view>
-			</view>
-			
 			<!-- 用户身份 -->
-			<view class="cu-form-group">
+			<!-- <view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.usertype}}</view>
 				<view class="content">
 					<view class="cu-tag radius" :class="[user.type === 0 ? 'bg-blue' : 'bg-cyan']">
 						{{ user.type === 0 ? i18n.base.admin : i18n.base.normaladmin }}
 					</view>
 				</view>
-			</view>
+			</view> -->
 			
 			<!-- 个人简介 -->
 			<view class="cu-form-group margin-top">
-				<textarea maxlength="-1"  v-model="signature" :placeholder="i18n.me.persondetail.signature"></textarea>
+				<textarea maxlength="-1"  v-model="comment" :placeholder="i18n.me.persondetail.signature"></textarea>
 			</view>
 			
 		</form>
@@ -90,17 +94,21 @@
 </template>
 
 <script>
+	
+	const db = uniCloud.database();
+	const dbCollectionName = 'uni-id-users';
+		
 	export default {
 		data() {
 			return {
+				username: '', // 用户名
 				avatarfile: null, // 头像图片文件
 				nickname: '', // 用户昵称
-				realname: '', // 用户真实姓名
-				account: '', // 用户账号
-				phone: '', // 用户手机号
+				// realname: '', // 用户真实姓名
+				mobile: '', // 用户手机号
 				email: '', // 用户邮箱
-				sex: 0, // 用户性别 0女1男2保密
-				signature: '', //个人简介
+				gender: 0, // 用户性别 0未知 1男 2女
+				comment: '', //个人简介
 				ifmodify: false, // 是否正在修改  默认为否
 				btnanimationname: null, // 当前按钮动画  默认为null
 			};
@@ -108,13 +116,13 @@
 		
 		onLoad() {
 			
-			this.nickname = this.user && this.user.userName ? this.user.userName : ''
-			this.realname = this.user && this.user.realName ? this.user.realName : ''
-			this.account = this.user && this.user.account ? this.user.account : ''
-			this.sex = this.user && this.user.sex ? this.user.sex : 0
-			this.phone = this.user && this.user.phone ? this.user.phone : ''
-			this.email = this.user && this.user.email ? this.user.email : ''
-			this.signature = this.user && this.user.signature ? this.user.signature : ''
+			this.nickname = this.user.nickname || ''
+			// this.realname = this.user && this.user.realName ? this.user.realName : ''
+			this.username = this.user.username || ''
+			this.gender = this.user.gender || 0
+			this.mobile = this.user.mobile || ''
+			this.email = this.user.email || ''
+			this.comment = this.user.comment || ''
 		},
 		
 		methods: {
@@ -130,16 +138,56 @@
 				})
 				
 			},
-		
-			// 选择性别
-			chooseGender(e) {
-				this.sex = e.detail.value ? 1 : 0
-			},
 			
 			// 修改个人资料
 			modifydetail() {
 				
 				const _this = this
+				
+				// 使用 clientDB 提交数据
+				let updatedata = {
+					nickname: this.nickname,
+					gender: this.gender,
+					mobile: this.mobile,
+					email: this.email,
+					comment: this.comment
+				}
+				_this.ifmodify = true // 开始加载动画
+				
+				db.collection(dbCollectionName).doc(this.user._id).update(updatedata).then((res) => {
+				  
+					// 修改成功
+					// 开始修改vuex的用户信息
+					_this.$store.dispatch('user/updateuserdetail', updatedata).then(() => {
+						// 更新成功
+						_this.avatarfile = null // 重置头像文件
+						uni.showToast({
+							title: _this.i18n.tip.fixsuccess,
+							icon: 'none'
+						});
+						setTimeout(function() {
+							uni.navigateBack();
+						}, 1500);
+					})
+				  
+				}).catch((err) => {
+					
+					// 修改失败
+					uni.showToast({
+						title: _this.i18n.error.fixerror,
+						icon: 'none'
+					});
+					
+					_this.btnanimationname = 'shake'
+					setTimeout(function() {
+						_this.btnanimationname = null
+					}, 1000);
+				  
+				}).finally(() => {
+				  _this.ifmodify = false // 关闭加载动画
+				})
+				
+				return
 				
 				// 修改其它信息资料
 				const modifyother = function(avatarUrl) {
@@ -147,14 +195,17 @@
 					_this.ifmodify = true // 开始加载动画
 					
 					let data = {
-						realName: _this.realname,
-						userName: _this.nickname,
-						sex: _this.sex,
-						phone: _this.phone,
+						// realName: _this.realname,
+						username: _this.username,
+						gender: _this.gender,
+						mobile: _this.mobile,
 						email: _this.email,
-						avatar: avatarUrl,
-						signature: _this.signature
+						// avatar: avatarUrl,
+						comment: _this.comment
 					}
+					
+					// 开始修改个人信息
+					
 					
 					_this.$api.userapi.modifyuserdetail(data).then(response => {
 						// 修改成功
@@ -229,7 +280,6 @@
 					// 开始修改其它资料
 					modifyother()
 				}
-				
 				
 			}
 		},

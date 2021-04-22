@@ -120,5 +120,26 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	// 获取用户个人信息
+	else if(type == 'getuserinfo') {
+		
+		// 获取用户uid
+		let uidres = await uniIDIns.checkToken(token)
+		// 获取返回错误的话直接返回该错误信息
+		if(uidres.code != 0) {
+			return uidres
+		}
+		let uid = uidres.uid
+		const res = uniIDIns.getUserInfo({
+			uid: uid,
+			field: [
+				'_id','username','nickname','gender','status',
+				'mobile','mobile_confirmed','email','email_confirmed',
+				'avatar','role','wx_openid','comment','register_date','last_login_date',
+			] 
+		})
+		return res
+	}
+	
 };
 

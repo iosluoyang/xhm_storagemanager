@@ -26,19 +26,25 @@
 						
 						<!-- 昵称 -->
 						<view class="username text-white text-bold text-xl margin-right-sm">
-							{{ iflogin ? user && user.username ? user.username : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
+							{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
 						</view>
 						<!-- 标签 -->
 						<view v-if="iflogin" class="usertag">
-							<view class="usertag cu-tag radius margin-right-sm" :class="[user.type === 0 ? 'bg-blue' : 'bg-cyan' ]">
-								{{ user.type === 0 ? i18n.base.admin : i18n.base.normaladmin }}
+							<view class="usertag cu-tag radius margin-right-sm" :class="[user.role && user.role[0] === 'merchant' ? 'bg-blue' : 'bg-cyan' ]">
+								{{ user.role && user.role[0] === 'merchant' ? i18n.base.admin : i18n.base.normaladmin }}
 							</view>
 						</view>
 						
 					</view>
 					
 					<!-- 下面视图 包含个人简介 -->
-					<view class="text-white text-xs text-cut" style="width: 400upx;">{{ user && user.signature ? user.signature : '' }}</view>
+					<view class="text-white text-cut" style="width: 400upx;">{{ user && user.comment ? user.comment : '' }}</view>
+					
+					<!-- 上次登录时间 -->
+					<view class="text-white text-xs margin-top-sm">
+						Last Login:
+						<uni-dateformat v-if="user && user.last_login_date" :date="user.last_login_date" />
+					</view>
 					
 				</view>
 				
@@ -181,14 +187,19 @@
 				name: this.i18n.me.panel.more
 			}
 			
-			let panelList = []
-			// 如果是超级管理员
-			if(this.user.type === 0) {
-				panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, subscribeitem, moreitem]
-			}
-			// 如果是普通员工则有
-			else if(this.user.type === 1) {
-				panelList = [resetpwditem, subscribeitem, moreitem]
+			let panelList = [moreitem]
+			// // 如果是超级管理员
+			// if(this.user.type === 0) {
+			// 	panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, subscribeitem, moreitem]
+			// }
+			// // 如果是普通员工则有
+			// else if(this.user.type === 1) {
+			// 	panelList = [resetpwditem, subscribeitem, moreitem]
+			// }
+			
+			// 如果是超级管理员或者商家的话则有公告管理
+			if( this.user.role.includes('merchant') || this.user.role.includes('admin')) {
+				panelList = [noticeitem, subscribeitem, moreitem]
 			}
 			
 			this.panelList = panelList
@@ -205,26 +216,38 @@
 			// 加载个人信息
 			loadpersondetail() {
 				const _this = this
-				_this.$api.userapi.getuserdetail().then(response => {
-					// 加载个人信息成功
-					let user = response.data.user
-					// 更新本地的用户信息
-					_this.$store.dispatch('user/updateuserdetail', user).then(() => {
-						// 更新成功
-					}).catch(error => {
-						// 更新失败
-						uni.showToast({
-							title: _this.i18n.error.networkerror,
-							icon: 'none'
-						});
-					})
+				
+				_this.$store.dispatch('user/getuserdetail').then(() => {
+					// 获取成功
 				}).catch(error => {
-					// 加载失败
+					// 获取失败
 					uni.showToast({
 						title: _this.i18n.error.networkerror,
 						icon: 'none'
 					});
 				})
+				
+				// _this.$api.userapi.getuserdetail().then(response => {
+				// 	// 加载个人信息成功
+				// 	let user = response.data.user
+				// 	// 更新本地的用户信息
+				// 	_this.$store.dispatch('user/updateuserdetail', user).then(() => {
+				// 		// 更新成功
+				// 	}).catch(error => {
+				// 		// 更新失败
+				// 		uni.showToast({
+				// 			title: _this.i18n.error.networkerror,
+				// 			icon: 'none'
+				// 		});
+				// 	})
+				// }).catch(error => {
+				// 	// 加载失败
+				// 	uni.showToast({
+				// 		title: _this.i18n.error.networkerror,
+				// 		icon: 'none'
+				// 	});
+				// })
+				
 			},
 			
 			// 跳转个人详情页

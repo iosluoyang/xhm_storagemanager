@@ -88,7 +88,6 @@ const actions = {
 	// login
 	login({ commit },data){
 		return new Promise((resolve, reject) => {
-
 			// 调用云函数登录接口
 			uniCloud.callFunction({
 				name: 'user',
@@ -104,12 +103,10 @@ const actions = {
 					if(res.result.code == 0) {
 						let token = res.result.token
 						let tokenExpiredDate = res.result.tokenExpired
-						let uid = res.result.uid
 						let userInfo = res.result.userInfo
-						let newuser = Object.assign({}, userInfo, {uid})
 						commit('SET_ACCESSTOKEN',token)
 						commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
-						commit('SET_USER',newuser)
+						commit('SET_USER',userInfo)
 						resolve(res.result)
 					}
 					// 登录出错
@@ -148,12 +145,10 @@ const actions = {
 							if(res.result.code == 0) {
 								let token = res.result.token
 								let tokenExpiredDate = res.result.tokenExpired
-								let uid = res.result.uid
 								let userInfo = res.result.userInfo
-								let newuser = Object.assign({}, userInfo, {uid})
 								commit('SET_ACCESSTOKEN',token)
 								commit('SET_ACCESSTOKENEXPIREDDATE',tokenExpiredDate)
-								commit('SET_USER',newuser)
+								commit('SET_USER',userInfo)
 								resolve(res.result)
 							}
 							// 登录出错
@@ -281,23 +276,46 @@ const actions = {
 	},
 	
 	// get userdetail
-	getuserdetail({ commit }){
+	getuserdetail({ state, commit }){
 		return new Promise((resolve,reject) => {
-			userapi.getuserdetail().then(response => {
-				// 获取用户基本资料成功
-				let user = response.data.user
-				commit('SET_USER',user)
-				resolve()
-			}).catch(error => {reject(error)})
+			
+			uniCloud.callFunction({
+				name: 'user',
+				data: {
+					type: 'getuserinfo'
+				}
+			}).then(res => {
+				// 获取成功
+				if(res.result.code == 0) {
+					// 加载个人信息成功
+					let user = res.result.userInfo
+					commit('SET_USER',user)
+					resolve()
+				}
+				else {
+					reject(res)
+				}
+			}).catch(err => {
+				// 加载失败
+				reject(err)
+			})
+			
+			// userapi.getuserdetail().then(response => {
+			// 	// 获取用户基本资料成功
+			// 	let user = response.data.user
+			// 	commit('SET_USER',user)
+			// 	resolve()
+			// }).catch(error => {reject(error)})
 		})
 	},
 	
 	// update userdetail 更新用户的信息
-	updateuserdetail({ commit }, user){
+	updateuserdetail({ state, commit }, user){
 		
 		return new Promise(resolve => {
 			if(user){ 
-				commit('SET_USER',user)
+				let newuser = {...state.user, ...user}
+				commit('SET_USER',newuser)
 			}
 			resolve()
 		})
