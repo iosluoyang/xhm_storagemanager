@@ -20,7 +20,7 @@
 		"role_name": {
 			"title": "名称",
 			"bsonType": "string",
-			"description": "角色名称",
+			"description": "角色名称 admin为超级管理员 merchant为商家 employee为商家下属雇员 proagent为商品代理员 shippingagent为物流代理员",
 			"trim": "both"
 		},
 		"permission": {

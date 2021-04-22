@@ -4,6 +4,7 @@
 		<!-- 返回按钮 -->
 		<cu-custom v-if="!ifforbidback" bgColor="transparent" isBack></cu-custom>
 		
+		<!-- 登录主页面 -->
 		<view class="maincontent flex flex-direction align-center padding-xl">
 			
 			<!-- 头部logo -->
@@ -33,6 +34,7 @@
 			</view>
 			
 		</view>
+	
 	</view>
 </template>
 

@@ -25,7 +25,7 @@ export function ifwxH5(){
 export function ifloginflag(){
 	
 	var user = store.getters.user
-	if(!user || user === {}){
+	if(!user || user == {} || !user.register_date){
 		//没有用户信息 表示还没有登录
 		return false
 	}
@@ -39,14 +39,8 @@ export function checklogin(){
 	
 	var promise = new Promise((resolve) => {
 		var user = store.getters.user
-		// 用户不存在
-		if(!user || user === {}){
-			// 首先记录当前的路由 以便于登录之后跳转至正确的原始页面
-			// var currentpages = getCurrentPages()
-			// var beforeloginroute = '/' + currentpages[currentpages.length - 1].route
-			// // 本地存储记录登录之后要跳转的路由
-			// uni.setStorageSync('beforeloginroute',currentroute)
-			// 跳转至登录页面
+		// 如果没有用户信息或者用户注册时间不存在则均判定为用户未登录
+		if(!user || user == {} || !user.register_date){
 			uni.navigateTo({
 				url: '/pages/base/login'
 			});

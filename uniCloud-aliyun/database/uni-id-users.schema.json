@@ -1,6 +1,14 @@
 {
 	"bsonType": "object",
+	"description":"用户表",
 	"required": [],
+	"permission": {
+		"read": true, // 前端非admin的读取记录权限控制。默认值是false，即可以不写。可以简单的true/false，也可以写表达式
+		"create": true, // 前端非admin的新增记录权限控制。默认值是false，即可以不写。可以简单的true/false，也可以写表达式 
+		"update": "doc._id == auth.uid", // 更新权限 用户自己可以进行更新
+		"delete": "doc._id == auth.uid", // 删除权限 用户自己可以进行删除(超级管理员不受影响)
+		"count": true // 前端非admin的求数权限控制。默认值是true，即可以不写。可以简单的true/false，也可以写表达式
+	},
 	"properties": {
 		"_id": {
 			"description": "存储文档 ID（用户 ID），系统自动生成"
