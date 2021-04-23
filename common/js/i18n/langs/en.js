@@ -161,6 +161,7 @@ const en = {
 	login: {
 		account: "Account",
 		password: "Password",
+		invitecode: "InviteCode",
 		loginstr: "Login",
 		registerstr: "Register"
 	},

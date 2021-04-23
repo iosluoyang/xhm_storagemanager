@@ -187,7 +187,7 @@
 				name: this.i18n.me.panel.more
 			}
 			
-			let panelList = [moreitem]
+			let panelList = [moreitem] // 默认有更多的选项
 			// // 如果是超级管理员
 			// if(this.user.type === 0) {
 			// 	panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, subscribeitem, moreitem]
@@ -197,9 +197,12 @@
 			// 	panelList = [resetpwditem, subscribeitem, moreitem]
 			// }
 			
-			// 如果是超级管理员或者商家的话则有公告管理
-			if( this.user.role.includes('merchant') || this.user.role.includes('admin')) {
-				panelList = [noticeitem, subscribeitem, moreitem]
+			// 登录状态下 根据身份获取不同的操作区域
+			if(this.iflogin) {
+				// 如果是超级管理员或者商家的话则有公告管理
+				if( this.user.role.includes('merchant') || this.user.role.includes('admin')) {
+					panelList = [noticeitem, subscribeitem, moreitem]
+				}
 			}
 			
 			this.panelList = panelList

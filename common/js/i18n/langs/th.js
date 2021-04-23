@@ -158,6 +158,7 @@ const th = {
 	login: {
 		account: "บัญชีผู้ใช้",
 		password: "รหัส",
+		invitecode: "รหัสเชิญ",
 		loginstr: "เข้าสู่ระบบ",
 		registerstr: "ลงทะเบียน"
 	},

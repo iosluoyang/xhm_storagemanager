@@ -19,7 +19,6 @@
 			<!-- 商品标题 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.producttitle}} :</view>
-				<!-- <input type="text" confirm-type="next" v-model="productTitle" /> -->
 				<textarea v-model="productTitle" :placeholder="i18n.error.lackgoodstitle"
 				auto-height
 				:show-confirm-bar="false" 
@@ -111,7 +110,15 @@
 				<view class="action">{{i18n.wishlist.uploadimg}}</view>
 				<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
 			</view>
-			<view class="cu-form-group">
+			
+			<view class="bg-white padding">
+				<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
+				return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+				@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+				</uni-file-picker>
+			</view>
+			
+			<!-- <view class="cu-form-group">
 				<view class="grid col-4 grid-square flex-sub">
 					
 					<view class="bg-img" v-for="(item, index) in imgArr" :key="index" @tap.stop="previewImg(index)">
@@ -124,7 +131,7 @@
 					</view>
 
 				</view>
-			</view>
+			</view> -->
 			
 		</form>
 		
@@ -261,8 +268,20 @@
 					this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					this.targetAmount = info.targetAmount // 目标数量
 					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
-					this.imgArr = info.imgs.split(',') // 图片数组
+					// this.imgArr = info.imgs.split(',') // 图片数组
 					this.remark = info.remark // 备注信息
+					
+					// 获取图片数组将其放入返显中
+					let imgs = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/2aac67f9-3305-4bba-a23c-a12d4328b44d.jpg,https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/76b8a0a0-416a-43f2-a8fa-2642907c5d6c.png,https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/2629e2d9-96eb-4cc5-a0f2-4dbc7fe3c8da.png'
+					let imgsarr = imgs.split(',') // 图片数组
+					let imgsobjarr = imgsarr.map(item => {
+						let imgobj = {
+							url: item
+						}
+						return imgobj
+					})
+					console.log(imgsobjarr);
+					this.imgArr = imgsobjarr
 					
 				}).catch(error => {
 					
@@ -298,6 +317,47 @@
 			// 紧急程度更改
 			hurrylevelchange(e) {
 				this.hurryLevel = Number(e.detail.value) + 1
+			},
+			
+			// 选择图片成功
+			fileselect(e) {
+				console.log(`图片选择成功,`);
+				console.log(e);
+				this.imgArr.concat(e.tempFiles)
+				console.log(this.imgArr);
+			},
+			
+			// 图片删除
+			filedelete(e) {
+				console.log(`图片删除成功`);
+				console.log(e);
+				let deleteIndex = this.imgArr.findIndex(item => {
+					return e.tempFilePath == item.path
+				})
+				console.log(deleteIndex);
+				if(deleteIndex > -1) {
+					this.imgArr.splice(deleteIndex,1)
+				}
+			},
+			
+			// 图片上传
+			fileprogress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				this.imgArr = e.tempFiles
+			},
+			
+			// 上传图片失败
+			filefail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
 			},
 			
 			// 添加图片
@@ -426,6 +486,11 @@
 			// 上传数据
 			uploaddata() {
 				
+				// 开始上传图片
+				this.$refs.filepickerref.upload()
+				
+				return
+				
 				// 进行数据检查			
 				
 				// 检查是否有商品标题
@@ -461,7 +526,7 @@
 					return false
 				}
 				
-				// 其余项均为选填项				
+				// 其余项均为选填项
 				
 				// 开始上传图片(包含新增和编辑)
 				this.uploadpic(this.imgArr).then(imgs => {
@@ -600,7 +665,6 @@
 				})
 				
 			},
-			
 			
 			hideModal() {
 				this.showModal = false

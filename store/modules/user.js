@@ -64,7 +64,8 @@ const actions = {
 					type: 'register',
 					info: {
 						account: data.account,
-						password: data.password
+						password: data.password,
+						invitecode: data.invitecode
 					}
 				},
 				success(res) {
@@ -95,7 +96,7 @@ const actions = {
 					type: 'login',
 					info: {
 						account: data.account,
-						password: data.password
+						password: data.password,
 					}
 				},
 				success(res) {
@@ -136,9 +137,7 @@ const actions = {
 						name: 'user',
 						data: {
 							type: 'wxlogin',
-							info: {
-								wxcode: code,
-							}
+							info: Object.assign({}, {wxcode: code}, data && data.invitecode ? {invitecode: data.invitecode} : null )
 						},
 						success(res) {
 							// 登录成功

@@ -14,8 +14,12 @@
 			
 			<!-- 输入内容区域 -->
 			<view class="inputview margin-top">
+				<!-- 账号 -->
 				<uni-easyinput v-model="account" :placeholder="i18n.login.account" trim prefixIcon="person-filled" />
+				<!-- 密码 -->
 				<uni-easyinput class="passwordinput" type="password" v-model="password" :placeholder="i18n.login.password" trim prefixIcon="locked-filled" />
+				<!-- 邀请码 -->
+				<uni-easyinput v-if="invitecode" :value="invitecode" disabled :placeholder="i18n.login.invitecode" trim prefixIcon="person-filled" />
 			</view>
 			
 			<!-- 登录按钮 -->
@@ -47,6 +51,7 @@
 				ifforbidback: false, // 是否禁止返回 默认为否 代表有导航栏 可以返回
 				account:'', //用户/电话
 				password:'', //密码
+				invitecode: '', // 邀请码
 				isLoading: false, //是否正在加载
 				isFocus: false // 是否聚焦
 			};
@@ -61,6 +66,11 @@
 			let forbidback = option ? option.forbidback : null
 			if(forbidback && forbidback === 'true') {
 				this.ifforbidback = true
+			}
+			
+			// 如果有邀请码的话则填充邀请码
+			if(option && option.inviteCode) {
+				this.invitecode = option.inviteCode
 			}
 		},
 		methods: {
@@ -93,7 +103,7 @@
 				// 开始登录操作
 				let data = {
 					account: _this.account,
-					password: _this.password
+					password: _this.password,
 				}
 				_this.$store.dispatch('user/login', data).then(res => {
 					console.log(`登录成功`);
@@ -230,6 +240,7 @@
 				}).catch(err => {
 					// 用户不存在
 					if(err.code == 10002) {
+						let registerdata = {...data, ...{invitecode: _this.invitecode}}
 						uni.showModal({
 							title: '提示',
 							content: '该账号不存在,是否进行注册?',
@@ -239,7 +250,7 @@
 							success: res => {
 								if(res.confirm) {
 									// 进行注册
-									_this.$store.dispatch('user/register', data).then(res => {
+									_this.$store.dispatch('user/register', registerdata).then(res => {
 										// 注册成功
 										uni.showToast({
 											title: '注册成功,正在为您自动登录',
@@ -286,7 +297,7 @@
 								type: 'bindwx',
 								info: {
 									wxcode: code,
-									uid: _this.$store.getters.user.uid
+									invitecode: _this.invitecode
 								}
 							},
 							success(res) {
@@ -316,7 +327,8 @@
 			//微信登录
 			wxlogin() {
 				
-				_this.$store.dispatch('user/wxlogin').then(res => {
+				let data = {invitecode: _this.invitecode}
+				_this.$store.dispatch('user/wxlogin', data).then(res => {
 					// 登录成功
 					uni.navigateBack();
 					uni.showToast({
@@ -345,13 +357,11 @@
 			}
 		}
 		
-		.inputview{
+		/deep/.inputview{
 			width: 80%;
 			
-			.passwordinput{
-				/deep/.uni-easyinput{
-					margin-top: 20px;
-				}
+			.uni-easyinput{
+				margin-top: 20px;
 			}
 			
 		}

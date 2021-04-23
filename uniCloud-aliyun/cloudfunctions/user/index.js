@@ -21,6 +21,19 @@ exports.main = async (event, context) => {
 	})
 	
 	let token = event.uniIdToken
+	console.log(`user云函数获取到的token为${token}`);
+	
+	let uid = ''
+	// 如果存在token的话则开始获取用户uid
+	if(token) {
+		let uidres = await uniIDIns.checkToken(token)
+		// 获取返回错误的话直接返回该错误信息
+		if(uidres.code != 0) {
+			return uidres
+		}
+		uid = uidres.uid
+	}
+	
 	// 根据不同的type区分不同的业务
 	let type = event.type
 	let info = event.info
@@ -29,7 +42,11 @@ exports.main = async (event, context) => {
 	if(type == 'register') {
 		const res = await uniIDIns.register({
 			username: info.account,
-			password: info.password
+			password: info.password,
+			avatar: '', // 注册时默认头像为空
+			nickname: '', // 注册时默认昵称为空
+			role: [], // 注册时默认角色为空数组
+			myInviteCode: info.invitecode, // 邀请码
 		})
 		console.log(`user云函数中用户注册返回的数据为`);
 		console.log(res);
@@ -40,10 +57,19 @@ exports.main = async (event, context) => {
 	else if(type == 'login') {
 		const res = await uniIDIns.login({
 			username: info.account,
-			password: info.password
+			password: info.password,
+			queryField: ['username','email','mobile'] //指定从哪些字段中比对username（传入参数均为username），不填默认与数据库内的username字段对比, 可取值'username'、'email'、'mobile'
 		})
 		console.log(`user云函数中获取到的用户信息为`);
 		console.log(res);
+		
+		// 注意此处返回的userInfo要去掉password字段
+		if(res.userInfo && res.userInfo.password) {
+			let newuserInfo = res.userInfo
+			delete newuserInfo.password
+			res.userInfo = newuserInfo
+		}
+		
 		return res
 	}
 	
@@ -70,14 +96,6 @@ exports.main = async (event, context) => {
 		
 		// 用户wxcode
 		let wxcode = info.wxcode
-		// 获取用户uid
-		let uidres = await uniIDIns.checkToken(token)
-		// 获取返回错误的话直接返回该错误信息
-		if(uidres.code != 0) {
-			return uidres
-		}
-		let uid = uidres.uid
-		// let uid = info.uid
 		let res = await uniIDIns.bindWeixin({
 			uid: uid,
 			code: wxcode
@@ -91,14 +109,6 @@ exports.main = async (event, context) => {
 	// 解绑微信
 	else if(type == 'unbindwx') {
 		
-		// 获取用户uid
-		let uidres = await uniIDIns.checkToken(token)
-		// 获取返回错误的话直接返回该错误信息
-		if(uidres.code != 0) {
-			return uidres
-		}
-		let uid = uidres.uid
-		// let uid = info.uid
 		const res = await uniIDIns.unbindWeixin({
 			uid: uid
 		})
@@ -113,31 +123,41 @@ exports.main = async (event, context) => {
 		
 		// 获取微信用户的openId
 		const res = await uniIDIns.loginByWeixin({
-			code: info.wxcode
+			code: info.wxcode,
+			myInviteCode: info.invitecode
 		})
 		
+		console.log(`user云函数中微信登录的信息为`);
 		console.log(res);
+		
+		// 注意此处返回的userInfo要去掉password字段
+		if(res.userInfo && res.userInfo.password) {
+			let newuserInfo = res.userInfo
+			delete newuserInfo.password
+			res.userInfo = newuserInfo
+		}
+		
 		return res
+		
 	}
 	
 	// 获取用户个人信息
 	else if(type == 'getuserinfo') {
 		
-		// 获取用户uid
-		let uidres = await uniIDIns.checkToken(token)
-		// 获取返回错误的话直接返回该错误信息
-		if(uidres.code != 0) {
-			return uidres
-		}
-		let uid = uidres.uid
-		const res = uniIDIns.getUserInfo({
-			uid: uid,
-			field: [
-				'_id','username','nickname','gender','status',
-				'mobile','mobile_confirmed','email','email_confirmed',
-				'avatar','role','wx_openid','comment','register_date','last_login_date',
-			] 
+		const res = await uniIDIns.getUserInfo({
+			uid: uid
 		})
+		
+		console.log(`user云函数中获取用户个人信息的结果为`);
+		console.log(res);
+		
+		// 注意此处返回的userInfo要去掉password字段
+		if(res.userInfo && res.userInfo.password) {
+			let newuserInfo = res.userInfo
+			delete newuserInfo.password
+			res.userInfo = newuserInfo
+		}
+		
 		return res
 	}
 	

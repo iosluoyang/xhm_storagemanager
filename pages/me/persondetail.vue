@@ -7,64 +7,57 @@
 		</cu-custom>
 		
 		<!-- 个人详细信息区域 -->
-		<form>
+		<form v-if="userInfo">
 			
 			<!-- 个人头像 -->
-			<!-- <view class="cu-form-group margin-top padding" @tap.stop="chooseimg"> -->
-				<!-- <view class="title">{{i18n.me.persondetail.avatar}}</view> -->
-				<!-- <template> -->
-					<!-- <view v-if="(user && user.avatar) || avatarfile " class="cu-avatar round lg" :style="{backgroundImage: 'url('+(avatarfile ? avatarfile.path : (imgUrl + user.avatar))+')'}"></view>
-					<view v-else class="cu-avatar round lg">
-						<text class="cuIcon-people"></text>
-					</view> -->
-					<!-- <uni-file-picker 
-					    disable-preview
-					    :del-icon="false"
-					    return-type="object"
-					>选择头像</uni-file-picker> -->
-				<!-- </template> -->
-			<!-- </view> -->
+			<view class="cu-form-group margin-top padding">
+				<view class="title">{{ i18n.me.persondetail.avatar }}</view>
+				
+				<template>
+					<uni-file-picker ref="filepickerref" v-model="filesArr" :limit="1" return-type="array" :del-icon="false" :auto-upload="false" mode='grid' disable-preview :imageStyles="imageStyles" file-mediatype="image" @select="fileselect" @progress="fileprogress" @success="filesuccess" @fail="filefail"></uni-file-picker>
+				</template>
+			</view>
 			
 			<!-- 账号 -->
-			<view class="cu-form-group">
+			<view class="cu-form-group bg-gray">
 				<view class="title">{{i18n.me.persondetail.account}}</view>
-				<input type="text" disabled :value="username" />
+				<input type="text" disabled :value="userInfo.username" />
 			</view>
 			
 			<!-- 昵称 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.nickname}}</view>
-				<input type="text" v-model="nickname" />
+				<input type="text" v-model="userInfo.nickname" />
 			</view>
 			
 			<!-- 真实姓名 -->
 			<!-- <view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.realname}}</view>
-				<input type="text" v-model="realname" />
+				<input type="text" v-model="userInfo.realname" />
 			</view> -->
 			
 			<!-- 性别 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.gender}}</view>
 				<view class="content flex align-center">
-					<view class="margin-right">{{ gender===1 ? i18n.base.male : gender === 2 ? i18n.base.female : ''}}</view>
-					<switch class='switch-sex' @change="(e) => { this.gender = e.detail.value ? 1 : 2 }" :class="gender===1?'checked':''" :checked="gender===1"></switch>
+					<view class="margin-right">{{ userInfo.gender===1 ? i18n.base.male : userInfo.gender === 2 ? i18n.base.female : ''}}</view>
+					<switch class='switch-sex' @change="(e) => { this.userInfo.gender = e.detail.value ? 1 : 2 }" :class="userInfo.gender===1?'checked':''" :checked="userInfo.gender===1"></switch>
 				</view>
 			</view>
 			
 			<!-- 手机号 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.phone}}</view>
-				<input type="number" v-model="mobile" />
+				<input type="number" v-model="userInfo.mobile" />
 			</view>
 			
 			<!-- 邮箱 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.email}}</view>
-				<input type="text" v-model="email" />
+				<input type="text" v-model="userInfo.email" />
 			</view>
 			
-			<!-- 用户身份 -->
+			<!-- 用户身份
 			<!-- <view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.usertype}}</view>
 				<view class="content">
@@ -72,11 +65,11 @@
 						{{ user.type === 0 ? i18n.base.admin : i18n.base.normaladmin }}
 					</view>
 				</view>
-			</view> -->
+			</view>
 			
 			<!-- 个人简介 -->
 			<view class="cu-form-group margin-top">
-				<textarea maxlength="-1"  v-model="comment" :placeholder="i18n.me.persondetail.signature"></textarea>
+				<textarea maxlength="-1"  v-model="userInfo.comment" :placeholder="i18n.me.persondetail.signature"></textarea>
 			</view>
 			
 		</form>
@@ -101,14 +94,18 @@
 	export default {
 		data() {
 			return {
-				username: '', // 用户名
-				avatarfile: null, // 头像图片文件
-				nickname: '', // 用户昵称
-				// realname: '', // 用户真实姓名
-				mobile: '', // 用户手机号
-				email: '', // 用户邮箱
-				gender: 0, // 用户性别 0未知 1男 2女
-				comment: '', //个人简介
+				imageStyles:{
+					width:64,
+					height:64,
+					border: {
+						radius: '50%'
+					}
+				},
+				
+				filesArr: [],
+				
+				userInfo: null,
+				
 				ifmodify: false, // 是否正在修改  默认为否
 				btnanimationname: null, // 当前按钮动画  默认为null
 			};
@@ -116,43 +113,89 @@
 		
 		onLoad() {
 			
-			this.nickname = this.user.nickname || ''
-			// this.realname = this.user && this.user.realName ? this.user.realName : ''
-			this.username = this.user.username || ''
-			this.gender = this.user.gender || 0
-			this.mobile = this.user.mobile || ''
-			this.email = this.user.email || ''
-			this.comment = this.user.comment || ''
+			// this.nickname = this.user.nickname || ''
+			// // this.realname = this.user && this.user.realName ? this.user.realName : ''
+			// this.username = this.user.username || ''
+			// this.gender = this.user.gender || 0
+			// this.mobile = this.user.mobile || ''
+			// this.email = this.user.email || ''
+			// this.comment = this.user.comment || ''
+			
+			// 选择要更新和展示的用户信息
+			this.userInfo = {
+				avatar: this.user.avatar,
+				username: this.user.username,
+				nickname: this.user.nickname,
+				gender: this.user.gender,
+				mobile: this.user.mobile,
+				email: this.user.email,
+				comment: this.user.comment,
+			}
+			
+			// 返现头像
+			this.filesArr = [
+				{
+					name: '',
+					extname: '',
+					url: this.user.avatar
+				}
+			]
+			
 		},
 		
 		methods: {
 			
-			// 点击选择头像
-			chooseimg() {
-				const _this = this
-				_this.$basejs.chooseImage({
-					count: 1,
-					success(res) {
-						_this.avatarfile = res.tempFiles[0]
-					}
-				})
-				
+			// 选择图片成功
+			fileselect(e) {
+				console.log(`图片选择成功,`);
+				console.log(e);
+				this.filesArr = e.tempFiles
 			},
 			
+			// 图片上传
+			fileprogress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				this.ifmodify = false // 关闭加载动画
+				this.filesArr = e.tempFiles
+				let avatar = e.tempFilePaths[0]
+				this.userInfo.avatar = avatar
+				this.modifydetail() // 开始上传其他数据
+			},
+			
+			// 上传图片失败
+			filefail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
+				this.ifmodify = false // 关闭加载动画
+			},
+						
 			// 修改个人资料
 			modifydetail() {
 				
 				const _this = this
 				
-				// 使用 clientDB 提交数据
-				let updatedata = {
-					nickname: this.nickname,
-					gender: this.gender,
-					mobile: this.mobile,
-					email: this.email,
-					comment: this.comment
-				}
 				_this.ifmodify = true // 开始加载动画
+				
+				// 根据文件是否有path字段来判断是否选择了新的本地图片 来决定是否上传
+				if(this.filesArr.find(item => {return item.path})) {
+					console.log(`存在新图片 此时要进行上传`);
+					// 开始上传图片
+					_this.$refs.filepickerref.upload()
+					return
+				}
+				else {
+					console.log(`不存在新图片  直接进行上传`);
+				}
+				// 使用 clientDB 提交数据
+				let updatedata = {...this.userInfo}
 				
 				db.collection(dbCollectionName).doc(this.user._id).update(updatedata).then((res) => {
 				  
@@ -286,7 +329,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 	.persondetail{
 		.cu-form-group input{
