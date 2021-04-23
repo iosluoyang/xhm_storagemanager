@@ -185,7 +185,7 @@
 				_this.ifmodify = true // 开始加载动画
 				
 				// 根据文件是否有path字段来判断是否选择了新的本地图片 来决定是否上传
-				if(this.filesArr.find(item => {return item.path})) {
+				if(this.filesArr.find(item => {return item.progress == 0})) {
 					console.log(`存在新图片 此时要进行上传`);
 					// 开始上传图片
 					_this.$refs.filepickerref.upload()

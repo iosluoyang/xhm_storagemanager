@@ -12,21 +12,21 @@
 			<!-- 基本信息区域 -->
 			<view v-if="wishinfo" class="cu-item shadow bg-white">
 				
-				<!-- 头部区域 -->
-				<view v-if="wishinfo.user" class="headerview flex justify-between padding">
+				<!-- 头部区域 创建者信息区域 -->
+				<view v-if="wishinfo.createdUser" class="headerview flex justify-between padding">
 					
 					<view class="publisherview flex">
 						
 						<!-- 头像 -->
 						<template>
-							<image v-if="wishinfo.user.avatar" class="cu-avatar round" :src="imgUrl + wishinfo.user.avatar"></image>
+							<image v-if="wishinfo.createdUser.avatar" class="cu-avatar round" :src="wishinfo.createdUser.avatar"></image>
 							<view v-else class="cu-avatar round sm">
 								<text class="cuIcon-people"></text>
 							</view>
 						</template>
 						<!-- 昵称和时间 -->
 						<view class="content flex-sub margin-left">
-							<view>{{wishinfo.user.userName}}</view>
+							<view>{{wishinfo.createdUser.nickname}}</view>
 							<view class="text-gray text-sm flex justify-between">
 								{{ wishinfo.creatTime }}
 							</view>
@@ -48,8 +48,8 @@
 				<swiper class="screen-swiper round-dot" indicator-dots circular
 				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
-					<swiper-item v-for="(completeimg,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
-						<image :src="completeimg" mode="aspectFit"></image>
+					<swiper-item v-for="(img,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
+						<image :src="img" mode="aspectFit"></image>
 					</swiper-item>
 				</swiper>
 				
@@ -105,10 +105,10 @@
 						<button class="cu-btn round line-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
-						<button v-if="wishinfo.user.uid == user.uid" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+						<button v-if="wishinfo.createdUser && wishinfo.createdUser.uid == user._id" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
 						<!-- 删除按钮 仅自己可删除 -->
-						<button v-if="wishinfo.user.uid == user.uid" class="cu-btn round line-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+						<button v-if="wishinfo.createdUser && wishinfo.createdUser.uid == user._id" class="cu-btn round line-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 						
 					</view>
 					
@@ -156,12 +156,12 @@
 					<view v-if="timelineitem.type == 1" class="cu-item">
 						<view class="content">
 							
-							<!-- 评论人头像昵称 -->
-							<view class="cu-item flex align-center justify-between">
+							<!-- 评论创建人的头像昵称 -->
+							<view v-if="timelineitem.creatUser" class="cu-item flex align-center justify-between">
 								<view class="leftview flex align-center">
-									<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+									<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 									<view class="flex flex-direction text-df">
-										<text class="text-df">{{timelineitem.user.userName}}</text>
+										<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
 										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 									</view>
 								</view>
@@ -176,7 +176,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + imgUrl + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
 								</view>
 								
 							</view>
@@ -208,9 +208,9 @@
 									
 								</view>
 								
-								<view class="righview flex align-center">
-									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
-									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+								<view v-if="timelineitem.creatUser" class="righview flex align-center">
+									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
 									<!-- #ifdef MP -->
 									<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
 									<!-- #endif -->
@@ -239,9 +239,9 @@
 								
 								<!-- 左侧区域 -->
 								<view class="leftview flex-treble flex align-center">
-									<image class="cu-avatar round margin-right-sm" :src="imgUrl + timelineitem.user.avatar" mode="aspectFill"></image>
+									<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 									<view class="flex flex-direction text-sm">
-										<text class="text-black">{{timelineitem.user.userName}}</text>
+										<text class="text-black">{{timelineitem.creatUser.nickname}}</text>
 										<text class="text-grey">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
 									</view>
 								</view>
@@ -269,7 +269,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + imgUrl + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
 								</view>
 								
 							</view>
@@ -336,7 +336,7 @@
 										<view class="leftview flex align-center">
 											<image class="cu-avatar round sm" :src="imgUrl + timelineitem.refuseUser.avatar" mode="aspectFill"></image>
 											<view class="flex margin-left-sm flex-direction text-sm">
-												<text class="usernameview text-black text-sm text-cut">{{ timelineitem.refuseUser.userName }}</text>
+												<text class="usernameview text-black text-sm text-cut">{{ timelineitem.refuseUser.nickname }}</text>
 												<text class="text-grey">{{timelineitem.refuseTime}}</text>
 											</view>
 										</view>
@@ -359,8 +359,8 @@
 								</view>
 								
 								<view class="righview flex align-center">
-									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
-									<button v-if="user.uid == timelineitem.user.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
 									<!-- #ifdef MP -->
 									<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
 									<!-- #endif -->
@@ -387,7 +387,7 @@
 		</view>
 		
 		<!-- 添加按钮 悬浮 -->
-		<view v-if=" wishinfo " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<view v-if="wishinfo" class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100upx;"></text>
 		</view>
 		
@@ -596,12 +596,8 @@
 						// 设置轮播图的图片数组
 						let imgsArr = []
 						if(_this.wishinfo && _this.wishinfo.imgs) {
-							_this.wishinfo.imgs.split(',').forEach(img => {
-								let completeimg = _this.imgUrl + img
-								imgsArr.push(completeimg)
-							})
+							_this.imgsArr = _this.wishinfo.imgs.split(',')
 						}
-						_this.imgsArr = imgsArr
 					}
 					else {
 						uni.showToast({
@@ -845,13 +841,9 @@
 			},
 			
 			// 查看评论图片
-			previewcommentimg(imgs, index) {
-				let previewArr = []
-				imgs.split(',').forEach((imgurl) => {
-					previewArr.push(_this.imgUrl + imgurl)
-				})
+			previewcommentimg(imgs, index) {				
 				uni.previewImage({
-					urls: previewArr,
+					urls: imgs,
 					current:index
 				})
 			},

@@ -41,10 +41,13 @@ const mutations = {
 		}
 	},
 	SET_USER: (state, user) => {
-		state.user = user
+		let userwithuid = user ? {...user, ...{uid: user._id}} : null // 增加user的uid字段
+		
+		state.user = userwithuid
+		
 		//如果user存在则存储到本地 如果不存在则移除本地缓存
 		if(user){
-			uni.setStorageSync('user',user)
+			uni.setStorageSync('user',userwithuid)
 		}
 		else{
 			uni.removeStorageSync('user')

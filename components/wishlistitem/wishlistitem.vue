@@ -8,7 +8,7 @@
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
-				<image style="height: 300rpx;" :src="ownwishitem.imgs ? imgUrl + ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
+				<image style="height: 300rpx;" :src="ownwishitem.imgs ? ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFit"></image>
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
@@ -29,7 +29,7 @@
 					
 					<!-- 头像 -->
 					<template>
-						<image v-if="ownwishitem.user && ownwishitem.user.avatar" class="cu-avatar round lg" :src="imgUrl + ownwishitem.user.avatar"></image>
+						<image v-if="ownwishitem.creatUser && ownwishitem.creatUser.avatar" class="cu-avatar round lg" :src="ownwishitem.creatUser.avatar"></image>
 						<view v-else class="cu-avatar round lg">
 							<text class="cuIcon-people"></text>
 						</view>
@@ -39,7 +39,7 @@
 					<view class="content flex-sub">
 						
 						<!-- 上方发布人昵称 -->
-						<view class="text-grey">{{ownwishitem.user && ownwishitem.user.userName ? ownwishitem.user.userName : 'XXX'}}</view>
+						<view class="text-grey">{{ownwishitem.creatUser && ownwishitem.creatUser.nickname ? ownwishitem.creatUser.nickname : 'XXX'}}</view>
 						
 						<!-- 内容区域 -->
 						<view class="flex justify-between">

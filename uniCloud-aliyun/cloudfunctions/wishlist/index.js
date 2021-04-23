@@ -4,8 +4,30 @@ var moment = require('moment')
 const db = uniCloud.database()
 const dbCmd = db.command // 数据库指令
 
+const uniID = require('uni-id')
+
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
+	
+	//获取集合对象	
+	const uniIDIns = uniID.createInstance({ // 创建uni-id实例，其上方法同uniID
+		context: context
+	})
+	
+	let token = event.uniIdToken
+	console.log(`wishlist云函数获取到的token为${token}`);
+	
+	let uid = ''
+	// 如果存在token的话则开始获取用户uid
+	if(token) {
+		let uidres = await uniIDIns.checkToken(token)
+		// 获取返回错误的话直接返回该错误信息
+		if(uidres.code != 0) {
+			return uidres
+		}
+		uid = uidres.uid
+		console.log(`wishlist云函数获取到的uid为${uid}`);
+	}
 		
 	// 当前时间字符串
 	let currenttimestr = moment().add(8,'h').format('YYYY-MM-DD HH:mm:ss') // 注意服务器时间要比客户端时间晚8个小时 所以这里要增加8个小时
@@ -24,7 +46,8 @@ exports.main = async (event, context) => {
 			achieveFlag: 0, // 设置心愿单完成状态为否  achieveFlag  0进行中 1待确认 2已完成
 			previewCount: 1, // 设置浏览数量为1
 			commentCount: 1, // 设置评论数量为1
-			creatTime: currenttimestr, // 当前新增的时间字符串
+			creatTime: currenttimestr, // 当前新增的时间字符串,
+			creatUid: uid, // 写入发布人uid
 		}
 		
 		let data = {...info,...otherdata}

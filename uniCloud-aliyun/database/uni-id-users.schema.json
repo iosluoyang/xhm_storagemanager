@@ -17,7 +17,10 @@
 			"bsonType": "string",
 			"title": "用户名",
 			"description": "用户名，不允许重复",
-			"trim": "both"
+			"trim": "both",
+			"permission":{
+				"read":true
+			}
 		},
 		"password": {
 			"bsonType": "password",
@@ -38,7 +41,10 @@
 			"bsonType": "string",
 			"title": "昵称",
 			"description": "用户昵称",
-			"trim": "both"
+			"trim": "both",
+			"permission":{
+				"read":true
+			}
 		},
 		"gender": {
 			"bsonType": "int",
@@ -120,7 +126,10 @@
 			"title": "头像地址",
 			"description": "头像地址",
 			"trim": "both",
-			"defaultValue":""
+			"defaultValue":"",
+			"permission":{
+				"read":true
+			}
 		},
 		"role": {
 			"bsonType": "array",

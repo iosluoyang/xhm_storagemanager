@@ -303,61 +303,72 @@
 				let searchText = this.searchText
 				
 				// 开始进行接口请求
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getlist',
-						info: {
-							achieveFlag: achieveFlag,
-							sortType: sortType,
-							searchText: searchText,
-							date: date,
-							pageSize: pageSize,
-							pageNum: pageNum
-						}
-					}
-				}).then(response => {
-					if(response) {
-						// 加载成功
-						let date = response.result.date
-						// 列表
-						let list = response.result.data || []
-						
-						if(pageNum == 1) {
-							dataArr = [] //清空数据源
-							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
-							mescroll.date = date
-						} 
-						//将请求的数据添加至现有数据源中
-						dataArr = dataArr.concat(list)
-						//无法检测数组对象长度的变更 故使用$set方法进行变更
-						_this.$set(currenttabitem,'dataArr',dataArr)
-						_this.$set(currenttabitem,'loaded',true)
-						
-						// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
-						_this.$nextTick(()=>{
-							let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
-							mescroll.endSuccess(list.length,hasNext)
-						})
 				
-					}
-					else {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
-						// 失败隐藏下拉加载状态
-						mescroll.endErr()
-					}
+				// const db = uniCloud.database()
+				// db.collection('wishlist,uni-id-users') // 注意collection方法内需要传入所有用到的表名，用逗号分隔，主表需要放在第一位
+				//   .field('creatUid{nickname, avatar}') // 这里联表查询book表返回book表内的title、book表内的author、order表内的quantity
+				//   .get()
+				//   .then(res => {
+				//     console.log(res);
+				//   }).catch(err => {
+				//     console.error(err)
+				//   })
+				
+				// uniCloud.callFunction({
+				// 	name: 'wishlist',
+				// 	data: {
+				// 		type: 'getlist',
+				// 		info: {
+				// 			achieveFlag: achieveFlag,
+				// 			sortType: sortType,
+				// 			searchText: searchText,
+				// 			date: date,
+				// 			pageSize: pageSize,
+				// 			pageNum: pageNum
+				// 		}
+				// 	}
+				// }).then(response => {
+				// 	if(response) {
+				// 		// 加载成功
+				// 		let date = response.result.date
+				// 		// 列表
+				// 		let list = response.result.data || []
+						
+				// 		if(pageNum == 1) {
+				// 			dataArr = [] //清空数据源
+				// 			mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
+				// 			mescroll.date = date
+				// 		} 
+				// 		//将请求的数据添加至现有数据源中
+				// 		dataArr = dataArr.concat(list)
+				// 		//无法检测数组对象长度的变更 故使用$set方法进行变更
+				// 		_this.$set(currenttabitem,'dataArr',dataArr)
+				// 		_this.$set(currenttabitem,'loaded',true)
+						
+				// 		// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
+				// 		_this.$nextTick(()=>{
+				// 			let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
+				// 			mescroll.endSuccess(list.length,hasNext)
+				// 		})
+				
+				// 	}
+				// 	else {
+				// 		uni.showToast({
+				// 			title: _this.i18n.error.loaderror,
+				// 			icon: 'none'
+				// 		});
+				// 		// 失败隐藏下拉加载状态
+				// 		mescroll.endErr()
+				// 	}
 					
-				}).catch(error => {
-					uni.showToast({
-						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
-					// 失败隐藏下拉加载状态
-					mescroll.endErr()
-				})
+				// }).catch(error => {
+				// 	uni.showToast({
+				// 		title: _this.i18n.error.loaderror,
+				// 		icon: 'none'
+				// 	});
+				// 	// 失败隐藏下拉加载状态
+				// 	mescroll.endErr()
+				// })
 				
 			},
 			

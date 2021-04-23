@@ -268,19 +268,16 @@
 					this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					this.targetAmount = info.targetAmount // 目标数量
 					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
-					// this.imgArr = info.imgs.split(',') // 图片数组
 					this.remark = info.remark // 备注信息
 					
 					// 获取图片数组将其放入返显中
-					let imgs = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/2aac67f9-3305-4bba-a23c-a12d4328b44d.jpg,https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/76b8a0a0-416a-43f2-a8fa-2642907c5d6c.png,https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6362743b-e8db-4edf-86bb-cf9dc983dadb/2629e2d9-96eb-4cc5-a0f2-4dbc7fe3c8da.png'
-					let imgsarr = imgs.split(',') // 图片数组
+					let imgsarr = info.imgs.split(',') // 图片数组
 					let imgsobjarr = imgsarr.map(item => {
 						let imgobj = {
 							url: item
 						}
 						return imgobj
 					})
-					console.log(imgsobjarr);
 					this.imgArr = imgsobjarr
 					
 				}).catch(error => {
@@ -321,21 +318,21 @@
 			
 			// 选择图片成功
 			fileselect(e) {
-				console.log(`图片选择成功,`);
+				console.log(`图片选择成功`);
 				console.log(e);
-				this.imgArr.concat(e.tempFiles)
+				this.imgArr.push.apply(this.imgArr, e.tempFiles)
+				// this.imgArr =  this.imgArr.concat(e.tempFiles)
 				console.log(this.imgArr);
 			},
 			
 			// 图片删除
 			filedelete(e) {
 				console.log(`图片删除成功`);
-				console.log(e);
 				let deleteIndex = this.imgArr.findIndex(item => {
 					return e.tempFilePath == item.path
 				})
-				console.log(deleteIndex);
 				if(deleteIndex > -1) {
+					console.log(`删除了第${deleteIndex}张图片`);
 					this.imgArr.splice(deleteIndex,1)
 				}
 			},
@@ -350,7 +347,11 @@
 			filesuccess(e) {
 				console.log(`上传图片成功,`);
 				console.log(e);
-				this.imgArr = e.tempFiles
+				
+				this.ifloading = false
+				
+				// 继续提交数据
+				this.uploaddata()
 			},
 			
 			// 上传图片失败
@@ -358,6 +359,12 @@
 				// 上传图片失败
 				console.log(`上传图片失败`);
 				console.log(e);
+				
+				this.ifloading = false
+				uni.showToast({
+					title: this.i18n.error.uploaderror,
+					icon: 'none'
+				});
 			},
 			
 			// 添加图片
@@ -486,10 +493,14 @@
 			// 上传数据
 			uploaddata() {
 				
-				// 开始上传图片
-				this.$refs.filepickerref.upload()
-				
-				return
+				console.log(this.imgArr);
+				// 检查是否需要上传图片
+				if(this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					this.ifloading = true
+					this.$refs.filepickerref.upload()
+					return
+				}
 				
 				// 进行数据检查			
 				
@@ -528,141 +539,267 @@
 				
 				// 其余项均为选填项
 				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = this.imgArr.map(item => (item.url)).join(',')
+				// 上传图片成功 开始上传所有数据
+				let info = {
+					productTitle: _this.productTitle, // 商品标题
+					sourceLink: _this.sourceLink, // 源网站链接
+					sourcePrice: _this.sourcePrice, // 源网站价格
+					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+					targetPrice: _this.targetPrice, // 目标价格
+					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
+					targetAmount: _this.targetAmount, // 目标数量
+					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
+					remark: _this.remark, // 备注信息
+					imgs: imgs, // 图片字符串集合
+					// user: _this.user, // 当前发布人的信息
+				}
+				
+				// 新增
+				if(_this.type == 'add') {
+					
+					// 开始上传云函数
+					uniCloud.callFunction({
+						name: 'wishlist',
+						data: {
+							type: 'add',
+							info: info
+						}
+					}).then(response => {
+						// 发布成功
+						uni.$emit('updatewishlist')
+						
+						this.modalTitle = this.i18n.tip.addsuccess
+						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+						this.showModal = true
+				
+						// uni.showToast({
+						// 	title: _this.i18n.tip.addsuccess,
+						// 	icon: 'none',
+						// 	duration: 1500
+						// });
+						// setTimeout(function() {
+						// 	uni.navigateBack();
+						// }, 1500);
+						
+					}).catch(error => {
+						// 发布失败
+						uni.showToast({
+							title: _this.i18n.error.adderror,
+							icon: 'none'
+						});
+					})
+					
+				}
+				// 编辑
+				else if(_this.type == 'edit') {
+					
+					info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
+					
+					// 开始上传云函数
+					uniCloud.callFunction({
+						name: 'wishlist',
+						data: {
+							type: 'edit',
+							info: info
+						}
+					}).then(response => {
+						// 发布成功
+						uni.$emit('updatewishlist')
+						uni.$emit('updatewishdetail')
+						
+						this.modalTitle = this.i18n.tip.fixsuccess
+						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+						this.showModal = true
+						
+						// uni.showToast({
+						// 	title: _this.i18n.tip.fixsuccess,
+						// 	icon: 'none',
+						// 	duration: 1500
+						// });
+						// setTimeout(function() {
+						// 	uni.navigateBack();
+						// }, 1500);
+					}).catch(error => {
+						// 发布失败
+						uni.showToast({
+							title: _this.i18n.error.fixerror,
+							icon: 'none'
+						});
+					})
+				}
+				// 拷贝
+				else if(_this.type == 'copy') {
+					// 开始上传云函数
+					uniCloud.callFunction({
+						name: 'wishlist',
+						data: {
+							type: 'add',
+							info: info
+						}
+					}).then(response => {
+						// 发布成功
+						uni.$emit('updatewishlist', {type: 'copywish'})
+						
+						this.modalTitle = this.i18n.tip.addsuccess
+						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+						this.showModal = true
+						
+						// uni.showToast({
+						// 	title: _this.i18n.tip.addsuccess,
+						// 	icon: 'none',
+						// 	duration: 1500
+						// });
+						
+						// setTimeout(function() {
+						// 	uni.navigateBack();
+						// }, 1500);
+					}).catch(error => {
+						// 发布失败
+						uni.showToast({
+							title: _this.i18n.error.adderror,
+							icon: 'none'
+						});
+					})
+				}
+				
+				
 				// 开始上传图片(包含新增和编辑)
-				this.uploadpic(this.imgArr).then(imgs => {
+				// this.uploadpic(this.imgArr).then(imgs => {
 					
-					// 上传图片成功 开始上传所有数据
-					let info = {
-						productTitle: _this.productTitle, // 商品标题
-						sourceLink: _this.sourceLink, // 源网站链接
-						sourcePrice: _this.sourcePrice, // 源网站价格
-						sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-						targetPrice: _this.targetPrice, // 目标价格
-						targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-						targetAmount: _this.targetAmount, // 目标数量
-						hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
-						remark: _this.remark, // 备注信息
-						imgs: imgs, // 图片字符串集合
-						user: _this.user, // 当前发布人的信息
-					}
+				// 	// 上传图片成功 开始上传所有数据
+				// 	let info = {
+				// 		productTitle: _this.productTitle, // 商品标题
+				// 		sourceLink: _this.sourceLink, // 源网站链接
+				// 		sourcePrice: _this.sourcePrice, // 源网站价格
+				// 		sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+				// 		targetPrice: _this.targetPrice, // 目标价格
+				// 		targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
+				// 		targetAmount: _this.targetAmount, // 目标数量
+				// 		hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
+				// 		remark: _this.remark, // 备注信息
+				// 		imgs: imgs, // 图片字符串集合
+				// 		user: _this.user, // 当前发布人的信息
+				// 	}
 					
-					// 新增
-					if(_this.type == 'add') {
+				// 	// 新增
+				// 	if(_this.type == 'add') {
 						
-						// 开始上传云函数
-						uniCloud.callFunction({
-							name: 'wishlist',
-							data: {
-								type: 'add',
-								info: info
-							}
-						}).then(response => {
-							// 发布成功
-							uni.$emit('updatewishlist')
+				// 		// 开始上传云函数
+				// 		uniCloud.callFunction({
+				// 			name: 'wishlist',
+				// 			data: {
+				// 				type: 'add',
+				// 				info: info
+				// 			}
+				// 		}).then(response => {
+				// 			// 发布成功
+				// 			uni.$emit('updatewishlist')
 							
-							this.modalTitle = this.i18n.tip.addsuccess
-							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-							this.showModal = true
+				// 			this.modalTitle = this.i18n.tip.addsuccess
+				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+				// 			this.showModal = true
 
-							// uni.showToast({
-							// 	title: _this.i18n.tip.addsuccess,
-							// 	icon: 'none',
-							// 	duration: 1500
-							// });
-							// setTimeout(function() {
-							// 	uni.navigateBack();
-							// }, 1500);
+				// 			// uni.showToast({
+				// 			// 	title: _this.i18n.tip.addsuccess,
+				// 			// 	icon: 'none',
+				// 			// 	duration: 1500
+				// 			// });
+				// 			// setTimeout(function() {
+				// 			// 	uni.navigateBack();
+				// 			// }, 1500);
 							
-						}).catch(error => {
-							// 发布失败
-							uni.showToast({
-								title: _this.i18n.error.adderror,
-								icon: 'none'
-							});
-						})
+				// 		}).catch(error => {
+				// 			// 发布失败
+				// 			uni.showToast({
+				// 				title: _this.i18n.error.adderror,
+				// 				icon: 'none'
+				// 			});
+				// 		})
 						
-					}
-					// 编辑
-					else if(_this.type == 'edit') {
+				// 	}
+				// 	// 编辑
+				// 	else if(_this.type == 'edit') {
 						
-						info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
+				// 		info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
 						
-						// 开始上传云函数
-						uniCloud.callFunction({
-							name: 'wishlist',
-							data: {
-								type: 'edit',
-								info: info
-							}
-						}).then(response => {
-							// 发布成功
-							uni.$emit('updatewishlist')
-							uni.$emit('updatewishdetail')
+				// 		// 开始上传云函数
+				// 		uniCloud.callFunction({
+				// 			name: 'wishlist',
+				// 			data: {
+				// 				type: 'edit',
+				// 				info: info
+				// 			}
+				// 		}).then(response => {
+				// 			// 发布成功
+				// 			uni.$emit('updatewishlist')
+				// 			uni.$emit('updatewishdetail')
 							
-							this.modalTitle = this.i18n.tip.fixsuccess
-							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-							this.showModal = true
+				// 			this.modalTitle = this.i18n.tip.fixsuccess
+				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+				// 			this.showModal = true
 							
-							// uni.showToast({
-							// 	title: _this.i18n.tip.fixsuccess,
-							// 	icon: 'none',
-							// 	duration: 1500
-							// });
-							// setTimeout(function() {
-							// 	uni.navigateBack();
-							// }, 1500);
-						}).catch(error => {
-							// 发布失败
-							uni.showToast({
-								title: _this.i18n.error.fixerror,
-								icon: 'none'
-							});
-						})
-					}
-					// 拷贝
-					else if(_this.type == 'copy') {
-						// 开始上传云函数
-						uniCloud.callFunction({
-							name: 'wishlist',
-							data: {
-								type: 'add',
-								info: info
-							}
-						}).then(response => {
-							// 发布成功
-							uni.$emit('updatewishlist', {type: 'copywish'})
+				// 			// uni.showToast({
+				// 			// 	title: _this.i18n.tip.fixsuccess,
+				// 			// 	icon: 'none',
+				// 			// 	duration: 1500
+				// 			// });
+				// 			// setTimeout(function() {
+				// 			// 	uni.navigateBack();
+				// 			// }, 1500);
+				// 		}).catch(error => {
+				// 			// 发布失败
+				// 			uni.showToast({
+				// 				title: _this.i18n.error.fixerror,
+				// 				icon: 'none'
+				// 			});
+				// 		})
+				// 	}
+				// 	// 拷贝
+				// 	else if(_this.type == 'copy') {
+				// 		// 开始上传云函数
+				// 		uniCloud.callFunction({
+				// 			name: 'wishlist',
+				// 			data: {
+				// 				type: 'add',
+				// 				info: info
+				// 			}
+				// 		}).then(response => {
+				// 			// 发布成功
+				// 			uni.$emit('updatewishlist', {type: 'copywish'})
 							
-							this.modalTitle = this.i18n.tip.addsuccess
-							this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-							this.showModal = true
+				// 			this.modalTitle = this.i18n.tip.addsuccess
+				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+				// 			this.showModal = true
 							
-							// uni.showToast({
-							// 	title: _this.i18n.tip.addsuccess,
-							// 	icon: 'none',
-							// 	duration: 1500
-							// });
+				// 			// uni.showToast({
+				// 			// 	title: _this.i18n.tip.addsuccess,
+				// 			// 	icon: 'none',
+				// 			// 	duration: 1500
+				// 			// });
 							
-							// setTimeout(function() {
-							// 	uni.navigateBack();
-							// }, 1500);
-						}).catch(error => {
-							// 发布失败
-							uni.showToast({
-								title: _this.i18n.error.adderror,
-								icon: 'none'
-							});
-						})
-					}
+				// 			// setTimeout(function() {
+				// 			// 	uni.navigateBack();
+				// 			// }, 1500);
+				// 		}).catch(error => {
+				// 			// 发布失败
+				// 			uni.showToast({
+				// 				title: _this.i18n.error.adderror,
+				// 				icon: 'none'
+				// 			});
+				// 		})
+				// 	}
 					
-				}).catch(error => {
-					console.log(`上传失败`);
-					console.log(JSON.stringify(error));
-					// 上传图片失败
-					uni.showToast({
-						title: this.i18n.error.uploaderror,
-						icon: 'none'
-					});
-				})
+				// }).catch(error => {
+				// 	console.log(`上传失败`);
+				// 	console.log(JSON.stringify(error));
+				// 	// 上传图片失败
+				// 	uni.showToast({
+				// 		title: this.i18n.error.uploaderror,
+				// 		icon: 'none'
+				// 	});
+				// })
 				
 			},
 			

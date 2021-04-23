@@ -43,10 +43,10 @@ exports.main = async (event, context) => {
 		const res = await uniIDIns.register({
 			username: info.account,
 			password: info.password,
-			avatar: '', // 注册时默认头像为空
-			nickname: '', // 注册时默认昵称为空
-			role: [], // 注册时默认角色为空数组
-			myInviteCode: info.invitecode, // 邀请码
+			avatar: info.avatar || '', // 注册时默认头像为空
+			nickname: info.nickname || '', // 注册时默认昵称为空
+			role: info.role || [], // 注册时默认角色为空数组
+			myInviteCode: info.invitecode || '', // 邀请码
 		})
 		console.log(`user云函数中用户注册返回的数据为`);
 		console.log(res);
