@@ -14,6 +14,7 @@
 			"description": "ID，系统自动生成"
 		},
 		"creatUser": {
+			"bsonType":"string",
 			"description": "发布者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue":{
@@ -39,19 +40,25 @@
 			"description": "目标价格类型"
 		},
 		"targetAmount": {
+			"bsonType":"string",
 			"description": "目标数量"
 		},
 		"hurryLevel": {
+			"bsonType":"int",
 			"description": "紧急程度 1 2 3 4 5"
 		},
 		"remark": {
+			"bsonType":"string",
 			"description": "备注"
 		},
 		"imgs": {
+			"bsonType":"string",
 			"description": "图片字符串 逗号拼接"
 		},
 		"achieveFlag": {
-			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭"
+			"bsonType":"int",
+			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭",
+			"defaultValue": 0
 		},
 		"creatTime": {
 			"description": "创建时间",

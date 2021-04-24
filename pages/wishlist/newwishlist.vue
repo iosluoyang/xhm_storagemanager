@@ -208,38 +208,52 @@
 			// 获取操作条上的角标数量
 			getbadgenum() {
 				
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getbadgenum',
-						info: {}
-					}
-				}).then(response => {
-					// 获取操作数量成功
-					if(response.result) {
-						let ingnum = response.result.ingnum
-						let needtoconfirmnum = response.result.needtoconfirmnum
-						let needtoordernum = response.result.needtoordernum
-						// 找到tabArr的数组更改其中的数据
-						let tabArr = this.tabArr
-						tabArr.forEach((eachtab, index) => {
-							if(eachtab.status == 0) {
-								eachtab.count = ingnum
-							}
-							else if(eachtab.status == 1) {
-								eachtab.count = needtoconfirmnum
-							}
-							else if(eachtab.status == 2) {
-								eachtab.count = needtoordernum
-							}
-						})
+				// 暂时还未能获取自身uid下的数量
+				const db = uniCloud.database();
+				db.collection('wishlist')
+					.where('creatUser._id == $cloudEnv_uid')
+					.groupBy('achieveFlag')
+					.groupField('count(*) as count')
+					.get()
+					.then(res => {
+						console.log(res);
+					})
+					.catch(err => {
+						console.log(err.message);
+					})
+				
+				// uniCloud.callFunction({
+				// 	name: 'wishlist',
+				// 	data: {
+				// 		type: 'getbadgenum',
+				// 		info: {}
+				// 	}
+				// }).then(response => {
+				// 	// 获取操作数量成功
+				// 	if(response.result) {
+				// 		let ingnum = response.result.ingnum
+				// 		let needtoconfirmnum = response.result.needtoconfirmnum
+				// 		let needtoordernum = response.result.needtoordernum
+				// 		// 找到tabArr的数组更改其中的数据
+				// 		let tabArr = this.tabArr
+				// 		tabArr.forEach((eachtab, index) => {
+				// 			if(eachtab.status == 0) {
+				// 				eachtab.count = ingnum
+				// 			}
+				// 			else if(eachtab.status == 1) {
+				// 				eachtab.count = needtoconfirmnum
+				// 			}
+				// 			else if(eachtab.status == 2) {
+				// 				eachtab.count = needtoordernum
+				// 			}
+				// 		})
 						
-						this.tabArr = tabArr
+				// 		this.tabArr = tabArr
 						
-					}
-				}).catch(error => {
-					// 获取操作数量失败
-				})
+				// 	}
+				// }).catch(error => {
+				// 	// 获取操作数量失败
+				// })
 				
 			},
 			
@@ -305,13 +319,41 @@
 				// 开始进行接口请求
 				
 				const db = uniCloud.database();
+				// 查询 搜索关键字 完成标识 和仅自己发布的可看
+				let wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				db.collection('wishlist,uni-id-users')
-					.field('creatUser{nickname,avatar},productTitle,imgs,creatTime')
+					.where(wherestr)
+					.field('creatUser{nickname,avatar},productTitle, imgs, sourcePrice, sourceMoneyType, targetPrice, targetMoneyType, hurryLevel, achieveFlag,creatTime')
+					.orderBy(`creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
-					.get()
-					.then(res => {
-						console.log(res);
+					.get({
+						getCount:true
+					})
+					.then(response => {
+						console.log(response.result.data);
+						// 加载成功
+						let list = response.result.data || []
+						
+						// 更改对应角标的数量
+						let selecttab = this.tabArr.find(item => (item.status == achieveFlag))
+						selecttab.count = response.result.count
+						
+						if(pageNum == 1) {
+							dataArr = [] //清空数据源
+							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
+						} 
+						//将请求的数据添加至现有数据源中
+						dataArr = dataArr.concat(list)
+						//无法检测数组对象长度的变更 故使用$set方法进行变更
+						_this.$set(currenttabitem,'dataArr',dataArr)
+						_this.$set(currenttabitem,'loaded',true)
+						
+						// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
+						_this.$nextTick(()=>{
+							let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
+							mescroll.endSuccess(list.length,hasNext)
+						})
 					})
 					.catch(err => {
 						uni.showToast({
