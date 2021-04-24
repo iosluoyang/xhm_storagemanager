@@ -116,16 +116,16 @@
 			setcolorUIcolor()
 			
 			// 初始化完成时  加载配置信息
-			this.$store.dispatch('app/setConfigData').then(response => {
-				// 此时配置信息已经加载成功并且保存到本地
+			// this.$store.dispatch('app/setConfigData').then(response => {
+			// 	// 此时配置信息已经加载成功并且保存到本地
 				
-			}).catch(error => {
-				// 配置信息加载失败,提示用户
-				uni.showToast({
-					title: this.i18n.error.configerror,
-					icon: 'none'
-				});
-			})
+			// }).catch(error => {
+			// 	// 配置信息加载失败,提示用户
+			// 	uni.showToast({
+			// 		title: this.i18n.error.configerror,
+			// 		icon: 'none'
+			// 	});
+			// })
 			
 		},
 		onShow: function() {

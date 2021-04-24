@@ -19,7 +19,7 @@
 			</view>
 			
 			<!-- 账号 -->
-			<view class="cu-form-group bg-gray">
+			<view class="cu-form-group text-grey">
 				<view class="title">{{i18n.me.persondetail.account}}</view>
 				<input type="text" disabled :value="userInfo.username" />
 			</view>
@@ -68,7 +68,7 @@
 			</view>
 			
 			<!-- 个人简介 -->
-			<view class="cu-form-group margin-top">
+			<view class="cu-form-group">
 				<textarea maxlength="-1"  v-model="userInfo.comment" :placeholder="i18n.me.persondetail.signature"></textarea>
 			</view>
 			

@@ -208,25 +208,14 @@ const actions = {
 	},
 	
 	// logout
-	logout({state, commit }){
+	logout({ dispatch, commit }){
 		return new Promise((resolve, reject) => {
-			// userapi.logout().then(() => {
-				
-			// 	// 登出成功  清除本地用户信息数据
-			// 	commit('SET_ACCESSTOKEN',null)
-			// 	commit('SET_REFRESHTOKEN',null)
-			// 	commit('SET_USER',null)
-				
-			// 	resolve()
-			// }).catch(error => {reject(error)})
-			
 			
 			// 调用云函数登出
 			uniCloud.callFunction({
 				name: 'user',
 				data: {
-					type: 'logout',
-					info: {}
+					type: 'logout'
 				},
 				success(res) {
 					// 登出成功
@@ -249,7 +238,6 @@ const actions = {
 	
 	// refresh token
 	refreshtoken({ commit }) {
-		
 		return new Promise((resolve, reject) => {
 			baseapi.refreshtoken().then(response => {
 				// 获取到最新的token之后刷新本地的token
@@ -260,7 +248,6 @@ const actions = {
 				reject(error)
 			})
 		})
-		
 	},
 	
 	// reset token
@@ -274,11 +261,10 @@ const actions = {
 	
 			resolve()
 		})
-		
 	},
 	
 	// get userdetail
-	getuserdetail({ state, commit }){
+	getuserdetail({ dispatch, commit }){
 		return new Promise((resolve,reject) => {
 			
 			uniCloud.callFunction({
@@ -295,7 +281,23 @@ const actions = {
 					resolve()
 				}
 				else {
-					reject(res)
+					// 如果是token过期则提示用户重新登录
+					if(res.result.code == 30203) {
+						dispatch('resettoken').then(() => {
+							
+							uni.navigateTo({
+								url: '/pages/base/login'
+							});
+							setTimeout(function() {
+								uni.showToast({
+									title: '您已经长时间未登录,请重新登录',
+									icon: 'none'
+								});
+							}, 1500);
+							
+						})
+					}
+					reject(res.result)
 				}
 			}).catch(err => {
 				// 加载失败
@@ -313,7 +315,6 @@ const actions = {
 	
 	// update userdetail 更新用户的信息
 	updateuserdetail({ state, commit }, user){
-		
 		return new Promise(resolve => {
 			if(user){ 
 				let newuser = {...state.user, ...user}
@@ -321,7 +322,6 @@ const actions = {
 			}
 			resolve()
 		})
-		
 	},
 	
 }

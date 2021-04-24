@@ -161,6 +161,7 @@ const zh = {
 		invitecode: "邀请码",
 		loginstr: "登录",
 		registerstr: "注册",
+		forgetpwd: "忘记密码",
 	},
 	
 	// 首页

@@ -163,7 +163,8 @@ const en = {
 		password: "Password",
 		invitecode: "InviteCode",
 		loginstr: "Login",
-		registerstr: "Register"
+		registerstr: "Register",
+		forgetpwd: "Forget Password",
 	},
 	
 	// 首页

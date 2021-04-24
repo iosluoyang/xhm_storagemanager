@@ -1,6 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
+	"description":"心愿单列表数据表",
 	"required": [],
 	"permission": {
 		"read": true,
@@ -12,9 +13,12 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
-		"creatUid": {
+		"creatUser": {
 			"description": "发布者的uid",
-			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue":{
+				"$env":"uid"
+			} // 强制设置creatUid的值为当前登录用户的id
 		},
 		"productTitle": {
 			"description": "商品标题"
@@ -46,20 +50,14 @@
 		"imgs": {
 			"description": "图片字符串 逗号拼接"
 		},
-		"user": {
-			"description": "创建者user对象"
-		},
 		"achieveFlag": {
 			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭"
 		},
-		"previewCount": {
-			"description": "浏览次数"
-		},
-		"commentCount": {
-			"description": "评论数量"
-		},
 		"creatTime": {
-			"description": "创建时间"
+			"description": "创建时间",
+			"forceDefaultValue": {
+			  "$env": "now"
+			}
 		}
 	}
 }

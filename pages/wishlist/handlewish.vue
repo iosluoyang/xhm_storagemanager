@@ -118,25 +118,10 @@
 				</uni-file-picker>
 			</view>
 			
-			<!-- <view class="cu-form-group">
-				<view class="grid col-4 grid-square flex-sub">
-					
-					<view class="bg-img" v-for="(item, index) in imgArr" :key="index" @tap.stop="previewImg(index)">
-						<image :src="item.path ? item.path : (imgUrl + item)" mode="aspectFill"></image>
-						<view class="cu-tag bg-red" @tap.stop="deleteimg(index)"><text class="cuIcon-close"></text></view>
-					</view>
-					
-					<view v-if="imgArr.length < mainpiclimitnum" class="solids" @tap.stop="addImg">
-						<text class="cuIcon cuIcon-cameraadd"></text>
-					</view>
-
-				</view>
-			</view> -->
-			
 		</form>
 		
 		<!-- 确定按钮 -->
-		<view class="cu-bar btn-group margin">
+		<view class="cu-bar btn-group padding-xl">
 			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
 		</view>
 		
@@ -149,7 +134,7 @@
 				<view class="cu-bar bg-white justify-end">
 					<view class="content">{{ modalTitle }}</view>
 					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-red"></text>
+						<text class="cuIcon-close text-pink"></text>
 					</view>
 				</view>
 				<view class="padding-xl">
@@ -493,15 +478,6 @@
 			// 上传数据
 			uploaddata() {
 				
-				console.log(this.imgArr);
-				// 检查是否需要上传图片
-				if(this.imgArr.find(item => { return item.progress == 0 })) {
-					// 开始上传图片
-					this.ifloading = true
-					this.$refs.filepickerref.upload()
-					return
-				}
-				
 				// 进行数据检查			
 				
 				// 检查是否有商品标题
@@ -536,8 +512,16 @@
 					});
 					return false
 				}
-				
 				// 其余项均为选填项
+				
+				// 开始上传
+				// 检查是否需要上传图片
+				if(this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					this.ifloading = true
+					this.$refs.filepickerref.upload()
+					return
+				}
 				
 				// 上传图片已经成功 此时开始提交其他数据
 				let imgs = this.imgArr.map(item => (item.url)).join(',')
@@ -553,43 +537,83 @@
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
-					// user: _this.user, // 当前发布人的信息
 				}
 				
 				// 新增
 				if(_this.type == 'add') {
 					
-					// 开始上传云函数
-					uniCloud.callFunction({
-						name: 'wishlist',
-						data: {
-							type: 'add',
-							info: info
-						}
-					}).then(response => {
+					// 使用openDB进行数据写入
+					const db = uniCloud.database();
+					db.collection('wishlist').add(info).then(res => {
+						
 						// 发布成功
 						uni.$emit('updatewishlist')
 						
+						// 如果是在小程序端则进行订阅消息
+						// #ifdef MP-WEIXIN
 						this.modalTitle = this.i18n.tip.addsuccess
-						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
+						this.modalContent = '点击订阅消息即可在该心愿单变更时及时通知到您'
 						this.showModal = true
-				
-						// uni.showToast({
-						// 	title: _this.i18n.tip.addsuccess,
-						// 	icon: 'none',
-						// 	duration: 1500
-						// });
-						// setTimeout(function() {
-						// 	uni.navigateBack();
-						// }, 1500);
+						// #endif
 						
-					}).catch(error => {
-						// 发布失败
+						// 非小程序则直接返回
+						// #ifndef MP-WEIXIN
 						uni.showToast({
-							title: _this.i18n.error.adderror,
+							title: _this.i18n.tip.addsuccess,
+							icon: 'none',
+							duration: 1500
+						});
+						setTimeout(function() {
+							uni.navigateBack();
+						}, 1500);
+						// #endif
+						
+					}).catch(err => {
+						uni.showToast({
+							title: err.message,
 							icon: 'none'
 						});
 					})
+					
+					return
+					
+					// // 开始上传云函数
+					// uniCloud.callFunction({
+					// 	name: 'wishlist',
+					// 	data: {
+					// 		type: 'add',
+					// 		info: info
+					// 	}
+					// }).then(response => {
+					// 	// 发布成功
+					// 	uni.$emit('updatewishlist')
+						
+					// 	// 如果是在小程序端则进行订阅消息
+					// 	// #ifdef MP-WEIXIN
+					// 	this.modalTitle = this.i18n.tip.addsuccess
+					// 	this.modalContent = '点击订阅消息即可在该心愿单变更时及时通知到您'
+					// 	this.showModal = true
+					// 	// #endif
+						
+					// 	// 非小程序则直接返回
+					// 	// #ifndef MP-WEIXIN
+					// 	uni.showToast({
+					// 		title: _this.i18n.tip.addsuccess,
+					// 		icon: 'none',
+					// 		duration: 1500
+					// 	});
+					// 	setTimeout(function() {
+					// 		uni.navigateBack();
+					// 	}, 1500);
+					// 	// #endif
+						
+					// }).catch(error => {
+					// 	// 发布失败
+					// 	uni.showToast({
+					// 		title: _this.i18n.error.adderror,
+					// 		icon: 'none'
+					// 	});
+					// })
 					
 				}
 				// 编辑
@@ -812,6 +836,8 @@
 				this.showModal = false
 				
 				// 开始获取订阅
+				// #ifdef MP-WEIXIN
+				
 				// 增加订阅模板消息的功能
 				let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
 				uni.requestSubscribeMessage({
@@ -841,6 +867,8 @@
 						uni.navigateBack();
 					}
 				})
+				
+				// #endif
 			}
 			
 		},

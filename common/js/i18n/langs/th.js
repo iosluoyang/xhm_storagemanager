@@ -160,7 +160,8 @@ const th = {
 		password: "รหัส",
 		invitecode: "รหัสเชิญ",
 		loginstr: "เข้าสู่ระบบ",
-		registerstr: "ลงทะเบียน"
+		registerstr: "ลงทะเบียน",
+		forgetpwd: "ลืมรหัสผ่าน",
 	},
 	
 	// 首页

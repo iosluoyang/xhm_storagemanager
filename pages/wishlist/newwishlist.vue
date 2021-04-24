@@ -304,15 +304,23 @@
 				
 				// 开始进行接口请求
 				
-				// const db = uniCloud.database()
-				// db.collection('wishlist,uni-id-users') // 注意collection方法内需要传入所有用到的表名，用逗号分隔，主表需要放在第一位
-				//   .field('creatUid{nickname, avatar}') // 这里联表查询book表返回book表内的title、book表内的author、order表内的quantity
-				//   .get()
-				//   .then(res => {
-				//     console.log(res);
-				//   }).catch(err => {
-				//     console.error(err)
-				//   })
+				const db = uniCloud.database();
+				db.collection('wishlist,uni-id-users')
+					.field('creatUser{nickname,avatar},productTitle,imgs,creatTime')
+					.skip((pageNum - 1) * pageSize)
+					.limit(pageSize)
+					.get()
+					.then(res => {
+						console.log(res);
+					})
+					.catch(err => {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+						// 失败隐藏下拉加载状态
+						mescroll.endErr()
+					})
 				
 				// uniCloud.callFunction({
 				// 	name: 'wishlist',
