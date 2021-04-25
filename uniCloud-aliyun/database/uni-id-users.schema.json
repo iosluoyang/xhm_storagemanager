@@ -52,6 +52,19 @@
 				"value": 2
 			}]
 		},
+		"avatar": {
+			"bsonType": "string",
+			"title": "头像地址",
+			"description": "头像地址",
+			"trim": "both",
+			"defaultValue":""
+		},
+		"comment": {
+			"bsonType": "string",
+			"title": "备注",
+			"description": "备注",
+			"trim": "both"
+		},
 		"status": {
 			"bsonType": "int",
 			"description": "用户状态：0 正常 1 禁用 2 审核中 3 审核拒绝",
@@ -111,13 +124,6 @@
 				"value": 1
 			}]
 		},
-		"avatar": {
-			"bsonType": "string",
-			"title": "头像地址",
-			"description": "头像地址",
-			"trim": "both",
-			"defaultValue":""
-		},
 		"role": {
 			"bsonType": "array",
 			"title": "角色",
@@ -156,12 +162,6 @@
 		"apple_openid": {
 			"bsonType": "string",
 			"description": "苹果登录openid"
-		},
-		"comment": {
-			"bsonType": "string",
-			"title": "备注",
-			"description": "备注",
-			"trim": "both"
 		},
 		"realname_auth": {
 			"bsonType": "object",

@@ -13,22 +13,22 @@
 			<view v-if="wishinfo" class="cu-item shadow bg-white">
 				
 				<!-- 头部区域 创建者信息区域 -->
-				<view v-if="wishinfo.createdUser" class="headerview flex justify-between padding">
+				<view v-if="wishinfo.creatUser" class="headerview flex justify-between padding">
 					
 					<view class="publisherview flex">
 						
 						<!-- 头像 -->
 						<template>
-							<image v-if="wishinfo.createdUser.avatar" class="cu-avatar round" :src="wishinfo.createdUser.avatar"></image>
+							<image v-if="wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
 							<view v-else class="cu-avatar round sm">
 								<text class="cuIcon-people"></text>
 							</view>
 						</template>
 						<!-- 昵称和时间 -->
 						<view class="content flex-sub margin-left">
-							<view>{{wishinfo.createdUser.nickname}}</view>
+							<view>{{wishinfo.creatUser.nickname || 'XXX'}}</view>
 							<view class="text-gray text-sm flex justify-between">
-								{{ wishinfo.creatTime }}
+								<uni-dateformat :date="wishinfo.creatTime" />
 							</view>
 						</view>
 					
@@ -48,12 +48,12 @@
 				<swiper class="screen-swiper round-dot" indicator-dots circular
 				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
-					<swiper-item v-for="(img,index) in imgsArr" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
+					<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
 						<image :src="img" mode="aspectFit"></image>
 					</swiper-item>
 				</swiper>
 				
-				<!-- 商品标题和备注区域 -->
+				<!-- 商品标题和价格区域 -->
 				<view class="text-content padding-sm">
 					
 					<view class="text-bold text-xl">
@@ -105,17 +105,17 @@
 						<button class="cu-btn round line-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
-						<button v-if="wishinfo.createdUser && wishinfo.createdUser.uid == user._id" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
 						<!-- 删除按钮 仅自己可删除 -->
-						<button v-if="wishinfo.createdUser && wishinfo.createdUser.uid == user._id" class="cu-btn round line-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round line-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 						
 					</view>
 					
-					<view class="staticview text-gray text-sm text-right">
+					<!-- <view class="staticview text-gray text-sm text-right">
 						<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishinfo.previewCount || 0}}
 						<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishinfo.commentCount || 0}}
-					</view>
+					</view> -->
 					
 				</view>
 								
@@ -495,7 +495,7 @@
 				this.loaddetaildata()
 				
 				// 加载心愿时间轴数据
-				this.loadtimelinedata()
+				// this.loadtimelinedata()
 			}
 			else {
 				uni.showToast({
@@ -575,7 +575,41 @@
 			// 获取心愿详情
 			loaddetaildata() {
 				
-				// _this.ifloading = true // 开始缓冲动画
+				_this.ifloading = true // 开始缓冲动画
+				
+				// 使用opendb获取详情信息
+				const db = uniCloud.database();
+				db.collection('wishlist,uni-id-users')
+					.where(`_id == '${_this.id}'`)
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,comment')
+					.get({
+						getOne:true
+					})
+					.then(res => {
+						console.log(res);
+						if(res.result.code == 0) {
+							let detaildata = res.result.data
+							detaildata.creatUser = detaildata.creatUser[0]
+							_this.wishinfo = detaildata
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(err => {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					})
+					.finally(() => {
+						_this.ifloading = false // 结束缓冲动画
+					})
+				
+				return
 				
 				uniCloud.callFunction({
 					name: 'wishlist',
@@ -767,7 +801,7 @@
 			previewImgs(index) {
 				uni.previewImage({
 					current:index,
-					urls: _this.imgsArr
+					urls: _this.wishinfo.imgs.split(',')
 				})
 			},
 			

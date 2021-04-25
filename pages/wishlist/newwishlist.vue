@@ -23,7 +23,7 @@
 			<view class="flex text-center">
 				<view class="cu-item flex-sub" :class=" index==current ? 'text-pink' : '' " v-for="(tabitem,index) in tabArr" :key="index" @tap="changetap" :data-index="index">
 					<text>{{ tabitem.name }}</text>
-					<view v-if="tabitem.count > 0" class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
+					<view v-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
 				</view>
 			</view>
 		</scroll-view>
@@ -129,70 +129,50 @@
 				let tabArr = [
 					{
 						name: this.i18n.base.all,
-						status: -1
+						status: -1,
+						loaded: false,
+						count: 0,
+						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.achieveFlag.ing,
-						status: 0
+						status: 0,
+						loaded: false,
+						count: 0,
+						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.achieveFlag.waittoconfirm,
-						status: 1
+						status: 1,
+						loaded: false,
+						count: 0,
+						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.achieveFlag.makeorder,
-						status: 2
+						status: 2,
+						loaded: false,
+						count: 0,
+						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.achieveFlag.finish,
-						status: 3
+						status: 3,
+						loaded: false,
+						count: 0,
+						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.achieveFlag.closed,
-						status: 4
+						status: 4,
+						loaded: false,
+						count: 0
 					}
 				]
 				
-				tabArr.forEach((eachtab, index) => {
-					
-					// 根据选中的状态选择默认选中的索引
-					if(_this.currentStatus == eachtab.status) {
-						_this.current = index
-					}
-					
-					// 设置加载标识为false
-					eachtab.loaded = false
-					// 设置空的数据源
-					eachtab.dataArr = []
-					// 设置各种状态的角标数量
-					
-					// 全部
-					if(eachtab.status == -1) {
-						eachtab.count = 0
-					}
-					// 进行中
-					else if(eachtab.status == 0) {
-						eachtab.count = 0
-					}
-					// 待确认
-					else if(eachtab.status == 1) {
-						eachtab.count = 0
-					}
-					// 待下单
-					else if(eachtab.status == 2) {
-						eachtab.count = 0
-					}
-					// 已完成
-					else if(eachtab.status == 3) {
-						eachtab.count = 0
-					}
-					// 已关闭
-					else if(eachtab.status == 4) {
-						eachtab.count = 0
-					}
-					
-				})
-				
+				// 设置选中索引
+				let selectIndex = tabArr.findIndex(item => ( _this.currentStatus == item.status ))
+				if(selectIndex > -1) { this.current = selectIndex }
 				this.tabArr = tabArr
 				
 				// 获取角标数量
@@ -211,12 +191,21 @@
 				// 暂时还未能获取自身uid下的数量
 				const db = uniCloud.database();
 				db.collection('wishlist')
-					.where('creatUser._id == $cloudEnv_uid')
+					.where('creatUser == $cloudEnv_uid')
 					.groupBy('achieveFlag')
 					.groupField('count(*) as count')
 					.get()
 					.then(res => {
+						console.log(`获取到的自己角标为:`);
 						console.log(res);
+						// 将各个状态的数量进行遍历设置
+						let countdata = res.result.data
+						countdata.forEach(item => {
+							let achieveFlag = item.achieveFlag
+							let count = item.count
+							let selectitem = _this.tabArr.find(item => ( item.status == achieveFlag ))
+							selectitem.count = count
+						})
 					})
 					.catch(err => {
 						console.log(err.message);
@@ -300,7 +289,7 @@
 				this.starttorefresh()
 			},
 			
-			/*上拉加载的回调*/
+			// 上拉加载的回调
 			upCallback(mescroll) {
 	
 				let pageNum = mescroll.num; // 页码, 默认从1开始

@@ -546,6 +546,17 @@
 					const db = uniCloud.database();
 					db.collection('wishlist').add(info).then(res => {
 						
+						// 增加一条默认的时间轴数据
+						let timelineinfo = {
+							wishId: res.result.id,
+							type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+						}
+						db.collection('wishlisttimeline').add(timelineinfo).then(res => {
+							console.log(`创建默认时间轴成功`);
+						}).catch(err => {
+							console.log(`创建默认时间轴失败`);
+						})
+						
 						// 发布成功
 						uni.$emit('updatewishlist')
 						

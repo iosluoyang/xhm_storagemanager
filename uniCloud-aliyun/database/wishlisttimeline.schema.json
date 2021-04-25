@@ -1,0 +1,51 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description":"心愿单时间轴表",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"wishId": {
+			"bsonType":"string",
+			"description":"该时间轴对应的心愿id",
+			"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+		},
+		"creatUser": {
+			"bsonType":"string",
+			"description": "创建者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue": {
+				"$env":"uid"
+			} // 强制设置该字段为当前创建者用户的uid
+		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+			  "$env": "now"
+			} // 强制设置创建时间为服务器当前时间
+		},
+		"content" : {
+			"bsonType":"string",
+			"description":"时间轴内容",
+			"defaultValue":""
+		},
+		"imgs": {
+			"bsonType":"string",
+			"description":"时间轴图片",
+			"defaultValue":""
+		},
+		"type": {
+			"bsonType":"int",
+			"description":"时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成"
+		}
+		
+	}
+}
