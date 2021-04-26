@@ -176,7 +176,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs.split(','), index)"></view>
 								</view>
 								
 							</view>
@@ -209,8 +209,8 @@
 								</view>
 								
 								<view v-if="timelineitem.creatUser" class="righview flex align-center">
-									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
-									<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+									<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+									<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
 									<!-- #ifdef MP -->
 									<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
 									<!-- #endif -->
@@ -269,7 +269,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs, index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs.split(','), index)"></view>
 								</view>
 								
 							</view>
@@ -495,7 +495,7 @@
 				this.loaddetaildata()
 				
 				// 加载心愿时间轴数据
-				// this.loadtimelinedata()
+				this.loadtimelinedata()
 			}
 			else {
 				uni.showToast({
@@ -626,6 +626,79 @@
 			loadtimelinedata() {
 				
 				_this.ifloading = true // 开始缓冲动画
+				
+				// 使用openDB获取心愿单对应的时间轴数据
+				let wherestr = `wishId == '${_this.id}' `
+				const db = uniCloud.database();
+				db.collection('wishlisttimeline,uni-id-users')
+				.where(wherestr)
+				.field('creatUser{avatar,nickname},content,imgs,type,wishId')
+				.orderBy('creatTime desc')
+				.get()
+				.then(res => {
+					// 获取成功
+					if(res.result.code == 0) {
+						console.log(`时间轴数据获取成功`);
+						console.log(res.result.data);
+						let timelinelist = res.result.data || []
+						
+						// 遍历时间轴数据将creatUser和editUser和refuseUser和agreeUser均转换为对象
+						timelinelist.forEach(item => {
+							if(item.creatUser) {
+								item.creatUser = item.creatUser[0] ? item.creatUser[0] : null
+							}
+							if(item.editUser) {
+								item.editUser = item.editUser[0] ? item.editUser[0] : null
+							}
+							if(item.refuseUser) {
+								item.refuseUser = item.refuseUser[0] ? item.refuseUser[0] : null
+							}
+							if(item.agreeUser) {
+								item.agreeUser = item.agreeUser[0] ? item.agreeUser[0] : null
+							}
+						})
+						
+						console.log(timelinelist);
+						
+						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
+						let newtimelinearrdic = {}
+						timelinelist.forEach((timelineitem, index) => {
+							let creatTime = timelineitem.creatTime
+							// 获取日期
+							let creatDate = _this.$moment(creatTime).format('YYYY-MM-DD')
+							if(newtimelinearrdic[creatDate]) {
+								let samedatearr = newtimelinearrdic[creatDate]
+								samedatearr.push(timelineitem)
+							}
+							else {
+								newtimelinearrdic[creatDate] = [timelineitem]
+							}
+						})
+						_this.timelinearrdic = newtimelinearrdic
+						
+					}
+					// 获取失败
+					else {
+						console.log(res.result.message);
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(err => {
+					// 获取失败
+					console.log(err.message);
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				.finally(() => {
+					_this.ifloading = false
+				})
+				
+				return
 				
 				uniCloud.callFunction({
 					name:'wishlisttimeline',
