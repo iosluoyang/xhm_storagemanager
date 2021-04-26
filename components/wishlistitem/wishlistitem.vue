@@ -29,7 +29,7 @@
 					
 					<!-- 头像 -->
 					<template>
-						<image v-if="ownwishitem.creatUser[0] && ownwishitem.creatUser[0].avatar" class="cu-avatar round lg" :src="ownwishitem.creatUser[0].avatar"></image>
+						<image v-if="ownwishitem.creatUser && ownwishitem.creatUser.avatar" class="cu-avatar round lg" :src="ownwishitem.creatUser.avatar"></image>
 						<view v-else class="cu-avatar round lg">
 							<text class="cuIcon-people"></text>
 						</view>
@@ -39,7 +39,7 @@
 					<view class="content flex-sub">
 						
 						<!-- 上方发布人昵称 -->
-						<view class="text-grey">{{ownwishitem.creatUser[0] && ownwishitem.creatUser[0].nickname ? ownwishitem.creatUser[0].nickname : 'XXX'}}</view>
+						<view class="text-grey">{{ownwishitem.creatUser && ownwishitem.creatUser.nickname ? ownwishitem.creatUser.nickname : 'XXX'}}</view>
 						
 						<!-- 内容区域 -->
 						<view class="flex justify-between">

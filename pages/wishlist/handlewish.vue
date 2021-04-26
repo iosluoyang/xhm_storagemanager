@@ -160,7 +160,7 @@
 		data() {
 			return {
 				
-				type: 'add', // 页面状态 add新增 edit编辑 
+				type: 'add', // 页面状态 add新增 edit编辑 copy 拷贝
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
@@ -230,49 +230,52 @@
 				
 				_this.ifloading = true // 开始缓冲动画
 				
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getdetail',
-						info: {
-							_id: this.id
-						}
+				// 使用opendb获取详情数据
+				const db = uniCloud.database();
+				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
+				db.collection('wishlist,uni-id-users')
+				.where(wherestr)
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime')
+				.get({
+					getOne:true
+				})
+				.then(res => {
+					if(res.result.code == 0) {
+						// 获取数据成功
+						let info = res.result.data
+						console.log(`详情数据为`);
+						console.log(info);
+						
+						this.productTitle = info.productTitle // 商品标题
+						this.sourceLink = info.sourceLink // 源网站链接
+						this.sourcePrice = info.sourcePrice // 源网站价格
+						this.sourceMoneyType = info.sourceMoneyType // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+						this.targetPrice = info.targetPrice // 目标价格
+						this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
+						this.targetAmount = info.targetAmount // 目标数量
+						this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
+						this.remark = info.remark // 备注信息
+						let imgsArr = info.imgs.split(',') // 商品图片
+						this.imgArr = imgsArr.map(item => ({url: item}))
+						
 					}
-				}).then(response => {
-					
-					_this.ifloading = false // 结束缓冲动画
-					
-					// 获取数据成功
-					let info = response.result.data[0]
-					
-					this.productTitle = info.productTitle // 商品标题
-					this.sourceLink = info.sourceLink // 源网站链接
-					this.sourcePrice = info.sourcePrice // 源网站价格
-					this.sourceMoneyType = info.sourceMoneyType // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-					this.targetPrice = info.targetPrice // 目标价格
-					this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-					this.targetAmount = info.targetAmount // 目标数量
-					this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
-					this.remark = info.remark // 备注信息
-					
-					// 获取图片数组将其放入返显中
-					let imgsarr = info.imgs.split(',') // 图片数组
-					let imgsobjarr = imgsarr.map(item => {
-						let imgobj = {
-							url: item
-						}
-						return imgobj
-					})
-					this.imgArr = imgsobjarr
-					
-				}).catch(error => {
-					
-					_this.ifloading = false // 结束缓冲动画
-					
+					else {
+						// 获取数据失败
+						uni.showToast({
+							title: this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(err => {
+					console.log(`获取数据失败-${err.message}`);
 					uni.showToast({
 						title: this.i18n.error.loaderror,
 						icon: 'none'
 					});
+				})
+				.finally(() => {
+					_this.ifloading = false
 				})
 				
 			},
@@ -352,125 +355,15 @@
 				});
 			},
 			
-			// 添加图片
-			addImg() {
-				
-				// 可添加的图片数量
-				let canaddnum = this.mainpiclimitnum - this.imgArr.length
-				this.$basejs.chooseImage({
-					count: canaddnum,
-					success(res) {
-						// 如果选择数量超过可选数量则提示超出数量
-						if(res.tempFiles.length > canaddnum) {
-							uni.showToast({
-								title: _this.i18n.error.chooseimgovererror,
-								icon: 'none'
-							});
-							return
-						}
-						else {
-							_this.imgArr = _this.imgArr.concat(res.tempFiles)
-						}
-					}
-				})
-				
-			},
-			
 			// 查看大图
 			previewImg(index) {
 				
 				// 组装预览图的数据
-				let previewimgArr = []
-				this.imgArr.forEach((imgitem, index) => {
-					if(imgitem.path) {
-						previewimgArr.push(imgitem.path)
-					}
-					// 带有标识的图片链接  即为后台返回的图片链接  此时要加上前缀
-					else if(imgitem.indexOf(_this.imgTagStr) != -1) {
-						previewimgArr.push(_this.imgUrl + imgitem)
-					}
-					// 未带有标识的图片链接 直接加入预览数组
-					else {
-						previewimgArr.push(imgitem)
-					}
-				})
-				
+				let previewimgArr = this.imgArr.map(item => (item.path))
 				// 开始预览
 				uni.previewImage({
 					urls: previewimgArr,
 					current: index
-				})
-				
-			},
-			
-			// 删除图片
-			deleteimg(index) {
-				this.imgArr.splice(index,1)
-			},
-			
-			// 上传图片
-			uploadpic(imgArr) {
-				
-				return new Promise((resolve,reject) => {
-					
-					// 图片长度为空则直接返回resolve
-					if(!imgArr || imgArr.length == 0) {
-						resolve('')
-						return
-					}
-										
-					// 区分新增和编辑以及拷贝状态
-					if(_this.type === 'add') {
-						
-						_this.ifloading = true // 开始加载动画
-						// 开始上送图片
-						let tempimgArr = [...imgArr]
-						
-						_this.$basejs.uploadmultipleimgs(tempimgArr).then(imgUrls => {
-							// 上传图片成功
-							_this.ifloading = false // 结束加载动画
-							let imgs = imgUrls.join(',')
-							resolve(imgs)
-						}).catch(error => {
-							_this.ifloading = false // 结束加载动画
-							reject(error)
-						})
-						
-					}
-					else if(_this.type === 'edit' || _this.type === 'copy') {
-						// 编辑状态下
-						_this.ifloading = true // 开始加载动画
-						let needtoindexArr = []
-						let needtouploadArr = []
-						imgArr.forEach((imgitem,index) => {
-							// 如果是本地文件则会有path值
-							if(imgitem.path) {
-								needtoindexArr.push(index)
-								needtouploadArr.push(imgitem)
-							}
-						})
-						
-						_this.$basejs.uploadmultipleimgs(needtouploadArr).then(imgUrls => {
-														
-							// 上传图片成功
-							_this.ifloading = false // 结束加载动画
-							let copyimgArr = [..._this.imgArr]
-							imgUrls.forEach((imgUrl, index) => {
-								copyimgArr.splice(needtoindexArr[index], 1, imgUrl)
-							})
-							let imgs = copyimgArr.join(',')
-							resolve(imgs)
-						
-						}).catch(error => {
-							_this.ifloading = false // 结束加载动画
-							reject(error)
-						})
-						
-					}
-					else {
-						reject()
-					}
-					
 				})
 				
 			},
@@ -539,11 +432,13 @@
 					imgs: imgs, // 图片字符串集合
 				}
 				
-				// 新增
-				if(_this.type == 'add') {
+				// 新增 或者 拷贝
+				if(_this.type == 'add' || _this.type == 'copy') {
 					
 					// 使用openDB进行数据写入
 					const db = uniCloud.database();
+					_this.ifloading = true
+					
 					db.collection('wishlist').add(info).then(res => {
 						
 						// 增加一条默认的时间轴数据
@@ -560,289 +455,84 @@
 						// 发布成功
 						uni.$emit('updatewishlist')
 						
-						// 如果是在小程序端则进行订阅消息
-						// #ifdef MP-WEIXIN
-						this.modalTitle = this.i18n.tip.addsuccess
-						this.modalContent = '点击订阅消息即可在该心愿单变更时及时通知到您'
-						this.showModal = true
-						// #endif
+						let modalTitle = this.i18n.tip.addsuccess
+						_this.checksubscribe(modalTitle) // 添加成功后检查订阅消息
 						
-						// 非小程序则直接返回
-						// #ifndef MP-WEIXIN
-						uni.showToast({
-							title: _this.i18n.tip.addsuccess,
-							icon: 'none',
-							duration: 1500
-						});
-						setTimeout(function() {
-							uni.navigateBack();
-						}, 1500);
-						// #endif
-						
-					}).catch(err => {
+					})
+					.catch(err => {
 						uni.showToast({
 							title: err.message,
 							icon: 'none'
 						});
 					})
-					
-					return
-					
-					// // 开始上传云函数
-					// uniCloud.callFunction({
-					// 	name: 'wishlist',
-					// 	data: {
-					// 		type: 'add',
-					// 		info: info
-					// 	}
-					// }).then(response => {
-					// 	// 发布成功
-					// 	uni.$emit('updatewishlist')
-						
-					// 	// 如果是在小程序端则进行订阅消息
-					// 	// #ifdef MP-WEIXIN
-					// 	this.modalTitle = this.i18n.tip.addsuccess
-					// 	this.modalContent = '点击订阅消息即可在该心愿单变更时及时通知到您'
-					// 	this.showModal = true
-					// 	// #endif
-						
-					// 	// 非小程序则直接返回
-					// 	// #ifndef MP-WEIXIN
-					// 	uni.showToast({
-					// 		title: _this.i18n.tip.addsuccess,
-					// 		icon: 'none',
-					// 		duration: 1500
-					// 	});
-					// 	setTimeout(function() {
-					// 		uni.navigateBack();
-					// 	}, 1500);
-					// 	// #endif
-						
-					// }).catch(error => {
-					// 	// 发布失败
-					// 	uni.showToast({
-					// 		title: _this.i18n.error.adderror,
-					// 		icon: 'none'
-					// 	});
-					// })
-					
+					.finally(() => {
+						_this.ifloading = false
+					})
+										
 				}
+				
 				// 编辑
 				else if(_this.type == 'edit') {
 					
-					info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
-					
-					// 开始上传云函数
-					uniCloud.callFunction({
-						name: 'wishlist',
-						data: {
-							type: 'edit',
-							info: info
-						}
-					}).then(response => {
-						// 发布成功
-						uni.$emit('updatewishlist')
+					// 使用openDB更新数据
+					_this.ifloading = true
+					const db = uniCloud.database();
+					db.collection('wishlist').doc(_this.id).update(info)
+					.then(res => {
+						// 更新成功
 						uni.$emit('updatewishdetail')
+						uni.$emit('updatewishlist')
 						
-						this.modalTitle = this.i18n.tip.fixsuccess
-						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-						this.showModal = true
+						let modalTitle = _this.i18n.tip.fixsuccess
+						_this.checksubscribe(modalTitle) // 更新成功后检查订阅消息
 						
-						// uni.showToast({
-						// 	title: _this.i18n.tip.fixsuccess,
-						// 	icon: 'none',
-						// 	duration: 1500
-						// });
-						// setTimeout(function() {
-						// 	uni.navigateBack();
-						// }, 1500);
-					}).catch(error => {
-						// 发布失败
+					})
+					.catch(err => {
+						console.log(`更新失败,原因为${err.message}`);
 						uni.showToast({
 							title: _this.i18n.error.fixerror,
 							icon: 'none'
 						});
 					})
-				}
-				// 拷贝
-				else if(_this.type == 'copy') {
-					// 开始上传云函数
-					uniCloud.callFunction({
-						name: 'wishlist',
-						data: {
-							type: 'add',
-							info: info
-						}
-					}).then(response => {
-						// 发布成功
-						uni.$emit('updatewishlist', {type: 'copywish'})
-						
-						this.modalTitle = this.i18n.tip.addsuccess
-						this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-						this.showModal = true
-						
-						// uni.showToast({
-						// 	title: _this.i18n.tip.addsuccess,
-						// 	icon: 'none',
-						// 	duration: 1500
-						// });
-						
-						// setTimeout(function() {
-						// 	uni.navigateBack();
-						// }, 1500);
-					}).catch(error => {
-						// 发布失败
-						uni.showToast({
-							title: _this.i18n.error.adderror,
-							icon: 'none'
-						});
+					.finally(() => {
+						_this.ifloading = false
 					})
+					
 				}
-				
-				
-				// 开始上传图片(包含新增和编辑)
-				// this.uploadpic(this.imgArr).then(imgs => {
-					
-				// 	// 上传图片成功 开始上传所有数据
-				// 	let info = {
-				// 		productTitle: _this.productTitle, // 商品标题
-				// 		sourceLink: _this.sourceLink, // 源网站链接
-				// 		sourcePrice: _this.sourcePrice, // 源网站价格
-				// 		sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-				// 		targetPrice: _this.targetPrice, // 目标价格
-				// 		targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-				// 		targetAmount: _this.targetAmount, // 目标数量
-				// 		hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
-				// 		remark: _this.remark, // 备注信息
-				// 		imgs: imgs, // 图片字符串集合
-				// 		user: _this.user, // 当前发布人的信息
-				// 	}
-					
-				// 	// 新增
-				// 	if(_this.type == 'add') {
-						
-				// 		// 开始上传云函数
-				// 		uniCloud.callFunction({
-				// 			name: 'wishlist',
-				// 			data: {
-				// 				type: 'add',
-				// 				info: info
-				// 			}
-				// 		}).then(response => {
-				// 			// 发布成功
-				// 			uni.$emit('updatewishlist')
-							
-				// 			this.modalTitle = this.i18n.tip.addsuccess
-				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-				// 			this.showModal = true
-
-				// 			// uni.showToast({
-				// 			// 	title: _this.i18n.tip.addsuccess,
-				// 			// 	icon: 'none',
-				// 			// 	duration: 1500
-				// 			// });
-				// 			// setTimeout(function() {
-				// 			// 	uni.navigateBack();
-				// 			// }, 1500);
-							
-				// 		}).catch(error => {
-				// 			// 发布失败
-				// 			uni.showToast({
-				// 				title: _this.i18n.error.adderror,
-				// 				icon: 'none'
-				// 			});
-				// 		})
-						
-				// 	}
-				// 	// 编辑
-				// 	else if(_this.type == 'edit') {
-						
-				// 		info = {...info, ...{_id: _this.id}} // 编辑状态下传递_id字段
-						
-				// 		// 开始上传云函数
-				// 		uniCloud.callFunction({
-				// 			name: 'wishlist',
-				// 			data: {
-				// 				type: 'edit',
-				// 				info: info
-				// 			}
-				// 		}).then(response => {
-				// 			// 发布成功
-				// 			uni.$emit('updatewishlist')
-				// 			uni.$emit('updatewishdetail')
-							
-				// 			this.modalTitle = this.i18n.tip.fixsuccess
-				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-				// 			this.showModal = true
-							
-				// 			// uni.showToast({
-				// 			// 	title: _this.i18n.tip.fixsuccess,
-				// 			// 	icon: 'none',
-				// 			// 	duration: 1500
-				// 			// });
-				// 			// setTimeout(function() {
-				// 			// 	uni.navigateBack();
-				// 			// }, 1500);
-				// 		}).catch(error => {
-				// 			// 发布失败
-				// 			uni.showToast({
-				// 				title: _this.i18n.error.fixerror,
-				// 				icon: 'none'
-				// 			});
-				// 		})
-				// 	}
-				// 	// 拷贝
-				// 	else if(_this.type == 'copy') {
-				// 		// 开始上传云函数
-				// 		uniCloud.callFunction({
-				// 			name: 'wishlist',
-				// 			data: {
-				// 				type: 'add',
-				// 				info: info
-				// 			}
-				// 		}).then(response => {
-				// 			// 发布成功
-				// 			uni.$emit('updatewishlist', {type: 'copywish'})
-							
-				// 			this.modalTitle = this.i18n.tip.addsuccess
-				// 			this.modalContent = '订阅消息通知以便于心愿单变更时及时通知到您'
-				// 			this.showModal = true
-							
-				// 			// uni.showToast({
-				// 			// 	title: _this.i18n.tip.addsuccess,
-				// 			// 	icon: 'none',
-				// 			// 	duration: 1500
-				// 			// });
-							
-				// 			// setTimeout(function() {
-				// 			// 	uni.navigateBack();
-				// 			// }, 1500);
-				// 		}).catch(error => {
-				// 			// 发布失败
-				// 			uni.showToast({
-				// 				title: _this.i18n.error.adderror,
-				// 				icon: 'none'
-				// 			});
-				// 		})
-				// 	}
-					
-				// }).catch(error => {
-				// 	console.log(`上传失败`);
-				// 	console.log(JSON.stringify(error));
-				// 	// 上传图片失败
-				// 	uni.showToast({
-				// 		title: this.i18n.error.uploaderror,
-				// 		icon: 'none'
-				// 	});
-				// })
 				
 			},
 			
+			// 检查订阅消息
+			checksubscribe(modalTitle) {
+				
+				// 如果是在小程序端则进行订阅消息
+				// #ifdef MP-WEIXIN
+				this.modalTitle = modalTitle
+				this.modalContent = this.i18n.tip.subsribewxmsg
+				this.showModal = true
+				// #endif
+				
+				// 非小程序则直接返回
+				// #ifndef MP-WEIXIN
+				uni.showToast({
+					title: modalTitle,
+					icon: 'none',
+					duration: 1500
+				});
+				setTimeout(function() {
+					uni.navigateBack();
+				}, 1500);
+				// #endif
+				
+			},
+			
+			// 隐藏弹出框
 			hideModal() {
 				this.showModal = false
 				uni.navigateBack();
 			},
 			
+			// 点击弹出框确定按钮  开始订阅消息
 			confirmModal() {
 				this.showModal = false
 				

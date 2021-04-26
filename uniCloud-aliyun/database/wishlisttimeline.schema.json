@@ -32,6 +32,14 @@
 			  "$env": "now"
 			} // 强制设置创建时间为服务器当前时间
 		},
+		"editUser": {
+			"bsonType":"string",
+			"description": "修改者的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"editTime": {
+			"description": "创建时间"
+		},
 		"content" : {
 			"bsonType":"string",
 			"description":"时间轴内容",
@@ -45,7 +53,20 @@
 		"type": {
 			"bsonType":"int",
 			"description":"时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成"
+		},
+		"link": {
+			"bsonType":"string",
+			"description":"时间轴的链接"
+		},
+		"price": {
+			"bsonType":"string",
+			"description":"时间轴价格"
+		},
+		"moneyType": {
+			"bsonType":"string",
+			"description":"货币种类 RMB 人民币 THB 泰铢"
 		}
+		
 		
 	}
 }

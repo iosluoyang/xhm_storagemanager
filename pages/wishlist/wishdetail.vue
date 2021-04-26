@@ -501,10 +501,7 @@
 				uni.showToast({
 					title: _this.i18n.error.loaderror,
 					icon: 'none'
-				});
-				setTimeout(function() {
-					// uni.navigateBack();
-				}, 1500);
+				})
 			}
 			
 			uni.$on('updatewishdetail', function() {
@@ -577,10 +574,11 @@
 				
 				_this.ifloading = true // 开始缓冲动画
 				
-				// 使用opendb获取详情信息
+				// 使用openDB获取详情信息
 				const db = uniCloud.database();
+				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
-					.where(`_id == '${_this.id}'`)
+					.where(wherestr)
 					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,comment')
 					.get({
 						getOne:true
@@ -608,47 +606,6 @@
 					.finally(() => {
 						_this.ifloading = false // 结束缓冲动画
 					})
-				
-				return
-				
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getdetail',
-						info: {
-							_id: this.id
-						}
-					}
-				}).then(res => {
-					// _this.ifloading = false // 结束缓冲动画
-					// 获取心愿详情数据成功
-					if(res) {
-						
-						let info = res.result.data[0]
-						_this.wishinfo = info
-						
-						// 设置轮播图的图片数组
-						let imgsArr = []
-						if(_this.wishinfo && _this.wishinfo.imgs) {
-							_this.imgsArr = _this.wishinfo.imgs.split(',')
-						}
-					}
-					else {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
-					}
-					
-				}).catch(error => {
-					
-					_this.ifloading = false // 结束缓冲动画
-					
-					uni.showToast({
-						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
-				})
 				
 			},
 			
@@ -837,36 +794,30 @@
 					confirmText: _this.i18n.base.confirm,
 					success: res => {
 						if(res.confirm) {
-							// 开始删除
-							
-							uniCloud.callFunction({
-								name: 'wishlist',
-								data: {
-									type: 'delete',
-									info: {
-										_id: _this.id
-									}
-								}
-							}).then(response => {
-								// 删除成功
-								uni.showToast({
-									title: _this.i18n.tip.deletesuccess,
-									icon: 'none'
-								});
-								// 更新列表数据
-								uni.$emit('updatewishlist')
-								// 返回
-								setTimeout(function() {
+							// 开始调用openDB 删除该心愿
+							const db = uniCloud.database();
+							db.collection('wishlist').doc(_this.id).remove()
+								.then(res => {
+									// 删除成功
+									// 更新列表数据
+									uni.$emit('updatewishlist')
 									uni.navigateBack();
-								}, 1500);
-								
-							}).catch(error => {
-								// 删除失败
-								uni.showToast({
-									title: _this.i18n.error.deleteerror,
-									icon: 'none'
-								});
-							})
+									// 返回
+									setTimeout(function() {
+										uni.showToast({
+											title: _this.i18n.tip.deletesuccess,
+											icon: 'none'
+										});
+									}, 300);
+								})
+								.catch(err => {
+									// 删除失败
+									uni.showToast({
+										title: _this.i18n.error.deleteerror,
+										icon: 'none'
+									});
+								})
+								.finally(() => {})
 							
 						}
 					},

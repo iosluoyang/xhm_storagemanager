@@ -20,16 +20,16 @@
 				
 				<!-- 商品轮播图 -->
 				<swiper class="screen-swiper square-dot" indicator-dots circular
-				 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;">
-					<swiper-item class="radius" v-for="(img,index) in swiperimgArr" :key="index">
-						<image :src="imgUrl + img" mode="aspectFill"></image>
+				 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
+					<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
+						<image :src="img" mode="aspectFill"></image>
 					</swiper-item>
 				</swiper>
 				
 				<!-- 商品标题和备注 链接 -->
-				<view class="procontentview flex-sub margin-left-sm">
+				<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
 					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light">{{wishinfo.remark}}</view>
+					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;">{{wishinfo.remark}}</view>
 					<view class="bottomview margin-top-sm flex justify-between align-center">
 						<view class="priceview flex align-center">
 							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
@@ -113,19 +113,12 @@
 					<view class="action">{{i18n.wishlist.uploadimg}}</view>
 					<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
 				</view>
-				<view class="cu-form-group">
-					<view class="grid col-4 grid-square flex-sub">
-						
-						<view class="bg-img" v-for="(item, index) in imgArr" :key="index" @tap.stop="previewImg(index)">
-							<image :src="item.path ? item.path : (imgUrl + item)" mode="aspectFill"></image>
-							<view class="cu-tag bg-red" @tap.stop="deleteimg(index)"><text class="cuIcon-close"></text></view>
-						</view>
-						
-						<view v-if="imgArr.length < mainpiclimitnum" class="solids" @tap.stop="addImg">
-							<text class="cuIcon cuIcon-cameraadd"></text>
-						</view>
 				
-					</view>
+				<view class="bg-white padding">
+					<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
+					return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+					@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+					</uni-file-picker>
 				</view>
 				
 			</form>
@@ -197,8 +190,46 @@
 			// 获取心愿详情
 			getwishdetail() {
 				
+				_this.ifloading = true // 开始缓冲动画
+				
+				// 使用openDB获取详情信息
+				const db = uniCloud.database();
+				let wherestr = ` _id == '${_this.wishId}' `
+				db.collection('wishlist,uni-id-users')
+					.where(wherestr)
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark')
+					.get({
+						getOne:true
+					})
+					.then(res => {
+						console.log(`获取详情信息成功`);
+						console.log(res);
+						if(res.result.code == 0) {
+							let detaildata = res.result.data
+							detaildata.creatUser = detaildata.creatUser[0]
+							_this.wishinfo = detaildata
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(err => {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					})
+					.finally(() => {
+						_this.ifloading = false // 结束缓冲动画
+					})
+				
 				_this.ifloading = true // 开始加载动画
 				
+				
+				return
 				uniCloud.callFunction({
 					name: 'wishlist',
 					data: {
@@ -237,6 +268,53 @@
 				
 				_this.ifloading = true // 开始加载动画
 				
+				const db = uniCloud.database();
+				db.collection('wishlisttimeline').doc(_this.timelineId).get()
+				.then(res => {
+					
+					if(res.result.code == 0) {
+						console.log(`获取时间轴详情数据成功`);
+						console.log(res.result.data);
+						let info = res.result.data
+						_this.timelineInfo = info
+						
+						// 时间轴类型
+						// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+						_this.type = info.type == 1 ? 'addcomment' : 'found'
+						_this.remark = info.content || ''
+						_this.targetMoneyType = info.moneyType || 'RMB'
+						_this.targetPrice = info.price || ''
+						_this.targetLink = info.link || ''
+						
+						// 遍历图片
+						let imgArr = []
+						if(info.imgs && info.imgs.length > 0) {
+							imgArr = info.imgs.split(',').map(item => ( {url: item} ))
+						}
+						_this.imgArr = imgArr
+						
+					}
+					else {
+						console.log(res.result.message);
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+					
+				})
+				.catch(err => {
+					console.log(err.message);
+				})
+				.finally(() => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+				return
+				
 				uniCloud.callFunction({
 					name: 'wishlisttimeline',
 					data: {
@@ -262,7 +340,7 @@
 					_this.targetMoneyType = info.moneyType || 'RMB'
 					_this.targetPrice = info.price || ''
 					_this.targetLink = info.link || ''
-					
+				
 				}).catch(error => {
 					
 					_this.ifloading = false // 结束加载动画
@@ -300,6 +378,57 @@
 				})
 			},
 			
+			// 选择图片成功
+			fileselect(e) {
+				console.log(`图片选择成功`);
+				console.log(e);
+				this.imgArr.push.apply(this.imgArr, e.tempFiles)
+				// this.imgArr =  this.imgArr.concat(e.tempFiles)
+				console.log(this.imgArr);
+			},
+			
+			// 图片删除
+			filedelete(e) {
+				console.log(`图片删除成功`);
+				let deleteIndex = this.imgArr.findIndex(item => {
+					return e.tempFilePath == item.path
+				})
+				if(deleteIndex > -1) {
+					console.log(`删除了第${deleteIndex}张图片`);
+					this.imgArr.splice(deleteIndex,1)
+				}
+			},
+			
+			// 图片上传
+			fileprogress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				
+				this.ifloading = false
+				
+				// 继续提交数据
+				this.uploaddata()
+			},
+			
+			// 上传图片失败
+			filefail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
+				
+				this.ifloading = false
+				uni.showToast({
+					title: this.i18n.error.uploaderror,
+					icon: 'none'
+				});
+			},
+			
 			// 添加图片
 			addImg() {
 				
@@ -328,97 +457,17 @@
 			previewImg(index) {
 				
 				// 组装预览图的数据
-				let previewimgArr = []
-				this.imgArr.forEach((imgitem, index) => {
-					if(imgitem.path) {
-						previewimgArr.push(imgitem.path)
-					}
-					// 带有标识的图片链接  即为后台返回的图片链接  此时要加上前缀
-					else if(imgitem.indexOf(_this.imgTagStr) != -1) {
-						previewimgArr.push(_this.imgUrl + imgitem)
-					}
-					// 未带有标识的图片链接 直接加入预览数组
-					else {
-						previewimgArr.push(imgitem)
-					}
-				})
-				
+				let previewimgArr = this.imgArr.map(item => (item.path))
 				// 开始预览
 				uni.previewImage({
 					urls: previewimgArr,
 					current: index
 				})
 				
-			},
-			
-			// 删除图片
-			deleteimg(index) {
-				this.imgArr.splice(index,1)
-			},
-			
-			// 上传图片
-			uploadpic(imgArr) {
-				
-				return new Promise((resolve,reject) => {
-					
-					// 图片长度为空则直接返回resolve
-					if(!imgArr || imgArr.length == 0) {
-						resolve('')
-						return
-					}
-										
-					// 区分新增和编辑状态
-					if(_this.pagetype === 'add') {
-						
-						_this.ifloading = true // 开始加载动画
-						// 开始上送图片
-						let tempimgArr = [...imgArr]
-						
-						_this.$basejs.uploadmultipleimgs(tempimgArr).then(imgUrls => {
-							// 上传图片成功
-							_this.ifloading = false // 结束加载动画
-							let imgs = imgUrls.join(',')
-							resolve(imgs)
-						}).catch(error => {
-							_this.ifloading = false // 结束加载动画
-							reject(error)
-						})
-						
-					}
-					else if(_this.pagetype === 'edit') {
-						// 编辑状态下
-						_this.ifloading = true // 开始加载动画
-						let needtoindexArr = []
-						let needtouploadArr = []
-						imgArr.forEach((imgitem,index) => {
-							// 如果是本地文件则会有path值
-							if(imgitem.path) {
-								needtoindexArr.push(index)
-								needtouploadArr.push(imgitem)
-							}
-						})
-						
-						_this.$basejs.uploadmultipleimgs(needtouploadArr).then(imgUrls => {
-														
-							// 上传图片成功
-							_this.ifloading = false // 结束加载动画
-							let copyimgArr = [..._this.imgArr]
-							imgUrls.forEach((imgUrl, index) => {
-								copyimgArr.splice(needtoindexArr[index], 1, imgUrl)
-							})
-							let imgs = copyimgArr.join(',')
-							resolve(imgs)
-						
-						}).catch(error => {
-							_this.ifloading = false // 结束加载动画
-							reject(error)
-						})
-						
-					}
-					else {
-						reject()
-					}
-					
+				// 开始预览
+				uni.previewImage({
+					urls: previewimgArr,
+					current: index
 				})
 				
 			},
@@ -455,96 +504,219 @@
 					
 				}
 				
-				// 检查是否有图片
-				// else if(this.imgArr.length == 0) {
-				// 	uni.showToast({
-				// 		title: this.i18n.error.lackgoodsmainpic,
-				// 		icon: 'none'
-				// 	});
-				// 	return false
-				// }
+				// 检查是否需要上传图片
+				if(this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					this.ifloading = true
+					this.$refs.filepickerref.upload()
+					return
+				}
 				
 				// 其余项均为选填项
 				
-				// 开始上传图片
-				this.uploadpic(this.imgArr).then(imgs => {
-					// 上传图片成功 开始上传所有数据
-					console.log(`获得的图片链接为${imgs}`);
-					// 根据当前页面类型和新增编辑类型选择更新的时间轴类型
-					let timelinetype = 1 // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-					// 如果是新增的话 根据是时间轴更新还是发现商品选择不同的类型
-					if(_this.pagetype == 'add') {
-						timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = this.imgArr.map(item => (item.url)).join(',')
+				
+				// 上传数据
+				let info = {
+					wishId: _this.wishId, // 当前心愿单的id
+					content: _this.remark, // 内容信息
+					imgs: imgs, // 图片字符串集合
+					type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  
+				}
+				
+				// 如果是发现新产品则需要上传链接 金额和货币类型等额外的参数
+				if(_this.type == 'found') {
+					let foundinfo = {
+						type: 3, // 如果是发现新产品则时间轴类型为3待确认
+						link: _this.targetLink, // 链接地址
+						price: _this.targetPrice, // 价格
+						moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 					}
-					else if(_this.pagetype == 'edit') {
-						timelinetype = _this.timelineInfo.type
-					}
-					let commoninfo = {
-						wishId: _this.wishId, // 当前心愿的id
-						_id: _this.pagetype == 'edit' ? _this.timelineId : null,
-						user: _this.user, // 当前发布人的信息
-						content: _this.remark, // 内容信息
-						imgs: imgs, // 图片字符串集合
-						type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-					}
+					info = {...info, ...foundinfo}  // 合并基础参数和发现新产品的参数
+				}
+				
+				// 新增时间轴
+				if(_this.pagetype == 'add') {
 					
-					let foundinfo = {}
-					// 如果是发现新商品类型则添加价格和链接地址
-					if(_this.type === 'found') {
-						foundinfo = {
-							link: _this.targetLink, // 链接地址
-							price: _this.targetPrice, // 价格
-							moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
-						}
-					}
-					
-					let uploaddata = {...commoninfo,...foundinfo}
-					console.log(`即将上传的数据为${JSON.stringify(uploaddata)}`);
-					
-					// 开始上传云函数
-					uniCloud.callFunction({
-						name: 'wishlisttimeline',
-						data: {
-							type: _this.pagetype == 'add' ? 'add' : 'edit',
-							info: uploaddata
-						}
-					}).then(response => {
-						// 发布成功
-						// 更新事件轴数据
-						uni.$emit('updatetimeline')
+					// 开始使用openDB进行数据上传
+					_this.ifloading = true
+					const db = uniCloud.database();
+					db.collection('wishlisttimeline').add(info)
+					.then(res => {
 						
-						// 如果是待确认状态则更新心愿单列表和详情
-						if(uploaddata.type == 3) {
-							uni.$emit('updatewishlist')
-							uni.$emit('updatewishdetail')
+						// 新增成功
+						if(res.result.code == 0) {
+							
+							// 发布成功
+							
+							// 更新事件轴数据
+							uni.$emit('updatetimeline')
+							
+							// 如果是待确认状态则更新心愿单列表和详情
+							if(info.type == 3) {
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+							}
+							
+							uni.showToast({
+								title: _this.i18n.tip.addsuccess,
+								icon: 'none',
+							});
+							
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1500);
+							
 						}
-						
-						uni.showToast({
-							title: _this.i18n.tip.addsuccess,
-							icon: 'none',
-							duration: 1500
-						});
-						
-						setTimeout(function() {
-							uni.navigateBack();
-						}, 1500);
-					}).catch(error => {
+						// 新增失败
+						else{
+							uni.showToast({
+								title: _this.i18n.error.adderror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(err => {
+						console.log(`新增失败-${err.message}`);
 						// 发布失败
 						uni.showToast({
 							title: _this.i18n.error.adderror,
 							icon: 'none'
 						});
 					})
+					.finally(() => {
+						_this.ifloading = false
+					})
 					
-				}).catch(error => {
-					console.log(``);
-					console.log(`上传失败`);
-					// 上传图片失败
-					uni.showToast({
-						title: this.i18n.error.uploaderror,
-						icon: 'none'
-					});
-				})
+				}
+				else if(_this.pagetype == 'edit') {
+					_this.ifloading = true
+					const db = uniCloud.database();
+					db.collection('wishlisttimeline').doc(_this.timelineId)
+					.update(info)
+					.then(res => {
+						// 编辑成功
+						if(res.result.code == 0) {
+							
+							// 更新事件轴数据
+							uni.$emit('updatetimeline')
+							
+							// 如果是待确认状态则更新心愿单列表和详情
+							if(info.type == 3) {
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+							}
+							
+							uni.showToast({
+								title: _this.i18n.tip.fixsuccess,
+								icon: 'none',
+							});
+							
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1500);
+						}
+						// 编辑失败
+						else {
+							console.log(res.result.message);
+							// 发布失败
+							uni.showToast({
+								title: _this.i18n.error.fixerror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err.message);
+						// 发布失败
+						uni.showToast({
+							title: _this.i18n.error.fixerror,
+							icon: 'none'
+						});
+					})
+				}
+				
+				return
+				// 开始上传图片
+				// this.uploadpic(this.imgArr).then(imgs => {
+				// 	// 上传图片成功 开始上传所有数据
+				// 	console.log(`获得的图片链接为${imgs}`);
+				// 	// 根据当前页面类型和新增编辑类型选择更新的时间轴类型
+				// 	let timelinetype = 1 // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+				// 	// 如果是新增的话 根据是时间轴更新还是发现商品选择不同的类型
+				// 	if(_this.pagetype == 'add') {
+				// 		timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
+				// 	}
+				// 	else if(_this.pagetype == 'edit') {
+				// 		timelinetype = _this.timelineInfo.type
+				// 	}
+				// 	let commoninfo = {
+				// 		wishId: _this.wishId, // 当前心愿的id
+				// 		_id: _this.pagetype == 'edit' ? _this.timelineId : null,
+				// 		user: _this.user, // 当前发布人的信息
+				// 		content: _this.remark, // 内容信息
+				// 		imgs: imgs, // 图片字符串集合
+				// 		type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
+				// 	}
+					
+				// 	let foundinfo = {}
+				// 	// 如果是发现新商品类型则添加价格和链接地址
+				// 	if(_this.type === 'found') {
+				// 		foundinfo = {
+				// 			link: _this.targetLink, // 链接地址
+				// 			price: _this.targetPrice, // 价格
+				// 			moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
+				// 		}
+				// 	}
+					
+				// 	let uploaddata = {...commoninfo,...foundinfo}
+				// 	console.log(`即将上传的数据为${JSON.stringify(uploaddata)}`);
+					
+				// 	// 开始上传云函数
+				// 	uniCloud.callFunction({
+				// 		name: 'wishlisttimeline',
+				// 		data: {
+				// 			type: _this.pagetype == 'add' ? 'add' : 'edit',
+				// 			info: uploaddata
+				// 		}
+				// 	}).then(response => {
+				// 		// 发布成功
+				// 		// 更新事件轴数据
+				// 		uni.$emit('updatetimeline')
+						
+				// 		// 如果是待确认状态则更新心愿单列表和详情
+				// 		if(uploaddata.type == 3) {
+				// 			uni.$emit('updatewishlist')
+				// 			uni.$emit('updatewishdetail')
+				// 		}
+						
+				// 		uni.showToast({
+				// 			title: _this.i18n.tip.addsuccess,
+				// 			icon: 'none',
+				// 			duration: 1500
+				// 		});
+						
+				// 		setTimeout(function() {
+				// 			uni.navigateBack();
+				// 		}, 1500);
+				// 	}).catch(error => {
+				// 		// 发布失败
+				// 		uni.showToast({
+				// 			title: _this.i18n.error.adderror,
+				// 			icon: 'none'
+				// 		});
+				// 	})
+					
+				// }).catch(error => {
+				// 	console.log(``);
+				// 	console.log(`上传失败`);
+				// 	// 上传图片失败
+				// 	uni.showToast({
+				// 		title: this.i18n.error.uploaderror,
+				// 		icon: 'none'
+				// 	});
+				// })
 				
 			},
 			

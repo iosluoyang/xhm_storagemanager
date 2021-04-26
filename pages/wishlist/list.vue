@@ -211,39 +211,6 @@
 						console.log(err.message);
 					})
 				
-				// uniCloud.callFunction({
-				// 	name: 'wishlist',
-				// 	data: {
-				// 		type: 'getbadgenum',
-				// 		info: {}
-				// 	}
-				// }).then(response => {
-				// 	// 获取操作数量成功
-				// 	if(response.result) {
-				// 		let ingnum = response.result.ingnum
-				// 		let needtoconfirmnum = response.result.needtoconfirmnum
-				// 		let needtoordernum = response.result.needtoordernum
-				// 		// 找到tabArr的数组更改其中的数据
-				// 		let tabArr = this.tabArr
-				// 		tabArr.forEach((eachtab, index) => {
-				// 			if(eachtab.status == 0) {
-				// 				eachtab.count = ingnum
-				// 			}
-				// 			else if(eachtab.status == 1) {
-				// 				eachtab.count = needtoconfirmnum
-				// 			}
-				// 			else if(eachtab.status == 2) {
-				// 				eachtab.count = needtoordernum
-				// 			}
-				// 		})
-						
-				// 		this.tabArr = tabArr
-						
-				// 	}
-				// }).catch(error => {
-				// 	// 获取操作数量失败
-				// })
-				
 			},
 			
 			// 切换tap
@@ -308,26 +275,26 @@
 				// 开始进行接口请求
 				
 				const db = uniCloud.database();
+				// creatUser._id == $cloudEnv_uid &&
 				// 查询 搜索关键字 完成标识 和仅自己发布的可看
 				let wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{nickname,avatar},productTitle, imgs, sourcePrice, sourceMoneyType, targetPrice, targetMoneyType, hurryLevel, achieveFlag,creatTime')
-					.orderBy(`creatTime desc`)
+					.field('creatUser{avatar, nickname},achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime')
+					.orderBy(` remindFlag desc, creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
-					.get({
-						getCount:true
-					})
+					.get()
 					.then(response => {
-						console.log(response.result.data);
 						// 加载成功
 						let list = response.result.data || []
 						
-						// 更改对应角标的数量
-						let selecttab = this.tabArr.find(item => (item.status == achieveFlag))
-						selecttab.count = response.result.count
-						
+						// 手动将creatUser的数据从数组转换为对象
+						list.forEach(item => {
+							item.creatUser = item.creatUser[0]
+						})
+						console.log(`本次共获取${list.length}个数据,具体数据为:`);
+						console.log(list);
 						if(pageNum == 1) {
 							dataArr = [] //清空数据源
 							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
@@ -353,65 +320,7 @@
 						mescroll.endErr()
 					})
 				
-				// uniCloud.callFunction({
-				// 	name: 'wishlist',
-				// 	data: {
-				// 		type: 'getlist',
-				// 		info: {
-				// 			achieveFlag: achieveFlag,
-				// 			sortType: sortType,
-				// 			searchText: searchText,
-				// 			date: date,
-				// 			pageSize: pageSize,
-				// 			pageNum: pageNum
-				// 		}
-				// 	}
-				// }).then(response => {
-				// 	if(response) {
-				// 		// 加载成功
-				// 		let date = response.result.date
-				// 		// 列表
-				// 		let list = response.result.data || []
-						
-				// 		if(pageNum == 1) {
-				// 			dataArr = [] //清空数据源
-				// 			mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
-				// 			mescroll.date = date
-				// 		} 
-				// 		//将请求的数据添加至现有数据源中
-				// 		dataArr = dataArr.concat(list)
-				// 		//无法检测数组对象长度的变更 故使用$set方法进行变更
-				// 		_this.$set(currenttabitem,'dataArr',dataArr)
-				// 		_this.$set(currenttabitem,'loaded',true)
-						
-				// 		// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
-				// 		_this.$nextTick(()=>{
-				// 			let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
-				// 			mescroll.endSuccess(list.length,hasNext)
-				// 		})
-				
-				// 	}
-				// 	else {
-				// 		uni.showToast({
-				// 			title: _this.i18n.error.loaderror,
-				// 			icon: 'none'
-				// 		});
-				// 		// 失败隐藏下拉加载状态
-				// 		mescroll.endErr()
-				// 	}
-					
-				// }).catch(error => {
-				// 	uni.showToast({
-				// 		title: _this.i18n.error.loaderror,
-				// 		icon: 'none'
-				// 	});
-				// 	// 失败隐藏下拉加载状态
-				// 	mescroll.endErr()
-				// })
-				
 			},
-			
-			//
 			
 		},
 	}

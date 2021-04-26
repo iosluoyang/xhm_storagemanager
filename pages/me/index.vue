@@ -318,19 +318,19 @@
 						if(res.confirm) {
 							// 确定退出
 							this.$store.dispatch('user/logout').then(() => {
-								// 登出成功
-								uni.showToast({
-									title: _this.i18n.tip.logoutsuccess,
-									icon: 'none',
-									duration: 1500
-								});
+								
+								// 重置到首页
+								uni.reLaunch({
+									url: '/pages/home/index'
+								})
 								
 								setTimeout(function() {
-									// 重置到首页
-									uni.reLaunch({
-										url: '/pages/home/index'
-									})
-								}, 1500);
+									// 登出成功
+									uni.showToast({
+										title: `登出成功`,
+										icon: 'none',
+									});
+								}, 300);
 								
 							}).catch(error => {
 								// 登出失败

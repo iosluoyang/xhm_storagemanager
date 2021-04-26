@@ -112,6 +112,7 @@ const zh = {
 		notinworkingtime: "您不在工作时间范围内",
 		loginotherplace: "您的账号已经在其他地方登录,请重新登录",
 		pleaseselectpricetype: "价格类型  (出库时选择)",
+		subsribewxmsg: "点击订阅消息,选择总是保持以上选择,即可在状态发生变更时及时通知到您"
 	},
 	
 	// 错误提示

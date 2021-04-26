@@ -115,6 +115,7 @@ const en = {
 		notinworkingtime: "You are not in the working time",
 		loginotherplace: "You've logined in other platform, please login again",
 		pleaseselectpricetype: "Select price type  (Select when stock out)",
+		subsribewxmsg: "Please subscribe the notification so that once the stats changed we can inforn you immediately"
 	},
 	
 	// 错误提示

@@ -161,30 +161,23 @@
 					}
 				},
 				{
-					"path":"wishlist",
-					"style": {
-						"navigationBarTitleText":"心愿清单"
+				    "path" : "list",
+				    "style" : {
+						"navigationBarTitleText": "心愿单",
+						"enablePullDownRefresh": false
 					}
-				}
-			    ,{
+				},
+			    {
                     "path" : "wishdetail",
                     "style" : {
 						"navigationBarTitleText":"心愿详情"
 					}
-                }
-                ,{
+                },
+                {
                     "path" : "handletimeline",
                     "style" : {
 						"navigationBarTitleText":"时间轴"
 					}
-                }
-                ,{
-                    "path" : "newwishlist",
-                    "style" : {
-						"navigationBarTitleText": "心愿单列表新",
-						"enablePullDownRefresh": false
-					}
-                
                 }
             ]
 		}

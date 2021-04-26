@@ -48,11 +48,8 @@
 			
 			// 查看心愿列表
 			checkwishlist() {
-				// uni.navigateTo({
-				// 	url: '/pages/wishlist/wishlist'
-				// });
 				uni.navigateTo({
-					url: '/pages/wishlist/newwishlist'
+					url: '/pages/wishlist/list'
 				});
 			},
 			
