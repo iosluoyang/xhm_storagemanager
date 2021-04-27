@@ -31,7 +31,10 @@
 			
 			<!-- 源网站链接 -->
 			<view class="cu-form-group">
-				<view class="title">{{i18n.wishlist.sourcelink}} :</view>
+				<view class="title">
+					<text class="cuIcon cuIcon-info" @click="showTipModal('sourceLink')"></text>
+					{{i18n.wishlist.sourcelink}}:
+				</view>
 				<!-- <input type="text" confirm-type="next" v-model="sourceLink" /> -->
 				<textarea auto-height :show-confirm-bar="false" v-model="sourceLink" />
 				<!-- #ifndef H5 -->
@@ -65,8 +68,8 @@
 				</view>
 			</view>
 			
-			<!-- 目标价格 -->
-			<view class="cu-form-group">
+			<!-- 目标价格 暂时屏蔽 -->
+			<view v-if="false" class="cu-form-group">
 				
 				<view class="title">{{i18n.wishlist.targetprice}} :</view>
 				
@@ -149,6 +152,17 @@
 			</view>
 		</view>
 		
+		<!-- 提示图片modal框 -->
+		<view class="cu-modal" :class="showImgModal ? 'show':'' ">
+			<view class="cu-dialog">
+				<view class="bg-img" :style="{ backgroundImage: 'url('+modalImg+')',height: '700rpx' }"></view>
+				
+				<view class="cu-bar bg-gradual-pink">
+					<view class="action margin-0 flex-sub  solid-left" @tap="showImgModal = false">{{ i18n.base.confirm }}</view>
+				</view>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
@@ -169,7 +183,7 @@
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
-				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
+				hurryLevel: 5, // 紧急程度 默认为5级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
@@ -179,6 +193,8 @@
 				modalTitle: '弹框标题',
 				modalContent: '弹框内容',
 				showModal: false, // 是否显示modal
+				showImgModal: false, // 是否显示图片提示modal
+				modalImg: '', // 图片提示框中的图片地址
 				
 			};
 		},
@@ -280,12 +296,31 @@
 				
 			},
 			
+			// 显示提示弹框
+			showTipModal(type) {
+				let modalImg = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/32115416-4de9-439e-9cd3-ce844306167c.gif'
+				console.log(type);
+				// 来源链接
+				if(type == 'sourceLink') {
+					modalImg = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/32115416-4de9-439e-9cd3-ce844306167c.gif'
+				}
+				
+				this.modalImg = modalImg
+				this.showImgModal = true
+			},
+			
 			// 粘贴源网站链接
 			pastesourelink(datatype) {
 				uni.getClipboardData({
 					success(res) {
 						let content = res.data
 						if(content) {
+							// 如果是拷贝链接的话则从内容中提取链接进行替换
+							// if(datatype == 'sourceLink') {
+							// 	// 提取链接
+							// 	var reg = `/(http://|https?/)((\w|=|?|.|/|&|-)+)/g`
+							// 	content= content.replace(reg, '$1$2')
+							// }
 							_this[datatype] = content
 						}
 					}

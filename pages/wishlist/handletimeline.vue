@@ -225,42 +225,7 @@
 					.finally(() => {
 						_this.ifloading = false // 结束缓冲动画
 					})
-				
-				_this.ifloading = true // 开始加载动画
-				
-				
-				return
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getdetail',
-						info: {
-							_id: this.wishId
-						}
-					}
-				}).then(response => {
-					
-					_this.ifloading = false // 结束加载动画
-					
-					// 获取数据成功
-					let info = response.result.data[0]
-					
-					this.wishinfo = info
-					
-					// 轮播数据
-					let swiperimgArr = info.imgs.split(',') // 图片数组
-					this.swiperimgArr = swiperimgArr
-					
-				}).catch(error => {
-					
-					_this.ifloading = false // 结束加载动画
-					
-					uni.showToast({
-						title: this.i18n.error.loaderror,
-						icon: 'none'
-					});
-				})
-				
+
 			},
 			
 			// 获取时间轴详情
@@ -309,44 +274,6 @@
 				.finally(() => {
 					uni.showToast({
 						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
-				})
-				
-				return
-				
-				uniCloud.callFunction({
-					name: 'wishlisttimeline',
-					data: {
-						type: 'getdetail',
-						info: {
-							_id: _this.timelineId
-						}
-					}
-				}).then(response => {
-					
-					_this.ifloading = false // 结束加载动画
-					
-					// 获取数据成功
-					let info = response.result.data[0]
-					_this.timelineInfo = info
-					
-					// 时间轴类型
-					// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-					let type = info.type
-					_this.type = type == 1 ? 'addcomment' : 'found'
-					_this.remark = info.content || ''
-					_this.imgArr = info.imgs && info.imgs.length > 0 ? info.imgs.split(',') : []
-					_this.targetMoneyType = info.moneyType || 'RMB'
-					_this.targetPrice = info.price || ''
-					_this.targetLink = info.link || ''
-				
-				}).catch(error => {
-					
-					_this.ifloading = false // 结束加载动画
-					
-					uni.showToast({
-						title: this.i18n.error.loaderror,
 						icon: 'none'
 					});
 				})
