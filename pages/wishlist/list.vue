@@ -275,7 +275,7 @@
 				// 开始进行接口请求
 				
 				const db = uniCloud.database();
-				// creatUser._id == $cloudEnv_uid &&
+				// && creatUser._id == $cloudEnv_uid
 				// 查询 搜索关键字 完成标识 和仅自己发布的可看
 				let wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				db.collection('wishlist,uni-id-users')

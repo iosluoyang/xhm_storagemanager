@@ -99,6 +99,17 @@
 				}
 			},
 			
+			watch: {
+				
+				// 监听外部wishitem的变更 深度变更
+				wishitem: {
+					handler(newValue, oldValue) {
+						this.ownwishitem = newValue
+					},
+					deep: true
+				}
+			},
+			
 			computed: {
 				
 				// 心愿单的背景颜色  根据不同的状态返回不同的颜色
@@ -137,19 +148,8 @@
 			
 			methods: {
 	
-				// 显示时间字符串
-				showtimestr(creatTime) {
-					let moment = this.$moment
-					let nowmoment = new moment()
-					let creatmoment = new moment(creatTime)
-					let duration = moment.duration(nowmoment.diff(creatTime))
-					let difftimestr = duration.humanize()
-					return difftimestr
-				},
-	
 				// 跳转心愿详情
 				gotowishdetail() {
-					console.log(this.ownwishitem);
 					uni.navigateTo({
 						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});
@@ -223,31 +223,27 @@
 							let tapindex = res.tapIndex
 							let tapItem = finalOptionList[tapindex]
 							let achieveFlag = tapItem.achieveFlag
+							
 							// 设置该心愿单的状态为切换状态
 							
-							uniCloud.callFunction({
-								name:'wishlist',
-								data: {
-									type: 'changestatus',
-									info: {
-										_id: _this.ownwishitem._id,
-										achieveFlag: achieveFlag
-									}
-								}
-							}).then(response => {
-								// 切换成功
+							const db = uniCloud.database();
+							db.collection('wishlist').doc(_this.ownwishitem._id)
+							.update({achieveFlag})
+							.then(res => {
+								console.log(`更新状态成功`);
 								// 将心愿单列表数据置空(消失) 然后发送响应事件
 								_this.ownwishitem = null
-								
 								uni.$emit('updatebadgenum')
-								
-							}).catch(error => {
+							})
+							.catch(err => {
+								console.log(`更新状态失败`);
 								// 切换失败
 								uni.showToast({
 									title: _this.i18n.error.loaderror,
 									icon: 'none'
 								});
 							})
+							
 						}
 					})
 				   

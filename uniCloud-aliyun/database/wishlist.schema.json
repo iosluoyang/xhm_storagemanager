@@ -15,7 +15,7 @@
 		},
 		"creatUser": {
 			"bsonType":"string",
-			"description": "发布者的uid",
+			"description": "发布者的uid 升级后的DB直接会返回该对象数据",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue":{
 				"$env":"uid"
