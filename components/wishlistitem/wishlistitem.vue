@@ -14,10 +14,19 @@
 					
 					<!-- 商品标题 -->
 					<view class="text-bold text-xl margin-top-sm">{{ownwishitem.productTitle}}</view>
-					<!-- 商品价格 -->
-					<view class="priceview margin-top-sm">
-						<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.targetPrice}` }}</text>
-						<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text>
+					
+					<!-- 商品价格和数量 -->
+					<view class="flex align-center justify-between width100">
+						
+						<view class="priceview margin-top-sm">
+							<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.targetPrice}` }}</text>
+							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text> -->
+						</view>
+						
+						<view class="amountview">
+							<text class="text-white text-xl bg-cyan padding-left-sm padding-right-sm radius">{{ ownwishitem.targetAmount }}</text>
+						</view>
+						
 					</view>
 					
 				</view>

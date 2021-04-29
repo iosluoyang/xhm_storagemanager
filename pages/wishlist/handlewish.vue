@@ -6,7 +6,7 @@
 		</cu-custom>
 
 		<!-- 填写的表单信息 -->
-		<form>
+		<form class="fillcontentform">
 			
 			<!-- 我发现 -->
 			<view class="cu-bar bg-white margin-top">
@@ -32,7 +32,7 @@
 			<!-- 源网站链接 -->
 			<view class="cu-form-group">
 				<view class="title">
-					<text class="cuIcon cuIcon-info" @click="showTipModal('sourceLink')"></text>
+					<text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text>
 					{{i18n.wishlist.sourcelink}}:
 				</view>
 				<!-- <input type="text" confirm-type="next" v-model="sourceLink" /> -->
@@ -59,6 +59,57 @@
 				</view>
 
 			</view>
+			
+			<!-- 更多区域 -->
+			<uni-collapse>
+				<uni-collapse-item :title="i18n.me.panel.more" :open="collapseOpen" showAnimation>
+					
+					<form>
+						
+						<!-- 装箱数量 -->
+						<view class="cu-form-group">
+							<view class="title">{{ '装箱数量' }}</view>
+							<input type="number" placeholder="pcs/box" v-model="boxContainNum">
+						</view>
+						
+						<!-- 装箱尺寸 -->
+						<view class="cu-form-group">
+							<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
+							<view class="flex align-center justify-around" style="flex-shrink: 1;">
+								<input class="borderCDCDCD" type="number" v-model="boxLength">
+								<text class="padding">x</text>
+								<input class="borderCDCDCD" type="number" v-model="boxWidth">
+								<text class="padding">x</text>
+								<input class="borderCDCDCD" type="number" v-model="boxHeight">
+							</view>
+							
+						</view>
+						
+						<!-- 装箱体积 -->
+						<view class="cu-form-group">
+							<view class="title">{{ '每箱体积(m³)' }}</view>
+							<input type="number" placeholder="可以直接填入体积(m³)" v-model="boxValume">
+							<button class='cu-btn bg-green shadow' @tap.stop="calculatevalume">{{ `计算体积` }} </button>
+						</view>
+						
+						<!-- 国际运费单价 -->
+						<view class="cu-form-group">
+							<view class="title">{{ '国际运费单价' }}</view>
+							<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
+						</view>
+						
+						<!-- 预估国际运费总价 -->
+						<view class="cu-form-group">
+							<view class="title">{{ '预估运费' }}</view>
+							<view class="content">
+								<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
+							</view>
+						</view>
+						
+					</form>
+					
+				</uni-collapse-item>
+			</uni-collapse>
 			
 			<!-- 我想要 -->
 			<view class="cu-bar bg-white margin-top">
@@ -180,6 +231,15 @@
 				sourceLink: '', // 源网站链接
 				sourcePrice: '', // 源网站价格
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
+				collapseOpen: false, // 是否展开商品更多  默认不展开
+				
+				boxContainNum: '', // 一箱有几个
+				boxLength: '', // 箱子长度
+				boxWidth: '', // 箱子宽度
+				boxHeight: '', // 箱子高度
+				boxValume: '', // 箱子体积
+				interShippingSingleFeeStr: '', // 国际运费单价
+				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
@@ -239,6 +299,25 @@
 			
 		},
 		
+		computed: {
+			
+			// 国际运费总价
+			interShippingTotalFeeStr() {
+				
+				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
+				if(this.boxValume && this.interShippingSingleFeeStr) {
+					let interShippingTotalFee = parseFloat(parseFloat(this.boxValume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
+					let interShippingTotalFeeStr = `${this.boxValume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
+					return interShippingTotalFeeStr
+				}
+				else {
+					return '……'
+				}
+			},
+			
+			//
+		},
+		
 		methods: {
 			
 			// 获取心愿详情
@@ -251,7 +330,7 @@
 				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt')
 				.get({
 					getOne:true
 				})
@@ -273,6 +352,29 @@
 						this.remark = info.remark // 备注信息
 						let imgsArr = info.imgs.split(',') // 商品图片
 						this.imgArr = imgsArr.map(item => ({url: item}))
+						
+						// 解析心愿商品拓展字段
+						let productExt = info.productExt
+						if(productExt) {
+							let boxContainNum = productExt.boxContainNum
+							let boxLength = productExt.boxLength
+							let boxWidth = productExt.boxWidth
+							let boxHeight = productExt.boxHeight
+							
+							if(boxContainNum) {this.boxContainNum = boxContainNum}
+							if(boxLength && boxWidth && boxHeight) {
+								this.boxLength = boxLength
+								this.boxWidth = boxWidth
+								this.boxHeight = boxHeight
+								// 计算体积
+								this.calculatevalume()
+							}
+							
+							if(boxContainNum || boxLength || boxWidth || boxHeight) {
+								this.collapseOpen = true
+							}
+							
+						}
 						
 					}
 					else {
@@ -332,6 +434,21 @@
 				let sourcePrice = e.detail.value
 				this.targetPrice = sourcePrice
 				this.targetMoneyType = this.sourceMoneyType
+			},
+			
+			// 计算货物体积
+			calculatevalume() {
+				// 如果商品的长宽高没有填完则提示用户 否则进行计算
+				if(this.boxLength && this.boxWidth && this.boxHeight) {
+					this.boxValume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
+				}
+				else {
+					this.boxValume = ''
+					uni.showToast({
+						title: '请输入长宽高',
+						icon: 'none'
+					});
+				}
 			},
 			
 			// 紧急程度更改
@@ -453,6 +570,15 @@
 				
 				// 上传图片已经成功 此时开始提交其他数据
 				let imgs = this.imgArr.map(item => (item.url)).join(',')
+				
+				// 商品拓展字段
+				let productExt = {
+					boxContainNum: this.boxContainNum,
+					boxLength: this.boxLength,
+					boxWidth: this.boxWidth,
+					boxHeight: this.boxHeight,
+				}
+				
 				// 上传图片成功 开始上传所有数据
 				let info = {
 					productTitle: _this.productTitle, // 商品标题
@@ -465,6 +591,7 @@
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
+					productExt: productExt, // 心愿商品的拓展字段
 				}
 				
 				// 新增 或者 拷贝
@@ -612,5 +739,14 @@
 </script>
 
 <style lang="scss" scoped>
-	
+	.content{
+		/deep/.fillcontentform{
+			.uni-collapse-cell{
+				border: none !important;
+				.uni-collapse-cell__content{
+					background-color: #FFFFFF;
+				}
+			}
+		}
+	}
 </style>

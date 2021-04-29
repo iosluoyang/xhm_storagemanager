@@ -13,9 +13,15 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+			  "$env": "now"
+			}
+		},
 		"creatUser": {
 			"bsonType":"string",
-			"description": "发布者的uid 升级后的DB直接会返回该对象数据",
+			"description": "发布者的uid 0428后升级后的DB直接会返回该对象数据",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue":{
 				"$env":"uid"
@@ -61,16 +67,36 @@
 			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭",
 			"defaultValue": 0
 		},
-		"creatTime": {
-			"description": "创建时间",
-			"forceDefaultValue": {
-			  "$env": "now"
-			}
-		},
 		"remindFlag": {
 			"bsonType":"int",
 			"description":"是否需要提醒的标识  0否 1是",
 			"defaultValue": 0
+		},
+		"productExt": {
+			"bsonType":"object",
+			"description":"心愿单商品的拓展字段",
+			"properties": {
+				"boxContainNum": {
+					"bsonType":"int",
+					"description":"一箱的商品数量",
+					"defaultValue":""
+				},
+				"boxLength": {
+					"bsonType":"int",
+					"description":"一箱的长度",
+					"defaultValue":""
+				},
+				"boxWidth": {
+					"bsonType":"int",
+					"description":"一箱的宽度",
+					"defaultValue":""
+				},
+				"boxHeight": {
+					"bsonType":"int",
+					"description":"一箱的高度",
+					"defaultValue":""
+				}
+			}
 		}
 		
 	}

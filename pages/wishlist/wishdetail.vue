@@ -48,7 +48,7 @@
 				<swiper class="screen-swiper round-dot" indicator-dots circular
 				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
-					<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(index)">
+					<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(wishinfo.imgs, index)">
 						<image :src="img" mode="aspectFit"></image>
 					</swiper-item>
 				</swiper>
@@ -59,15 +59,15 @@
 					<view class="text-bold text-xl">
 						
 						<!-- 紧急程度 -->
-						<text class="hurryleveltext margin-right-sm">
+						<!-- <text class="hurryleveltext margin-right-sm">
 							<text v-for="item in wishinfo.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-						</text>
+						</text> -->
 						
 						<!-- 商品标题 -->
 						<text class="protitle">
 							{{wishinfo.productTitle}}
 						</text>
-						
+
 					</view>
 					
 					<!-- 商品价格和数量 -->
@@ -75,11 +75,11 @@
 						
 						<view class="priceview flex-sub">
 							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
-							<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
 						</view>
 						
 						<view class="amountview flex-sub t_right" v-if="wishinfo.targetAmount">
-							<text class="text-black text-sm"> {{ `${i18n.wishlist.targetamount}: ${wishinfo.targetAmount}` }}</text>
+							<text class="text-white text-xl bg-cyan padding-left-sm padding-right-sm radius">{{ wishinfo.targetAmount }}</text>
 						</view>
 						
 					</view>
@@ -118,7 +118,58 @@
 					</view> -->
 					
 				</view>
+				
+				<!-- 心愿商品拓展字段展示及运费计算 -->
+				<!-- 更多区域 -->
+				<uni-collapse>
+					<uni-collapse-item title="运费估算工具" :open="collapseOpen" showAnimation>
+						
+						<form>
+							
+							<!-- 装箱数量 -->
+							<view class="cu-form-group">
+								<view class="title">{{ '装箱数量' }}</view>
+								<input type="number" disabled v-model="boxContainNum">
+							</view>
+							
+							<!-- 装箱尺寸 -->
+							<view class="cu-form-group">
+								<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
+								<view class="flex align-center justify-around" style="flex-shrink: 1;">
+									<input type="number" disabled v-model="boxLength">
+									<text class="padding">x</text>
+									<input type="number" disabled v-model="boxWidth">
+									<text class="padding">x</text>
+									<input type="number" disabled v-model="boxHeight">
+								</view>
 								
+							</view>
+							
+							<!-- 装箱体积 -->
+							<view class="cu-form-group">
+								<view class="title">{{ '每箱体积(m³)' }}</view>
+								<input type="number" disabled v-model="boxValume">
+							</view>
+							
+							<!-- 国际运费单价 -->
+							<view class="cu-form-group">
+								<view class="title">{{ '国际运费单价' }}</view>
+								<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
+							</view>
+							
+							<!-- 预估国际运费总价 -->
+							<view class="cu-form-group">
+								<view class="title">{{ '预估运费' }}</view>
+								<view class="rightcontent">
+									<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
+								</view>
+							</view>
+							
+						</form>
+						
+					</uni-collapse-item>
+				</uni-collapse>
+				
 			</view>
 			
 		</view>
@@ -176,7 +227,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs.split(','), index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
 								</view>
 								
 							</view>
@@ -225,7 +276,7 @@
 					<view v-if="timelineitem.type == 2" class="cu-item cuIcon-evaluate_fill text-gray">
 						<view class="content bg-gray shadow-blur">
 							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
-							<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.userName : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
+							<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 						</view>
 					</view>
 					
@@ -269,7 +320,7 @@
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
-									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewcommentimg(timelineitem.imgs.split(','), index)"></view>
+									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
 								</view>
 								
 							</view>
@@ -317,9 +368,9 @@
 									<!-- 同意人 -->
 									<view v-if="timelineitem.agreeUser" class="agreeUserview flex align-center">
 										<view class="leftview flex align-center">
-											<image class="cu-avatar round sm" :src="imgUrl + timelineitem.agreeUser.avatar" mode="aspectFill"></image>
+											<image class="cu-avatar round sm" :src="timelineitem.agreeUser.avatar" mode="aspectFill"></image>
 											<view class="flex margin-left-sm flex-direction text-sm">
-												<text class="usernameview text-white text-sm text-cut">{{ timelineitem.agreeUser.userName }}</text>
+												<text class="usernameview text-white text-sm text-cut">{{ timelineitem.agreeUser.avatar }}</text>
 												<text class="text-gray">{{timelineitem.agreeTime}}</text>
 											</view>
 										</view>
@@ -334,7 +385,7 @@
 									<view v-if="timelineitem.refuseUser" class="refuseUserview flex align-center">
 										
 										<view class="leftview flex align-center">
-											<image class="cu-avatar round sm" :src="imgUrl + timelineitem.refuseUser.avatar" mode="aspectFill"></image>
+											<image class="cu-avatar round sm" :src="timelineitem.refuseUser.avatar" mode="aspectFill"></image>
 											<view class="flex margin-left-sm flex-direction text-sm">
 												<text class="usernameview text-black text-sm text-cut">{{ timelineitem.refuseUser.nickname }}</text>
 												<text class="text-grey">{{timelineitem.refuseTime}}</text>
@@ -388,7 +439,7 @@
 		
 		<!-- 添加按钮 悬浮 -->
 		<view v-if="wishinfo" class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
-			<text class="cuIcon-add" style="font-size: 100upx;"></text>
+			<text class="cuIcon-add" style="font-size: 100rpx;"></text>
 		</view>
 		
 		<!-- 加载条 -->
@@ -441,6 +492,16 @@
 				swiperCur: 0, // 当前轮播图索引
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
+				
+				collapseOpen: false, // 是否展开商品更多  默认不展开
+				
+				boxContainNum: '', // 一箱有几个
+				boxLength: '', // 箱子长度
+				boxWidth: '', // 箱子宽度
+				boxHeight: '', // 箱子高度
+				boxValume: '', // 箱子体积
+				interShippingSingleFeeStr: '', // 国际运费单价
+				
 				temptimelineitem: null, // 临时时间轴变量
 				refuseReason: '', // 拒绝原因
 				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
@@ -452,6 +513,7 @@
 		},
 		
 		computed: {
+			
 			// 心愿单的背景颜色  根据不同的状态返回不同的颜色
 			wishbgcolor() {
 				if(this.wishinfo) {
@@ -478,6 +540,21 @@
 				}
 				
 			},
+			
+			// 国际运费总价
+			interShippingTotalFeeStr() {
+				
+				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
+				if(this.boxValume && this.interShippingSingleFeeStr) {
+					let interShippingTotalFee = parseFloat(parseFloat(this.boxValume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
+					let interShippingTotalFeeStr = `${this.boxValume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
+					return interShippingTotalFeeStr
+				}
+				else {
+					return '……'
+				}
+			},
+			
 		},
 		
 		onLoad(option) {
@@ -539,7 +616,7 @@
 			// 设置分享的内容
 			let title = this.sharecontent && this.sharecontent.length > 0 ? this.sharecontent : `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
 			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&ifShare=true`
-			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? this.imgUrl + sharetimelineitem.imgs.split(',')[0] : this.imgUrl + this.wishinfo.imgs.split(',')[0]
+			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? sharetimelineitem.imgs.split(',')[0] : this.wishinfo.imgs.split(',')[0]
 			let shareobj = {
 				title: title,
 				path: path,
@@ -579,7 +656,7 @@
 				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,comment')
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,comment,creatTime,productExt')
 					.get({
 						getOne:true
 					})
@@ -589,6 +666,30 @@
 							let detaildata = res.result.data
 							detaildata.creatUser = detaildata.creatUser[0]
 							_this.wishinfo = detaildata
+							
+							// 解析心愿商品拓展字段
+							let productExt = detaildata.productExt
+							if(productExt) {
+								let boxContainNum = productExt.boxContainNum
+								let boxLength = productExt.boxLength
+								let boxWidth = productExt.boxWidth
+								let boxHeight = productExt.boxHeight
+								
+								if(boxContainNum) {this.boxContainNum = boxContainNum}
+								if(boxLength && boxWidth && boxHeight) {
+									this.boxLength = boxLength
+									this.boxWidth = boxWidth
+									this.boxHeight = boxHeight
+									// 计算体积
+									this.calculatevalume()
+								}
+								
+								if(boxContainNum || boxLength || boxWidth || boxHeight) {
+									this.collapseOpen = true
+								}
+								
+							}
+							
 						}
 						else {
 							uni.showToast({
@@ -607,6 +708,17 @@
 						_this.ifloading = false // 结束缓冲动画
 					})
 				
+			},
+			
+			// 计算货物体积
+			calculatevalume() {
+				// 如果商品的长宽高没有填完则提示用户 否则进行计算
+				if(this.boxLength && this.boxWidth && this.boxHeight) {
+					this.boxValume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
+				}
+				else {
+					this.boxValume = ''
+				}
 			},
 			
 			// 点击复制到剪贴板
@@ -828,10 +940,10 @@
 			},
 			
 			// 查看大图
-			previewImgs(index) {
+			previewImgs(imgsStr,index) {
 				uni.previewImage({
 					current:index,
-					urls: _this.wishinfo.imgs.split(',')
+					urls: imgsStr.split(',')
 				})
 			},
 			
@@ -845,7 +957,7 @@
 			// 再次购买
 			buyagain(wishitem) {
 				// replace到新增心愿页面
-				uni.redirectTo({
+				uni.navigateTo({
 					url: `/pages/wishlist/handlewish?type=copy&id=${wishitem._id}`
 				});
 			}, 
@@ -896,14 +1008,6 @@
 					},
 				})
 				
-			},
-			
-			// 查看评论图片
-			previewcommentimg(imgs, index) {				
-				uni.previewImage({
-					urls: imgs,
-					current:index
-				})
 			},
 			
 			// 编辑时间轴数据
@@ -1060,13 +1164,16 @@
 	
 	.content{
 		
+		padding-bottom: 120rpx;
+		
 		.addbtn{
 			position: fixed;
 			z-index: 999;
-			width: 100upx;
-			height: 100upx;
-			bottom: 50upx;
-			right: 50upx;
+			width: 100rpx;
+			height: 100rpx;
+			bottom: 20rpx;
+			left: 50%;
+			transform: translate(-50%);
 		}
 
 	}
