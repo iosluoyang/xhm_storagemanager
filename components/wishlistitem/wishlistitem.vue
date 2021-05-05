@@ -18,14 +18,12 @@
 					<!-- 商品价格和数量 -->
 					<view class="flex align-center justify-between width100">
 						
-						<view class="priceview margin-top-sm">
+						<view class="flex-sub priceview margin-top-sm">
 							<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.targetPrice}` }}</text>
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text> -->
 						</view>
 						
-						<view class="amountview">
-							<text class="text-white text-xl bg-cyan padding-left-sm padding-right-sm radius">{{ ownwishitem.targetAmount }}</text>
-						</view>
+						<view class="flex-sub amountview margin-left-sm text-cut text-white text-df bg-cyan padding-left-sm padding-right-sm radius">{{ ownwishitem.targetAmount }}</view>
 						
 					</view>
 					

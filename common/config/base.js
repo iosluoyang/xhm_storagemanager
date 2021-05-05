@@ -139,17 +139,22 @@ const imgTagStr = function() {
 const imgUrl = function() {
 	// 配置列表信息
 	var configlist = store.getters.configList
-	for(var i=0; i<configlist.length;i++){
-		var configdata = configlist[i]
-		if (configdata.itemKey === 'imgUrlPrefix') {
-			var imgUrl = configdata.itemVal
-			return imgUrl
-		}
-		// 如果到最后也没有找到图片前缀的话则返回默认的图片前缀
-		if(i === configlist.length - 1){
-			return ''
+	if(configlist) {
+		for(var i=0; i<configlist.length;i++){
+			var configdata = configlist[i]
+			if (configdata.itemKey === 'imgUrlPrefix') {
+				var imgUrl = configdata.itemVal
+				return imgUrl
+			}
+			// 如果到最后也没有找到图片前缀的话则返回默认的图片前缀
+			if(i === configlist.length - 1){
+				return ''
+			}
 		}
 	}
+	
+	return ''
+	
 }
 
 

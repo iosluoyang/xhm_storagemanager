@@ -8,7 +8,7 @@
     "passwordErrorRetryTime": 3600,
     "autoSetInviteCode": false,
     "forceInviteCode": false,
-	"removePermissionAndRoleFromToken": true,
+	"removePermissionAndRoleFromToken": false,
     "mp-weixin": {
         "tokenExpiresIn": 259200,
         "oauth": {

@@ -24,6 +24,16 @@
 				<input type="text" disabled :value="userInfo.username" />
 			</view>
 			
+			<!-- 用户身份 -->
+			 <view class="cu-form-group">
+				<view class="title flex-sub">{{i18n.me.persondetail.usertype}}</view>
+				<view class="content flex-treble grid col-4">
+					<view class="usertag cu-tag radius margin-right-sm margin-top-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
+						{{ $basejs.getrolenameandcolor(item).title }}
+					</view>
+				</view>
+			</view>
+			
 			<!-- 昵称 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.nickname}}</view>
@@ -39,10 +49,11 @@
 			<!-- 性别 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.gender}}</view>
-				<view class="content flex align-center">
-					<view class="margin-right">{{ userInfo.gender===1 ? i18n.base.male : userInfo.gender === 2 ? i18n.base.female : ''}}</view>
-					<switch class='switch-sex' @change="(e) => { this.userInfo.gender = e.detail.value ? 1 : 2 }" :class="userInfo.gender===1?'checked':''" :checked="userInfo.gender===1"></switch>
-				</view>
+				<picker v-if="pickerRange" @change="pickerChange" :value="pickerIndex" :range="pickerRange" range-key="title">
+					<view class="picker">
+						{{ pickerRange[pickerIndex].title }}
+					</view>
+				</picker>
 			</view>
 			
 			<!-- 手机号 -->
@@ -55,16 +66,6 @@
 			<view class="cu-form-group">
 				<view class="title">{{i18n.me.persondetail.email}}</view>
 				<input type="text" v-model="userInfo.email" />
-			</view>
-			
-			<!-- 用户身份
-			<!-- <view class="cu-form-group">
-				<view class="title">{{i18n.me.persondetail.usertype}}</view>
-				<view class="content">
-					<view class="cu-tag radius" :class="[user.type === 0 ? 'bg-blue' : 'bg-cyan']">
-						{{ user.type === 0 ? i18n.base.admin : i18n.base.normaladmin }}
-					</view>
-				</view>
 			</view>
 			
 			<!-- 个人简介 -->
@@ -81,7 +82,6 @@
 					:data-class="btnanimationname ? btnanimationname : '' "
 					@tap.stop="modifydetail" :loading="ifmodify">{{i18n.base.save}}</button>
 		</view>
-				
 		
 	</view>
 </template>
@@ -106,20 +106,15 @@
 				
 				userInfo: null,
 				
+				pickerIndex: 0, // 默认选中第0个
+				pickerRange: [], // 单选数据内容
+				
 				ifmodify: false, // 是否正在修改  默认为否
 				btnanimationname: null, // 当前按钮动画  默认为null
 			};
 		},
 		
 		onLoad() {
-			
-			// this.nickname = this.user.nickname || ''
-			// // this.realname = this.user && this.user.realName ? this.user.realName : ''
-			// this.username = this.user.username || ''
-			// this.gender = this.user.gender || 0
-			// this.mobile = this.user.mobile || ''
-			// this.email = this.user.email || ''
-			// this.comment = this.user.comment || ''
 			
 			// 选择要更新和展示的用户信息
 			this.userInfo = {
@@ -132,7 +127,7 @@
 				comment: this.user.comment,
 			}
 			
-			// 返现头像
+			// 返显头像
 			this.filesArr = [
 				{
 					name: '',
@@ -140,6 +135,29 @@
 					url: this.user.avatar
 				}
 			]
+			
+			// 设置性别数据内容
+			let pickerRange = [
+				{
+					title: this.i18n.base.unknown,
+					value: 0
+				},
+				{
+					title: this.i18n.base.male,
+					value: 1
+				},
+				{
+					title: this.i18n.base.female,
+					value: 2
+				}
+			]
+			this.pickerRange = pickerRange
+			
+			// 返显性别
+			let pickerIndex = pickerRange.findIndex(item => (item.value == this.user.gender))
+			if(pickerIndex > -1) {
+				this.pickerIndex = pickerIndex
+			}
 			
 		},
 		
@@ -175,6 +193,15 @@
 				console.log(`上传图片失败`);
 				console.log(e);
 				this.ifmodify = false // 关闭加载动画
+			},
+			
+			// 单选
+			pickerChange(e) {
+				let selectIndex = e.detail.value
+				this.pickerIndex = selectIndex
+				
+				let gendervalue = this.pickerRange[this.pickerIndex].value
+				this.$set(this.userInfo, 'gender', gendervalue)
 			},
 						
 			// 修改个人资料

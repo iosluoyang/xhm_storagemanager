@@ -8,26 +8,3 @@
 // 数据库查询有最大返回条数限制，详见：https://uniapp.dcloud.net.cn/uniCloud/cf-database?id=limit
 // 详细JQL语法，请参考 https://uniapp.dcloud.net.cn/uniCloud/clientdb?id=jsquery
 
-// 下面示例查询wishlist表的所有数据
-// db.collection('wishlist')
-// .aggregate()
-// // .match({
-// // 	_id: '5f5d8a207737f100013e9e6b'
-// // })
-// .addFields({
-// 	uid: '$user.uid'
-// })
-// .limit(750)
-// .end()
-// .where(`${new RegExp('5f5dbf8d5b982a000191a296', 'i')}.test(_id)`)
-
-
-// db.collection('wishlisttimeline')
-// // .where(`${new RegExp('5f5dbf8d5b982a000191a296', 'i')}.test(_id)`)
-// .where({
-// 	_id: '5f5d8a207737f100013e9e6b'
-// })
-// // .aggregate().addFields({
-// // 	userId:
-// // })
-// .get();

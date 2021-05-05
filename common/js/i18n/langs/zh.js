@@ -9,6 +9,7 @@ const zh = {
 		normaladmin: "普通用户",
 		female: "女",
 		male: "男",
+		unknown: "未知",
 		edit: "编辑",
 		del: "删除",
 		save: "保存",
@@ -72,6 +73,7 @@ const zh = {
 		editcustomer: "编辑客户",
 		operationlog: "操作日志",
 		me: "个人中心",
+		storemanage: "店铺管理",
 		resetpwd: "修改密码",
 		persondetail: "个人资料",
 		logistic: "物流管理",
@@ -84,8 +86,12 @@ const zh = {
 		
 		useinapp: "请在APP中使用该功能",
 		loadingstr: "加载中",
+		needtoregister: "该账户暂未注册,请先注册",
 		loginsuccess: "登录成功",
 		logoutsuccess: "登出成功",
+		needstorenametip: "请输入店铺名称",
+		needshippingnametip: "请输入物流公司名称",
+		copysuccess: "复制成功",
 		addsuccess: "添加成功",
 		fixsuccess: "修改成功",
 		savesuccess: "保存成功",
@@ -159,10 +165,13 @@ const zh = {
 	login: {
 		account: "账号",
 		password: "密码",
+		passwordconfirm: "确认密码",
 		invitecode: "邀请码",
 		loginstr: "登录",
 		registerstr: "注册",
+		havequestion: "遇到问题",
 		forgetpwd: "忘记密码",
+		selectrole: "选择身份",
 	},
 	
 	// 首页
@@ -199,6 +208,7 @@ const zh = {
 		exit: "退出登录",
 		
 		panel: {
+			storemanage: "店铺管理",
 			proqrcode: "商品二维码",
 			mytask: "我的任务",
 			managepeople: "人员管理",
@@ -398,6 +408,52 @@ const zh = {
 		
 	},
 	
+	// 角色相关
+	role: {
+		admin: '超级管理员',
+		admin_des: '系统超级管理员,拥有最高权限',
+		merchant_admin: '商家管理员',
+		merchant_admin_des: '商家店铺管理者,可管理店铺及下属员工',
+		merchant_employee: '商家雇员',
+		merchnat_employee_des: '可处理商家店铺事宜',
+		product_agent: '商品代理员',
+		product_agent_des: '人人可参与,单单可赚钱',
+		shipping_admin: '物流管理员',
+		shipping_admin_des: '管理所属物流公司相关订单数据等',
+		shipping_employee: '物流雇员',
+		shipping_employee_des: '可处理所属物流公司事宜',
+		
+		admin: {
+			title: '超级管理员',
+			des: '系统超级管理员,拥有最高权限'
+		},
+		MERCHANT_ADMIN: {
+			title: '商家管理员',
+			des: '商家店铺管理者,可管理店铺及下属员工'
+		},
+		MERCHANT_EMPLOYEE: {
+			title: '商家雇员',
+			des: '可处理商家店铺事宜'
+		},
+		PRODUCT_AGENT: {
+			title: '商品代理员',
+			des: '人人可参与,单单可赚钱'
+		},
+		SHIPPING_ADMIN: {
+			title: '物流管理员',
+			des: '管理所属物流公司相关订单数据等'
+		},
+		SHIPPING_EMPLOYEE: {
+			title: '物流雇员',
+			des: '可处理所属物流公司事宜'
+		},
+		
+	},
+	
+	// 物流相关
+	shipping: {
+		calcualteshipping: "计算运费"
+	}
 	
 }
 

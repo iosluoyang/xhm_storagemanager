@@ -1,0 +1,41 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"name": {
+			"bsonType": "string",
+			"description":"店铺名称"
+		},
+		"logo": {
+			"description":"店铺logo",
+			"bsonType":"string",
+			"defaultValue":"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/519ba632-6eb3-44ac-9158-7ac3dcd48ea1.png"
+		},
+		"admin": {
+			"bsonType":"string",
+			"description":"店铺管理员",
+			"foreignKey":"uni-id-users._id"
+		},
+		"employee": {
+			"bsonType":"array",
+			"description":"店铺雇员数组",
+			"enum": {
+				"collection":"uni-id-users"
+			}
+		},
+		"businessType": {
+			"description":"店铺经营范围",
+			"bsonType":"string"
+		}
+	}
+}

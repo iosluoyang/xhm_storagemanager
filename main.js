@@ -73,6 +73,11 @@ Vue.mixin({
 			// return this.$t('index')
 		},
 		
+		// 配置文件对象
+		configData() {
+			return this.$store.getters.configData
+		},
+		
 		// 后台返回图片标识
 		imgTagStr() {
 			return defaultconfig.imgTagStr()

@@ -5,8 +5,8 @@
 	"permission": {
 		"read": true, // 前端非admin的读取记录权限控制。默认值是false，即可以不写。可以简单的true/false，也可以写表达式
 		"create": true, // 前端非admin的新增记录权限控制。默认值是false，即可以不写。可以简单的true/false，也可以写表达式 
-		"update": "doc._id == auth.uid", // 更新权限 用户自己可以进行更新
-		"delete": "doc._id == auth.uid", // 删除权限 用户自己可以进行删除(超级管理员不受影响)
+		"update": true, // 更新权限 用户自己可以进行更新
+		"delete": true, // 删除权限 用户自己可以进行删除(超级管理员不受影响)
 		"count": true // 前端非admin的求数权限控制。默认值是true，即可以不写。可以简单的true/false，也可以写表达式
 	},
 	"properties": {
@@ -57,7 +57,7 @@
 			"title": "头像地址",
 			"description": "头像地址",
 			"trim": "both",
-			"defaultValue":""
+			"defaultValue":"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/ff3c957c-604a-4242-a965-007aa4005613.png"
 		},
 		"comment": {
 			"bsonType": "string",

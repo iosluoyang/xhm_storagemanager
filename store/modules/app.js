@@ -2,14 +2,14 @@ import baseapi from '@/api/base.js'
 import config from '@/common/config/base.js'
 
 const state = {
-	configVersion: uni.getStorageSync('config_version'),// 系统配置版本号信息，公共请求参数需要上送
-	configList: uni.getStorageSync('config_list'),// 系统配置信息
+	// configVersion: uni.getStorageSync('config_version'),// 系统配置版本号信息，公共请求参数需要上送
+	// configList: uni.getStorageSync('config_list'),// 系统配置信息
+	configData: null,
 }
 
 const mutations = {
 	SET_CONFIG: (state, configdata) => {
-		state.configVersion = configdata.configVersion
-		state.configList = configdata.configList
+		state.configData = configdata
 	}
 }
 
@@ -20,23 +20,23 @@ const actions = {
 		
 		return new Promise((resolve, reject) => {
 			
-			baseapi.getconfig(data)
-			.then((response) => {
-				
-				// 获取到配置信息之后将配置信息存储到本地
-				commit('SET_CONFIG',response.data)
-				
-				//将配置信息存储在本地
-				uni.setStorageSync('config_version',response.data.configVersion)
-				uni.setStorageSync('config_list',response.data.configList)
-				
-				resolve(response)
+			// 使用openDB获取配置文件
+			const db = uniCloud.database();
+			db.collection('config').get({getOne:true})
+			.then(res => {
+				let configdata = res.result.data
+				if(configdata) {
+					commit('SET_CONFIG',configdata)
+					resolve(res.result)
+				}
+				else {
+					reject(res.result)
+				}
+			})
+			.catch(err => {
+				reject(err.message)
+			})
 			
-			})
-			.catch((error) => {
-				reject(error)
-			})
-		
 		})
 		
 	},

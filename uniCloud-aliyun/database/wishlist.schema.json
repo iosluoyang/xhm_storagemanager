@@ -34,6 +34,14 @@
 		"sourceLink": {
 			"description": "原网址链接"
 		},
+		"productSecretCode": {
+			"bsonType":"string",
+			"description":"商品口令"
+		},
+		"productPureUrl": {
+			"bsonType":"string",
+			"description":"商品纯链接"
+		},
 		"sourcePrice": {
 			"description": "原商品价格"
 		},

@@ -29,7 +29,7 @@
 		</scroll-view>
 		
 		<!-- 切换语言按钮 -->
-		<button class="languagebtn xl cu-btn radius bg-white text-black" @tap.stop="ifshowmodal=true">{{ showlanguagestr }}</button>
+		<button class="languagebtn xl cu-btn radius bg-white text-black" @tap.stop="ifshowmodal=true">{{ `语言/Lang` }}</button>
 		
 		<!-- 切换语言单选框弹出框 -->
 		<view class="cu-modal" :class="ifshowmodal?'show':''" @tap.stop="ifshowmodal=false">
@@ -108,14 +108,6 @@
 				moment.locale(momentlanguage) // 设置moment的国际化
 				return currentlanguage
 			},
-			
-			showlanguagestr() {
-				// let language =  this.languageArr.find((language,index) => {
-				// 	return language.id === _this.currentlanguage
-				// })
-				// return language ? language.name : ''
-				return '语言/Lang'
-			}
 			
 		},
 		
@@ -227,6 +219,7 @@
 				}
 				
 				let elements = []
+				
 				// 根据当前的用户标识选择部分的功能显示(因为支持游客模式 所以只有登录状态下的管理员才能展示全部功能)
 				// 超级管理员
 				// if(this.$basejs.ifloginflag() && this.user.type === 0){

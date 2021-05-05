@@ -1,15 +1,16 @@
 <template>
 	<view class="content loginview">
 		
-		<!-- 返回按钮 -->
+		<!-- 自定义导航栏 -->
 		<cu-custom v-if="!ifforbidback" bgColor="transparent" isBack></cu-custom>
 		
-		<!-- 登录主页面 -->
+		<!-- 登录注册主页面 -->
 		<view class="maincontent flex flex-direction align-center padding-xl">
 			
 			<!-- 头部logo -->
-			<view class="header">
-				<image class="img round" mode="aspectFit" src="/static/publicicon/logo.png"></image>
+			<view class="header flex flex-direction align-center">
+				<image class="img" mode="aspectFill" :src=" configData && configData.appLogo ? configData.appLogo : '/static/publicicon/logo.png' "></image>
+				<!-- <text class="text-bold text-xl text-center margin-top text-pink">{{ configData.appName }}</text> -->
 			</view>
 			
 			<!-- 输入内容区域 -->
@@ -22,16 +23,33 @@
 				<uni-easyinput type="password" v-model="password" :placeholder="i18n.login.password" trim prefixIcon="locked-filled" />
 				
 				<!-- 确认密码 -->
-				<uni-easyinput v-if="type == 'register'" type="password" v-model="confirmpassword" :placeholder="i18n.login.password" trim prefixIcon="locked-filled"></uni-easyinput>
+				<uni-easyinput v-if="type == 'register'" type="password" v-model="confirmpassword" :placeholder="i18n.login.passwordconfirm" trim prefixIcon="locked-filled"></uni-easyinput>
+				
+				<!-- 选择注册角色 -->
+				<uni-collapse class="margin-top" v-if="type == 'register'">
+					<uni-collapse-item :title="i18n.login.selectrole" open showAnimation>
+						
+						<view class="cu-list grid no-border col-3">
+							<view class="cu-item" :class="[role == item.value ? 'bg-yellow light animation-scale-up' : '']" v-for="(item,index) in roleList" :key="index" @click="role=item.value">
+								<view :class="[item.icon,item.color]"></view>
+								<text>{{item.title}}</text>
+							</view>
+						</view>
+						
+						<!-- 一段文字的简介 -->
+						<view class="text-xs padding text-cut">{{ i18n.role[role]['des'] }}</view>
+						
+					</uni-collapse-item>
+				</uni-collapse>
 				
 			</view>
 			
 			<!-- 其他操作区域 -->
 			<view class="eachareaview otherview flex align-center justify-between margin-top">
 				
-				<text class="text-xl text-pink" @tap.stop=" type = type == 'login' ? 'register' : 'login' ">{{ type == 'login' ? i18n.login.registerstr : i18n.login.loginstr }}</text>
+				<text class="text-lg text-pink" @tap.stop=" type = type == 'login' ? 'register' : 'login' ">{{ type == 'login' ? i18n.login.registerstr : i18n.login.loginstr }}</text>
 				
-				<text v-if="type == 'login'" class="text-xl text-black">{{ i18n.login.forgetpwd }}</text>
+				<text class="text-lg text-black cuIcon cuIcon-questionfill" @tap.stop="havequestion">{{ i18n.login.havequestion }}</text>
 				
 			</view>
 			
@@ -41,17 +59,17 @@
 			</button>
 			
 			<!-- 其他登录 -->
-			<view class="other_loginview width100 margin-top-xl flex align-center justify-center padding-top">
+			<!-- <view class="other_loginview width100 margin-top-xl flex align-center justify-center padding-top"> -->
 				
 				<!-- #ifdef MP -->
 				<!-- 微信登录按钮 -->
-				<u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon>
+				<!-- <u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon> -->
 				<!-- #endif -->
 				
-			</view>
+			<!-- </view> -->
 			
 		</view>
-	
+		
 	</view>
 </template>
 
@@ -59,6 +77,7 @@
 	let _this;
 	
 	export default {
+		
 		data() {
 			return {
 				
@@ -68,15 +87,21 @@
 				account:'', //用户/电话
 				password:'', //密码
 				confirmpassword: '', // 确认密码
+				role: this.$basejs.roleEnum.merchantAdmin, // 默认的角色为商家角色
+				roleList: [], // 角色列表
+				
 				invitecode: '', // 邀请码
 				isLoading: false, //是否正在加载
-				isFocus: false // 是否聚焦
+				isFocus: false ,// 是否聚焦
+				
 			};
 		},
+		
 		components:{
 			
 		},
-		mounted(option) {
+		
+		onLoad(option) {
 			_this= this
 			
 			// 根据页面参数获取是否可以后退的标识
@@ -89,8 +114,51 @@
 			if(option && option.inviteCode) {
 				this.invitecode = option.inviteCode
 			}
+			
+			// 设置角色列表
+			let roleList = [
+				{
+					icon: 'cuIcon-shopfill',
+					color: 'text-pink',
+					title: this.i18n.role.merchant_admin,
+					value: this.$basejs.roleEnum.merchantAdmin,
+				},
+				{
+					icon: 'cuIcon-peoplefill',
+					color: 'text-orange',
+					title: this.i18n.role.product_agent,
+					value: this.$basejs.roleEnum.productAgent,
+				},
+				{
+					icon: 'cuIcon-deliver_fill',
+					color: 'text-green',
+					title: this.i18n.role.shipping_admin,
+					value: this.$basejs.roleEnum.shippingAdmin,
+				}
+			] // 角色列表
+			this.roleList = roleList
+			
 		},
+		
 		methods: {
+			
+			// 选择角色
+			selectrole(e) {
+				let role = e.detail.value
+				this.role = role
+			},
+			
+			// 检测店铺名称
+			checkStoreName() {
+				let storeName = this.store.storeName
+				console.log(storeName);
+			},
+			
+			// 检测物流公司名称
+			checkShippingName() {
+				let shippingName = this.shipping.shippingName
+				console.log(shippingName);
+			},
 			
 			// 登录或注册
 		    confirm(){
@@ -113,6 +181,7 @@
 				
 				// 如果是注册则多增加一次确认密码的判断
 				if(this.type == 'register') {
+					
 					if(this.password != this.confirmpassword) {
 						uni.showToast({
 							title: _this.i18n.error.password,
@@ -120,6 +189,7 @@
 						});
 						return
 					}
+					
 				}
 				
 				// 开始操作
@@ -273,7 +343,7 @@
 
 							uni.showModal({
 								title: _this.i18n.base.tip,
-								content: `This account doesnt exist , please do register`,
+								content: _this.i18n.tip.needtoregister,
 								showCancel: true,
 								cancelText: _this.i18n.base.cancel,
 								confirmText: _this.i18n.base.confirm,
@@ -303,7 +373,10 @@
 					let data = {
 						account: _this.account,
 						password: _this.password,
-						invitecode: _this.invitecode
+						invitecode: _this.invitecode,
+						role: [_this.role],
+						store: _this.store,
+						shipping: _this.shipping
 					}
 					_this.$store.dispatch('user/register', data).then(res => {
 						// 注册成功
@@ -311,6 +384,11 @@
 							title: '注册成功,正在为您自动登录',
 							icon: 'success'
 						});
+						
+						// 注册成功后将店铺或者物流公司的管理员与该用户进行绑定
+						const db = uniCloud.database();
+						db.collection('store')
+						
 						// 进行自动登录
 						setTimeout(function() {
 							_this.type = 'login'
@@ -327,6 +405,16 @@
 				}
 				
 		    },
+			
+			// 遇到问题
+			havequestion() {
+				// 预览大图客服二维码
+				let serviceImg = this.$store.getters.configData.serviceImg
+				uni.previewImage({
+					urls: [serviceImg],
+					current:0
+				})
+			},
 			
 			// 绑定微信
 			bindwx() {
@@ -409,6 +497,14 @@
 				/deep/.uni-easyinput{
 					margin-top: 20px;
 				}
+			}
+			
+			/deep/.uni-collapse{
+				
+				.uni-collapse-cell--open{
+					background-color: #FFFFFF;
+				}
+				
 			}
 			
 		}

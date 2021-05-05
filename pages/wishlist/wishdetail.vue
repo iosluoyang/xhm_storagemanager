@@ -7,13 +7,13 @@
 		</cu-custom>
 		
 		<!-- 详情区域 -->
-		<view class="detailview cu-card">
+		<view v-if="wishinfo" class="detailview cu-card">
 			
 			<!-- 基本信息区域 -->
-			<view v-if="wishinfo" class="cu-item shadow bg-white">
+			<view class="cu-item shadow bg-white">
 				
 				<!-- 头部区域 创建者信息区域 -->
-				<view v-if="wishinfo.creatUser" class="headerview flex justify-between padding">
+				<view v-if="wishinfo.creatUser" class="headerview flex align-center justify-between padding">
 					
 					<view class="publisherview flex">
 						
@@ -25,7 +25,7 @@
 							</view>
 						</template>
 						<!-- 昵称和时间 -->
-						<view class="content flex-sub margin-left">
+						<view class="publishcontent flex-sub margin-left">
 							<view>{{wishinfo.creatUser.nickname || 'XXX'}}</view>
 							<view class="text-gray text-sm flex justify-between">
 								<uni-dateformat :date="wishinfo.creatTime" />
@@ -34,13 +34,7 @@
 					
 					</view>
 					
-					<view class="headerrightview flex align-center justify-end">
-						
-						<view class="cu-tag" :class="wishbgcolor">
-							{{ wishtagtext }}
-						</view>
-						
-					</view>
+					<view class="cu-tag" :class="wishbgcolor">{{ wishtagtext }}</view>
 					
 				</view>
 				
@@ -49,7 +43,7 @@
 				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
 				 indicator-active-color="#0081ff">
 					<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(wishinfo.imgs, index)">
-						<image :src="img" mode="aspectFit"></image>
+						<image :src="img" mode="aspectFill"></image>
 					</swiper-item>
 				</swiper>
 				
@@ -79,7 +73,7 @@
 						</view>
 						
 						<view class="amountview flex-sub t_right" v-if="wishinfo.targetAmount">
-							<text class="text-white text-xl bg-cyan padding-left-sm padding-right-sm radius">{{ wishinfo.targetAmount }}</text>
+							<text class="text-white text-df bg-cyan padding-left-sm padding-right-sm radius">{{ wishinfo.targetAmount }}</text>
 						</view>
 						
 					</view>
@@ -98,17 +92,17 @@
 						
 						<!-- 分享按钮 小程序平台有 -->
 						<!-- #ifdef MP -->
-						<button class="cu-btn round line-orange cuIcon-share margin-right-sm" open-type="share"></button>
+						<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
 						<!-- #endif -->
 						
 						<!-- 再次购买按钮 -->
-						<button class="cu-btn round line-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+						<button class="cu-btn round bg-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round line-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
 						<!-- 删除按钮 仅自己可删除 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round line-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 						
 					</view>
 					
@@ -172,10 +166,32 @@
 				
 			</view>
 			
+			<!-- 详细参数区域 -->
+			<view v-if="wishinfo.productExt" class="detaildataview margin">
+				
+				<u-table>
+					<u-tr class="u-tr">
+						<u-th class="u-th">pcs/box</u-th>
+						<u-th class="u-th">box size</u-th>
+						<u-th class="u-th">Domestic Shipping</u-th>
+						<u-th class="u-th">Thai Shipping</u-th>
+					</u-tr>
+					<u-tr class="u-tr">
+						<u-td class="u-td">{{ wishinfo.productExt.boxContainNum || '*' }}</u-td>
+						<u-td class="u-td">{{ wishinfo.productExt.boxLength && wishinfo.productExt.boxWidth && wishinfo.productExt.boxHeight ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight} \n ${wishinfo.productExt.boxValume} m³` : wishinfo.productExt.boxValume ? `${wishinfo.productExt.boxValume} m³` : '*' }}</u-td>
+						<u-td class="u-td">{{ wishinfo.productExt.domesticShippingFee || '*' }}</u-td>
+						<u-td class="u-td">
+							<button class="cu-btn round sm bg-blue" @tap.stop="openshippingtool">{{ `${i18n.shipping.calcualteshipping}` }}</button>
+						</u-td>
+					</u-tr>
+				</u-table>
+				
+			</view>
+			
 		</view>
 		
 		<!-- 时间轴 -->
-		<view v-if="timelinearrdic && Object.keys(timelinearrdic).length > 0 " class="timelineview solid-top">
+		<view v-if="wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " class="timelineview solid-top">
 			
 			<view class="cu-bar bg-white">
 				<view class="action">
@@ -438,7 +454,7 @@
 		</view>
 		
 		<!-- 添加按钮 悬浮 -->
-		<view v-if="wishinfo" class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<view class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100rpx;"></text>
 		</view>
 		
@@ -473,6 +489,54 @@
 			</view>
 		</view>
 		
+		<!-- 弹出视图 -->
+		<u-popup v-model="showpopup" mode="top" border-radius="16" height="200px">
+			
+			<form>
+				
+				<!-- 装箱数量 -->
+				<view class="cu-form-group">
+					<view class="title">{{ '装箱数量' }}</view>
+					<input type="number" disabled v-model="boxContainNum">
+				</view>
+				
+				<!-- 装箱尺寸 -->
+				<view class="cu-form-group">
+					<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
+					<view class="flex align-center justify-around" style="flex-shrink: 1;">
+						<input type="number" disabled v-model="boxLength">
+						<text class="padding">x</text>
+						<input type="number" disabled v-model="boxWidth">
+						<text class="padding">x</text>
+						<input type="number" disabled v-model="boxHeight">
+					</view>
+					
+				</view>
+				
+				<!-- 装箱体积 -->
+				<view class="cu-form-group">
+					<view class="title">{{ '每箱体积(m³)' }}</view>
+					<input type="number" disabled v-model="boxValume">
+				</view>
+				
+				<!-- 国际运费单价 -->
+				<view class="cu-form-group">
+					<view class="title">{{ '国际运费单价' }}</view>
+					<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
+				</view>
+				
+				<!-- 预估国际运费总价 -->
+				<view class="cu-form-group">
+					<view class="title">{{ '预估运费' }}</view>
+					<view class="rightcontent">
+						<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
+					</view>
+				</view>
+				
+			</form>
+			
+		</u-popup>
+		
 	</view>
 </template>
 
@@ -493,6 +557,7 @@
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
 				
+				showpopup: false, // 是否显示计算顶部弹框
 				collapseOpen: false, // 是否展开商品更多  默认不展开
 				
 				boxContainNum: '', // 一箱有几个
@@ -708,6 +773,25 @@
 						_this.ifloading = false // 结束缓冲动画
 					})
 				
+			},
+			
+			// 开启运费小工具
+			openshippingtool() {
+				let productExt = this.wishinfo.productExt
+				if(productExt) {
+					this.boxContainNum = productExt.boxContainNum
+					this.boxLength = productExt.boxLength
+					this.boxWidth = productExt.boxWidth
+					this.boxHeight = productExt.boxHeight
+					this.boxValume = productExt.boxValume
+					this.showpopup = true
+				}
+				else {
+					uni.showToast({
+						title: '暂未获取体积信息',
+						icon: 'none'
+					});
+				}
 			},
 			
 			// 计算货物体积

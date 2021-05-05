@@ -13,6 +13,14 @@
 	}
 }
 
+// 覆盖 mescroll的样式
+/deep/.mescroll{
+	.mescroll-empty{
+		.empty-icon{
+			margin: 0 auto;
+		}
+	}
+}
 
 // 动画相关
 @keyframes show {

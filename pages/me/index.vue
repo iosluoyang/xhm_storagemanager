@@ -13,38 +13,28 @@
 			<view class="flex align-center">
 				
 				<!-- 头像 -->
-				<template class="avatarview">
+				<view class="avatarview" style="flex-shrink: 0;">
 					<view v-if="user && user.avatar" class="cu-avatar xl round margin-right" :style="{backgroundImage: 'url('+user.avatar+')'}"></view>
 					<view v-else class="cu-avatar xl round margin-right"><text class="cuIcon-people"></text></view>
-				</template>
+				</view>
 				
 				<!-- 个人资料 包含昵称和标签以及个人简介 -->
 				<view class="contentview">
 					
-					<!-- 上面视图 包含昵称和标签 -->
-					<view class="flex align-center margin-bottom-sm">
-						
-						<!-- 昵称 -->
-						<view class="username text-white text-bold text-xl margin-right-sm">
-							{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
+					<!-- 上面视图 昵称 -->
+					<view class="username text-white text-bold text-xl margin-right-sm">
+						{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
+					</view>
+					
+					<!-- 标签 -->
+					<view v-if="iflogin" class="usertag grid col-3">
+						<view class="usertag cu-tag radius margin-right-sm margin-top-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
+							{{ $basejs.getrolenameandcolor(item).title }}
 						</view>
-						<!-- 标签 -->
-						<view v-if="iflogin" class="usertag">
-							<view class="usertag cu-tag radius margin-right-sm" :class="[user.role && user.role[0] === 'merchant' ? 'bg-blue' : 'bg-cyan' ]">
-								{{ user.role && user.role[0] === 'merchant' ? i18n.base.admin : i18n.base.normaladmin }}
-							</view>
-						</view>
-						
 					</view>
 					
 					<!-- 下面视图 包含个人简介 -->
-					<view class="text-white text-cut" style="width: 400upx;">{{ user && user.comment ? user.comment : '' }}</view>
-					
-					<!-- 上次登录时间 -->
-					<view class="text-white text-xs margin-top-sm">
-						Last Login:
-						<uni-dateformat v-if="user && user.last_login_date" :date="user.last_login_date" />
-					</view>
+					<view class="text-white text-cut margin-top-sm" style="width: 400rpx;">{{ user && user.comment ? user.comment : '' }}</view>
 					
 				</view>
 				
@@ -55,12 +45,9 @@
 			
 		</view>
 		
-		
-		<!-- 个人信息区域 -->
-		
 		<!-- 任务面板 -->
 		<view class="cu-list grid col-3 no-border">
-			<view class="cu-item" v-for="(item,index) in panelList" :key="index" @tap.stop="clickpanel(item)">
+			<view class="cu-item" :class="['text-' + item.color]" v-for="(item,index) in panelList" :key="index" @tap.stop="clickpanel(item)">
 				<view :class="['cuIcon-' + item.cuIcon,'text-' + item.color]">
 					<view class="cu-tag badge" v-if="item.badge!=0">
 						<block v-if="item.badge!=1">{{item.badge>99?'99+':item.badge}}</block>
@@ -74,13 +61,13 @@
 		<view class="cu-list menu sm-border card-menu margin-top">
 			
 			<!-- 当前版本 -->
-			<view class="cu-item">
+			<view class="cu-item" v-if="configData">
 				<view class="content">
-					<image src="/static/publicicon/logo.png" class="png" mode="aspectFit"></image>
+					<image :src="configData.appLogo" mode="aspectFit"></image>
 					<text class="text-grey">{{i18n.me.appversion}}</text>
 				</view>
 				<view class="action">
-					<text class="text-grey text-sm">{{this.$config.app_version()}}</text>
+					<text class="text-grey text-sm">{{configData.appVersion}}</text>
 				</view>
 			</view>
 			
@@ -92,9 +79,7 @@
 				</view>
 			</view>
 			
-			
 		</view>
-		
 		
 	</view>
 </template>
@@ -108,7 +93,18 @@
 		},
 		
 		onLoad() {
+			
 			// 设置个人中心任务面板内容
+			
+			// 店铺管理  仅商家管理员有
+			let storemanageitem = {
+				id: 'storemanage',
+				cuIcon: 'shopfill',
+				color: 'purple',
+				badge: 0,
+				name: this.i18n.me.panel.storemanage,
+				url: '/pages/me/storemanage'
+			}
 			
 			// 商品二维码
 			let qrcodeitem = {
@@ -187,23 +183,28 @@
 				name: this.i18n.me.panel.more
 			}
 			
-			let panelList = [moreitem] // 默认有更多的选项
-			// // 如果是超级管理员
-			// if(this.user.type === 0) {
-			// 	panelList = [qrcodeitem, memberitem, workingtimeitem, noticeitem, resetpwditem, subscribeitem, moreitem]
-			// }
-			// // 如果是普通员工则有
-			// else if(this.user.type === 1) {
-			// 	panelList = [resetpwditem, subscribeitem, moreitem]
-			// }
 			
+			let panelList = []
+
 			// 登录状态下 根据身份获取不同的操作区域
 			if(this.iflogin) {
-				// 如果是超级管理员或者商家的话则有公告管理
-				if( this.user.role.includes('merchant') || this.user.role.includes('admin')) {
-					panelList = [noticeitem, subscribeitem, moreitem]
+				
+				// 如果有超级管理员角色
+				if(this.user.role.includes('ADMIN')) {
+					// 添加公告选项
+					panelList.push(noticeitem)
 				}
+				
+				// 如果有商家角色
+				if(this.user.role.includes('MERCHANT_ADMIN')) {
+					// 添加店铺管理选项
+					panelList.push(storemanageitem)
+				}
+				
 			}
+			
+			// 最后添加一个更多选项
+			panelList.push(moreitem)
 			
 			this.panelList = panelList
 			

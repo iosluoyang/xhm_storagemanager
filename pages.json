@@ -59,6 +59,12 @@
             }
         }
 		,{
+		    "path" : "pages/me/storemanage",
+		    "style" : {
+				"navigationBarTitleText":"店铺管理"
+			}
+		}
+		,{
 		    "path" : "pages/me/resetpwd",
 		    "style" : {
 				"navigationBarTitleText":"重置密码"

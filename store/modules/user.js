@@ -68,7 +68,10 @@ const actions = {
 					info: {
 						account: data.account,
 						password: data.password,
-						invitecode: data.invitecode
+						invitecode: data.invitecode,
+						role: data.role,
+						store: data.store,
+						shipping: data.shipping
 					}
 				},
 				success(res) {

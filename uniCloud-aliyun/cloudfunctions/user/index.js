@@ -40,16 +40,30 @@ exports.main = async (event, context) => {
 	
 	// 用户注册
 	if(type == 'register') {
+		
 		const res = await uniIDIns.register({
 			username: info.account,
 			password: info.password,
-			avatar: info.avatar || '', // 注册时默认头像为空
-			nickname: info.nickname || '', // 注册时默认昵称为空
 			role: info.role || [], // 注册时默认角色为空数组
 			myInviteCode: info.invitecode || '', // 邀请码
 		})
+		
 		console.log(`user云函数中用户注册返回的数据为`);
 		console.log(res);
+		
+		// 用户注册成功之后设置用户的默认头像和昵称
+		if(res.code == 0) {
+			
+			const updateres = await uniIDIns.updateUser({
+				uid: res.uid, // 注册用户的uid
+				avatar: `https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/ff3c957c-604a-4242-a965-007aa4005613.png`, // 设置默认的用户头像
+				nickname: `User-${res.token.slice(-6)}` // 默认昵称为注册时返回的token后6位
+			})
+			console.log(`user云函数中用户注册后更新用户信息返回的数据为`);
+			console.log(updateres);
+			
+		}
+		
 		return res
 	}
 	

@@ -280,7 +280,7 @@
 				let wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime')
+					.field('creatUser{avatar, nickname},achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
 					.orderBy(` remindFlag desc, creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)

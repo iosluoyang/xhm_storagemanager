@@ -3,7 +3,19 @@ import store from '@/store'
 import md5 from 'js-md5'
 import defaultconfig from '@/common/config/base.js'
 import ossuploadjs from '@/common/js/upload/upload.js'
-import i18n from '@/common/js/i18n/i18n.js'
+import i18nmodule from '@/common/js/i18n/i18n.js'
+
+let i18n = i18nmodule.messages[i18nmodule.locale].index
+
+// 定义角色枚举
+const roleEnum = {
+	admin: 'admin',
+	merchantAdmin: 'MERCHANT_ADMIN',
+	merchantEmployee: 'MERCHANT_EMPLOYEE',
+	productAgent: 'PRODUCT_AGENT',
+	shippingAdmin: 'SHIPPING_ADMIN',
+	shippingEmployee: 'SHIPPING_EMPLOYEE'
+}
 
 // 返回供应商名称  用于生成二维码的前缀
 export function storeName() {
@@ -364,6 +376,61 @@ export function sleep(sleeptime) {
 	}
 }
 
+// 根据当前用户角色返回角色名称和背景颜色
+export function getrolenameandcolor(roleId) {
+	
+	/*
+	角色ID:
+	1.超级管理员 admin
+	2.商家管理员 MERCHANT_ADMIN
+	3.商家雇员 MERCHANT_EMPLOYEE
+	4.商品代理员 PRODUCT_AGENT
+	5.物流公司管理员 SHIPPING_ADMIN
+	6.物流公司雇员 SHIPPING_EMPLOYEE
+	*/
+	switch (roleId){
+		case 'admin':
+			return {
+				title: i18n.role.admin,
+				bgColor: 'bg-gradual-red'
+			}
+			break;
+		case 'MERCHANT_ADMIN':
+			return {
+				title: i18n.role.merchant_admin,
+				bgColor: 'bg-gradual-purple'
+			}
+			break;
+		case 'MERCHANT_EMPLOYEE':
+			return {
+				title: i18n.role.merchant_employee,
+				bgColor: 'bg-purple'
+			}
+			break;
+		case 'PRODUCT_AGENT':
+			return {
+				title: i18n.role.product_agent,
+				bgColor: 'bg-gradual-green'
+			}
+			break;
+		case 'SHIPPING_ADMIN':
+			return {
+				title: i18n.role.shipping_admin,
+				bgColor: 'bg-gradual-blue'
+			}
+			break;
+		case 'SHIPPING_EMPLOYEE':
+			return {
+				title: i18n.role.shipping_employee,
+				bgColor: 'bg-blue'
+			}
+			break;
+		default:
+			return {}
+			break;
+	}
+}
+
 // 根据当前心愿单标识返回心愿单的背景颜色类名
 export function getwishtagbgcolorclassname(achieveFlag) {
 	switch (achieveFlag){
@@ -397,19 +464,19 @@ export function getwishtagbgcolorclassname(achieveFlag) {
 export function getwishtagname(achieveFlag) {
 	switch (achieveFlag){
 		case 0:
-			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.ing
+			return i18n.wishlist.achieveFlag.ing
 			break;
 		case 1:
-			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.waittoconfirm
+			return i18n.wishlist.achieveFlag.waittoconfirm
 			break;
 		case 2:
-			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.makeorder
+			return i18n.wishlist.achieveFlag.makeorder
 			break;
 		case 3:
-			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.finish
+			return i18n.wishlist.achieveFlag.finish
 			break;
 		case 4:
-			return i18n.messages[i18n.locale].index.wishlist.achieveFlag.closed
+			return i18n.wishlist.achieveFlag.closed
 			break;
 		default:
 			return ''
@@ -417,7 +484,10 @@ export function getwishtagname(achieveFlag) {
 	}
 }
 
+
+
 export default {
+	roleEnum, // 角色枚举类型
 	storeName, // 返回供应商名称  用于生成二维码的前缀
 	ifwxH5, // 是否是微信H5环境
 	ifloginflag,//判断是否登录 仅仅返回是否登录的状态标识 返回true或者false
@@ -429,6 +499,8 @@ export default {
 	fileToUrl, //将获取本地文件的url 仅H5端生效
 	scanQR, // 开始扫描二维码
 	sleep, // js休眠
+	
+	getrolenameandcolor, // 获取角色的名称和背景颜色
 	getwishtagbgcolorclassname, // 获取心愿背景颜色
 	getwishtagname, // 获取心愿tag名称
 }

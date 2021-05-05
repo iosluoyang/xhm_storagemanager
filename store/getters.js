@@ -1,6 +1,5 @@
 const getters = {
-  configVersion: state => state.app.configVersion,
-  configList: state => state.app.configList,
+  configData: state => state.app.configData,
   accessToken: state => state.user.accessToken,
   refreshToken: state => state.user.refreshToken,
   user: state => state.user.user,

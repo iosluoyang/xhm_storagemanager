@@ -25,7 +25,7 @@
 				disable-default-padding
 				/>
 				<!-- #ifndef H5 -->
-				<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pastesourelink('productTitle')">{{i18n.base.paste}}</button>
+				<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pasteData('productTitle')">{{i18n.base.paste}}</button>
 				<!-- #endif -->
 			</view>
 			
@@ -35,11 +35,17 @@
 					<text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text>
 					{{i18n.wishlist.sourcelink}}:
 				</view>
-				<!-- <input type="text" confirm-type="next" v-model="sourceLink" /> -->
-				<textarea auto-height :show-confirm-bar="false" v-model="sourceLink" />
+				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
+				<!-- <textarea auto-height :show-confirm-bar="false" v-model="sourceLink" @blur="analysisUrl" /> -->
 				<!-- #ifndef H5 -->
-				<button class="cu-btn bg-cyan shadow" @tap.stop="pastesourelink('sourceLink')">{{i18n.base.paste}}</button>
+				<button class="cu-btn bg-cyan shadow" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
 				<!-- #endif -->
+			</view>
+			
+			<!-- 链接解析结果 -->
+			<view class="cu-form-group flex" v-if="productSecretCode || productPureUrl">
+				<view v-if="productSecretCode" class="flex-sub bg-blue light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productSecretCode)">{{ productSecretCode }}</view>
+				<view v-if="productPureUrl" class="flex-sub bg-yellow light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productPureUrl)">{{ productPureUrl }}</view>
 			</view>
 			
 			<!-- 源网站价格 -->
@@ -61,7 +67,7 @@
 			</view>
 			
 			<!-- 更多区域 -->
-			<uni-collapse>
+			<uni-collapse v-if="false">
 				<uni-collapse-item :title="i18n.me.panel.more" :open="collapseOpen" showAnimation>
 					
 					<form>
@@ -143,11 +149,6 @@
 				<input type="text" v-model="targetAmount" />
 			</view>
 			
-			<!-- 备注 -->
-			<view class="cu-form-group">
-				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
-			</view>
-			
 			<!-- 紧急程度 -->
 			<view class="cu-form-group solid-bottom">
 				<view class="title">{{i18n.wishlist.hurrylevel}}</view>
@@ -157,6 +158,11 @@
 						<text class="margin-left-sm">{{ hurrylevelDataArr[hurryLevel - 1].name }}</text>
 					</view>
 				</picker>
+			</view>
+			
+			<!-- 备注 -->
+			<view class="cu-form-group">
+				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.remark" />
 			</view>
 			
 			<!-- 图片上传 -->
@@ -213,7 +219,7 @@
 				</view>
 			</view>
 		</view>
-		
+				
 	</view>
 </template>
 
@@ -229,6 +235,10 @@
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
+				
+				productSecretCode: '', // 商品编码口令
+				productPureUrl: '', //商品纯链接
+				
 				sourcePrice: '', // 源网站价格
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 				collapseOpen: false, // 是否展开商品更多  默认不展开
@@ -353,6 +363,9 @@
 						let imgsArr = info.imgs.split(',') // 商品图片
 						this.imgArr = imgsArr.map(item => ({url: item}))
 						
+						// 解析商品链接
+						this.analysisUrl()
+						
 						// 解析心愿商品拓展字段
 						let productExt = info.productExt
 						if(productExt) {
@@ -411,22 +424,61 @@
 				this.showImgModal = true
 			},
 			
-			// 粘贴源网站链接
-			pastesourelink(datatype) {
+			// 粘贴内容
+			pasteData(datatype) {
 				uni.getClipboardData({
 					success(res) {
 						let content = res.data
 						if(content) {
-							// 如果是拷贝链接的话则从内容中提取链接进行替换
-							// if(datatype == 'sourceLink') {
-							// 	// 提取链接
-							// 	var reg = `/(http://|https?/)((\w|=|?|.|/|&|-)+)/g`
-							// 	content= content.replace(reg, '$1$2')
-							// }
 							_this[datatype] = content
+							// 如果是拷贝链接的话则执行链接提取
+							if(datatype == 'sourceLink') {
+								_this.analysisUrl()
+							}
 						}
 					}
 				})
+			},
+			
+			// 解析链接
+			analysisUrl() {
+				
+				let content = this.sourceLink
+				console.log(content);
+				// 匹配口令内容
+				let patt = new RegExp(`(￥\\S+￥)\\S+(https?:\\S+)`)
+				let resultArr = patt.exec(content)
+				console.log(resultArr);
+				if(resultArr && resultArr.length > 1) {
+					let productSecretCode = RegExp.$1
+					let productPureUrl = RegExp.$2
+					console.log(productSecretCode);
+					console.log(productPureUrl);
+					if(productSecretCode) {
+						this.productSecretCode = productSecretCode
+					}
+					if(productPureUrl) {
+						this.productPureUrl = productPureUrl
+					}
+				}
+				
+			},
+			
+			// 复制内容
+			copyStr(content) {
+				
+				// #ifndef H5
+				uni.setClipboardData({
+					data: content,
+					success() {
+						uni.showToast({
+							title: this.i18n.tip.copysuccess,
+							icon: 'none'
+						});
+					}
+				})
+				// #endif
+				
 			},
 			
 			// 输入源网站价格
@@ -583,6 +635,8 @@
 				let info = {
 					productTitle: _this.productTitle, // 商品标题
 					sourceLink: _this.sourceLink, // 源网站链接
+					productSecretCode: _this.productSecretCode, // 商品口令
+					productPureUrl: _this.productPureUrl, // 商品纯链接
 					sourcePrice: _this.sourcePrice, // 源网站价格
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetPrice: _this.targetPrice, // 目标价格
