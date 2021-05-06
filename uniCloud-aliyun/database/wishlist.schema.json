@@ -84,6 +84,16 @@
 			"bsonType":"object",
 			"description":"心愿单商品的拓展字段",
 			"properties": {
+				"secretCode": {
+					"bsonType":"string",
+					"description":"商品口令",
+					"defaultValue":""
+				},
+				"pureUrl": {
+					"bsonType":"string",
+					"description":"商品纯链接",
+					"defaultValue":""
+				},
 				"boxContainNum": {
 					"bsonType":"int",
 					"description":"一箱的商品数量",
@@ -102,6 +112,11 @@
 				"boxHeight": {
 					"bsonType":"int",
 					"description":"一箱的高度",
+					"defaultValue":""
+				},
+				"boxVolume": {
+					"bsonType":"string",
+					"description":"箱子体积",
 					"defaultValue":""
 				}
 			}

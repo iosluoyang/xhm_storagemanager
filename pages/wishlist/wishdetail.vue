@@ -10,7 +10,7 @@
 		<view v-if="wishinfo" class="detailview cu-card">
 			
 			<!-- 基本信息区域 -->
-			<view class="cu-item shadow bg-white">
+			<view class="cu-item shadow-warp bg-white">
 				
 				<!-- 头部区域 创建者信息区域 -->
 				<view v-if="wishinfo.creatUser" class="headerview flex align-center justify-between padding">
@@ -58,9 +58,7 @@
 						</text> -->
 						
 						<!-- 商品标题 -->
-						<text class="protitle">
-							{{wishinfo.productTitle}}
-						</text>
+						<text class="protitle">{{wishinfo.productTitle}}</text>
 
 					</view>
 					
@@ -72,8 +70,8 @@
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
 						</view>
 						
-						<view class="amountview flex-sub t_right" v-if="wishinfo.targetAmount">
-							<text class="text-white text-df bg-cyan padding-left-sm padding-right-sm radius">{{ wishinfo.targetAmount }}</text>
+						<view class="cu-tag radius bg-cyan pos-static">
+							{{ wishinfo.targetAmount }}
 						</view>
 						
 					</view>
@@ -114,8 +112,8 @@
 				</view>
 				
 				<!-- 心愿商品拓展字段展示及运费计算 -->
-				<!-- 更多区域 -->
-				<uni-collapse>
+				<!-- 更多区域 暂时不显示 -->
+				<uni-collapse v-if="false">
 					<uni-collapse-item title="运费估算工具" :open="collapseOpen" showAnimation>
 						
 						<form>
@@ -142,7 +140,7 @@
 							<!-- 装箱体积 -->
 							<view class="cu-form-group">
 								<view class="title">{{ '每箱体积(m³)' }}</view>
-								<input type="number" disabled v-model="boxValume">
+								<input type="number" disabled v-model="boxVolume">
 							</view>
 							
 							<!-- 国际运费单价 -->
@@ -166,25 +164,32 @@
 				
 			</view>
 			
-			<!-- 详细参数区域 -->
+			<!-- 详细参数区域 表格 -->
 			<view v-if="wishinfo.productExt" class="detaildataview margin">
 				
-				<u-table>
-					<u-tr class="u-tr">
-						<u-th class="u-th">pcs/box</u-th>
-						<u-th class="u-th">box size</u-th>
-						<u-th class="u-th">Domestic Shipping</u-th>
-						<u-th class="u-th">Thai Shipping</u-th>
-					</u-tr>
-					<u-tr class="u-tr">
-						<u-td class="u-td">{{ wishinfo.productExt.boxContainNum || '*' }}</u-td>
-						<u-td class="u-td">{{ wishinfo.productExt.boxLength && wishinfo.productExt.boxWidth && wishinfo.productExt.boxHeight ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight} \n ${wishinfo.productExt.boxValume} m³` : wishinfo.productExt.boxValume ? `${wishinfo.productExt.boxValume} m³` : '*' }}</u-td>
-						<u-td class="u-td">{{ wishinfo.productExt.domesticShippingFee || '*' }}</u-td>
-						<u-td class="u-td">
+				<tableCom ref="tableComRef" :headers="tableHeaders"></tableCom>
+				
+				
+				<uni-table v-if="false" class="tableview">
+					
+					<!-- 表头行 -->
+					<uni-tr>
+						<uni-th align="center">pcs/box</uni-th>
+						<uni-th>box size</uni-th>
+						<uni-th>Domestic Shipping</uni-th>
+						<uni-th>Thai Shipping</uni-th>
+					</uni-tr>
+					
+					<!-- 每一行的具体内容数据 -->
+					<uni-tr>
+						<uni-td>{{ wishinfo.productExt.boxContainNum || '*' }}</uni-td>
+						<uni-td>{{ wishinfo.productExt.boxLength && wishinfo.productExt.boxWidth && wishinfo.productExt.boxHeight ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight} \n ${wishinfo.productExt.boxVolume} m³` : wishinfo.productExt.boxVolume ? `${wishinfo.productExt.boxVolume} m³` : '*' }}</uni-td>
+						<uni-td>{{ wishinfo.productExt.domesticShippingFee || '*' }}</uni-td>
+						<uni-td>
 							<button class="cu-btn round sm bg-blue" @tap.stop="openshippingtool">{{ `${i18n.shipping.calcualteshipping}` }}</button>
-						</u-td>
-					</u-tr>
-				</u-table>
+						</uni-td>
+					</uni-tr>
+				</uni-table>
 				
 			</view>
 			
@@ -516,7 +521,7 @@
 				<!-- 装箱体积 -->
 				<view class="cu-form-group">
 					<view class="title">{{ '每箱体积(m³)' }}</view>
-					<input type="number" disabled v-model="boxValume">
+					<input type="number" disabled v-model="boxVolume">
 				</view>
 				
 				<!-- 国际运费单价 -->
@@ -542,6 +547,7 @@
 
 <script>
 	
+	import tableCom from "@/components/wyb-table/wyb-table.vue";
 	var _this
 	
 	export default {
@@ -551,6 +557,7 @@
 				id: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishinfo: null, // 当前心愿详情
+				productExt: null, // 心愿商品拓展字段
 				timelinearrdic: {}, // 心愿时间轴数据
 				sharetimelineitem: null, // 要分享的时间轴数据
 				swiperCur: 0, // 当前轮播图索引
@@ -564,7 +571,7 @@
 				boxLength: '', // 箱子长度
 				boxWidth: '', // 箱子宽度
 				boxHeight: '', // 箱子高度
-				boxValume: '', // 箱子体积
+				boxVolume: '', // 箱子体积
 				interShippingSingleFeeStr: '', // 国际运费单价
 				
 				temptimelineitem: null, // 临时时间轴变量
@@ -575,6 +582,10 @@
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
+		},
+		
+		components: {
+			tableCom
 		},
 		
 		computed: {
@@ -610,9 +621,9 @@
 			interShippingTotalFeeStr() {
 				
 				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
-				if(this.boxValume && this.interShippingSingleFeeStr) {
-					let interShippingTotalFee = parseFloat(parseFloat(this.boxValume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
-					let interShippingTotalFeeStr = `${this.boxValume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
+				if(this.boxVolume && this.interShippingSingleFeeStr) {
+					let interShippingTotalFee = parseFloat(parseFloat(this.boxVolume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
+					let interShippingTotalFeeStr = `${this.boxVolume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
 					return interShippingTotalFeeStr
 				}
 				else {
@@ -734,26 +745,25 @@
 							
 							// 解析心愿商品拓展字段
 							let productExt = detaildata.productExt
+							_this.productExt = productExt
+							
 							if(productExt) {
-								let boxContainNum = productExt.boxContainNum
-								let boxLength = productExt.boxLength
-								let boxWidth = productExt.boxWidth
-								let boxHeight = productExt.boxHeight
 								
-								if(boxContainNum) {this.boxContainNum = boxContainNum}
-								if(boxLength && boxWidth && boxHeight) {
-									this.boxLength = boxLength
-									this.boxWidth = boxWidth
-									this.boxHeight = boxHeight
-									// 计算体积
+								this.boxContainNum = productExt.boxContainNum
+								this.boxLength = productExt.boxLength
+								this.boxWidth = productExt.boxWidth
+								this.boxHeight = productExt.boxHeight
+								this.boxVolume = productExt.boxVolume
+								
+								// 如果不存在体积的话则计算体积
+								if(!productExt.boxVolume) {
 									this.calculatevalume()
 								}
 								
-								if(boxContainNum || boxLength || boxWidth || boxHeight) {
-									this.collapseOpen = true
-								}
-								
 							}
+							
+							// 设置table的数据
+							_this.setTableData()
 							
 						}
 						else {
@@ -775,6 +785,18 @@
 				
 			},
 			
+			// 设置table数据
+			setTableData() {
+				
+				// 设置table的header数据
+				let headers = [
+					{
+						label: _this.i18n.wishlist
+					}
+				]
+				
+			},
+			
 			// 开启运费小工具
 			openshippingtool() {
 				let productExt = this.wishinfo.productExt
@@ -783,7 +805,7 @@
 					this.boxLength = productExt.boxLength
 					this.boxWidth = productExt.boxWidth
 					this.boxHeight = productExt.boxHeight
-					this.boxValume = productExt.boxValume
+					this.boxVolume = productExt.boxVolume
 					this.showpopup = true
 				}
 				else {
@@ -797,11 +819,12 @@
 			// 计算货物体积
 			calculatevalume() {
 				// 如果商品的长宽高没有填完则提示用户 否则进行计算
-				if(this.boxLength && this.boxWidth && this.boxHeight) {
-					this.boxValume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
+				if(this.productExt && this.productExt.boxLength && this.productExt.boxWidth && this.productExt.boxHeight) {
+					let boxVolume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
+					this.$set(this.productExt, 'boxVolumn', boxVolume)
 				}
 				else {
-					this.boxValume = ''
+					this.$set(this.productExt, 'boxVolumn', '')
 				}
 			},
 			
@@ -1249,6 +1272,12 @@
 	.content{
 		
 		padding-bottom: 120rpx;
+		
+		/deep/.tableview{
+			.uni-table{
+				width: 100%;
+			}
+		}
 		
 		.addbtn{
 			position: fixed;

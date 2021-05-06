@@ -23,7 +23,9 @@
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text> -->
 						</view>
 						
-						<view class="flex-sub amountview margin-left-sm text-cut text-white text-df bg-cyan padding-left-sm padding-right-sm radius">{{ ownwishitem.targetAmount }}</view>
+						<view class="cu-tag radius bg-cyan pos-static">
+							{{ ownwishitem.targetAmount }}
+						</view>
 						
 					</view>
 					
@@ -49,23 +51,31 @@
 						<view class="text-grey">{{ownwishitem.creatUser && ownwishitem.creatUser.nickname ? ownwishitem.creatUser.nickname : 'XXX'}}</view>
 						
 						<!-- 内容区域 -->
-						<view class="flex justify-between">
+						<view class="flex justify-between align-center">
 							
 							<!-- 发布时间 -->
 							<view class="text-gray text-sm">
 								<uni-dateformat :date="ownwishitem.creatTime" />
 							</view>
 							
-							<!-- 点赞浏览区域 -->
-							<view class="text-gray text-sm">
+							<!-- 右侧区域 -->
+							<view class="text-gray text-sm flex align-center">
+								
 								<!-- 紧急程度 -->
-								<text class="hurryleveltext margin-right-sm">
+								<!-- <text class="hurryleveltext margin-right-sm">
 									<text v-for="item in ownwishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-								</text>
+								</text> -->
+								
+								<!-- 点赞浏览 -->
 								<!-- <text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
 								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}} -->
 								<!-- <button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button> -->
+							
+								<!-- 再次购买按钮 -->
+								<button class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+							
 							</view>
+						
 						</view>
 						
 					</view>

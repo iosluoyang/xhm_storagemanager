@@ -363,9 +363,9 @@ const zh = {
 	wishlist: {
 		
 		producttitle: "商品标题",
-		sourcelink: "源网站链接",
-		targetlink: "网站链接",
-		sourceprice: "源网站价格",
+		sourcelink: "商品链接",
+		targetlink: "商品链接",
+		sourceprice: "商品价格",
 		targetprice: "目标价格",
 		targetamount: "目标数量",
 		hurrylevel: "紧急程度",
@@ -380,6 +380,7 @@ const zh = {
 		remark: "备注",
 		found: "我发现",
 		wishdetail: "心愿详情",
+		wishproductextdetail: "商品参数信息",
 		achieveFlag: {
 			ing: "进行中",
 			waittoconfirm: "待确认",

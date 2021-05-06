@@ -66,57 +66,6 @@
 
 			</view>
 			
-			<!-- 更多区域 -->
-			<uni-collapse v-if="false">
-				<uni-collapse-item :title="i18n.me.panel.more" :open="collapseOpen" showAnimation>
-					
-					<form>
-						
-						<!-- 装箱数量 -->
-						<view class="cu-form-group">
-							<view class="title">{{ '装箱数量' }}</view>
-							<input type="number" placeholder="pcs/box" v-model="boxContainNum">
-						</view>
-						
-						<!-- 装箱尺寸 -->
-						<view class="cu-form-group">
-							<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
-							<view class="flex align-center justify-around" style="flex-shrink: 1;">
-								<input class="borderCDCDCD" type="number" v-model="boxLength">
-								<text class="padding">x</text>
-								<input class="borderCDCDCD" type="number" v-model="boxWidth">
-								<text class="padding">x</text>
-								<input class="borderCDCDCD" type="number" v-model="boxHeight">
-							</view>
-							
-						</view>
-						
-						<!-- 装箱体积 -->
-						<view class="cu-form-group">
-							<view class="title">{{ '每箱体积(m³)' }}</view>
-							<input type="number" placeholder="可以直接填入体积(m³)" v-model="boxValume">
-							<button class='cu-btn bg-green shadow' @tap.stop="calculatevalume">{{ `计算体积` }} </button>
-						</view>
-						
-						<!-- 国际运费单价 -->
-						<view class="cu-form-group">
-							<view class="title">{{ '国际运费单价' }}</view>
-							<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
-						</view>
-						
-						<!-- 预估国际运费总价 -->
-						<view class="cu-form-group">
-							<view class="title">{{ '预估运费' }}</view>
-							<view class="content">
-								<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
-							</view>
-						</view>
-						
-					</form>
-					
-				</uni-collapse-item>
-			</uni-collapse>
-			
 			<!-- 我想要 -->
 			<view class="cu-bar bg-white margin-top">
 				<view class="action">
@@ -147,10 +96,11 @@
 			<view class="cu-form-group solid-bottom">
 				<view class="title">{{i18n.wishlist.targetamount}} :</view>
 				<input type="text" v-model="targetAmount" />
+				<!-- <textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" /> -->
 			</view>
 			
-			<!-- 紧急程度 -->
-			<view class="cu-form-group solid-bottom">
+			<!-- 紧急程度  暂时屏蔽 -->
+			<view v-if="false" class="cu-form-group solid-bottom">
 				<view class="title">{{i18n.wishlist.hurrylevel}}</view>
 				<picker :range="hurrylevelDataArr" range-key="name" :value="hurryLevel - 1" @change="hurrylevelchange">
 					<view class="picker">
@@ -182,7 +132,7 @@
 		
 		<!-- 确定按钮 -->
 		<view class="cu-bar btn-group padding-xl">
-			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
+			<button class="cu-btn round bg-pink" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
 		</view>
 		
 		<!-- 加载条 -->
@@ -190,34 +140,45 @@
 		
 		<!-- 订阅消息modal框 -->
 		<view class="cu-modal" :class=" showModal ? 'show' : '' ">
-			<view class="cu-dialog">
-				<view class="cu-bar bg-white justify-end">
-					<view class="content">{{ modalTitle }}</view>
-					<view class="action" @tap="hideModal">
-						<text class="cuIcon-close text-pink"></text>
-					</view>
-				</view>
-				<view class="padding-xl">
-					{{ modalContent }}
-				</view>
-				<view class="cu-bar bg-white justify-around">
-					<view class="action">
-						<button class="cu-btn line-green text-green" @tap="hideModal">{{ i18n.base.cancel }}</button>
-						<button class="cu-btn bg-green margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
-					</view>
-				</view>
-			</view>
-		</view>
-		
-		<!-- 提示图片modal框 -->
-		<view class="cu-modal" :class="showImgModal ? 'show':'' ">
-			<view class="cu-dialog">
-				<view class="bg-img" :style="{ backgroundImage: 'url('+modalImg+')',height: '700rpx' }"></view>
+			
+			<template>
 				
-				<view class="cu-bar bg-gradual-pink">
-					<view class="action margin-0 flex-sub  solid-left" @tap="showImgModal = false">{{ i18n.base.confirm }}</view>
+				<!-- 图片弹框内容 -->
+				<view class="cu-dialog" v-if="modalType == 'img'">
+					<view class="bg-img" :style="{ backgroundImage: 'url('+modalImg+')',height: '700rpx' }"></view>
+					
+					<view class="cu-bar bg-gradual-pink">
+						<view class="action margin-0 flex-sub  solid-left" @tap="showModal = false">{{ i18n.base.confirm }}</view>
+					</view>
 				</view>
-			</view>
+				
+				<!-- 文字弹框内容 -->
+				<view class="cu-dialog" v-if="modalType == 'content'">
+					
+					<view class="cu-bar bg-white justify-end">
+						<view class="content">{{ modalTitle }}</view>
+						<view class="action" @tap="hideModal">
+							<text class="cuIcon-close text-pink"></text>
+						</view>
+					</view>
+					
+					<view class="padding-xl">
+						{{ modalContent }}
+					</view>
+					
+					<view class="cu-bar bg-white">
+						<view class="action">
+							<button class="cu-btn bg-grey" @tap="hideModal">{{ i18n.base.cancel }}</button>
+						</view>
+						<view class="action">
+							<button class="cu-btn bg-green margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
+						</view>
+					</view>
+					
+				</view>
+				
+			</template>
+			
 		</view>
 				
 	</view>
@@ -253,7 +214,7 @@
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
-				hurryLevel: 5, // 紧急程度 默认为5级 int 类型
+				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
@@ -262,8 +223,8 @@
 				
 				modalTitle: '弹框标题',
 				modalContent: '弹框内容',
+				modalType: 'content', // 弹框类型 默认为文本
 				showModal: false, // 是否显示modal
-				showImgModal: false, // 是否显示图片提示modal
 				modalImg: '', // 图片提示框中的图片地址
 				
 			};
@@ -421,7 +382,8 @@
 				}
 				
 				this.modalImg = modalImg
-				this.showImgModal = true
+				this.modalType = 'img'
+				this.showModal = true
 			},
 			
 			// 粘贴内容
@@ -625,6 +587,8 @@
 				
 				// 商品拓展字段
 				let productExt = {
+					secretCode: this.productSecretCode,// 商品口令
+					pureUrl: this.productPureUrl, // 商品纯链接
 					boxContainNum: this.boxContainNum,
 					boxLength: this.boxLength,
 					boxWidth: this.boxWidth,
@@ -635,8 +599,6 @@
 				let info = {
 					productTitle: _this.productTitle, // 商品标题
 					sourceLink: _this.sourceLink, // 源网站链接
-					productSecretCode: _this.productSecretCode, // 商品口令
-					productPureUrl: _this.productPureUrl, // 商品纯链接
 					sourcePrice: _this.sourcePrice, // 源网站价格
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetPrice: _this.targetPrice, // 目标价格
@@ -645,7 +607,7 @@
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
-					productExt: productExt, // 心愿商品的拓展字段
+					productExt: productExt, // 商品的拓展字段
 				}
 				
 				// 新增 或者 拷贝
@@ -725,6 +687,7 @@
 				// #ifdef MP-WEIXIN
 				this.modalTitle = modalTitle
 				this.modalContent = this.i18n.tip.subsribewxmsg
+				this.modalType = 'content'
 				this.showModal = true
 				// #endif
 				
