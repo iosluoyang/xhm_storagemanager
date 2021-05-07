@@ -118,6 +118,11 @@
 					"bsonType":"string",
 					"description":"箱子体积",
 					"defaultValue":""
+				},
+				"boxWeight": {
+					"bsonType":"string",
+					"description":"箱子重量,单位kg",
+					"defaultValue":""
 				}
 			}
 		}

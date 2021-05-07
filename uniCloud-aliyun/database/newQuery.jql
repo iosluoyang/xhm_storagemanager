@@ -12,3 +12,5 @@ const db = uniCloud.database();
 
 // 删除全部时间轴数据
 db.collection('wishlisttimeline').remove()
+
+db.collection('wishlist').remove()

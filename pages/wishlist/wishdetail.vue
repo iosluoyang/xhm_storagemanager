@@ -167,8 +167,46 @@
 			<!-- 详细参数区域 表格 -->
 			<view v-if="wishinfo.productExt" class="detaildataview margin">
 				
-				<tableCom ref="tableComRef" :headers="tableHeaders"></tableCom>
-				
+				<tableCom v-if="tableHeader" ref="tableComRef" :headers="tableHeader" :contents="tableContents"
+						width="100%"
+						height="auto"
+						:fontSize="[30,20]"
+						:headerWeight="true"
+						:minHeight="[70,70]"
+						:defaultColWidth="165"
+						headerBgColor="#f1f1f1"
+						contentBgColor="#fff"
+						headerFtColor="#3e3e3e"
+						contentFtColor="#3e3e3e"
+						linkColor="#0024c8"
+						firstColBgColor="#f1f1f1"
+						borderColor="#e1e1e1"
+						:showLeftAndRightBorder="true"
+						:showVertBorder="true"
+						:loaderSize="50"
+						loaderColor="#a3a3a3"
+						loaderBgColor="#f8f8f8"
+						:checkColWidth="70"
+						checkerColor="#3e3e3e"
+						checkerBorderColor="#d3d3d3"
+						checkerBgColor="rgba(0, 0, 0, 0)"
+						checkerBoxBgColor="'rgba(0, 0, 0, 0)'"
+						checkerCellBgColor="#f1f1f1"
+						
+						emptyString="-"
+						:firstLineFixed="true"
+						textAlign="center"
+						:padding="[5,10]"
+						:urlCol="tableUrlCol"
+						:computedCol="tableComputedCol"
+						:bottomComputedFixed="true"
+						:valueFormat="tableValueFormat"
+						:formatCol="tableFormatCol"
+						:sortCol="tableSortCol"
+						:sortWays="tableSortWays"
+						:loading="tableLoading"
+						enableCheck=""
+				></tableCom>
 				
 				<uni-table v-if="false" class="tableview">
 					
@@ -567,11 +605,24 @@
 				showpopup: false, // 是否显示计算顶部弹框
 				collapseOpen: false, // 是否展开商品更多  默认不展开
 				
+				tableHeader: null, // 表格表头数据
+				tableContents: null, // 表格内容数据
+				tableUrlCol: [],
+				tableComputedCol: [],
+				tableValueFormat: [],
+				tableFormatCol: [],
+				tableSortCol: [],
+				tableSortWays: [],
+				tableLoading: false,
+				
+				
 				boxContainNum: '', // 一箱有几个
 				boxLength: '', // 箱子长度
 				boxWidth: '', // 箱子宽度
 				boxHeight: '', // 箱子高度
 				boxVolume: '', // 箱子体积
+				boxWeight: '', // 箱子重量
+				
 				interShippingSingleFeeStr: '', // 国际运费单价
 				
 				temptimelineitem: null, // 临时时间轴变量
@@ -747,20 +798,16 @@
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
-							if(productExt) {
+							// if(productExt) {
 								
-								this.boxContainNum = productExt.boxContainNum
-								this.boxLength = productExt.boxLength
-								this.boxWidth = productExt.boxWidth
-								this.boxHeight = productExt.boxHeight
-								this.boxVolume = productExt.boxVolume
+							// 	this.boxContainNum = productExt.boxContainNum
+							// 	this.boxLength = productExt.boxLength
+							// 	this.boxWidth = productExt.boxWidth
+							// 	this.boxHeight = productExt.boxHeight
+							// 	this.boxVolume = productExt.boxVolume
+							// 	this.boxWeight = productExt.boxWeight
 								
-								// 如果不存在体积的话则计算体积
-								if(!productExt.boxVolume) {
-									this.calculatevalume()
-								}
-								
-							}
+							// }
 							
 							// 设置table的数据
 							_this.setTableData()
@@ -791,9 +838,49 @@
 				// 设置table的header数据
 				let headers = [
 					{
-						label: _this.i18n.wishlist
+						label: _this.i18n.wishlist.spec, // 规格
+						key: 'spec'
+					},
+					{
+						label: _this.i18n.wishlist.targetamount, // 订购数量
+						key: 'targetAmount'
+					},
+					{
+						label: _this.i18n.wishlist.boxContainerNum, // 装箱数量
+						key: 'boxContainerNum'
+					},
+					{
+						label: _this.i18n.wishlist.boxSize, // 箱体尺寸
+						key: 'boxSize'
+					},
+					{
+						label: _this.i18n.wishlist.boxVolume, // 装箱体积
+						key: 'boxVolume'
+					},
+					{
+						label: _this.i18n.wishlist.boxWeight, // 装箱重量
+						key: 'boxWeight'
 					}
 				]
+				
+				this.tableHeader = headers
+				
+				// 设置表格数据
+				let contents = [
+					{
+						spec: '',
+						targetAmount: this?.wishinfo.targetAmount || '',
+						boxContainerNum: this?.productExt?.boxContainNum || '',
+						boxSize: this?.productExt?.boxLength && this?.productExt?.boxWidth && this?.productExt?.boxHeight ? `${this?.productExt?.boxLength}*${this?.productExt?.boxWidth}*${this?.productExt?.boxHeight}` : '',
+						boxVolume: this?.productExt?.boxVolume || '',
+						boxWeight: this?.productExt?.boxWeight || '',
+					}
+				]
+				
+				this.tableContents = contents
+				
+				// 暂不加入统计行
+				// this.tableComputedCol = ['targetAmount']
 				
 			},
 			

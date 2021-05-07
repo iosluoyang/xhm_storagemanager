@@ -8,7 +8,7 @@
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
-				<image style="height: 300rpx;" :src="ownwishitem.imgs ? ownwishitem.imgs.split(',')[0] : '/static/publicicon/logo.png' " mode="aspectFill"></image>
+
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
@@ -41,6 +41,7 @@
 						<image v-if="ownwishitem.creatUser && ownwishitem.creatUser.avatar" class="cu-avatar round lg" :src="ownwishitem.creatUser.avatar"></image>
 						<view v-else class="cu-avatar round lg">
 							<text class="cuIcon-people"></text>
+							
 						</view>
 					</template>
 					
