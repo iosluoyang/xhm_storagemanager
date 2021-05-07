@@ -12,7 +12,7 @@
 			<view class="cu-bar bg-white margin-top">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-green"></text>
-					<text class="text-xl text-bold">I Found</text>
+					<text class="text-xl text-bold">{{ i18n.wishlist.Ifound }}</text>
 				</view>
 			</view>
 			
@@ -70,7 +70,7 @@
 			<view class="cu-bar bg-white margin-top">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text class="text-xl text-bold">I Want</text>
+					<text class="text-xl text-bold">{{ i18n.wishlist.Iwant }}</text>
 				</view>
 			</view>
 			
@@ -216,7 +216,7 @@
 				targetAmount: '', // 目标数量
 				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
-				mainpiclimitnum: 5, // 图片上传的数量限制
+				mainpiclimitnum: 9, // 图片上传的数量限制
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
 				remark: '', // 备注

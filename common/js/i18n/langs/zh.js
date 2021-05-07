@@ -362,6 +362,8 @@ const zh = {
 	// 心愿单相关
 	wishlist: {
 		
+		Ifound: "我发现",
+		Iwant: "我想要",
 		producttitle: "商品标题",
 		sourcelink: "商品链接",
 		targetlink: "商品链接",
@@ -419,18 +421,6 @@ const zh = {
 	
 	// 角色相关
 	role: {
-		admin: '超级管理员',
-		admin_des: '系统超级管理员,拥有最高权限',
-		merchant_admin: '商家管理员',
-		merchant_admin_des: '商家店铺管理者,可管理店铺及下属员工',
-		merchant_employee: '商家雇员',
-		merchnat_employee_des: '可处理商家店铺事宜',
-		product_agent: '商品代理员',
-		product_agent_des: '人人可参与,单单可赚钱',
-		shipping_admin: '物流管理员',
-		shipping_admin_des: '管理所属物流公司相关订单数据等',
-		shipping_employee: '物流雇员',
-		shipping_employee_des: '可处理所属物流公司事宜',
 		
 		admin: {
 			title: '超级管理员',

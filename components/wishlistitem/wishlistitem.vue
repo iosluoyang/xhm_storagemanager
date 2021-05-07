@@ -4,12 +4,12 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow " @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
+		<view class="cu-item shadow" @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
 				
-				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill"></image>
+				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill" style="height: 300rpx;"></image>
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
@@ -31,6 +31,7 @@
 					</view>
 					
 				</view>
+			
 			</view>
 			
 			<!-- 卡片下方-内容区域 -->

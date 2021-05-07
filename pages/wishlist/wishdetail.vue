@@ -12,40 +12,60 @@
 			<!-- 基本信息区域 -->
 			<view class="cu-item shadow-warp bg-white">
 				
-				<!-- 头部区域 创建者信息区域 -->
-				<view v-if="wishinfo.creatUser" class="headerview flex align-center justify-between padding">
+				<!-- 图片区域 -->
+				<view class="picview pos-relative">
 					
-					<view class="publisherview flex">
-						
-						<!-- 头像 -->
-						<template>
-							<image v-if="wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
-							<view v-else class="cu-avatar round sm">
-								<text class="cuIcon-people"></text>
-							</view>
-						</template>
-						<!-- 昵称和时间 -->
-						<view class="publishcontent flex-sub margin-left">
-							<view>{{wishinfo.creatUser.nickname || 'XXX'}}</view>
-							<view class="text-gray text-sm flex justify-between">
-								<uni-dateformat :date="wishinfo.creatTime" />
-							</view>
-						</view>
+					<!-- 状态标签 -->
+					<view class="cu-tag pos-absolute radius" style="right: 0;top: 0;z-index: 10;" :class="wishbgcolor">{{ wishtagtext }}</view>
 					
-					</view>
+					<!-- 数量标签 -->
+					<!-- <view class="cu-tag pos-absolute radius bg-cyan" style="right: 0;bottom: 0;z-index: 10;">
+						{{ wishinfo.targetAmount }}
+					</view> -->
 					
-					<view class="cu-tag" :class="wishbgcolor">{{ wishtagtext }}</view>
+					<!-- 轮播图 -->
+					<swiper class="screen-swiper round-dot radius" indicator-dots circular
+					 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
+					 indicator-active-color="#0081ff">
+						<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(wishinfo.imgs, index)">
+							<image :src="img" mode="aspectFill"></image>
+						</swiper-item>
+					</swiper>
 					
 				</view>
 				
-				<!-- 商品图片区域 -->
-				<swiper class="screen-swiper round-dot" indicator-dots circular
-				 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
-				 indicator-active-color="#0081ff">
-					<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(wishinfo.imgs, index)">
-						<image :src="img" mode="aspectFill"></image>
-					</swiper-item>
-				</swiper>
+				<!-- 创建者信息及留言 -->
+				<view class="headerview flex align-center justify-between padding-sm">
+					
+					<view class="publisherandremarkview flex align-center width100">
+						
+						<!-- 头像 -->
+						<view class="avatarview flex align-center" style="flex-shrink: 0;">
+							<image v-if="wishinfo.creatUser && wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
+							<view v-else class="cu-avatar round sm">
+								<text class="cuIcon-people"></text>
+							</view>
+						</view>
+						
+						<!-- 右侧区域 -->
+						<template>
+						
+							<!-- 显示备注 -->
+							<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longtap="copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
+							
+							<!-- 没有备注时显示昵称和时间 -->
+							<view v-else class="publishcontent flex-sub margin-left">
+								<view>{{wishinfo.creatUser.nickname || 'XXX'}}</view>
+								<view class="text-gray text-sm flex justify-between">
+									<uni-dateformat :date="wishinfo.creatTime" />
+								</view>
+							</view>
+							
+						</template>
+						
+					</view>
+					
+				</view>
 				
 				<!-- 商品标题和价格区域 -->
 				<view class="text-content padding-sm">
@@ -257,7 +277,8 @@
 					<!-- 心愿开始类型  type=0 -->
 					<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
 						<view class="content bg-pink shadow-blur">
-							<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
+							<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
+							<!-- <text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text> -->
 							<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
 						</view>
 					</view>
@@ -783,7 +804,7 @@
 				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,comment,creatTime,productExt')
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt')
 					.get({
 						getOne:true
 					})
@@ -938,7 +959,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlisttimeline,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{avatar,nickname},content,imgs,type,wishId')
+				.field('creatUser{avatar,nickname},content,imgs,type,wishId,creatTime')
 				.orderBy('creatTime desc')
 				.get()
 				.then(res => {
