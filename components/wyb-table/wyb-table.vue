@@ -194,7 +194,7 @@
 </template>
 
 <script>
-	import Pinyin from './js/characterToPinyin.js'
+	// import Pinyin from './js/characterToPinyin.js'
 	import {isEqual} from './js/objEqual.js'
 	export default {
 		data() {
@@ -710,7 +710,7 @@
 			if (this.sortCol.length !== 0) {
 				this.sortActiveKey = this.sortCol[0].key
 				uni.setStorageSync('lastSortActiveKey', this.sortActiveKey)
-				this.doSort(this.sortCol[0].key, this.sortWays[this.sortWay], this.sortCol[0].isNumber)
+				// this.doSort(this.sortCol[0].key, this.sortWays[this.sortWay], this.sortCol[0].isNumber)
 			}
 		},
 		methods: {
@@ -802,7 +802,7 @@
 							this.sortWay = 0
 						}
 						let isNumber = this.sortCol[this.sortKeys.indexOf(header.key)].isNumber
-						this.doSort(header.key, this.sortWays[this.sortWay], isNumber)
+						// this.doSort(header.key, this.sortWays[this.sortWay], isNumber)
 					}
 				}
 			},

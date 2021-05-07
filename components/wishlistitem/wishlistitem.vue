@@ -8,7 +8,8 @@
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
-
+				
+				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill"></image>
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
