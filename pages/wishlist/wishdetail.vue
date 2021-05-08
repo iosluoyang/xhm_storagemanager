@@ -1,5 +1,5 @@
 <template>
-	<view class="content wishdetailview">
+	<view class="pagecontent wishdetailview">
 		
 		<!-- 导航栏 -->
 		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-gradual-pink' " isBack :title="i18n.nav.wishlist" isOwnBackPage @ownbackpage="ownBackPage">
@@ -68,7 +68,7 @@
 				</view>
 				
 				<!-- 商品标题和价格区域 -->
-				<view class="text-content padding-sm">
+				<view class="text-content padding-left-sm padding-right-sm padding-bottom-sm">
 					
 					<view class="text-bold text-xl">
 						
@@ -99,35 +99,26 @@
 				</view>
 				
 				<!-- 操作区域 -->
-				<view class="flex align-center justify-between padding-sm">
+				<view class="btnsview flex align-center padding-sm">
 					
-					<view class="btnsview flex align-center">
-						
-						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
-						<!-- #ifndef H5 -->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copytoclipboard(wishinfo.sourceLink)"></button>
-						<!-- #endif -->
-						
-						<!-- 分享按钮 小程序平台有 -->
-						<!-- #ifdef MP -->
-						<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
-						<!-- #endif -->
-						
-						<!-- 再次购买按钮 -->
-						<button class="cu-btn round bg-pink cuIcon-recharge margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
-						
-						<!-- 编辑按钮 仅自己可编辑 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
-						
-						<!-- 删除按钮 仅自己可删除 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
-						
-					</view>
+					<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+					<!-- #ifdef H5 -->
+					<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal=true"></button>
+					<!-- #endif -->
 					
-					<!-- <view class="staticview text-gray text-sm text-right">
-						<text class="cuIcon-attentionfill margin-lr-xs"></text>{{wishinfo.previewCount || 0}}
-						<text class="cuIcon-messagefill margin-lr-xs"></text> {{wishinfo.commentCount || 0}}
-					</view> -->
+					<!-- 分享按钮 小程序平台有 -->
+					<!-- #ifndef MP -->
+					<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
+					<!-- #endif -->
+					
+					<!-- 再次购买按钮 -->
+					<button class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+					
+					<!-- 编辑按钮 仅自己可编辑 -->
+					<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+					
+					<!-- 删除按钮 仅自己可删除 -->
+					<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 					
 				</view>
 				
@@ -184,70 +175,23 @@
 				
 			</view>
 			
-			<!-- 详细参数区域 表格 -->
+			<!-- 详细参数区域 表格区域 -->
 			<view v-if="wishinfo.productExt" class="detaildataview margin">
 				
-				<tableCom v-if="tableHeader" ref="tableComRef" :headers="tableHeader" :contents="tableContents"
-						width="100%"
-						height="auto"
-						:fontSize="[30,20]"
-						:headerWeight="true"
-						:minHeight="[70,70]"
-						:defaultColWidth="165"
-						headerBgColor="#f1f1f1"
-						contentBgColor="#fff"
-						headerFtColor="#3e3e3e"
-						contentFtColor="#3e3e3e"
-						linkColor="#0024c8"
-						firstColBgColor="#f1f1f1"
-						borderColor="#e1e1e1"
-						:showLeftAndRightBorder="true"
-						:showVertBorder="true"
-						:loaderSize="50"
-						loaderColor="#a3a3a3"
-						loaderBgColor="#f8f8f8"
-						:checkColWidth="70"
-						checkerColor="#3e3e3e"
-						checkerBorderColor="#d3d3d3"
-						checkerBgColor="rgba(0, 0, 0, 0)"
-						checkerBoxBgColor="'rgba(0, 0, 0, 0)'"
-						checkerCellBgColor="#f1f1f1"
+				<uni-collapse>
+					<uni-collapse-item :title="i18n.wishlist.spectable.specstr" :open="collapseOpen" showAnimation>
 						
-						emptyString="-"
-						:firstLineFixed="true"
-						textAlign="center"
-						:padding="[5,10]"
-						:urlCol="tableUrlCol"
-						:computedCol="tableComputedCol"
-						:bottomComputedFixed="true"
-						:valueFormat="tableValueFormat"
-						:formatCol="tableFormatCol"
-						:sortCol="tableSortCol"
-						:sortWays="tableSortWays"
-						:loading="tableLoading"
-						enableCheck=""
-				></tableCom>
-				
-				<uni-table v-if="false" class="tableview">
-					
-					<!-- 表头行 -->
-					<uni-tr>
-						<uni-th align="center">pcs/box</uni-th>
-						<uni-th>box size</uni-th>
-						<uni-th>Domestic Shipping</uni-th>
-						<uni-th>Thai Shipping</uni-th>
-					</uni-tr>
-					
-					<!-- 每一行的具体内容数据 -->
-					<uni-tr>
-						<uni-td>{{ wishinfo.productExt.boxContainNum || '*' }}</uni-td>
-						<uni-td>{{ wishinfo.productExt.boxLength && wishinfo.productExt.boxWidth && wishinfo.productExt.boxHeight ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight} \n ${wishinfo.productExt.boxVolume} m³` : wishinfo.productExt.boxVolume ? `${wishinfo.productExt.boxVolume} m³` : '*' }}</uni-td>
-						<uni-td>{{ wishinfo.productExt.domesticShippingFee || '*' }}</uni-td>
-						<uni-td>
-							<button class="cu-btn round sm bg-blue" @tap.stop="openshippingtool">{{ `${i18n.shipping.calcualteshipping}` }}</button>
-						</uni-td>
-					</uni-tr>
-				</uni-table>
+						
+						<view class="spectable">
+							<wishSpecTable v-if="wishinfo" :wishinfo="wishinfo"></wishSpecTable>
+						</view>
+						
+						<view class="shippingtable margin-top-sm">
+							<wishShippingTable v-if="wishinfo" :wishinfo="wishinfo"></wishShippingTable>
+						</view>
+						
+					</uni-collapse-item>
+				</uni-collapse>
 				
 			</view>
 			
@@ -550,6 +494,64 @@
 						<button v-if="modalType=='share'" open-type="share" class="cu-btn cuIcon-share round bg-gradual-orange">{{i18n.base.confirm}}</button>
 					</template>
 				</view>
+			
+			</view>
+		</view>
+		
+		<!-- 底部弹出框 -->
+		<view class="cu-modal bottom-modal" :class="{'show': ifshowbottommodal}" @tap.stop="ifshowbottommodal = false">
+			<view class="cu-dialog" @tap.stop="">
+				
+				<view v-if="productExt" class="cu-list menu text-left">
+					
+					<!-- 口令 -->
+					<view class="cu-item">
+						<view class="content padding-tb-sm" style="max-width: 70%;">
+							<view>
+								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
+								{{ productExt.secretCode }}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="cuIcon-infofill margin-right-xs"></text>
+								{{ i18n.wishlist.secretcodetip }}
+							</view>
+						</view>
+						
+						<!-- #ifndef H5 -->
+						<view class="action">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="copytoclipboard(productExt.secretCode)">
+								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							</button>
+						</view>
+						<!-- #endif -->
+						
+					</view>
+					
+					<!-- 纯链接 -->
+					<view class="cu-item">
+						<view class="content padding-tb-sm" style="max-width: 70%;">
+							<view>
+								<text class="cuIcon-link text-yellow margin-right-xs"></text>
+								{{ productExt.pureUrl }}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="cuIcon-infofill margin-right-xs"></text>
+								{{ i18n.wishlist.pureurltip }}
+							</view>
+						</view>
+						
+						<!-- #ifndef H5 -->
+						<view class="action">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="copytoclipboard(productExt.pureUrl)">
+								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							</button>
+						</view>
+						<!-- #endif -->
+						
+					</view>
+					
+				</view>
+			
 			</view>
 		</view>
 		
@@ -606,7 +608,9 @@
 
 <script>
 	
-	import tableCom from "@/components/wyb-table/wyb-table.vue";
+	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue';
+	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'
+	
 	var _this
 	
 	export default {
@@ -624,19 +628,8 @@
 				imgsArr: [], // 轮播图的图片数组索引
 				
 				showpopup: false, // 是否显示计算顶部弹框
-				collapseOpen: false, // 是否展开商品更多  默认不展开
-				
-				tableHeader: null, // 表格表头数据
-				tableContents: null, // 表格内容数据
-				tableUrlCol: [],
-				tableComputedCol: [],
-				tableValueFormat: [],
-				tableFormatCol: [],
-				tableSortCol: [],
-				tableSortWays: [],
-				tableLoading: false,
-				
-				
+				collapseOpen: true, // 是否展开规格订购信息  默认展开
+			
 				boxContainNum: '', // 一箱有几个
 				boxLength: '', // 箱子长度
 				boxWidth: '', // 箱子宽度
@@ -651,13 +644,15 @@
 				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
 				sharecontent: '', // 分享内容文本
 				ifshowmodal: false, // 是否显示模态框
+				ifshowbottommodal: false, // 是否显示底部模态框
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
 		},
 		
 		components: {
-			tableCom
+			wishSpecTable,
+			wishShippingTable,
 		},
 		
 		computed: {
@@ -850,58 +845,6 @@
 					.finally(() => {
 						_this.ifloading = false // 结束缓冲动画
 					})
-				
-			},
-			
-			// 设置table数据
-			setTableData() {
-				
-				// 设置table的header数据
-				let headers = [
-					{
-						label: _this.i18n.wishlist.spec, // 规格
-						key: 'spec'
-					},
-					{
-						label: _this.i18n.wishlist.targetamount, // 订购数量
-						key: 'targetAmount'
-					},
-					{
-						label: _this.i18n.wishlist.boxContainerNum, // 装箱数量
-						key: 'boxContainerNum'
-					},
-					{
-						label: _this.i18n.wishlist.boxSize, // 箱体尺寸
-						key: 'boxSize'
-					},
-					{
-						label: _this.i18n.wishlist.boxVolume, // 装箱体积
-						key: 'boxVolume'
-					},
-					{
-						label: _this.i18n.wishlist.boxWeight, // 装箱重量
-						key: 'boxWeight'
-					}
-				]
-				
-				this.tableHeader = headers
-				
-				// 设置表格数据
-				let contents = [
-					{
-						spec: '',
-						targetAmount: this?.wishinfo.targetAmount || '',
-						boxContainerNum: this?.productExt?.boxContainNum || '',
-						boxSize: this?.productExt?.boxLength && this?.productExt?.boxWidth && this?.productExt?.boxHeight ? `${this?.productExt?.boxLength}*${this?.productExt?.boxWidth}*${this?.productExt?.boxHeight}` : '',
-						boxVolume: this?.productExt?.boxVolume || '',
-						boxWeight: this?.productExt?.boxWeight || '',
-					}
-				]
-				
-				this.tableContents = contents
-				
-				// 暂不加入统计行
-				// this.tableComputedCol = ['targetAmount']
 				
 			},
 			
@@ -1366,20 +1309,20 @@
 				
 			},
 			
-			// 进货操作
-			importproduct(timelineitem) {
-				
-			},
-			
 		},
 	}
 </script>
 
 <style lang="scss" scoped>
 	
-	.content{
+	.pagecontent{
 		
 		padding-bottom: 120rpx;
+		
+		/deep/.uni-collapse-cell{
+			background-color: #FFFFFF !important;
+			border-bottom: none !important;
+		}
 		
 		/deep/.tableview{
 			.uni-table{

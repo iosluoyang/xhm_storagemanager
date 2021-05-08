@@ -231,27 +231,6 @@
 					});
 				})
 				
-				// _this.$api.userapi.getuserdetail().then(response => {
-				// 	// 加载个人信息成功
-				// 	let user = response.data.user
-				// 	// 更新本地的用户信息
-				// 	_this.$store.dispatch('user/updateuserdetail', user).then(() => {
-				// 		// 更新成功
-				// 	}).catch(error => {
-				// 		// 更新失败
-				// 		uni.showToast({
-				// 			title: _this.i18n.error.networkerror,
-				// 			icon: 'none'
-				// 		});
-				// 	})
-				// }).catch(error => {
-				// 	// 加载失败
-				// 	uni.showToast({
-				// 		title: _this.i18n.error.networkerror,
-				// 		icon: 'none'
-				// 	});
-				// })
-				
 			},
 			
 			// 跳转个人详情页

@@ -2409,6 +2409,7 @@ button.cuIcon.lg {
  ==================== */
 
 .cu-modal {
+	display: none;
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -2435,6 +2436,7 @@ button.cuIcon.lg {
 }
 
 .cu-modal.show {
+	display: block;
 	opacity: 1;
 	transition-duration: 0.3s;
 	-ms-transform: scale(1);

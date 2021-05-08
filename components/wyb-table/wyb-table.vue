@@ -93,7 +93,8 @@
 				</view>
 			</view>
 			<view class="wyb-table-content">
-				<view class="wyb-table-content-line" v-for="(content, cIndex) in contentsSort" :key="contentLineKey(content, cIndex)"
+				<!-- :key="contentLineKey(content, cIndex)"  注意为了防止表格数据重绘,使用固定的key -->
+				<view class="wyb-table-content-line" v-for="(content, cIndex) in contentsSort" :key="cIndex"
 				 :style="{borderTop: cIndex === 0 ? 'none' : '1px solid' + borderColor}">
 					<view class="wyb-table-content-item" v-if="enableCheck" :style="{
 						 minWidth: checkColWidth + 'rpx',
@@ -127,11 +128,12 @@
 									fontSize: (fontSize[1] || fontSize[0]) + 'rpx'}" />
 							</view>
 						 </view>
+					<!-- :key="contentItemKey(header, hIndex)"  注意为了防止表格数据重绘,使用固定的key -->
 					<view
 					 class="wyb-table-content-item" 
 					 v-for="(header, hIndex) in headers"
 					 @tap.stop="onContentItemTap(cIndex, hIndex)"
-					 :key="contentItemKey(header, hIndex)" 
+					 :key="hIndex"
 					 :style="{
 						 minWidth: (header.width || defaultColWidth) + 'rpx',
 						 maxWidth: (header.width || defaultColWidth) + 'rpx',
@@ -147,7 +149,19 @@
 						 borderRight: hIndex === headers.length - 1 || (!showVertBorder && hIndex !== 0) ? 'none' : '1px solid' + borderColor,
 						 zIndex: hIndex === 0 ? 20 : 0,
 						 left: enableCheck ? checkColWidth + 'rpx' : 0,
-						 position: hIndex === 0 && firstLineFixed ? 'sticky' : 'static'}">{{autoContentItem(cIndex, hIndex)}}</view>
+						 position: hIndex === 0 && firstLineFixed ? 'sticky' : 'static'}">
+							
+							<template>
+								
+								<image v-if="autoContentItem(cIndex, hIndex) && autoContentItem(cIndex, hIndex)['type'] == 'img' " :src="autoContentItem(cIndex, hIndex)['url']" mode="aspectFill" style="width: 100%;height: 100%;"></image>
+								
+								<template v-else>
+									{{autoContentItem(cIndex, hIndex)}}
+								</template>
+								
+							</template>
+							
+						 </view>
 				</view>
 				<view v-if="computedCol.length !== 0" class="wyb-table-content-line" :style="{
 					position: bottomComputedFixed ? 'sticky' : 'static',
@@ -248,6 +262,7 @@
 					let content = this.contentsSort[cIndex]
 					let header = this.headers[hIndex]
 					let result = ''
+					// console.log(`重新计算填充内容`);
 					if (content[header.key] || content[header.key] === 0) {
 						result = content[header.key]
 						if (this.urlCol.length !== 0) {
@@ -266,6 +281,16 @@
 									result = item.template.replace(needRplace, result)
 								}
 							})
+						}
+						if (this.mediaCol.length !== 0) {
+							let item = this.mediaCol.find(item => (header.key === item.key))
+							if(item) {
+								let url = result
+								result = {
+									type: item.type,// img || video
+									url: url
+								}
+							}
 						}
 						
 					} else {
@@ -599,6 +624,12 @@
 					return []
 				}
 			},
+			mediaCol: {
+				type: Array,
+				default() {
+					return []
+				}
+			},
 			computedCol: {
 				type: Array,
 				default() {
@@ -818,25 +849,55 @@
 						keys.push(item.key)
 					}
 				}
+				if (this.mediaCol.length !== 0) {
+					this.mediaCol.forEach(item => {
+						keys.push(item.key)
+					})
+				}
 				
 				if (content[header.key]) {
 					if (keys.includes(header.key)) {
 						// 该单元格为链接
-						switch(this.urlCol[keys.indexOf(header.key)].type) {
-							case 'route':
-								let url = content[header.key][1]
-								if (content[header.key][2]) {
-									url = `${url}?`
-									Object.keys(content[header.key][2]).forEach(key => {
-										url += `&${key}=${content[header['key']][2][key]}`
-									})
-								}
-								uni.navigateTo({url})
-								break
-							case 'http':
-								this.openURL(content[header.key][1])
-								break
+						if(this.urlCol.find(item => (item.key == header.key))) {
+							let selectitem = this.urlCol.find(item => (item.key == header.key))
+							switch(selectitem.type) {
+								case 'route':
+									let url = content[header.key][1]
+									if (content[header.key][2]) {
+										url = `${url}?`
+										Object.keys(content[header.key][2]).forEach(key => {
+											url += `&${key}=${content[header['key']][2][key]}`
+										})
+									}
+									uni.navigateTo({url})
+									break
+								case 'http':
+									this.openURL(content[header.key][1])
+									break
+							}
 						}
+						
+						// 该单元格为多媒体
+						else if(this.mediaCol.find(item => (item.key == header.key))) {
+							let selectitem = this.mediaCol.find(item => (item.key == header.key))
+							let url = content[header.key]
+							switch(selectitem.type) {
+								case 'img':
+									{
+										uni.previewImage({
+											urls: [url]
+										})
+									}
+									break
+								case 'video':
+									{
+										console.log(url)
+									}
+									break
+							}
+						}
+						
+						
 					} else {
 						event = {
 							content: content[header.key],
@@ -940,7 +1001,7 @@
 					data: href,
 					success() {
 						uni.showToast({
-							title: '网址已复制，请在手机浏览器里粘贴该网址',
+							title: this.i18n.tip.copysuccess,
 							icon: 'none'
 						})
 					}

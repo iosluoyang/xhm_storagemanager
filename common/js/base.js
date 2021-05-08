@@ -391,37 +391,37 @@ export function getrolenameandcolor(roleId) {
 	switch (roleId){
 		case 'admin':
 			return {
-				title: i18n.role.admin,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-red'
 			}
 			break;
 		case 'MERCHANT_ADMIN':
 			return {
-				title: i18n.role.merchant_admin,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-purple'
 			}
 			break;
 		case 'MERCHANT_EMPLOYEE':
 			return {
-				title: i18n.role.merchant_employee,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-purple'
 			}
 			break;
 		case 'PRODUCT_AGENT':
 			return {
-				title: i18n.role.product_agent,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-green'
 			}
 			break;
 		case 'SHIPPING_ADMIN':
 			return {
-				title: i18n.role.shipping_admin,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-blue'
 			}
 			break;
 		case 'SHIPPING_EMPLOYEE':
 			return {
-				title: i18n.role.shipping_employee,
+				title: i18n.role[roleId].title,
 				bgColor: 'bg-blue'
 			}
 			break;
