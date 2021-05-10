@@ -21,7 +21,7 @@
 		},
 		"creatUser": {
 			"bsonType":"string",
-			"description": "发布者的uid 0428后升级后的DB直接会返回该对象数据",
+			"description": "发布者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue":{
 				"$env":"uid"
@@ -33,14 +33,6 @@
 		},
 		"sourceLink": {
 			"description": "原网址链接"
-		},
-		"productSecretCode": {
-			"bsonType":"string",
-			"description":"商品口令"
-		},
-		"productPureUrl": {
-			"bsonType":"string",
-			"description":"商品纯链接"
 		},
 		"sourcePrice": {
 			"description": "原商品价格"

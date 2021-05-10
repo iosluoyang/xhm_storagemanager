@@ -431,7 +431,7 @@ const zh = {
 		},
 		timeline: {
 			title: "时间轴",
-			updatetimeline: "更新时间轴",
+			saysometing: "说点什么吧",
 			targetpriceerror: "请输入目标价格",
 			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始",

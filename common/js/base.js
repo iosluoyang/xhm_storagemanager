@@ -376,6 +376,24 @@ export function sleep(sleeptime) {
 	}
 }
 
+// 复制内容到剪贴板
+export function copytoclipboard(data) {
+	
+	// 非H5可以进行复制内容到剪贴板
+	// #ifndef H5
+	uni.setClipboardData({
+		data: data,
+		success() {
+			uni.showToast({
+				title: i18n.tip.copysuccess,
+				icon: 'none'
+			});
+		}
+	})
+	// #endif
+	
+}
+
 // 根据当前用户角色返回角色名称和背景颜色
 export function getrolenameandcolor(roleId) {
 	
@@ -500,6 +518,7 @@ export default {
 	scanQR, // 开始扫描二维码
 	sleep, // js休眠
 	
+	copytoclipboard, // 非H5平台复制内容到剪贴板
 	getrolenameandcolor, // 获取角色的名称和背景颜色
 	getwishtagbgcolorclassname, // 获取心愿背景颜色
 	getwishtagname, // 获取心愿tag名称

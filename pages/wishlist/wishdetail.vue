@@ -51,7 +51,7 @@
 						<template>
 						
 							<!-- 显示备注 -->
-							<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longtap="copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
+							<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longtap="$basejs.copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
 							
 							<!-- 没有备注时显示昵称和时间 -->
 							<view v-else class="publishcontent flex-sub margin-left">
@@ -271,7 +271,7 @@
 								<text class="text-sm text-gray margin-left-sm t_oneline">{{ timelineitem.link }}</text>
 								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 								<!-- #endif -->
 								
 							</view>
@@ -364,7 +364,7 @@
 								<text class="text-sm text-black margin-left-sm t_oneline">{{ timelineitem.link }}</text>
 								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 								<!-- #endif -->
 								
 							</view>
@@ -519,7 +519,7 @@
 						
 						<!-- #ifndef H5 -->
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="copytoclipboard(productExt.secretCode)">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
@@ -542,7 +542,7 @@
 						
 						<!-- #ifndef H5 -->
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="copytoclipboard(productExt.pureUrl)">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
@@ -877,19 +877,6 @@
 				else {
 					this.$set(this.productExt, 'boxVolumn', '')
 				}
-			},
-			
-			// 点击复制到剪贴板
-			copytoclipboard(data) {
-				uni.setClipboardData({
-					data: data,
-					success() {
-						uni.showToast({
-							title: `copy succeed !`,
-							icon: 'none'
-						});
-					}
-				})
 			},
 			
 			// 加载心愿时间轴数据

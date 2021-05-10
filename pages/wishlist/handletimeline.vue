@@ -2,7 +2,7 @@
 	<view class="handletimelineview content">
 		
 		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
-			<block slot="content">{{ type === 'found' ? i18n.wishlist.found : type === 'addcomment' ? i18n.wishlist.timeline.updatetimeline : i18n.wishlist.title }}</block>
+			<block slot="content">{{ type === 'found' ? i18n.wishlist.found : type === 'addcomment' ? i18n.wishlist.timeline.saysometing : i18n.wishlist.title }}</block>
 		</cu-custom>
 		
 		<!-- 该心愿详情信息 -->
@@ -29,17 +29,17 @@
 				<!-- 商品标题和备注 链接 -->
 				<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
 					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;">{{wishinfo.remark}}</view>
+					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longtap="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
 					<view class="bottomview margin-top-sm flex justify-between align-center">
 						<view class="priceview flex align-center">
 							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
-							<text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-							<text v-if="wishinfo.targetAmount" class="text-black text-df margin-left">{{ `(${wishinfo.targetAmount})` }}</text>
+							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
+							<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
 						</view>
 						
-						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
 						<!-- #ifndef H5 -->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="copytoclipboard(wishinfo.sourceLink)"></button>
+						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal = true"></button>
 						<!-- #endif -->
 					</view>
 				</view>
@@ -54,13 +54,13 @@
 			<view class="cu-bar">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text>{{ i18n.wishlist.timeline.updatetimeline }}</text>
+					<text>{{ i18n.wishlist.timeline.saysometing }}</text>
 				</view>
 			</view>
 			
 			<!-- 选择更新时间轴的类型 -->
 			<view class="cu-bar btn-group">
-				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.updatetimeline }}</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.saysometing }}</button>
 				<text class="text-gray">/</text>
 				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink' ]" @tap.stop="type='found'">{{ i18n.wishlist.found }}</button>
 			</view>
@@ -98,14 +98,16 @@
 					
 					<!-- 粘贴按钮 -->
 					<!-- #ifndef H5 -->
-					<button class="cu-btn bg-cyan shadow" @tap.stop="pastesourelink('targetLink')">{{i18n.base.paste}}</button>
+					<button class="cu-btn bg-cyan shadow" @tap.stop="pastefromclipboard('targetLink')">{{i18n.base.paste}}</button>
 					<!-- #endif -->
 					
 				</view>
 				
 				<!-- 备注 -->
-				<view class="cu-form-group solid-bottom">
-					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<view class="cu-form-group solid-bottom pos-relative">
+					<textarea :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				
+					<view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-unfold']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></view>
 				</view>
 				
 				<!-- 图片上传 -->
@@ -125,7 +127,6 @@
 			
 		</view>
 		
-		
 		<!-- 确定按钮 -->
 		<view class="cu-bar btn-group margin">
 			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
@@ -133,6 +134,63 @@
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
+		
+		<!-- 底部弹出框 -->
+		<view class="cu-modal bottom-modal" :class="{'show': ifshowbottommodal}" @tap.stop="ifshowbottommodal = false">
+			<view class="cu-dialog" @tap.stop="">
+				
+				<view v-if="productExt" class="cu-list menu text-left">
+					
+					<!-- 口令 -->
+					<view class="cu-item">
+						<view class="content padding-tb-sm" style="max-width: 70%;">
+							<view>
+								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
+								{{ productExt.secretCode }}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="cuIcon-infofill margin-right-xs"></text>
+								{{ i18n.wishlist.secretcodetip }}
+							</view>
+						</view>
+						
+						<!-- #ifndef H5 -->
+						<view class="action">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
+								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							</button>
+						</view>
+						<!-- #endif -->
+						
+					</view>
+					
+					<!-- 纯链接 -->
+					<view class="cu-item">
+						<view class="content padding-tb-sm" style="max-width: 70%;">
+							<view>
+								<text class="cuIcon-link text-yellow margin-right-xs"></text>
+								{{ productExt.pureUrl }}
+							</view>
+							<view class="text-gray text-sm">
+								<text class="cuIcon-infofill margin-right-xs"></text>
+								{{ i18n.wishlist.pureurltip }}
+							</view>
+						</view>
+						
+						<!-- #ifndef H5 -->
+						<view class="action">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
+								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							</button>
+						</view>
+						<!-- #endif -->
+						
+					</view>
+					
+				</view>
+			
+			</view>
+		</view>
 		
 	</view>
 </template>
@@ -148,6 +206,7 @@
 				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
+				productExt: null ,// 心愿商品的拓展字段
 				timelineId: null, // 当前时间轴id
 				timelineInfo: null, // 时间轴数据
 				
@@ -156,11 +215,13 @@
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
-				mainpiclimitnum: 5, // 图片上传的数量限制
+				mainpiclimitnum: 9, // 图片上传的数量限制
 				targetLink: '', // 目标网站链接
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
+				ifshowbottommodal: false, // 是否显示底部弹框
 				remark: '', // 备注
+				textareaHighScreen: true, // textarea是否高屏显示
 				
 			};
 		},
@@ -194,10 +255,8 @@
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
-				let wherestr = ` _id == '${_this.wishId}' `
-				db.collection('wishlist,uni-id-users')
-					.where(wherestr)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark')
+				db.collection('wishlist')
+					.doc(_this.wishId)
 					.get({
 						getOne:true
 					})
@@ -206,8 +265,12 @@
 						console.log(res);
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
-							detaildata.creatUser = detaildata.creatUser[0]
 							_this.wishinfo = detaildata
+							
+							if(_this.wishinfo.productExt) {
+								_this.productExt = _this.wishinfo.productExt
+							}
+							
 						}
 						else {
 							uni.showToast({
@@ -280,21 +343,8 @@
 				
 			},
 			
-			// 点击复制到剪贴板
-			copytoclipboard(data) {
-				uni.setClipboardData({
-					data: data,
-					success() {
-						uni.showToast({
-							title: `copy succeed !`,
-							icon: 'none'
-						});
-					}
-				})
-			},
-			
-			// 粘贴源网站链接
-			pastesourelink(datatype) {
+			// 从粘贴板粘贴内容
+			pastefromclipboard(datatype) {
 				uni.getClipboardData({
 					success(res) {
 						let content = res.data
@@ -355,50 +405,7 @@
 					icon: 'none'
 				});
 			},
-			
-			// 添加图片
-			addImg() {
-				
-				// 可添加的图片数量
-				let canaddnum = this.mainpiclimitnum - this.imgArr.length
-				this.$basejs.chooseImage({
-					count: canaddnum,
-					success(res) {
-						// 如果选择数量超过可选数量则提示超出数量
-						if(res.tempFiles.length > canaddnum) {
-							uni.showToast({
-								title: _this.i18n.error.chooseimgovererror,
-								icon: 'none'
-							});
-							return
-						}
-						else {
-							_this.imgArr = _this.imgArr.concat(res.tempFiles)
-						}
-					}
-				})
-				
-			},
-			
-			// 查看大图
-			previewImg(index) {
-				
-				// 组装预览图的数据
-				let previewimgArr = this.imgArr.map(item => (item.path))
-				// 开始预览
-				uni.previewImage({
-					urls: previewimgArr,
-					current: index
-				})
-				
-				// 开始预览
-				uni.previewImage({
-					urls: previewimgArr,
-					current: index
-				})
-				
-			},
-			
+		
 			// 上传时间轴数据
 			uploaddata() {
 				
@@ -471,7 +478,6 @@
 					const db = uniCloud.database();
 					db.collection('wishlisttimeline').add(info)
 					.then(res => {
-						
 						// 新增成功
 						if(res.result.code == 0) {
 							
@@ -517,6 +523,7 @@
 					})
 					
 				}
+				// 编辑时间轴
 				else if(_this.pagetype == 'edit') {
 					_this.ifloading = true
 					const db = uniCloud.database();
@@ -563,87 +570,6 @@
 						});
 					})
 				}
-				
-				return
-				// 开始上传图片
-				// this.uploadpic(this.imgArr).then(imgs => {
-				// 	// 上传图片成功 开始上传所有数据
-				// 	console.log(`获得的图片链接为${imgs}`);
-				// 	// 根据当前页面类型和新增编辑类型选择更新的时间轴类型
-				// 	let timelinetype = 1 // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-				// 	// 如果是新增的话 根据是时间轴更新还是发现商品选择不同的类型
-				// 	if(_this.pagetype == 'add') {
-				// 		timelinetype = _this.type === 'addcomment' ? 1 : _this.type === 'found' ? 3 : 1
-				// 	}
-				// 	else if(_this.pagetype == 'edit') {
-				// 		timelinetype = _this.timelineInfo.type
-				// 	}
-				// 	let commoninfo = {
-				// 		wishId: _this.wishId, // 当前心愿的id
-				// 		_id: _this.pagetype == 'edit' ? _this.timelineId : null,
-				// 		user: _this.user, // 当前发布人的信息
-				// 		content: _this.remark, // 内容信息
-				// 		imgs: imgs, // 图片字符串集合
-				// 		type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-				// 	}
-					
-				// 	let foundinfo = {}
-				// 	// 如果是发现新商品类型则添加价格和链接地址
-				// 	if(_this.type === 'found') {
-				// 		foundinfo = {
-				// 			link: _this.targetLink, // 链接地址
-				// 			price: _this.targetPrice, // 价格
-				// 			moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
-				// 		}
-				// 	}
-					
-				// 	let uploaddata = {...commoninfo,...foundinfo}
-				// 	console.log(`即将上传的数据为${JSON.stringify(uploaddata)}`);
-					
-				// 	// 开始上传云函数
-				// 	uniCloud.callFunction({
-				// 		name: 'wishlisttimeline',
-				// 		data: {
-				// 			type: _this.pagetype == 'add' ? 'add' : 'edit',
-				// 			info: uploaddata
-				// 		}
-				// 	}).then(response => {
-				// 		// 发布成功
-				// 		// 更新事件轴数据
-				// 		uni.$emit('updatetimeline')
-						
-				// 		// 如果是待确认状态则更新心愿单列表和详情
-				// 		if(uploaddata.type == 3) {
-				// 			uni.$emit('updatewishlist')
-				// 			uni.$emit('updatewishdetail')
-				// 		}
-						
-				// 		uni.showToast({
-				// 			title: _this.i18n.tip.addsuccess,
-				// 			icon: 'none',
-				// 			duration: 1500
-				// 		});
-						
-				// 		setTimeout(function() {
-				// 			uni.navigateBack();
-				// 		}, 1500);
-				// 	}).catch(error => {
-				// 		// 发布失败
-				// 		uni.showToast({
-				// 			title: _this.i18n.error.adderror,
-				// 			icon: 'none'
-				// 		});
-				// 	})
-					
-				// }).catch(error => {
-				// 	console.log(``);
-				// 	console.log(`上传失败`);
-				// 	// 上传图片失败
-				// 	uni.showToast({
-				// 		title: this.i18n.error.uploaderror,
-				// 		icon: 'none'
-				// 	});
-				// })
 				
 			},
 			

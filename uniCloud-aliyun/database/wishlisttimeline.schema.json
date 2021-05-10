@@ -38,7 +38,7 @@
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
 		"editTime": {
-			"description": "创建时间"
+			"description": "编辑时间"
 		},
 		"content" : {
 			"bsonType":"string",
@@ -52,7 +52,7 @@
 		},
 		"type": {
 			"bsonType":"int",
-			"description":"时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成"
+			"description":"时间轴类型  0心愿单创建  1心愿单普通时间轴更新  2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成"
 		},
 		"link": {
 			"bsonType":"string",
