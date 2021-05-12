@@ -406,11 +406,9 @@
 			analysisUrl() {
 				
 				let content = this.sourceLink
-				console.log(content);
 				// 匹配口令内容
 				let patt = new RegExp(`(￥\\S+￥)\\S+(https?:\\S+)`)
 				let resultArr = patt.exec(content)
-				console.log(resultArr);
 				if(resultArr && resultArr.length > 1) {
 					let productSecretCode = RegExp.$1
 					let productPureUrl = RegExp.$2
