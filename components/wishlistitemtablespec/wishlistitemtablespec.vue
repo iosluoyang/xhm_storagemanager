@@ -48,22 +48,20 @@
 			
 			<u-tr>
 				<u-th>索引</u-th>
-				<u-th>属性1</u-th>
-				<u-th>属性2</u-th>
 				<u-th>图片</u-th>
-				<u-th>规格</u-th>
+				<u-th>属性1</u-th>
+				<u-th width="30%">属性2</u-th>
+				<u-th>数量</u-th>
 				<u-th>单价</u-th>
 			</u-tr>
 			<u-tr>
 				<u-td>1</u-td>
-				<u-td>属性1-1</u-td>
-				<u-td>属性2</u-td>
 				<u-td>
 					<u-image style="margin: 0 auto;" width="80rpx" height="80rpx" mode="aspectFill" src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg"></u-image>
 				</u-td>
-				<u-td>
-					统一规格
-				</u-td>
+				<u-td>红色</u-td>
+				<u-td width="30%">统一尺寸</u-td>
+				<u-td>6</u-td>
 				<u-td>
 					100.00
 				</u-td>
@@ -71,16 +69,25 @@
 			
 			<u-tr>
 				<u-td>2</u-td>
-				<u-td>属性1-2</u-td>
-				<u-td>
-					u-tru-tr
-				</u-td>
 				<u-td>
 					<u-image style="margin: 0 auto;" width="80rpx" height="80rpx" mode="aspectFill" src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg"></u-image>
 				</u-td>
-				<u-td>
-					统一规格
+				<u-td>绿色</u-td>
+				<u-td width="30%">
+					<u-tr>
+						<u-td>大号</u-td>
+						<u-td>10</u-td>
+					</u-tr>
+					<u-tr>
+						<u-td>中号</u-td>
+						<u-td>20</u-td>
+					</u-tr>
+					<u-tr>
+						<u-td>小号</u-td>
+						<u-td>30</u-td>
+					</u-tr>
 				</u-td>
+				<u-td>60</u-td>
 				<u-td>
 					200.00
 				</u-td>
@@ -88,17 +95,13 @@
 			
 			<u-tr>
 				<u-td>3</u-td>
-				<u-td>属性1-3</u-td>
-				<u-td>第3子属性</u-td>
 				<u-td>
 					<u-image style="margin: 0 auto;" width="80rpx" height="80rpx" mode="aspectFill" src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg"></u-image>
 				</u-td>
-				<u-td>
-					统一规格
-				</u-td>
-				<u-td>
-					300.00
-				</u-td>
+				<u-td>蓝色</u-td>
+				<u-td width="30%">统一尺寸</u-td>
+				<u-td>60</u-td>
+				<u-td>300.00</u-td>
 			</u-tr>
 			
 		</u-table>
