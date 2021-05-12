@@ -2,7 +2,7 @@
 	<view class="wishprotable comcontent">
 		
 		<!-- 多商品table -->
-		<u-table class="u-table multiprotable">
+		<u-table class="u-table multiprotable" fontSize="20">
 			
 			<!-- 首先遍历表头 -->
 			<u-tr v-if="tableHeader" class="u-tr tableheader">
@@ -11,7 +11,7 @@
 			
 			<!-- 填充表格内容数据 -->
 			<!-- 每一个商品数据 -->
-			<u-tr v-if="tableContent" class="u-tr tableeachrow" v-for="(contentitem, contentindex) in tableContent" :key="contentindex + 1">
+			<u-tr v-if="tableContent" class="u-tr tableeachrow" v-for="(contentitem, contentindex) in tableContent" :key="contentindex">
 				
 				<!-- 每一列的数据要和header保持一致 -->
 				<!-- 每一商品数据的每一列数据 -->
@@ -24,7 +24,7 @@
 					
 					<!-- 如果类型为图片则渲染图片组件 -->
 					<template v-else-if="headeritem.type == 'img'">
-						<u-image style="margin: 0 auto;" width="80rpx" height="80rpx" mode="aspectFill" :src="contentitem[headeritem.key]" @tap="previewImg(contentitem[headeritem.key])"></u-image>
+						<u-image style="margin: 0 auto;width: 100%;" width="100%" mode="widthFix" :src="contentitem[headeritem.key]" @click="previewImg(contentitem[headeritem.key])"></u-image>
 					</template>
 					
 					<!-- 如果类型为数组则该列渲染多个行数据 -->
@@ -42,17 +42,17 @@
 							</u-td>
 							
 							<!-- 一级规格名称 -->
-							<u-td class="u-td subtd spec1name">
+							<u-td class="u-td subtd spec1name" width="10%">
 								<view class="u-line-5">{{ subitem.attributeName }}</view>
 							</u-td>
 							
 							<!-- 一级规格图片 -->
-							<u-td class="u-td subtd spec1img">
-								<u-image style="margin: 0 auto;" width="100%" mode="widthFix" :src="subitem.img" @tap="previewImg(subitem.img)"></u-image>
+							<u-td class="u-td subtd spec1img" width="10%">
+								<u-image style="margin: 0 auto;width: 100%;" width="100%" mode="widthFix" :src="subitem.img" @click="previewImg(subitem.img)"></u-image>
 							</u-td>
 							
 							<!-- 对应的二级规格 此处默认一定会有二级规格(没有则为默认规格) -->
-							<u-td class="u-td subtd spec1speclist" width="50%">
+							<u-td class="u-td subtd spec1speclist" width="70%" style="width: 70%;">
 								
 								<!-- 根据二级规格的多少选择渲染多少行 -->
 								<u-tr class="u-tr spec2utr" v-for="(sub2item, sub2itemindex) in subitem.childList" :key="sub2itemindex">
@@ -74,7 +74,7 @@
 							</u-td>
 							
 							<!-- 一级规格总数量 -->
-							<u-td class="u-td subtd spec1totalamount">{{ subitem.totalAmount }}</u-td>
+							<u-td class="u-td subtd spec1totalamount" width="5%">{{ subitem.totalAmount }}</u-td>
 							
 						</u-tr>
 					</template>
