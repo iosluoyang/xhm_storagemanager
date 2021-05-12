@@ -54,6 +54,7 @@
 				<u-th>数量</u-th>
 				<u-th>单价</u-th>
 			</u-tr>
+			
 			<u-tr>
 				<u-td>1</u-td>
 				<u-td>
@@ -131,7 +132,7 @@
 				tableSortCol: [],
 				tableSortWays: [],
 				tableLoading: false,
-				
+								
 			};
 		},
 		

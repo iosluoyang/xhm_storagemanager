@@ -181,10 +181,13 @@
 				<uni-collapse>
 					<uni-collapse-item :title="i18n.wishlist.spectable.specstr" :open="collapseOpen" showAnimation>
 						
-						
-						<view class="spectable">
-							<wishSpecTable v-if="wishinfo" :wishinfo="wishinfo"></wishSpecTable>
+						<view class="wishtable">
+							<wishTable v-if="wishinfo" :wishinfo="wishinfo"></wishTable>
 						</view>
+						
+						<!-- <view class="spectable margin-top-sm">
+							<wishSpecTable v-if="wishinfo" :wishinfo="wishinfo"></wishSpecTable>
+						</view> -->
 						
 						<view class="shippingtable margin-top-sm">
 							<wishShippingTable v-if="wishinfo" :wishinfo="wishinfo"></wishShippingTable>
@@ -609,7 +612,8 @@
 <script>
 	
 	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue';
-	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'
+	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue';
+	import wishTable from '@/components/wishtable/wishtable.vue';
 	
 	var _this
 	
@@ -653,6 +657,7 @@
 		components: {
 			wishSpecTable,
 			wishShippingTable,
+			wishTable,
 		},
 		
 		computed: {
