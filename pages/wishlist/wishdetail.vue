@@ -102,12 +102,12 @@
 				<view class="btnsview flex align-center padding-sm">
 					
 					<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
-					<!-- #ifdef H5 -->
+					<!-- #ifndef H5 -->
 					<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal=true"></button>
 					<!-- #endif -->
 					
 					<!-- 分享按钮 小程序平台有 -->
-					<!-- #ifndef MP -->
+					<!-- #ifdef MP -->
 					<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
 					<!-- #endif -->
 					
