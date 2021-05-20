@@ -217,19 +217,19 @@
 							title: '名称',
 							key: 'productTitle',
 							type: 'text',
-							width: '60rpx'
+							width: '15%'
 						},
 						{
 							title: '规格',
 							key: 'specList',
 							type: 'arr',
-							width: '60%'
+							width: '70%'
 						},
 						{
 							title: '合计',
 							key: 'totalAmount',
 							type: 'text',
-							width: '60rpx'
+							width: '15%'
 						},
 						
 					]
