@@ -1,7 +1,6 @@
 <template>
-	<view class="wishprotable comcontent">
+	<view class="wishtablespec comcontent">
 		
-		<!-- 多商品table -->
 		<u-table class="u-table multiprotable" fontSize="20" padding="10rpx 0">
 			
 			<!-- 首先遍历表头 -->
@@ -98,7 +97,7 @@
 	
 	export default {
 		
-		name:"wishtable",
+		name:"wishtablespec",
 		
 		props: {
 			
@@ -132,141 +131,135 @@
 			setTableData() {
 				
 				// 模拟加载table数据
-				// 根据不同的表格类型选择初始不同的表格数据
+				// 模拟规格数组
+				let specList = [
+					{
+						attributeName: '红色/Red',
+						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
+						childList: [
+							{
+								attributeName: '大号/Big',
+								amount: 200,
+								price: '6.00'
+							}
+						],
+						totalAmount: 200
+						
+					},
+					{
+						attributeName: '蓝色/Blue',
+						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg',
+						childList: [
+							{
+								attributeName: '大号/Big',
+								amount: 200,
+								price: '6.00'
+							},
+							{
+								attributeName: '中号/Middle',
+								amount: 300,
+								price: '3.00'
+							},
+							{
+								attributeName: '小号/Small',
+								amount: 400,
+								price: '2.00'
+							}
+						],
+						totalAmount: 900
+						
+					},
+					{
+						attributeName: '黄色/Yellow',
+						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
+						childList: [
+							{
+								attributeName: '大号/Big',
+								amount: 150,
+								price: '6.00'
+							},
+							{
+								attributeName: '小号/Small',
+								amount: 50,
+								price: '2.00'
+							}
+						],
+						totalAmount: 200
+						
+					},
+				]
 				
-				if(_this.tableType == 'multipro') {
+				// 构建商品数组
+				let productList = [
+					{...this.wishinfo, ...{specList: specList}, ...{totalAmount: 1300}}
+				]
+				
+				// 设置表头
+				let tableHeaderArr = [
+					// {
+					// 	title: '索引',
+					// 	key: 'index',
+					// 	type: 'text',
+					// 	width: '80rpx'
+					// },
+					// {
+					// 	title: '图片',
+					// 	key: 'mainImg',
+					// 	type: 'img',
+					// 	width: '80rpx'
+					// },
+					// {
+					// 	title: '名称',
+					// 	key: 'productTitle',
+					// 	type: 'text',
+					// 	width: '20%'
+					// },
+					{
+						title: '规格',
+						key: 'specList',
+						type: 'arr',
+						width: '100%'
+					},
+					// {
+					// 	title: '合计',
+					// 	key: 'totalAmount',
+					// 	type: 'text',
+					// 	width: '20%'
+					// },
 					
-					// 模拟规格数组
-					let specList = [
-						{
-							attributeName: '红色/Red',
-							img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
-							childList: [
-								{
-									attributeName: '大号/Big',
-									amount: 200,
-									price: '6.00'
-								}
-							],
-							totalAmount: 200
-							
-						},
-						{
-							attributeName: '蓝色/Blue',
-							img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg',
-							childList: [
-								{
-									attributeName: '大号/Big',
-									amount: 200,
-									price: '6.00'
-								},
-								{
-									attributeName: '中号/Middle',
-									amount: 300,
-									price: '3.00'
-								},
-								{
-									attributeName: '小号/Small',
-									amount: 400,
-									price: '2.00'
-								}
-							],
-							totalAmount: 900
-							
-						},
-						{
-							attributeName: '黄色/Yellow',
-							img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
-							childList: [
-								{
-									attributeName: '大号/Big',
-									amount: 150,
-									price: '6.00'
-								},
-								{
-									attributeName: '小号/Small',
-									amount: 50,
-									price: '2.00'
-								}
-							],
-							totalAmount: 200
-							
-						},
-					]
+				]
+				
+				_this.tableHeaderArr = tableHeaderArr
+				
+				// 表格内容数据数组
+				let tableDataArr = []
+				
+				productList.forEach( (proitem, proindex) => {
 					
-					// 构建商品数组
-					let productList = [
-						{...this.wishinfo, ...{specList: specList}, ...{totalAmount: 1300}}
-					]
+					let eachtabledata = {}
 					
-					// 设置表头
-					let tableHeaderArr = [
-						// {
-						// 	title: '索引',
-						// 	key: 'index',
-						// 	type: 'text',
-						// 	width: '80rpx'
-						// },
-						// {
-						// 	title: '图片',
-						// 	key: 'mainImg',
-						// 	type: 'img',
-						// 	width: '80rpx'
-						// },
-						{
-							title: '名称',
-							key: 'productTitle',
-							type: 'text',
-							width: '60rpx'
-						},
-						{
-							title: '规格',
-							key: 'specList',
-							type: 'arr',
-							width: '60%'
-						},
-						{
-							title: '合计',
-							key: 'totalAmount',
-							type: 'text',
-							width: '60rpx'
-						},
-						
-					]
-					
-					_this.tableHeaderArr = tableHeaderArr
-					
-					// 表格内容数据数组
-					let tableDataArr = []
-					
-					productList.forEach( (proitem, proindex) => {
-						
-						let eachtabledata = {}
-						
-						// 根据表头内容进行数据填充
-						tableHeaderArr.forEach(headeritem => {
-							let key = headeritem.key // 取值key
-							// 如果key值为索引则赋值当前商品列表的索引
-							if(key == 'index') {
-								eachtabledata[key] = (proindex + 1).toString()
-							}
-							// 如果是主图则展示商品的第一张图片
-							else if(key == 'mainImg') {
-								eachtabledata[key] = proitem.imgs.split(',')[0]								
-							}
-							else {
-								eachtabledata[key] = proitem[key] // 赋值value
-							}
-							
-						})
-												
-						tableDataArr.push(eachtabledata)
+					// 根据表头内容进行数据填充
+					tableHeaderArr.forEach(headeritem => {
+						let key = headeritem.key // 取值key
+						// 如果key值为索引则赋值当前商品列表的索引
+						if(key == 'index') {
+							eachtabledata[key] = (proindex + 1).toString()
+						}
+						// 如果是主图则展示商品的第一张图片
+						else if(key == 'mainImg') {
+							eachtabledata[key] = proitem.imgs.split(',')[0]								
+						}
+						else {
+							eachtabledata[key] = proitem[key] // 赋值value
+						}
 						
 					})
+											
+					tableDataArr.push(eachtabledata)
 					
-					this.tableDataArr = tableDataArr
-					
-				}
+				})
+				
+				this.tableDataArr = tableDataArr
 				
 			},
 			

@@ -132,18 +132,18 @@
 							<!-- 装箱数量 -->
 							<view class="cu-form-group">
 								<view class="title">{{ '装箱数量' }}</view>
-								<input type="number" disabled v-model="boxContainNum">
+								<input type="number" disabled v-model="productExt.boxContainNum">
 							</view>
 							
 							<!-- 装箱尺寸 -->
 							<view class="cu-form-group">
 								<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
 								<view class="flex align-center justify-around" style="flex-shrink: 1;">
-									<input type="number" disabled v-model="boxLength">
+									<input type="number" disabled v-model="productExt.boxLength">
 									<text class="padding">x</text>
-									<input type="number" disabled v-model="boxWidth">
+									<input type="number" disabled v-model="productExt.boxWidth">
 									<text class="padding">x</text>
-									<input type="number" disabled v-model="boxHeight">
+									<input type="number" disabled v-model="productExt.boxHeight">
 								</view>
 								
 							</view>
@@ -151,7 +151,7 @@
 							<!-- 装箱体积 -->
 							<view class="cu-form-group">
 								<view class="title">{{ '每箱体积(m³)' }}</view>
-								<input type="number" disabled v-model="boxVolume">
+								<input type="number" disabled v-model="productExt.boxVolume">
 							</view>
 							
 							<!-- 国际运费单价 -->
@@ -175,23 +175,60 @@
 				
 			</view>
 			
-			<!-- 详细参数区域 表格区域 -->
+			<!-- 详细参数区域-->
 			<view v-if="wishinfo.productExt" class="detaildataview margin">
 				
 				<uni-collapse>
 					<uni-collapse-item :title="i18n.wishlist.spectable.specstr" :open="collapseOpen" showAnimation>
 						
-						<view class="wishtable">
-							<wishTable v-if="wishinfo" :wishinfo="wishinfo"></wishTable>
+						<!-- 表格区域 -->
+						<view class="cu-bar bg-white solid-bottom">
+							<view class="action">
+								<text class="cuIcon-title text-orange"></text>
+								规格信息
+							</view>
+						</view>
+						<view class="wishspectable">
+							<wishTableSpec v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
 						</view>
 						
 						<!-- <view class="spectable margin-top-sm">
 							<wishSpecTable v-if="wishinfo" :wishinfo="wishinfo"></wishSpecTable>
 						</view> -->
 						
-						<view class="shippingtable margin-top-sm">
+						<!-- <view class="shippingtable margin-top-sm">
 							<wishShippingTable v-if="wishinfo" :wishinfo="wishinfo"></wishShippingTable>
+						</view> -->
+						
+						<!-- 其他相关信息 -->
+						<view v-if="detailInfoArr" class="shippinginfoview">
+							
+							<view class="cu-bar bg-white solid-bottom">
+								<view class="action">
+									<text class="cuIcon-title text-orange"></text>
+									其他信息
+								</view>
+							</view>
+							<view class="cu-list menu sm-border">
+								
+								<view class="cu-item" v-for="(item, index) in detailInfoArr" :key="index">
+									<view class="content basis-sm">
+										<text class="text-grey text-cut">{{ item.key }}</text>
+									</view>
+									<view class="action basis-df text-right">
+										<text class="text-grey text-sm">{{ item.value }}</text>
+									</view>
+								</view>
+								
+							</view>
+							
 						</view>
+						
+						<!-- 收起按钮 -->
+						<view class="collapsebtn flex align-center justify-center padding-sm" @tap.stop="collapseOpen = !collapseOpen">
+							<text class="cuIcon cuIcon-triangleupfill text-pink" style="font-size: 20px;"></text>
+						</view>
+						
 						
 					</uni-collapse-item>
 				</uni-collapse>
@@ -564,28 +601,28 @@
 			<form>
 				
 				<!-- 装箱数量 -->
-				<view class="cu-form-group">
+				<view v-if="productExt && productExt.boxContainNum" class="cu-form-group">
 					<view class="title">{{ '装箱数量' }}</view>
-					<input type="number" disabled v-model="boxContainNum">
+					<input type="number" disabled v-model="productExt.boxContainNum">
 				</view>
 				
 				<!-- 装箱尺寸 -->
-				<view class="cu-form-group">
+				<view v-if="productExt && productExt.boxLength" class="cu-form-group">
 					<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
 					<view class="flex align-center justify-around" style="flex-shrink: 1;">
-						<input type="number" disabled v-model="boxLength">
+						<input type="number" disabled v-model="productExt.boxLength">
 						<text class="padding">x</text>
-						<input type="number" disabled v-model="boxWidth">
+						<input type="number" disabled v-model="productExt.boxWidth">
 						<text class="padding">x</text>
-						<input type="number" disabled v-model="boxHeight">
+						<input type="number" disabled v-model="productExt.boxHeight">
 					</view>
 					
 				</view>
 				
 				<!-- 装箱体积 -->
-				<view class="cu-form-group">
+				<view v-if="productExt && productExt.boxVolume" class="cu-form-group">
 					<view class="title">{{ '每箱体积(m³)' }}</view>
-					<input type="number" disabled v-model="boxVolume">
+					<input type="number" disabled v-model="productExt.boxVolume">
 				</view>
 				
 				<!-- 国际运费单价 -->
@@ -611,9 +648,9 @@
 
 <script>
 	
-	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue';
-	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue';
-	import wishTable from '@/components/wishtable/wishtable.vue';
+	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
+	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue'; // 使用table-com的多规格表格
+	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'; // 使用table-com的物流表格
 	
 	var _this
 	
@@ -633,13 +670,7 @@
 				
 				showpopup: false, // 是否显示计算顶部弹框
 				collapseOpen: true, // 是否展开规格订购信息  默认展开
-			
-				boxContainNum: '', // 一箱有几个
-				boxLength: '', // 箱子长度
-				boxWidth: '', // 箱子宽度
-				boxHeight: '', // 箱子高度
-				boxVolume: '', // 箱子体积
-				boxWeight: '', // 箱子重量
+				detailInfoArr: [], // 其他信息展示数组
 				
 				interShippingSingleFeeStr: '', // 国际运费单价
 				
@@ -657,7 +688,7 @@
 		components: {
 			wishSpecTable,
 			wishShippingTable,
-			wishTable,
+			wishTableSpec,
 		},
 		
 		computed: {
@@ -801,9 +832,8 @@
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
-				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
-					.where(wherestr)
+					.where(`_id == '${_this.id}' `)
 					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt')
 					.get({
 						getOne:true
@@ -819,19 +849,15 @@
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
-							// if(productExt) {
-								
-							// 	this.boxContainNum = productExt.boxContainNum
-							// 	this.boxLength = productExt.boxLength
-							// 	this.boxWidth = productExt.boxWidth
-							// 	this.boxHeight = productExt.boxHeight
-							// 	this.boxVolume = productExt.boxVolume
-							// 	this.boxWeight = productExt.boxWeight
-								
-							// }
-							
-							// 设置table的数据
-							_this.setTableData()
+							// 解析要展示的字段
+							let detailInfoArr = []
+							for (let [key, value] of Object.entries(productExt)) {
+								if(key && value) {
+									let item = {key, value}
+									detailInfoArr.push(item)
+								}
+							}
+							this.detailInfoArr = detailInfoArr
 							
 						}
 						else {
@@ -853,15 +879,11 @@
 				
 			},
 			
+			
 			// 开启运费小工具
 			openshippingtool() {
 				let productExt = this.wishinfo.productExt
 				if(productExt) {
-					this.boxContainNum = productExt.boxContainNum
-					this.boxLength = productExt.boxLength
-					this.boxWidth = productExt.boxWidth
-					this.boxHeight = productExt.boxHeight
-					this.boxVolume = productExt.boxVolume
 					this.showpopup = true
 				}
 				else {
@@ -876,7 +898,7 @@
 			calculatevalume() {
 				// 如果商品的长宽高没有填完则提示用户 否则进行计算
 				if(this.productExt && this.productExt.boxLength && this.productExt.boxWidth && this.productExt.boxHeight) {
-					let boxVolume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
+					let boxVolume = parseFloat(parseFloat(this.productExt.boxLength/100) * parseFloat(this.productExt.boxWidth/100) * parseFloat(this.productExt.boxHeight/100)).toFixed(4)
 					this.$set(this.productExt, 'boxVolumn', boxVolume)
 				}
 				else {
