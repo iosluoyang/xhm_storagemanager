@@ -166,29 +166,9 @@
 								price: '2.00'
 							}
 						],
-						totalAmount: 900
-						
-					},
-					{
-						attributeName: '黄色/Yellow',
-						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
-						childList: [
-							{
-								attributeName: '大号/Big',
-								amount: 150,
-								price: '6.00'
-							},
-							{
-								attributeName: '小号/Small',
-								amount: 50,
-								price: '2.00'
-							}
-						],
-						totalAmount: 200
-						
-					},
-				]
-				
+						totalAmount: 900,
+					}]
+
 				// 构建商品数组
 				let productList = [
 					{...this.wishinfo, ...{specList: specList}, ...{totalAmount: 1300}}
