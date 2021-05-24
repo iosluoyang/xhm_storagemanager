@@ -1,7 +1,7 @@
 <template>
 	<view class="wishlistitemtablespecview comcontent">
 		
-		<!-- 多规格表格 -->
+		<!-- 多规格表格  不支持多行合并 -->
 		<tableCom v-if="tableHeader" ref="tableComRef" :headers="tableHeader" :contents="tableContents"
 				width="100%"
 				height="auto"

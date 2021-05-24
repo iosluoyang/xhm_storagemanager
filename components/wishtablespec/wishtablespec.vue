@@ -3,11 +3,11 @@
 		
 		
 		<!-- 使用uview的table -->
-		<u-table v-if="false" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
+		<u-table v-if="tableType == 'u-table'" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
 			
 			<!-- 首先遍历表头 -->
 			<u-tr v-if="tableHeaderArr" class="u-tr tableheader">
-				<u-th class='u-th eachheaderitem' v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">{{ headeritem.title }}</u-th>
+				<u-th class='u-th eachheaderitem' v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width=" headeritem.width != 'auto' ? headeritem.width : '' ">{{ headeritem.title }}</u-th>
 			</u-tr>
 			
 			<!-- 填充表格内容数据 -->
@@ -35,48 +35,57 @@
 						<!-- 如果对应表头为多规格则渲染多规格数据 -->
 						<template v-if="headeritem.key == 'specList'">
 							
-							<!-- 每一个商品数据的一级规格行数据 -->
+							<!-- 商品的每一个一级规格行数据 -->
+							
+							<!-- 表头数据 隐藏-->
+							<u-tr v-if="false" class="u-tr subtr">
+								<u-th class="u-th subth" v-for="(subhead, subheadindex) in tableHeaderArr2" :key="subheadindex" :width=" subhead.width != 'auto' ? subhead.width : '' ">{{ subhead.title }}</u-th>
+							</u-tr>
+							
 							<u-tr class="u-tr subtr" v-for="(subitem, subitemindex) in contentitem[headeritem.key]" :key="subitemindex">
 								
-								<!-- 一级规格索引 -->
-								<u-td class="u-td subtd spec1index" :class=" subitemindex%2 == 0 ? 'bg-cyan light' : 'bg-pink light' " width="5%">
-									{{ (subitemindex+1).toString() }}
-								</u-td>
+								<u-td class="u-td subtd" v-for="(subheaditem, subheaditemindex) in tableHeaderArr2" :key="subheaditemindex" :width="subheaditem.width">
 								
-								<!-- 一级规格名称 -->
-								<u-td class="u-td subtd spec1name" width="10%">
-									<view class="u-line-5">{{ subitem.attributeName }}</view>
-								</u-td>
-								
-								<!-- 一级规格图片 -->
-								<u-td class="u-td subtd spec1img" width="10%">
-									<u-image style="margin: 0 auto;width: 100%;" width="100%" mode="widthFix" :src="subitem.img" @click="previewImg(subitem.img)"></u-image>
-								</u-td>
-								
-								<!-- 对应的二级规格 此处默认一定会有二级规格(没有则为默认规格) -->
-								<u-td class="u-td subtd spec1speclist" width="70%">
+									<!-- 一级规格索引 -->
+									<template v-if="subheaditem.key == 'index'" class="spec1index" :class=" subitemindex%2 == 0 ? 'bg-cyan light' : 'bg-pink light' ">
+										{{ (subitemindex+1).toString() }}
+									</template>
 									
-									<!-- 根据二级规格的多少选择渲染多少行 -->
-									<u-tr class="u-tr spec2utr" v-for="(sub2item, sub2itemindex) in subitem.childList" :key="sub2itemindex">
+									<!-- 一级规格名称 -->
+									<template v-if="subheaditem.key == 'attributeName'" class="spec1name">
+										<view class="u-line-5">{{ subitem[subheaditem.key] }}</view>
+									</template>
+									
+									<!-- 一级规格图片 -->
+									<template v-if="subheaditem.key == 'img'" class="spec1img">
+										<u-image style="margin: 0 auto;width: 100%;" width="100%" mode="widthFix" :src="subitem[subheaditem.key]" @click="previewImg(subitem[subheaditem.key])"></u-image>
+									</template>
+									
+									<!-- 对应的二级规格 此处默认一定会有二级规格(没有则为默认规格) -->
+									<template v-if="subheaditem.key == 'childList'" class="spec1speclist">
+										<!-- 根据二级规格的多少选择渲染多少行 -->
+										<u-tr class="u-tr spec2utr" v-for="(sub2item, sub2itemindex) in subitem[subheaditem.key]" :key="sub2itemindex">
+											
+											<!-- 每一个子行包含的列数据 -->
+											<!-- 每一个二级规格对应的每一列的数据 -->
+											
+											<!-- 二级规格名称 -->
+											<u-td class="u-td subtd spec2name">
+												<view class="u-line-5">{{ sub2item.attributeName }}</view>
+											</u-td>
+											<!-- 二级规格单价 -->
+											<u-td class="u-td subtd spec2price">{{ sub2item.price }}</u-td>
+											<!-- 二级规格数量 -->
+											<u-td class="u-td subtd spec2amount">{{ sub2item.amount }}</u-td>
+											
+										</u-tr>
 										
-										<!-- 每一个子行包含的列数据 -->
-										<!-- 每一个二级规格对应的每一列的数据 -->
-										
-										<!-- 二级规格名称 -->
-										<u-td class="u-td subtd spec2name" width="50%">
-											<view class="u-line-5">{{ sub2item.attributeName }}</view>
-										</u-td>
-										<!-- 二级规格单价 -->
-										<u-td class="u-td subtd spec2price" width="30%">{{ sub2item.price }}</u-td>
-										<!-- 二级规格数量 -->
-										<u-td class="u-td subtd spec2amount" width="20%">{{ sub2item.amount }}</u-td>
-										
-									</u-tr>
+									</template>
+									
+									<!-- 一级规格总数量 -->
+									<template v-if="subheaditem.key == 'totalAmount'" class="spec1totalamount" >{{ subitem[subheaditem.key] }}</template>
 									
 								</u-td>
-								
-								<!-- 一级规格总数量 -->
-								<u-td class="u-td subtd spec1totalamount" width="5%">{{ subitem.totalAmount }}</u-td>
 								
 							</u-tr>
 						
@@ -91,7 +100,7 @@
 		</u-table>
 		
 		<!-- 使用uni-table -->
-		<uni-table class="multiprotable" border stripe>
+		<uni-table v-if="tableType == 'uni-table'" class="multiprotable" border :stripe="false">
 			
 			<!-- 首先遍历表头 -->
 			<uni-tr v-if="tableHeaderArr" class="tableheader">
@@ -117,7 +126,7 @@
 					</template>
 					
 					<!-- 如果类型为数组则该列渲染多个行数据 -->
-					<template v-else-if="headeritem.type == 'arr'">
+					<template v-else-if=" headeritem.type == 'arr' ">
 						<!-- 每一个子行数据 -->
 						
 						<!-- 如果对应表头为多规格则渲染多规格数据 -->
@@ -125,7 +134,7 @@
 							
 							<!-- 表头区域 -->
 							<uni-tr class="subheadtr">
-								<uni-th v-for="(subheaditem, subheaditemindex) in tableHeaderArr2" :key="subheaditemindex" :width="subheaditem.width" align="center">{{ subheaditem.title }}</uni-th>
+								<!-- <uni-th v-for="(subheaditem, subheaditemindex) in tableHeaderArr2" :key="subheaditemindex" :width="subheaditem.width" align="center">{{ subheaditem.title }}</uni-th> -->
 							</uni-tr>
 							
 							<!-- 每一个商品数据的一级规格行数据 -->
@@ -207,10 +216,12 @@
 		
 		data() {
 			return {
-				tableType: 'multipro', // 表格类型  multipro代表多商品表格  logistic代表物流表格  默认多商品表格
+
+				tableType: 'u-table', // 表格类型  u-table代表u-table组件  uni-table代表uni-table 默认u-table
 				tableHeaderArr: null, // 表头数组
 				tableHeaderArr2: null, // 副表头数组
 				tableDataArr: null, // 表格内容数组
+				
 			};
 		},
 		
@@ -277,35 +288,41 @@
 						title: '索引',
 						key: 'index',
 						type: 'text',
-						width: '20rpx'
+						width: this.tableType == 'u-table' ? '10%' : '20rpx',
+						ifShow: false
 					},
 					{
 						title: '图片',
 						key: 'mainImg',
 						type: 'img',
-						width: '200rpx'
+						width: this.tableType == 'u-table' ? '10%' : '100rpx',
+						ifShow: false
 					},
 					{
 						title: '名称',
 						key: 'productTitle',
 						type: 'text',
-						width: '50rpx'
+						width: this.tableType == 'u-table' ? '15%' : '50rpx',
+						ifShow: false
 					},
 					{
 						title: '规格',
 						key: 'specList',
 						type: 'arr',
-						width: '1500rpx'
+						width: this.tableType == 'u-table' ? 'auto' : '500rpx',
+						ifShow: true
 					},
 					{
 						title: '合计',
 						key: 'totalAmount',
 						type: 'text',
-						width: '50rpx'
+						width: this.tableType == 'u-table' ? '10%' : '50rpx',
+						ifShow: true
 					},
 					
 				]
 				
+				tableHeaderArr = tableHeaderArr.filter(item => (item.ifShow))
 				_this.tableHeaderArr = tableHeaderArr
 				
 				// 设置二级表头
@@ -314,34 +331,41 @@
 						title: '索引',
 						key: 'index',
 						type: 'text',
-						width: '20rpx'
+						width: this.tableType == 'u-table' ? '5%' : '20rpx',
+						ifShow: true
 					},
 					{
 						title: '规格1',
 						key: 'attributeName',
 						type: 'text',
-						width: '50rpx'
+						width: this.tableType == 'u-table' ? '15%' : '50rpx',
+						ifShow: true
 					},
 					{
 						title: '规格图片',
 						key: 'img',
 						type: 'img',
-						width: '100rpx'
+						width: this.tableType == 'u-table' ? '20%' : '100rpx',
+						ifShow: true
 					},
 					{
 						title: '规格2',
 						key: 'childList',
 						type: 'arr',
-						width: '1000rpx'
+						width: this.tableType == 'u-table' ? 'auto' : '500rpx',
+						ifShow: true
 					},
 					{
 						title: '合计',
 						key: 'totalAmount',
 						type: 'text',
-						width: '50rpx'
+						width: this.tableType == 'u-table' ? '10%' : '50rpx',
+						ifShow: true
 					},
 					
 				]
+				
+				tableHeader2Arr = tableHeader2Arr.filter(item => (item.ifShow))
 				
 				this.tableHeaderArr2 = tableHeader2Arr
 				
