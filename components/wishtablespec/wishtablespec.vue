@@ -252,7 +252,6 @@
 							}
 						],
 						totalAmount: 200
-						
 					},
 					{
 						attributeName: '蓝色/Blue',

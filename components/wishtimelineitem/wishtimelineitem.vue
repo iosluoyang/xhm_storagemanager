@@ -1,0 +1,314 @@
+<template>
+	<view class="wishtimelineitem cu-item" v-if="timelineitem">
+		
+		<!-- 时间轴具体内容 -->
+		<view class="content">
+			
+			<!-- 时间轴发布人信息 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction text-df">
+						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
+						<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text>
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
+				{{timelineitem.content}}
+			</view>
+			
+			<!-- 图片 -->
+			<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
+				
+				<view class="grid col-3 grid-square">
+					<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
+				</view>
+				
+			</view>
+			
+			
+			
+		</view>
+		
+		<template v-if="false">
+			
+			<!-- 心愿开始类型  type=0 -->
+			<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
+				<view class="content bg-pink shadow-blur">
+					<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
+					<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
+				</view>
+			</view>
+			
+			<!-- 心愿单普通时间轴类型 type=1 -->
+			<view v-if="timelineitem.type == 1" class="cu-item">
+				<view class="content">
+					
+					<!-- 评论创建人的头像昵称 -->
+					<view v-if="timelineitem.creatUser" class="cu-item flex align-center justify-between">
+						<view class="leftview flex align-center">
+							<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+							<view class="flex flex-direction text-df">
+								<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
+								<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text>
+							</view>
+						</view>
+					</view>
+					
+					<!-- 文本内容 -->
+					<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
+						{{timelineitem.content}}
+					</view>
+					
+					<!-- 图片 -->
+					<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
+						
+						<view class="grid col-3 grid-square">
+							<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
+						</view>
+						
+					</view>
+					
+					<!-- 价格 -->
+					<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+						
+						<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+						<text class="text-red text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
+						
+					</view>
+					
+					<!-- 评论链接区域 -->
+					<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
+						
+						<text class="cuIcon cuIcon-link text-green"></text>
+						<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
+						<!-- 复制按钮 -->
+						<!-- #ifndef H5 -->
+						<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+						<!-- #endif -->
+						
+					</view>
+					
+					<!-- 按钮操作区域 -->
+					<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center justify-between">
+						
+						<view class="leftview flex align-center">
+							
+						</view>
+						
+						<view v-if="timelineitem.creatUser" class="righview flex align-center">
+							<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+							<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+							<!-- #ifdef MP -->
+							<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
+							<!-- #endif -->
+						</view>
+						
+					</view>
+					
+				</view>
+			</view>
+			
+			<!-- 心愿单编辑类型  type=2 -->
+			<view v-if="timelineitem.type == 2" class="cu-item cuIcon-evaluate_fill text-gray">
+				<view class="content bg-gray shadow-blur">
+					<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
+					<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
+				</view>
+			</view>
+			
+			<!-- 心愿单发现新商品类型 包含待确认type=3、同意type=4、拒绝type=5等状态 -->
+			<view v-if="timelineitem.type == 3 || timelineitem.type == 4 || timelineitem.type == 5" class="cu-item">
+				
+				<view :class="[ timelineitem.type==3 ? 'bg-gradual-orange' : timelineitem.type==4 ? 'bg-pink' : timelineitem.type==5 ? 'bg-gray' : 'bg-grey' , 'content']">
+					
+					<!-- 发布人头像昵称 -->
+					<view class="cu-item flex align-center justify-between">
+						
+						<!-- 左侧区域 -->
+						<view class="leftview flex-treble flex align-center">
+							<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+							<view class="flex flex-direction text-sm">
+								<text class="text-black">{{timelineitem.creatUser.nickname}}</text>
+								<text class="text-grey">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+							</view>
+						</view>
+						
+						<!-- 动态标识 -->
+						<view class="rightview flex-sub flex align-center justify-end">
+							
+							<!-- type=3 待确认标识 -->
+							<view v-if="timelineitem.type==3" class="cu-tag bg-white radius">{{ i18n.base.waittoconfirm }}</view>
+							<!-- type=4 通过标识 -->
+							<view v-if="timelineitem.type==4" class="cu-tag bg-green radius">{{ i18n.base.agree }}</view>
+							<!-- type=5 拒绝标识 -->
+							<view v-if="timelineitem.type==5" class="cu-tag bg-grey radius">{{ i18n.base.refuse }}</view>
+							
+						</view>
+						
+					</view>
+					
+					<!-- 文本内容 -->
+					<view v-if="timelineitem.content" class="margin-top-sm text-black t_wrap">
+						{{ timelineitem.content }}
+					</view>
+					
+					<!-- 图片区域 -->
+					<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
+						
+						<view class="grid col-3 grid-square">
+							<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
+						</view>
+						
+					</view>
+					
+					<!-- 价格区域 -->
+					<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+						
+						<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+						<text class="text-black text-bold text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
+						
+					</view>
+					
+					<!-- 链接区域 -->
+					<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
+						
+						<text class="cuIcon cuIcon-link text-green"></text>
+						<text class="text-sm text-black margin-left-sm t_oneline">{{ timelineitem.link }}</text>
+						<!-- 复制按钮 -->
+						<!-- #ifndef H5 -->
+						<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+						<!-- #endif -->
+						
+					</view>
+					
+					<!-- 不同状态的差异化区域 -->
+					<view class="differentview margin-top-sm padding-top-sm solid-top">
+						
+						<!-- 待确认状态 type=3 按钮操作区域 -->
+						<view v-if="timelineitem.type==3" class="btnview flex align-center justify-between">
+							
+							<view class="leftview flex align-center">
+								<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+								<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+							</view>
+							
+							<view class="rightview flex align-center">
+								
+							</view>
+							
+						</view>
+						
+						<!-- 同意状态 type=4 发布需求单 -->
+						<view v-if="timelineitem.type==4" class="agreeview margin-left-sm padding-left-sm">
+							
+							<!-- 同意人 -->
+							<view v-if="timelineitem.agreeUser" class="agreeUserview flex align-center">
+								<view class="leftview flex align-center">
+									<image class="cu-avatar round sm" :src="timelineitem.agreeUser.avatar" mode="aspectFill"></image>
+									<view class="flex margin-left-sm flex-direction text-sm">
+										<text class="usernameview text-white text-sm text-cut">{{ timelineitem.agreeUser.avatar }}</text>
+										<text class="text-gray">{{timelineitem.agreeTime}}</text>
+									</view>
+								</view>
+							</view>
+						
+						</view>
+						
+						<!-- 被拒绝状态  type=5 拒绝标识和拒绝理由 -->
+						<view v-if="timelineitem.type==5" class="refusereasonview margin-left-sm padding-left-sm">
+							
+							<!-- 拒绝人 -->
+							<view v-if="timelineitem.refuseUser" class="refuseUserview flex align-center">
+								
+								<view class="leftview flex align-center">
+									<image class="cu-avatar round sm" :src="timelineitem.refuseUser.avatar" mode="aspectFill"></image>
+									<view class="flex margin-left-sm flex-direction text-sm">
+										<text class="usernameview text-black text-sm text-cut">{{ timelineitem.refuseUser.nickname }}</text>
+										<text class="text-grey">{{timelineitem.refuseTime}}</text>
+									</view>
+								</view>
+							</view>
+							
+							<!-- 拒绝原因 -->
+							<view class="bg-grey padding-sm margin-top-sm margin-left radius text-sm">
+								{{ timelineitem.refuseReason }}
+							</view>
+							
+						</view>
+						
+					</view>
+					
+					<!-- 按钮操作区域 -->
+					<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center justify-between">
+						
+						<view class="leftview flex align-center">
+							
+						</view>
+						
+						<view class="righview flex align-center">
+							<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline(timelineitem,timelinekey,timelineindex)"></button>
+							<button v-if="user.uid == timelineitem.creatUser.uid" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline(timelineitem)"></button>
+							<!-- #ifdef MP -->
+							<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline(timelineitem)"></button>
+							<!-- #endif -->
+						</view>
+						
+					</view>
+					
+				</view>
+				
+			</view>
+			
+			<!-- 心愿完成类型  type=6 -->
+			<view v-if="timelineitem.type == 6" class="cu-item cuIcon-evaluate_fill text-green">
+				<view class="content bg-green shadow-blur">
+					<text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text>
+					<text class="margin-left">{{ i18n.wishlist.timeline.finishsign }}</text>
+				</view>
+			</view>
+			
+		</template>
+		
+	</view>
+</template>
+
+<script>
+	export default {
+		name:"wishtimelineitem",
+		
+		props: {
+			timelineInfo: {
+				type: Object,
+				default: null
+			},
+		},
+		
+		data() {
+			return {
+				timelineitem: this.timelineInfo, // 当前的时间轴数据
+			};
+		},
+		
+		methods: {
+			
+			// 查看原图
+			previewImgs(imgsStr,index) {
+				uni.previewImage({
+					current:index,
+					urls: imgsStr.split(',')
+				})
+			},
+			
+			//
+			
+		},
+	}
+</script>
+
+<style lang="scss" scoped>
+
+</style>

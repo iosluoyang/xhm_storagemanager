@@ -127,7 +127,7 @@
 					},
 					{
 						label: _this.i18n.wishlist.shippingtable.boxVolume, // 箱子体积
-						key: 'boxVolumn'
+						key: 'boxVolume'
 					},
 					{
 						label: _this.i18n.wishlist.shippingtable.boxWeight, // 装箱重量

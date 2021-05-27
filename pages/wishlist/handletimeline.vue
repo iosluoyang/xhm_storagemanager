@@ -37,10 +37,8 @@
 							<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
 						</view>
 						
-						<!-- #ifndef H5 -->
-						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+						<!-- 复网站链接按钮 -->
 						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal = true"></button>
-						<!-- #endif -->
 					</view>
 				</view>
 				
@@ -54,19 +52,72 @@
 			<view class="cu-bar">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text>{{ i18n.wishlist.timeline.saysometing }}</text>
+					<text>{{ i18n.wishlist.timeline.saysomething }}</text>
 				</view>
 			</view>
 			
 			<!-- 选择更新时间轴的类型 -->
 			<view class="cu-bar btn-group">
-				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.saysometing }}</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.saysomething }}</button>
 				<text class="text-gray">/</text>
-				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink' ]" @tap.stop="type='found'">{{ i18n.wishlist.found }}</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
+				<text class="text-gray">/</text>
+				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink sm' ]" @tap.stop="type='found'">{{ i18n.wishlist.timeline.found }}</button>
 			</view>
 			
 			<!-- 表单区域 -->
 			<form>
+				
+				<!-- 拓展信息区域 -->
+				<template v-if=" type == 'addext' ">
+					
+					<!-- 装箱数量 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.boxContainerNum }}</view>
+						<input class="borderbottom text-center" style="max-width: 50%;" type="number" cursor-spacing="60" v-model="productExt.boxContainerNum" />
+						<text>pcs/box</text>
+					</view>
+					
+					<!-- 箱体尺寸 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.boxSize }}</view>
+						<view class="flex align-center justify-around" style="max-width: 60%;">
+							<input class="borderbottom text-center" cursor-spacing="60" type="digit" v-model="productExt.boxLength" @blur="finishtypesize" />cm * 
+							<input class="borderbottom text-center" cursor-spacing="60" type="digit" v-model="productExt.boxWidth" @blur="finishtypesize" />cm *
+							<input class="borderbottom text-center" cursor-spacing="60" type="digit" v-model="productExt.boxHeight" @blur="finishtypesize" />cm
+						</view>
+					</view>
+					
+					<!-- 箱体体积 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.boxVolume }}</view>
+						<view class=""></view>
+						<input class="text-right" type="digit" v-model="productExt.boxVolume" />
+						<text>m³</text>
+					</view>
+					
+					<!-- 国内运费 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.domesticShippingFee }}</view>
+						<input class="text-right" type="number" v-model="productExt.domesticShippingFee" />
+						<text>RMB</text>
+					</view>
+					
+					<!-- 国际物流名称 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.internationalShippingName }}</view>
+						<input class="text-right" type="text" v-model="productExt.internationalShippingName" />
+					</view>
+					
+					<!-- 国际物流编码 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.internationalShippingCode }}</view>
+						<input class="text-right" type="text" v-model="productExt.internationalShippingCode" />
+					</view>
+					
+				</template>
+				
+				<!-- 下方的为其他字段 视情况而定 -->
 				
 				<!-- 目标价格 仅当发现新商品时才有 -->
 				<view v-if="type==='found'" class="cu-form-group">
@@ -103,25 +154,29 @@
 					
 				</view>
 				
-				<!-- 备注 -->
-				<view class="cu-form-group solid-bottom pos-relative">
-					<textarea :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<!-- 备注 当为发现新商品或者发布评论时有  -->
+				<view v-if="type === 'addcomment' || type === 'found' " class="cu-form-group solid-bottom pos-relative">
+					
+					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" :focus="textareaHighScreen" />
+					
+					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-unfold']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
 				
-					<view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-unfold']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></view>
 				</view>
 				
 				<!-- 图片上传 -->
-				<view class="cu-bar bg-white margin-top">
-					<view class="action">{{i18n.wishlist.uploadimg}}</view>
-					<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
-				</view>
-				
-				<view class="bg-white padding">
-					<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
-					return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
-					@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
-					</uni-file-picker>
-				</view>
+				<template v-if="type === 'addcomment' || type === 'found' ">
+					<view class="cu-bar bg-white margin-top">
+						<view class="action">{{i18n.wishlist.uploadimg}}</view>
+						<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
+					</view>
+					
+					<view class="bg-white padding">
+						<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
+						return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+						@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+						</uni-file-picker>
+					</view>
+				</template>
 				
 			</form>
 			
@@ -202,7 +257,7 @@
 	export default {
 		data() {
 			return {
-				type: "addcomment", // 页面类型 found 发现新商品 addcomment 添加普通评论
+				type: "addcomment", // 页面类型 found 发现新商品 addext为添加额外信息 addcomment 添加普通评论
 				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
@@ -355,6 +410,31 @@
 				})
 			},
 			
+			// 输入完箱体长宽高之后
+			finishtypesize() {
+				let boxLength = this.productExt.boxLength
+				let boxWidth = this.productExt.boxWidth
+				let boxHeight = this.productExt.boxHeight
+								
+				// 当长宽高均存在时自动开始计算箱体体积
+				if(boxLength && boxWidth && boxHeight) {
+					this.calculatevalume()
+				}
+			},
+			
+			// 计算货物体积
+			calculatevalume() {
+				// 如果商品的长宽高没有填完则提示用户 否则进行计算
+				if(this.productExt && this.productExt.boxLength && this.productExt.boxWidth && this.productExt.boxHeight) {
+					let boxVolume = parseFloat(parseFloat(this.productExt.boxLength/100) * parseFloat(this.productExt.boxWidth/100) * parseFloat(this.productExt.boxHeight/100)).toFixed(4)
+					this.$set(this.productExt, 'boxVolume', boxVolume)
+					console.log(this.productExt);
+				}
+				else {
+					this.$set(this.productExt, 'boxVolume', '')
+				}
+			},
+			
 			// 选择图片成功
 			fileselect(e) {
 				console.log(`图片选择成功`);
@@ -405,7 +485,43 @@
 					icon: 'none'
 				});
 			},
-		
+			
+			// 更新拓展信息
+			updateproext() {
+				
+				_this.ifloading = true
+				const db = uniCloud.database();
+				db.collection('wishlist')
+				.doc(this.wishId)
+				.update({productExt: this.productExt})
+				.then(res => {
+					if(res.result.code == 0) {
+						// 更新成功
+						uni.$emit('updatewishdetail')
+						uni.$emit('updatetimeline')
+						
+						uni.showToast({
+							title: _this.i18n.tip.fixsuccess,
+							icon: 'none'
+						});
+						setTimeout(function() {
+							uni.navigateBack();
+						}, 1500);
+					}
+				})
+				.catch(err => {
+					console.log(err.message);
+					uni.showToast({
+						title: _this.i18n.error.fixerror,
+						icon: 'none'
+					});
+				})
+				.finally( () => {
+					_this.ifloading = false
+				})
+				
+			},
+			
 			// 上传时间轴数据
 			uploaddata() {
 				
@@ -423,6 +539,10 @@
 						return false
 					}
 					
+				}
+				// 补充拓展信息时
+				else if(this.type === 'addext') {
+					// 暂无需要校验的字段  均可为空
 				}
 				// 添加发现新商品时
 				else if(this.type === 'found') {
@@ -446,10 +566,10 @@
 					return
 				}
 				
-				// 其余项均为选填项
-				
 				// 上传图片已经成功 此时开始提交其他数据
 				let imgs = this.imgArr.map(item => (item.url)).join(',')
+				
+				// 根据上传的类型不同选择不同的接口调用
 				
 				// 上传数据
 				let info = {
@@ -470,105 +590,132 @@
 					info = {...info, ...foundinfo}  // 合并基础参数和发现新产品的参数
 				}
 				
-				// 新增时间轴
+				
+				// 开始提交数据
+				
+				// 新增
 				if(_this.pagetype == 'add') {
-					
-					// 开始使用openDB进行数据上传
-					_this.ifloading = true
-					const db = uniCloud.database();
-					db.collection('wishlisttimeline').add(info)
-					.then(res => {
-						// 新增成功
-						if(res.result.code == 0) {
-							
-							// 发布成功
-							
-							// 更新事件轴数据
-							uni.$emit('updatetimeline')
-							
-							// 如果是待确认状态则更新心愿单列表和详情
-							if(info.type == 3) {
-								uni.$emit('updatewishlist')
-								uni.$emit('updatewishdetail')
+
+					// 如果是时间轴操作
+					if( this.type === 'addcomment' || this.type === 'found' ) {
+						// 开始使用openDB进行数据上传
+						_this.ifloading = true
+						
+						const db = uniCloud.database();
+						db.collection('wishlisttimeline').add(info)
+						.then(res => {
+							// 新增成功
+							if(res.result.code == 0) {
+								
+								// 发布成功
+								
+								// 更新事件轴数据
+								uni.$emit('updatetimeline')
+								
+								// 如果是待确认状态则更新心愿单列表和详情
+								if(info.type == 3) {
+									uni.$emit('updatewishlist')
+									uni.$emit('updatewishdetail')
+								}
+								
+								uni.showToast({
+									title: _this.i18n.tip.addsuccess,
+									icon: 'none',
+								});
+								
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1500);
+								
 							}
-							
-							uni.showToast({
-								title: _this.i18n.tip.addsuccess,
-								icon: 'none',
-							});
-							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
-							
-						}
-						// 新增失败
-						else{
+							// 新增失败
+							else{
+								uni.showToast({
+									title: _this.i18n.error.adderror,
+									icon: 'none'
+								});
+							}
+						})
+						.catch(err => {
+							console.log(`新增失败-${err.message}`);
+							// 发布失败
 							uni.showToast({
 								title: _this.i18n.error.adderror,
 								icon: 'none'
 							});
-						}
-					})
-					.catch(err => {
-						console.log(`新增失败-${err.message}`);
-						// 发布失败
-						uni.showToast({
-							title: _this.i18n.error.adderror,
-							icon: 'none'
-						});
-					})
-					.finally(() => {
-						_this.ifloading = false
-					})
+						})
+						.finally(() => {
+							_this.ifloading = false
+						})
+						
+					}
+					// 如果是拓展信息操作
+					else if(this.type === 'addext') {
+						_this.updateproext()
+					}
 					
 				}
-				// 编辑时间轴
+				// 编辑
 				else if(_this.pagetype == 'edit') {
-					_this.ifloading = true
-					const db = uniCloud.database();
-					db.collection('wishlisttimeline').doc(_this.timelineId)
-					.update(info)
-					.then(res => {
-						// 编辑成功
-						if(res.result.code == 0) {
-							
-							// 更新事件轴数据
-							uni.$emit('updatetimeline')
-							
-							// 如果是待确认状态则更新心愿单列表和详情
-							if(info.type == 3) {
-								uni.$emit('updatewishlist')
-								uni.$emit('updatewishdetail')
+					
+					// 如果是时间轴操作
+					if( this.type === 'addcomment' || this.type === 'found' ) {
+						// 开始使用openDB进行数据上传
+						_this.ifloading = true
+						
+						const db = uniCloud.database();
+						db.collection('wishlisttimeline').doc(_this.timelineId)
+						.update(info)
+						.then(res => {
+							// 编辑成功
+							if(res.result.code == 0) {
+								
+								// 更新事件轴数据
+								uni.$emit('updatetimeline')
+								
+								// 如果是待确认状态则更新心愿单列表和详情
+								if(info.type == 3) {
+									uni.$emit('updatewishlist')
+									uni.$emit('updatewishdetail')
+								}
+								
+								uni.showToast({
+									title: _this.i18n.tip.fixsuccess,
+									icon: 'none',
+								});
+								
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1500);
 							}
-							
-							uni.showToast({
-								title: _this.i18n.tip.fixsuccess,
-								icon: 'none',
-							});
-							
-							setTimeout(function() {
-								uni.navigateBack();
-							}, 1500);
-						}
-						// 编辑失败
-						else {
-							console.log(res.result.message);
+							// 编辑失败
+							else {
+								console.log(res.result.message);
+								// 发布失败
+								uni.showToast({
+									title: _this.i18n.error.fixerror,
+									icon: 'none'
+								});
+							}
+						})
+						.catch(err => {
+							console.log(err.message);
 							// 发布失败
 							uni.showToast({
 								title: _this.i18n.error.fixerror,
 								icon: 'none'
 							});
-						}
-					})
-					.catch(err => {
-						console.log(err.message);
-						// 发布失败
-						uni.showToast({
-							title: _this.i18n.error.fixerror,
-							icon: 'none'
-						});
-					})
+						})
+						.finally(() => {
+							_this.ifloading = false
+						})
+						
+					}
+					// 如果是拓展信息操作
+					else if(this.type === 'addext') {
+						_this.updateproext()
+					}
+					
 				}
 				
 			},

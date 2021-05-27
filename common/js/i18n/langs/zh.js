@@ -382,7 +382,10 @@ const zh = {
 		remark: "备注",
 		found: "我发现",
 		wishdetail: "心愿详情",
+		specandextstr: "规格及参数",
+		wishproductspecdetail: "商品规格信息",
 		wishproductextdetail: "商品参数信息",
+		calculateShippingStr: "计算运费",
 		spectable: {
 			specstr: "订购规格信息",
 			spec: "规格",
@@ -422,6 +425,10 @@ const zh = {
 		boxHeight: "箱体高度",
 		boxVolume: "箱子体积",
 		boxWeight: "箱子重量",
+		domesticShippingFee: "国内物流费用",
+		internationalShippingFee: "国际物流费用",
+		internationalShippingName: "国际物流名称",
+		internationalShippingCode: "国际物流编码",
 		achieveFlag: {
 			ing: "进行中",
 			waittoconfirm: "待确认",
@@ -431,7 +438,9 @@ const zh = {
 		},
 		timeline: {
 			title: "时间轴",
-			saysometing: "说点什么吧",
+			saysomething: "说点什么",
+			addext: "补充信息",
+			found: "发现商品",
 			targetpriceerror: "请输入目标价格",
 			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始",

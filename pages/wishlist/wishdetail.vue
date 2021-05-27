@@ -102,9 +102,7 @@
 				<view class="btnsview flex align-center padding-sm">
 					
 					<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
-					<!-- #ifndef H5 -->
-					<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal=true"></button>
-					<!-- #endif -->
+					<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
 					
 					<!-- 分享按钮 小程序平台有 -->
 					<!-- #ifdef MP -->
@@ -122,72 +120,23 @@
 					
 				</view>
 				
-				<!-- 心愿商品拓展字段展示及运费计算 -->
-				<!-- 更多区域 暂时不显示 -->
-				<uni-collapse v-if="false">
-					<uni-collapse-item title="运费估算工具" :open="collapseOpen" showAnimation>
-						
-						<form>
-							
-							<!-- 装箱数量 -->
-							<view class="cu-form-group">
-								<view class="title">{{ '装箱数量' }}</view>
-								<input type="number" disabled v-model="productExt.boxContainNum">
-							</view>
-							
-							<!-- 装箱尺寸 -->
-							<view class="cu-form-group">
-								<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
-								<view class="flex align-center justify-around" style="flex-shrink: 1;">
-									<input type="number" disabled v-model="productExt.boxLength">
-									<text class="padding">x</text>
-									<input type="number" disabled v-model="productExt.boxWidth">
-									<text class="padding">x</text>
-									<input type="number" disabled v-model="productExt.boxHeight">
-								</view>
-								
-							</view>
-							
-							<!-- 装箱体积 -->
-							<view class="cu-form-group">
-								<view class="title">{{ '每箱体积(m³)' }}</view>
-								<input type="number" disabled v-model="productExt.boxVolume">
-							</view>
-							
-							<!-- 国际运费单价 -->
-							<view class="cu-form-group">
-								<view class="title">{{ '国际运费单价' }}</view>
-								<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
-							</view>
-							
-							<!-- 预估国际运费总价 -->
-							<view class="cu-form-group">
-								<view class="title">{{ '预估运费' }}</view>
-								<view class="rightcontent">
-									<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
-								</view>
-							</view>
-							
-						</form>
-						
-					</uni-collapse-item>
-				</uni-collapse>
-				
 			</view>
 			
 			<!-- 详细参数区域-->
 			<view v-if="wishinfo.productExt" class="detaildataview margin">
 				
-				<uni-collapse>
-					<uni-collapse-item :title="i18n.wishlist.spectable.specstr" :open="collapseOpen" showAnimation>
+				<uni-collapse accordion  @change="(activeNameArr) => { collapseOpen = activeNameArr.includes('spec') }">
+					<uni-collapse-item name="spec" :title="i18n.wishlist.specandextstr" :open="collapseOpen" showAnimation>
 						
 						<!-- 表格区域 -->
 						<view class="cu-bar bg-white solid-bottom">
 							<view class="action">
 								<text class="cuIcon-title text-orange"></text>
-								规格信息
+								{{i18n.wishlist.wishproductspecdetail}}
 							</view>
 						</view>
+						
+						<!-- 规格table -->
 						<view class="wishspectable">
 							<wishTableSpec v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
 						</view>
@@ -200,22 +149,24 @@
 							<wishShippingTable v-if="wishinfo" :wishinfo="wishinfo"></wishShippingTable>
 						</view> -->
 						
-						<!-- 其他相关信息 -->
-						<view v-if="detailInfoArr" class="shippinginfoview">
+						<!-- 其他拓展信息 -->
+						<view v-if="extArr" class="extinfoview">
 							
 							<view class="cu-bar bg-white solid-bottom">
 								<view class="action">
 									<text class="cuIcon-title text-orange"></text>
-									其他信息
+									{{ i18n.wishlist.wishproductextdetail }} 
 								</view>
 							</view>
 							<view class="cu-list menu sm-border">
 								
-								<view class="cu-item" v-for="(item, index) in detailInfoArr" :key="index">
+								<view class="cu-item" v-for="(item, index) in extArr" :key="index">
 									<view class="content basis-sm">
-										<text class="text-grey text-cut">{{ item.key }}</text>
+										<text class="text-grey text-cut">{{ item.keyStr }}</text>
 									</view>
 									<view class="action basis-df text-right">
+										<!-- 计算运费项 -->
+										<button v-if=" item.id === 'internationalShippingFee' " class="margin-right-sm cu-btn radius bg-gradual-blue sm" @click="  popuptype = 'shippingtool'; popmode='top'; showpopup=true; ">{{ i18n.wishlist.calculateShippingStr }}</button>
 										<text class="text-grey text-sm">{{ item.value }}</text>
 									</view>
 								</view>
@@ -225,10 +176,9 @@
 						</view>
 						
 						<!-- 收起按钮 -->
-						<view class="collapsebtn flex align-center justify-center padding-sm" @tap.stop="collapseOpen = !collapseOpen">
+						<view class="collapsebtn flex align-center justify-center padding-sm" @tap.stop="collapseOpen = false">
 							<text class="cuIcon cuIcon-triangleupfill text-pink" style="font-size: 20px;"></text>
 						</view>
-						
 						
 					</uni-collapse-item>
 				</uni-collapse>
@@ -247,22 +197,23 @@
 				</view>
 			</view>
 			
-			<view class="cu-timeline"  v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
+			<view class="cu-timeline" v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
 				
 				<view class="cu-time">{{ $moment(timelinekey).format('Do/MMM') }}</view>
+				
+				<wishTimeLineItem v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem"></wishTimeLineItem>
 				
 				<!-- 
 				时间轴类型  
 					0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认
 					4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 				-->
-				<block v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex">
+				<block v-if="false" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex">
 					
 					<!-- 心愿开始类型  type=0 -->
 					<view v-if="timelineitem.type == 0" class="cu-item cuIcon-evaluate_fill text-pink">
 						<view class="content bg-pink shadow-blur">
 							<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
-							<!-- <text>{{ $moment(timelineitem.creatTime).format('DD/MM/YYYY HH:mm:ss') }}</text> -->
 							<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
 						</view>
 					</view>
@@ -277,17 +228,17 @@
 									<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 									<view class="flex flex-direction text-df">
 										<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
-										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('HH:mm:ss')}}</text>
+										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text>
 									</view>
 								</view>
 							</view>
 							
-							<!-- 评论文本内容 -->
+							<!-- 文本内容 -->
 							<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
 								{{timelineitem.content}}
 							</view>
 							
-							<!-- 评论图片区域 -->
+							<!-- 图片 -->
 							<view v-if="timelineitem.imgs" class="imgsview bg-white margin-top-sm padding">
 								
 								<view class="grid col-3 grid-square">
@@ -296,7 +247,7 @@
 								
 							</view>
 							
-							<!-- 价格区域 -->
+							<!-- 价格 -->
 							<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
 								
 								<text class="cuIcon cuIcon-moneybagfill text-red"></text>
@@ -308,7 +259,7 @@
 							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
 								
 								<text class="cuIcon cuIcon-link text-green"></text>
-								<text class="text-sm text-gray margin-left-sm t_oneline">{{ timelineitem.link }}</text>
+								<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
 								<!-- 复制按钮 -->
 								<!-- #ifndef H5 -->
 								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
@@ -538,18 +489,20 @@
 			</view>
 		</view>
 		
-		<!-- 底部弹出框 -->
-		<view class="cu-modal bottom-modal" :class="{'show': ifshowbottommodal}" @tap.stop="ifshowbottommodal = false">
-			<view class="cu-dialog" @tap.stop="">
-				
-				<view v-if="productExt" class="cu-list menu text-left">
+		<!-- 弹出视图 -->
+		<u-popup v-model="showpopup" :mode="popmode" border-radius="16">
+			
+			
+			<!-- 链接展示 -->
+			<template v-if="popuptype == 'wishlink' && productExt">
+				<view class="cu-list menu text-left">
 					
 					<!-- 口令 -->
 					<view class="cu-item">
 						<view class="content padding-tb-sm" style="max-width: 70%;">
 							<view>
 								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
-								{{ productExt.secretCode }}
+								{{ productExt.secretCode || '' }}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
@@ -572,7 +525,7 @@
 						<view class="content padding-tb-sm" style="max-width: 70%;">
 							<view>
 								<text class="cuIcon-link text-yellow margin-right-xs"></text>
-								{{ productExt.pureUrl }}
+								{{ productExt.pureUrl || '' }}
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
@@ -591,55 +544,59 @@
 					</view>
 					
 				</view>
+			</template>
 			
-			</view>
-		</view>
-		
-		<!-- 弹出视图 -->
-		<u-popup v-model="showpopup" mode="top" border-radius="16" height="200px">
-			
-			<form>
+			<!-- 运费计算工具 -->
+			<template v-if="popuptype === 'shippingtool' && productExt">
 				
-				<!-- 装箱数量 -->
-				<view v-if="productExt && productExt.boxContainNum" class="cu-form-group">
-					<view class="title">{{ '装箱数量' }}</view>
-					<input type="number" disabled v-model="productExt.boxContainNum">
-				</view>
-				
-				<!-- 装箱尺寸 -->
-				<view v-if="productExt && productExt.boxLength" class="cu-form-group">
-					<view class="title" style="flex-shrink: 0;">{{ '装箱尺寸(cm)' }}</view>
-					<view class="flex align-center justify-around" style="flex-shrink: 1;">
-						<input type="number" disabled v-model="productExt.boxLength">
-						<text class="padding">x</text>
-						<input type="number" disabled v-model="productExt.boxWidth">
-						<text class="padding">x</text>
-						<input type="number" disabled v-model="productExt.boxHeight">
+				<view class="shippingcontentview">
+					
+					<!-- 装箱数量 -->
+					<view v-if="productExt.boxContainerNum" class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.boxContainerNum }}</view>
+						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
+					</view>
+					
+					<!-- 装箱尺寸 -->
+					<view v-if="productExt.boxLength" class="cu-form-group">
+						<view class="title">{{ `${i18n.wishlist.boxSize}(cm)` }}</view>
+						<view class="flex align-center justify-around" style="max-width: 50%;">
+							<input type="number" disabled v-model="productExt.boxLength">
+							<text class="padding">x</text>
+							<input type="number" disabled v-model="productExt.boxWidth">
+							<text class="padding">x</text>
+							<input type="number" disabled v-model="productExt.boxHeight">
+						</view>
+					</view>
+					
+					<!-- 装箱体积 -->
+					<view v-if="productExt.boxVolume" class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.boxVolume }}</view>
+						<input class="text-right" type="number" disabled v-model="productExt.boxVolume">
+					</view>
+					
+					<!-- 国际运费单价 -->
+					<view class="cu-form-group">
+						<view class="title">{{ '国际运费单价' }}</view>
+						<input class="text-right" type="number" placeholder="请输入国际运费单价" :focus="showpopup && popuptype == 'shippingtool' " v-model="interShippingSingleFeeStr">
+					</view>
+					
+					<!-- 预估国际运费总价 -->
+					<view class="cu-form-group">
+						<view class="title">{{ '预估运费' }}</view>
+						<view class="rightcontent">
+							<text class="text-sm text-red">{{ interShippingTotalFeeStr }}</text>
+						</view>
 					</view>
 					
 				</view>
 				
-				<!-- 装箱体积 -->
-				<view v-if="productExt && productExt.boxVolume" class="cu-form-group">
-					<view class="title">{{ '每箱体积(m³)' }}</view>
-					<input type="number" disabled v-model="productExt.boxVolume">
-				</view>
-				
-				<!-- 国际运费单价 -->
-				<view class="cu-form-group">
-					<view class="title">{{ '国际运费单价' }}</view>
-					<input type="number" placeholder="请输入国际运费单价" v-model="interShippingSingleFeeStr">
-				</view>
-				
-				<!-- 预估国际运费总价 -->
-				<view class="cu-form-group">
-					<view class="title">{{ '预估运费' }}</view>
-					<view class="rightcontent">
-						<text class="cuIcon text-sm text-red cuIcon-moneybagfill">{{ interShippingTotalFeeStr }}</text>
-					</view>
-				</view>
-				
-			</form>
+			</template>
+			
+			<!-- 中间输入内容 -->
+			<template v-if="popuptype === 'inputarea'">
+				<!--  -->
+			</template>
 			
 		</u-popup>
 		
@@ -651,6 +608,7 @@
 	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
 	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue'; // 使用table-com的多规格表格
 	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'; // 使用table-com的物流表格
+	import wishTimeLineItem from '@/components/wishtimelineitem/wishtimelineitem.vue'; // 单个时间轴组件
 	
 	var _this
 	
@@ -668,9 +626,8 @@
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
 				
-				showpopup: false, // 是否显示计算顶部弹框
 				collapseOpen: true, // 是否展开规格订购信息  默认展开
-				detailInfoArr: [], // 其他信息展示数组
+				extArr: [], // 拓展信息展示数组
 				
 				interShippingSingleFeeStr: '', // 国际运费单价
 				
@@ -678,8 +635,12 @@
 				refuseReason: '', // 拒绝原因
 				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
 				sharecontent: '', // 分享内容文本
+				
+				popuptype: 'wishlink' , //模态框的类型  shippingtool为运费工具  wishlink为心愿链接展示  inputarea为输入内容类型  默认为心愿链接展示
+				popmode: 'bottom', // 模态框的方向类型  默认为bottom
+				showpopup: false, // 是否显示模态框
+				
 				ifshowmodal: false, // 是否显示模态框
-				ifshowbottommodal: false, // 是否显示底部模态框
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 			};
@@ -689,6 +650,7 @@
 			wishSpecTable,
 			wishShippingTable,
 			wishTableSpec,
+			wishTimeLineItem,
 		},
 		
 		computed: {
@@ -724,13 +686,13 @@
 			interShippingTotalFeeStr() {
 				
 				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
-				if(this.boxVolume && this.interShippingSingleFeeStr) {
-					let interShippingTotalFee = parseFloat(parseFloat(this.boxVolume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
-					let interShippingTotalFeeStr = `${this.boxVolume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
+				if(this.productExt.boxVolume && this.interShippingSingleFeeStr) {
+					let interShippingTotalFee = parseFloat(parseFloat(this.productExt.boxVolume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
+					let interShippingTotalFeeStr = `${this.productExt.boxVolume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
 					return interShippingTotalFeeStr
 				}
 				else {
-					return '……'
+					return ''
 				}
 			},
 			
@@ -849,15 +811,8 @@
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
-							// 解析要展示的字段
-							let detailInfoArr = []
-							for (let [key, value] of Object.entries(productExt)) {
-								if(key && value) {
-									let item = {key, value}
-									detailInfoArr.push(item)
-								}
-							}
-							this.detailInfoArr = detailInfoArr
+							// 设置拓展展示字段
+							_this.setshowproductextinfo()
 							
 						}
 						else {
@@ -879,6 +834,58 @@
 				
 			},
 			
+			// 设置展示的拓展字段
+			setshowproductextinfo() {
+				
+				// 解析要展示的拓展字段
+				let extArr = []
+				// for (let [key, value] of Object.entries(productExt)) {
+				// 	if(key && value) {
+				// 		let item = {key, value}
+				// 		extArr.push(item)
+				// 	}
+				// }
+				
+				// 箱体尺寸
+				let boxSizeItem = {
+					keyStr: `${_this.i18n.wishlist.boxSize}(cm)`,
+					id: 'boxSize',
+					value: _this.productExt.boxLength ? `${_this.productExt.boxLength}cm x ${_this.productExt.boxWidth}cm x ${_this.productExt.boxHeight}cm` : '/'
+				}
+				
+				// 箱体体积
+				let boxVolumeItem = {
+					keyStr: `${_this.i18n.wishlist.boxVolume}(m³)`,
+					id: 'boxVolume',
+					value: _this.productExt.boxVolume || '/'
+				}
+				
+				// 装箱数量
+				let boxContainNumItem = {
+					keyStr: `${_this.i18n.wishlist.boxContainerNum}(pcs/box)`,
+					id: 'boxContainNum',
+					value: _this.productExt.boxContainerNum || '/'
+				}
+				
+				// 国内运费
+				let domesticShippingItem = {
+					keyStr: _this.i18n.wishlist.domesticShippingFee,
+					id: 'domesticShippingFee',
+					value: _this.productExt.domesticShippingFee || '/'
+				}
+				
+				// 国际运费
+				let internationalShippingItem = {
+					keyStr: _this.i18n.wishlist.internationalShippingFee,
+					id: 'internationalShippingFee',
+					value: _this.productExt.internationalShippingFee || ''
+				}
+				
+				extArr = [boxSizeItem, boxVolumeItem, boxContainNumItem, domesticShippingItem, internationalShippingItem]
+				
+				this.extArr = extArr
+				
+			},
 			
 			// 开启运费小工具
 			openshippingtool() {
@@ -899,10 +906,10 @@
 				// 如果商品的长宽高没有填完则提示用户 否则进行计算
 				if(this.productExt && this.productExt.boxLength && this.productExt.boxWidth && this.productExt.boxHeight) {
 					let boxVolume = parseFloat(parseFloat(this.productExt.boxLength/100) * parseFloat(this.productExt.boxWidth/100) * parseFloat(this.productExt.boxHeight/100)).toFixed(4)
-					this.$set(this.productExt, 'boxVolumn', boxVolume)
+					this.$set(this.productExt, 'boxVolume', boxVolume)
 				}
 				else {
-					this.$set(this.productExt, 'boxVolumn', '')
+					this.$set(this.productExt, 'boxVolume', '')
 				}
 			},
 			
@@ -1111,7 +1118,6 @@
 				this.swiperCur = e.detail.current
 			},
 			
-			// 查看大图
 			previewImgs(imgsStr,index) {
 				uni.previewImage({
 					current:index,
