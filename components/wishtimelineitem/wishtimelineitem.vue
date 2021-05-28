@@ -29,7 +29,25 @@
 				
 			</view>
 			
+			<!-- 价格 -->
+			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+				
+				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+				<text class="text-red text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
+				
+			</view>
 			
+			<!-- 链接 -->
+			<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
+				
+				<text class="cuIcon cuIcon-link text-green"></text>
+				<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
+				<!-- 复制按钮 -->
+				<!-- #ifndef H5 -->
+				<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
+				<!-- #endif -->
+				
+			</view>
 			
 		</view>
 		
@@ -80,7 +98,7 @@
 						
 					</view>
 					
-					<!-- 评论链接区域 -->
+					<!-- 链接 -->
 					<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
 						
 						<text class="cuIcon cuIcon-link text-green"></text>
