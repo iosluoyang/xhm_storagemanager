@@ -6,60 +6,66 @@
 			</view>
 			<view class="main_cen center">
 				<view class="cen_lei">
+					
+					<!-- 标题头 -->
 					<view class="cen_button_A" @click="kongzhi(false)">
 						<input style="font-weight: 400;" v-model="data.title" :disabled="flag" placeholder="请输入内容" />
 						<em class="center-x"  v-if="dataFlag.title"></em>
 					</view>
+					
+					<!-- 标题分割线 -->
 					<view class="cen_xian"  v-if="dataFlag.title" :style="'width:'+(flag?(data.ArrC.length-1):(data.ArrC.length))*200+'px;'"></view>
+					
+					<!-- 一级目录 -->
 					<view class="cen_fenban_box" :style="'width:'+(flag?(data.ArrC.length):(data.ArrC.length+1))*200+'px;'"  v-if="dataFlag.title">
 						<view class="cen_fenban" v-for="(item,i) in data.ArrC" :key="i" @click="kongzhi(true,i)">
-							<input type="text" v-model="item.title" :disabled="flag" placeholder="请输入内容" />
+							<view class="firstbox" style="height: 80px;">
+								<image :src="item.img.url" mode="aspectFill" style="width: 50px;height: 50px;"></image>
+								<input type="text" v-model="item.title" :disabled="flag" placeholder="请输入内容" />
+							</view>
 							<em class="center-x"></em>
-							<text class="svg" v-if="!flag" @click="delChild(data.ArrC,i)">
-								<svg t="1604300688569" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-								 p-id="3072" width="20" height="20">
-									<path d="M512.175497 775.053138c12.68695 0 22.983457-10.296507 22.983457-22.982434L535.158954 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.983457 10.296507-22.983457 22.982434l0 321.755098C489.193063 764.756631 499.48957 775.053138 512.175497 775.053138z"
-									 p-id="3073"></path>
-									<path d="M650.071124 775.053138c12.685927 0 22.982434-10.296507 22.982434-22.982434L673.053558 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.982434 10.296507-22.982434 22.982434l0 321.755098C627.08869 764.756631 637.384174 775.053138 650.071124 775.053138z"
-									 p-id="3074"></path>
-									<path d="M374.280894 775.053138c12.685927 0 22.982434-10.296507 22.982434-22.982434L397.263327 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.982434 10.296507-22.982434 22.982434l0 321.755098C351.29846 764.756631 361.593943 775.053138 374.280894 775.053138z"
-									 p-id="3075"></path>
-									<path d="M833.930595 154.525376 696.035992 154.525376 696.035992 108.559485c0-25.372877-20.590967-45.964868-45.964868-45.964868L374.280894 62.594617c-25.372877 0-45.965891 20.546965-45.965891 45.964868l0 45.964868L190.420399 154.524352c-25.372877 0-45.964868 20.591991-45.964868 45.964868l0 45.964868c0 25.372877 20.591991 45.964868 45.964868 45.964868l0 574.563918c0 50.745754 41.138956 91.928712 91.930759 91.928712l459.650725 0.002047c50.745754 0 91.929736-41.138956 91.929736-91.930759L833.931618 292.419979c25.372877 0 45.965891-20.545942 45.965891-45.964868l0-45.964868C879.896486 175.117366 859.303472 154.525376 833.930595 154.525376zM374.280894 129.496329c0-12.685927 10.296507-22.982434 22.982434-22.982434l229.825362 0c12.68695 0 22.982434 10.296507 22.982434 22.982434l0 22.982434c-22.246677 0-275.79023 0-275.79023 0L374.280894 129.496329zM787.966751 866.983897c0 25.372877-20.593014 45.963845-45.965891 45.963845L282.351158 912.947741c-25.3739 0-45.965891-20.590967-45.965891-45.963845L236.385267 292.419979c31.578206 0 525.748119 0 551.582507 0L787.967774 866.983897zM810.948161 246.455111 213.402833 246.455111c-12.685927 0-22.982434-10.296507-22.982434-22.981411 0-12.685927 10.296507-22.982434 22.982434-22.982434l597.546352 0c12.685927 0 22.982434 10.296507 22.982434 22.982434C833.930595 236.158604 823.635111 246.455111 810.948161 246.455111z"
-									 p-id="3076"></path>
-								</svg>
-							</text>
+							<text v-if="!flag" class="delbtn cuIcon cuIcon-deletefill text-red" @click="delChild(data.ArrC,i)"></text>
 						</view>
 						<view class="cen_fenban" style="cursor: pointer;" @click="addItem()" v-if="!flag">
 							<text>+</text>
 							<em class="center-x"></em>
 						</view>
 					</view>
+					
+					<!-- 次级目录 -->
 					<view class="clearfix" v-if="dataFlag.title">
 						<view class="cen_fenban_child" v-for="(item,i) in data.ArrC" :key="i" >
-							<view class="cen_fenban_child_leftX" v-show="dataFlag.child[i]" v-if="!item.child.length==0||!flag" :style="'height:'+(((flag?(item.child.length):(item.child.length+1))*60)-20)+'px;'"></view>
-							<view class="cen_fenban_child_box" v-show="dataFlag.child[i]" v-for="(child,n) in item.child" :key="n">
-								<input type="text" v-model="child.title" placeholder="请输入内容" :disabled="flag" />
+							
+							<view class="cen_fenban_child_leftX" v-show="dataFlag.child[i]" v-if="!item.child.length==0||!flag" :style="'height:'+(((flag?(item.child.length):(item.child.length+1))*110))+'px;'"></view>
+							<view class="cen_fenban_child_box padding-sm" v-show="dataFlag.child[i]" v-for="(child,n) in item.child" :key="n">
+								
+								<view class="flex align-center">
+									<text class="cuIcon cuIcon-infofill text-black"></text>
+									<input class="borderCDCDCD margin-left-sm" type="text" v-model="child.title" placeholder="请输入内容" :disabled="flag" />
+								</view>
+								
+								<view class="flex align-center margin-top-sm">
+									<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+									<input class="borderCDCDCD margin-left-sm" type="number" v-model="child.price" :disabled="flag" />
+								</view>
+								
+								<view class="flex align-center margin-top-sm">
+									<text class="cuIcon cuIcon-cartfill text-blue"></text>
+									<input class="borderCDCDCD margin-left-sm" type="number" v-model="child.stock" :disabled="flag" />
+								</view>
+								
 								<em class="center-y"></em>
-								<text class="svg" v-if="!flag" @click="delChild(item.child,n)">
-									<svg t="1604300688569" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-									 p-id="3072" width="20" height="20">
-										<path d="M512.175497 775.053138c12.68695 0 22.983457-10.296507 22.983457-22.982434L535.158954 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.983457 10.296507-22.983457 22.982434l0 321.755098C489.193063 764.756631 499.48957 775.053138 512.175497 775.053138z"
-										 p-id="3073"></path>
-										<path d="M650.071124 775.053138c12.685927 0 22.982434-10.296507 22.982434-22.982434L673.053558 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.982434 10.296507-22.982434 22.982434l0 321.755098C627.08869 764.756631 637.384174 775.053138 650.071124 775.053138z"
-										 p-id="3074"></path>
-										<path d="M374.280894 775.053138c12.685927 0 22.982434-10.296507 22.982434-22.982434L397.263327 430.314583c0-12.685927-10.296507-22.982434-22.982434-22.982434s-22.982434 10.296507-22.982434 22.982434l0 321.755098C351.29846 764.756631 361.593943 775.053138 374.280894 775.053138z"
-										 p-id="3075"></path>
-										<path d="M833.930595 154.525376 696.035992 154.525376 696.035992 108.559485c0-25.372877-20.590967-45.964868-45.964868-45.964868L374.280894 62.594617c-25.372877 0-45.965891 20.546965-45.965891 45.964868l0 45.964868L190.420399 154.524352c-25.372877 0-45.964868 20.591991-45.964868 45.964868l0 45.964868c0 25.372877 20.591991 45.964868 45.964868 45.964868l0 574.563918c0 50.745754 41.138956 91.928712 91.930759 91.928712l459.650725 0.002047c50.745754 0 91.929736-41.138956 91.929736-91.930759L833.931618 292.419979c25.372877 0 45.965891-20.545942 45.965891-45.964868l0-45.964868C879.896486 175.117366 859.303472 154.525376 833.930595 154.525376zM374.280894 129.496329c0-12.685927 10.296507-22.982434 22.982434-22.982434l229.825362 0c12.68695 0 22.982434 10.296507 22.982434 22.982434l0 22.982434c-22.246677 0-275.79023 0-275.79023 0L374.280894 129.496329zM787.966751 866.983897c0 25.372877-20.593014 45.963845-45.965891 45.963845L282.351158 912.947741c-25.3739 0-45.965891-20.590967-45.965891-45.963845L236.385267 292.419979c31.578206 0 525.748119 0 551.582507 0L787.967774 866.983897zM810.948161 246.455111 213.402833 246.455111c-12.685927 0-22.982434-10.296507-22.982434-22.981411 0-12.685927 10.296507-22.982434 22.982434-22.982434l597.546352 0c12.685927 0 22.982434 10.296507 22.982434 22.982434C833.930595 236.158604 823.635111 246.455111 810.948161 246.455111z"
-										 p-id="3076"></path>
-									</svg>
-								</text>
+								<text v-if="!flag" class="delbtn cuIcon cuIcon-deletefill text-red" @click="delChild(item.child,n)"></text>
+							
 							</view>
 							<view style="cursor: pointer;" class="cen_fenban_child_box" @click="addChild(i)" v-if="!flag">
 								<text>+</text>
 								<em class="center-y"></em>
 							</view>
+							
 						</view>
 					</view>
+				
 				</view>
 			</view>
 		</view>
@@ -93,7 +99,11 @@
 			}
 		},
 		created() {
-			this.data = this.$props.serverData
+			let data = this.$props.serverData
+			data.ArrC.forEach(item => {
+				item.img = {url: item.img}
+			})
+			this.data = data
 		},
 		methods: {
 			upflag(){
@@ -144,8 +154,13 @@
 			addItem() {
 				this.data.ArrC.push({
 					title: '',
+					img: {url: ''},
 					child: [
-
+						{
+							title: '',
+							price: '',
+							stock: ''
+						}
 					]
 				})
 				this.data = JSON.parse(JSON.stringify(this.data));
@@ -153,6 +168,8 @@
 			addChild(i) {
 				this.data.ArrC[i].child.push({
 					title: '',
+					price: '',
+					stock: ''
 				})
 				this.data = JSON.parse(JSON.stringify(this.data));
 			}
@@ -271,8 +288,7 @@
 
 	.cen_fenban {
 		width: 160px;
-		height: 40px;
-		line-height: 40px;
+		height: 80px;
 		text-align: center;
 		background-color: #52BF8A;
 		float: left;
@@ -307,7 +323,7 @@
 
 	.cen_fenban_child_box {
 		width: 140px;
-		height: 40px;
+		/* height: 40px; */
 		margin-top: 20px;
 		background-color: #FFFFFF;
 		color: #707070;
@@ -316,24 +332,14 @@
 		text-align: center;
 		position: relative;
 		cursor: pointer;
-		line-height: 40px;
+		/* line-height: 40px; */
 	}
 
-	.svg {
+	.delbtn {
 		position: absolute;
 		right: -25px;
-		top: 0;
-	}
-
-	.cen_fenban_child_box>text>svg {
-		width: 20px;
-	}
-
-	.cen_fenban_child_box>input,
-	.cen_fenban>input {
-		width: 100%;
-		line-height: 40px;
-		height: 40px;
+		top: 50%;
+		transform: translateY(-50%);
 	}
 
 	.cen_fenban_child_box>em {
@@ -342,7 +348,7 @@
 		height: 1px;
 		background-color: #AAAAAA;
 		left: -20px;
-		top: 20px;
+		top: 50%;
 	}
 
 	.cen_fenban>em {

@@ -292,6 +292,7 @@
 				textareaHighScreen: false, // textarea是否高屏显示
 				
 				treeData: null, // 规格数的数据
+				specList: null, // 规格数组数据
 				
 			};
 		},
@@ -341,30 +342,36 @@
 								_this.productExt = _this.wishinfo.productExt
 							}
 							
-							// 模拟心愿的规格数组
-							let mockSpecTreeData = {
-								title: '模拟设置多规格',
-								Arrc: [
-									{
-										title: "红色",
-										child: [
-											{title: "M"},
-											{title: "L"},
-											{title: "XL"},
-										]
-									},
-									{
-										title: "蓝色",
-										child: [
-											{title: "M"},
-											{title: "3XL"},
-											{title: "4XL"},
-										]
+							let specList = _this.wishinfo.specList
+							let ArrC = []
+							specList.forEach( firstitem => {
+								
+								let child = []
+								firstitem.childList.forEach( seconditem => {
+									let secondinfo = {
+										title: seconditem.attributeName,
+										price: seconditem.price,
+										stock: seconditem.amount
 									}
-								]
+									child.push(secondinfo)
+								})
+								
+								let firstinfo = {
+									title: firstitem.attributeName,
+									img: firstitem.img,
+									child: child
+								}
+								ArrC.push(firstinfo)
+								
+							})
+							
+							// 心愿的规格数组
+							let specTreeData = {
+								title: '规格',
+								ArrC: ArrC
 							}
 							
-							this.treeData = mockSpecTreeData
+							this.treeData = specTreeData
 							
 						}
 						else {
@@ -565,12 +572,49 @@
 			
 			// 更改tree数据
 			treeDataChange(res) {
+				let newTreeData = {...res}
+				// 将其中的一级属性图片更新
+				newTreeData.ArrC.forEach(item => {
+					item.img = item.img.url
+				})
 				console.log(`最新的tree数据为`);
-				console.log(res);
+				console.log(newTreeData);
+				this.treeData = newTreeData
+				
+				let specList = []
+				newTreeData.ArrC.forEach(firstitem => {
+					
+					// 遍历每一个二级规格
+					let totalAmount = 0
+					let childList = []
+					firstitem.child.forEach(seconditem => {
+						let childItem = {
+							attributeName: seconditem.title,
+							price: seconditem.price,
+							amount: seconditem.stock
+						}
+						totalAmount += parseInt(seconditem.stock)
+						childList.push(childItem)
+					})
+					let firstItem = {
+						attributeName: firstitem.title,
+						img: firstitem.img,
+						childList: childList,
+						totalAmount: totalAmount
+					}
+					specList.push(firstItem)
+					
+				})
+				
+				console.log(`汇总完毕的规格数组为:`);
+				console.log(specList);
+				if(specList) {
+					this.specList = specList
+				}
 			},
 			
 			// 上传时间轴数据
-			uploaddata() {
+			async uploaddata() {
 				
 				// 进行数据检查
 				
@@ -591,9 +635,25 @@
 				else if(this.type === 'addext') {
 					// 暂无需要校验的字段  均可为空
 				}
-				// 添加发现新商品时
+				// 添加商品规格汇总时
 				else if(this.type === 'found') {
-					
+					// 上传规格数据
+					const db = uniCloud.database();
+					await db.collection('wishlist')
+					.doc(_this.wishId)
+					.update({specList: _this.specList})
+					.then(response => {
+						// 更新成功
+						console.log(`更新成功`);
+						// 继续后面的操作
+					})
+					.catch(error => {
+						console.log(error.message);
+						uni.showToast({
+							title: _this.i18n.error.fixerror,
+							icon: 'none'
+						});
+					})
 					
 				}
 				
@@ -622,9 +682,6 @@
 				if(_this.type == 'found') {
 					let foundinfo = {
 						type: 3, // 如果是发现新产品则时间轴类型为3待确认
-						link: _this.targetLink, // 链接地址
-						price: _this.price, // 价格
-						moneyType: _this.moneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 					}
 					info = {...info, ...foundinfo}  // 合并基础参数和发现新产品的参数
 				}

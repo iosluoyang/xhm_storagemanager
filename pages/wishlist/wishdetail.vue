@@ -810,7 +810,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.where(`_id == '${_this.id}' `)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt')
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specList')
 					.get({
 						getOne:true
 					})

@@ -117,6 +117,28 @@
 					"defaultValue":""
 				}
 			}
+		},
+		"specList": {
+			"bsonType":"array",
+			"description":"心愿单商品的规格数组",
+			"arrayType":"object",
+			"properties": {
+				"attributeName": {
+					"bsonType":"string",
+					"description":"一级属性的名称",
+					"defaultValue": ""
+				},
+				"img": {
+					"bsonType":"string",
+					"description":"一级属性的图片",
+					"defaultValue": ""
+				},
+				"totalAmount": {
+					"bsonType":"int",
+					"description":"一级属性的总数量",
+					"defaultValue": 0
+				}
+			}
 		}
 		
 	}

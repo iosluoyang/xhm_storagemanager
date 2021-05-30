@@ -240,45 +240,49 @@
 				
 				// 模拟加载table数据
 				// 模拟规格数组
-				let specList = [
-					{
-						attributeName: '红色/Red',
-						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
-						childList: [
-							{
-								attributeName: '大号/Big',
-								amount: 200,
-								price: '6.00'
-							}
-						],
-						totalAmount: 200
-					},
-					{
-						attributeName: '蓝色/Blue',
-						img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg',
-						childList: [
-							{
-								attributeName: '大号/Big',
-								amount: 200,
-								price: '6.00'
-							},
-							{
-								attributeName: '中号/Middle',
-								amount: 300,
-								price: '3.00'
-							},
-							{
-								attributeName: '小号/Small',
-								amount: 400,
-								price: '2.00'
-							}
-						],
-						totalAmount: 900,
-					}]
-
-				// 构建商品数组
+				// let specList = [
+				// 	{
+				// 		attributeName: '红色/Red',
+				// 		img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/dae8f9be-91e5-479b-a662-7601a34858a7.jpg',
+				// 		childList: [
+				// 			{
+				// 				attributeName: '大号/Big',
+				// 				amount: 200,
+				// 				price: '6.00'
+				// 			}
+				// 		],
+				// 		totalAmount: 200
+				// 	},
+				// 	{
+				// 		attributeName: '蓝色/Blue',
+				// 		img: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/fd01c09b-47da-4c8e-9bb4-a61b16a7c965.jpeg',
+				// 		childList: [
+				// 			{
+				// 				attributeName: '大号/Big',
+				// 				amount: 200,
+				// 				price: '6.00'
+				// 			},
+				// 			{
+				// 				attributeName: '中号/Middle',
+				// 				amount: 300,
+				// 				price: '3.00'
+				// 			},
+				// 			{
+				// 				attributeName: '小号/Small',
+				// 				amount: 400,
+				// 				price: '2.00'
+				// 			}
+				// 		],
+				// 		totalAmount: 900,
+				// 	}]
+				
+				// 构建商品数组 单个商品
+				// 计算总数量
+				let totalAmount = _this.wishinfo.specList.reduce((total, item) => {
+					return total + item.totalAmount
+				}, 0)
 				let productList = [
-					{...this.wishinfo, ...{specList: specList}, ...{totalAmount: 1100}}
+					{..._this.wishinfo, ...{totalAmount: totalAmount}}
 				]
 				
 				// 设置表头
