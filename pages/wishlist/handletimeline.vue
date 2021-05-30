@@ -2,7 +2,7 @@
 	<view class="handletimelineview content">
 		
 		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
-			<block slot="content">{{ type === 'found' ? i18n.wishlist.found : type === 'addcomment' ? i18n.wishlist.timeline.saysometing : i18n.wishlist.title }}</block>
+			<block slot="content">{{ i18n.wishlist.wishdetail }}</block>
 		</cu-custom>
 		
 		<!-- 该心愿详情信息 -->
@@ -38,7 +38,7 @@
 						</view>
 						
 						<!-- 复网站链接按钮 -->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="ifshowbottommodal = true"></button>
+						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="showpopup = true"></button>
 					</view>
 				</view>
 				
@@ -52,13 +52,13 @@
 			<view class="cu-bar">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text>{{ i18n.wishlist.timeline.saysomething }}</text>
+					<text>{{ i18n.wishlist.timeline[type] }}</text>
 				</view>
 			</view>
 			
 			<!-- 选择更新时间轴的类型 -->
 			<view class="cu-bar btn-group">
-				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.saysomething }}</button>
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
 				<text class="text-gray">/</text>
 				<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
 				<text class="text-gray">/</text>
@@ -117,30 +117,39 @@
 					
 				</template>
 				
+				<!-- 设置商品规格价格库存区域 -->
+				<template v-if=" type == 'found' ">
+					<view class="setspecview">
+						
+						<treeTuY v-if="treeData" :serverData="treeData" @dataChange="treeDataChange"></treeTuY>
+						
+					</view>
+				</template>
+				
 				<!-- 下方的为其他字段 视情况而定 -->
 				
-				<!-- 目标价格 仅当发现新商品时才有 -->
-				<view v-if="type==='found'" class="cu-form-group">
+				<!-- 目标价格 仅当发现新商品时才有 暂时隐藏 -->
+				<view v-if="type==='found' && false" class="cu-form-group">
 					
 					<text class="cuIcon cuIcon-moneybag text-red"></text>
 					
-					<view class="title">{{i18n.wishlist.targetprice}} :</view>
+					<view class="title">{{i18n.wishlist.price}} :</view>
 					
 					<view class="content flex-sub flex align-center">
-						<text :class="[ targetMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ targetMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-						<input type="digit" class="borderCDCDCD radius" v-model="targetPrice" />
+						<text :class="[ moneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ moneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
+						<input type="digit" class="borderCDCDCD radius" v-model="price" />
 					</view>
 					
 					<!-- 目标货币种类选择 -->
 					<view class="flex align-center margin-left">
-						<button class="cu-btn sm round margin-right" :class="targetMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="targetMoneyType='RMB'">¥</button>
-						<button class="cu-btn sm round " :class="targetMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="targetMoneyType='THB'">฿</button>
+						<button class="cu-btn sm round margin-right" :class="moneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="moneyType='RMB'">¥</button>
+						<button class="cu-btn sm round " :class="moneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="moneyType='THB'">฿</button>
 					</view>
 					
 				</view>
 				
-				<!-- 目标网站链接 仅当发现新商品时才有 -->
-				<view v-if="type==='found'" class="cu-form-group ">
+				<!-- 目标网站链接 仅当发现新商品时才有 暂时隐藏 -->
+				<view v-if="type==='found' && false" class="cu-form-group ">
 					
 					<text class="cuIcon cuIcon-link text-green"></text>
 					
@@ -157,7 +166,7 @@
 				<!-- 备注 当为发现新商品或者发布评论时有  -->
 				<view v-if="type === 'addcomment' || type === 'found' " class="cu-form-group solid-bottom pos-relative">
 					
-					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="remark" :placeholder="i18n.wishlist.remark" :focus="textareaHighScreen" />
+					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
 					
 					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-unfold']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
 				
@@ -191,70 +200,75 @@
 		<loading :loadModal="ifloading"></loading>
 		
 		<!-- 底部弹出框 -->
-		<view class="cu-modal bottom-modal" :class="{'show': ifshowbottommodal}" @tap.stop="ifshowbottommodal = false">
-			<view class="cu-dialog" @tap.stop="">
+		<u-popup mode="bottom" v-model="showpopup" border-radius="16">
+			
+			<view v-if="productExt" class="cu-list menu text-left">
 				
-				<view v-if="productExt" class="cu-list menu text-left">
-					
-					<!-- 口令 -->
-					<view class="cu-item">
-						<view class="content padding-tb-sm" style="max-width: 70%;">
-							<view>
-								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
-								{{ productExt.secretCode }}
-							</view>
-							<view class="text-gray text-sm">
-								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.secretcodetip }}
-							</view>
+				<!-- 口令 -->
+				<view class="cu-item">
+					<view class="content padding-tb-sm" style="max-width: 70%;">
+						<view>
+							<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
+							{{ productExt.secretCode }}
 						</view>
-						
-						<!-- #ifndef H5 -->
-						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
-								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
-							</button>
+						<view class="text-gray text-sm">
+							<text class="cuIcon-infofill margin-right-xs"></text>
+							{{ i18n.wishlist.secretcodetip }}
 						</view>
-						<!-- #endif -->
-						
 					</view>
 					
-					<!-- 纯链接 -->
-					<view class="cu-item">
-						<view class="content padding-tb-sm" style="max-width: 70%;">
-							<view>
-								<text class="cuIcon-link text-yellow margin-right-xs"></text>
-								{{ productExt.pureUrl }}
-							</view>
-							<view class="text-gray text-sm">
-								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.pureurltip }}
-							</view>
-						</view>
-						
-						<!-- #ifndef H5 -->
-						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
-								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
-							</button>
-						</view>
-						<!-- #endif -->
-						
+					<!-- #ifndef H5 -->
+					<view class="action">
+						<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
+							<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+						</button>
 					</view>
+					<!-- #endif -->
 					
 				</view>
-			
+				
+				<!-- 纯链接 -->
+				<view class="cu-item">
+					<view class="content padding-tb-sm" style="max-width: 70%;">
+						<view>
+							<text class="cuIcon-link text-yellow margin-right-xs"></text>
+							{{ productExt.pureUrl }}
+						</view>
+						<view class="text-gray text-sm">
+							<text class="cuIcon-infofill margin-right-xs"></text>
+							{{ i18n.wishlist.pureurltip }}
+						</view>
+					</view>
+					
+					<!-- #ifndef H5 -->
+					<view class="action">
+						<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
+							<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+						</button>
+					</view>
+					<!-- #endif -->
+					
+				</view>
+				
 			</view>
-		</view>
+			
+		</u-popup>
 		
 	</view>
 </template>
 
 <script>
 	
+	import treeTuY from '@/components/treeTuY/treeTuY.vue'
+	
 	var _this
 	
 	export default {
+		
+		components: {
+			treeTuY
+		},
+		
 		data() {
 			return {
 				type: "addcomment", // 页面类型 found 发现新商品 addext为添加额外信息 addcomment 添加普通评论
@@ -267,16 +281,17 @@
 				
 				swiperimgArr: [], // 轮播图片数组
 				
-				targetPrice: '', // 目标价格
-				targetMoneyType: 'RMB', // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-				targetAmount: '', // 目标数量
+				price: '', // 目标价格
+				moneyType: 'RMB', // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 				mainpiclimitnum: 9, // 图片上传的数量限制
 				targetLink: '', // 目标网站链接
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
-				ifshowbottommodal: false, // 是否显示底部弹框
-				remark: '', // 备注
-				textareaHighScreen: true, // textarea是否高屏显示
+				showpopup: false, // 是否显示弹框
+				content: '', // 备注
+				textareaHighScreen: false, // textarea是否高屏显示
+				
+				treeData: null, // 规格数的数据
 				
 			};
 		},
@@ -326,6 +341,31 @@
 								_this.productExt = _this.wishinfo.productExt
 							}
 							
+							// 模拟心愿的规格数组
+							let mockSpecTreeData = {
+								title: '模拟设置多规格',
+								Arrc: [
+									{
+										title: "红色",
+										child: [
+											{title: "M"},
+											{title: "L"},
+											{title: "XL"},
+										]
+									},
+									{
+										title: "蓝色",
+										child: [
+											{title: "M"},
+											{title: "3XL"},
+											{title: "4XL"},
+										]
+									}
+								]
+							}
+							
+							this.treeData = mockSpecTreeData
+							
 						}
 						else {
 							uni.showToast({
@@ -352,7 +392,7 @@
 				_this.ifloading = true // 开始加载动画
 				
 				const db = uniCloud.database();
-				db.collection('wishlisttimeline').doc(_this.timelineId).get()
+				db.collection('wishlisttimeline').doc(_this.timelineId).get({getOne: true})
 				.then(res => {
 					
 					if(res.result.code == 0) {
@@ -363,10 +403,10 @@
 						
 						// 时间轴类型
 						// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
-						_this.type = info.type == 1 ? 'addcomment' : 'found'
-						_this.remark = info.content || ''
-						_this.targetMoneyType = info.moneyType || 'RMB'
-						_this.targetPrice = info.price || ''
+						_this.type = info.type == 1 ? 'addcomment' : _this.type
+						_this.content = info.content || ''
+						_this.moneyType = info.moneyType || 'RMB'
+						_this.price = info.price || ''
 						_this.targetLink = info.link || ''
 						
 						// 遍历图片
@@ -388,12 +428,13 @@
 				})
 				.catch(err => {
 					console.log(err.message);
-				})
-				.finally(() => {
 					uni.showToast({
 						title: _this.i18n.error.loaderror,
 						icon: 'none'
 					});
+				})
+				.finally(() => {
+					_this.ifloading = false
 				})
 				
 			},
@@ -522,6 +563,12 @@
 				
 			},
 			
+			// 更改tree数据
+			treeDataChange(res) {
+				console.log(`最新的tree数据为`);
+				console.log(res);
+			},
+			
 			// 上传时间轴数据
 			uploaddata() {
 				
@@ -531,7 +578,7 @@
 				if(this.type === 'addcomment') {
 					
 					// 检查是否有评论内容
-					if(!this.remark) {
+					if(!this.content) {
 						uni.showToast({
 							title: this.i18n.wishlist.timeline.timelinecontenterror,
 							icon: 'none'
@@ -547,14 +594,6 @@
 				// 添加发现新商品时
 				else if(this.type === 'found') {
 					
-					// 检查是否有目标价格
-					if(!this.targetPrice) {
-						uni.showToast({
-							title: this.i18n.wishlist.timeline.targetpriceerror,
-							icon: 'none'
-						});
-						return false
-					}
 					
 				}
 				
@@ -574,7 +613,7 @@
 				// 上传数据
 				let info = {
 					wishId: _this.wishId, // 当前心愿单的id
-					content: _this.remark, // 内容信息
+					content: _this.content, // 内容信息
 					imgs: imgs, // 图片字符串集合
 					type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  
 				}
@@ -584,8 +623,8 @@
 					let foundinfo = {
 						type: 3, // 如果是发现新产品则时间轴类型为3待确认
 						link: _this.targetLink, // 链接地址
-						price: _this.targetPrice, // 价格
-						moneyType: _this.targetMoneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
+						price: _this.price, // 价格
+						moneyType: _this.moneyType, // 价格币种 默认为RMB  RMB人民币 THB泰铢
 					}
 					info = {...info, ...foundinfo}  // 合并基础参数和发现新产品的参数
 				}

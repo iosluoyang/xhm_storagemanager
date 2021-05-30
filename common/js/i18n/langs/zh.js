@@ -379,7 +379,8 @@ const zh = {
 			level5: "五级(3天内)"
 		},
 		uploadimg: "图片上传",
-		remark: "备注",
+		content: "备注",
+		price: "价格",
 		found: "我发现",
 		wishdetail: "心愿详情",
 		specandextstr: "规格及参数",
@@ -438,7 +439,7 @@ const zh = {
 		},
 		timeline: {
 			title: "时间轴",
-			saysomething: "说点什么",
+			addcomment: "说点什么",
 			addext: "补充信息",
 			found: "发现商品",
 			targetpriceerror: "请输入目标价格",

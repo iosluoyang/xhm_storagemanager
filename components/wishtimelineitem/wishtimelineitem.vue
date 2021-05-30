@@ -1,5 +1,5 @@
 <template>
-	<view class="wishtimelineitem cu-item" v-if="timelineitem">
+	<view class="wishtimelineitem cu-item" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' " v-if="timelineitem">
 		
 		<!-- 时间轴具体内容 -->
 		<view class="content">
@@ -49,6 +49,16 @@
 				
 			</view>
 			
+			<!-- 按钮操作区域 -->
+			<view v-if="timelineitem.creatUser" class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+				
+				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline"></button>
+				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline"></button>
+				<!-- #ifdef MP -->
+				<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline"></button>
+				<!-- #endif -->
+				
+			</view>
 			
 			
 		</view>
@@ -297,6 +307,7 @@
 </template>
 
 <script>
+	
 	export default {
 		name:"wishtimelineitem",
 		
@@ -310,7 +321,12 @@
 		data() {
 			return {
 				timelineitem: this.timelineInfo, // 当前的时间轴数据
+				ifDisappear: false, // 是否消失
 			};
+		},
+		
+		created() {
+			
 		},
 		
 		methods: {
@@ -323,7 +339,65 @@
 				})
 			},
 			
-			//
+			// 删除时间轴
+			deletetimeline() {
+				
+				const _this = this
+				
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始删除
+							const db = uniCloud.database();
+							db.collection('wishlisttimeline')
+							.doc(_this.timelineitem._id)
+							.remove()
+							.then(response => {
+								// 删除成功
+								_this.ifDisappear = true
+								setTimeout(function() {
+									_this.timelineitem = null
+									
+									// 删除成功
+									uni.showToast({
+										title: _this.i18n.tip.deletesuccess,
+										icon: 'none'
+									});
+									
+								}, 800);
+								
+							})
+							.catch(error => {
+								// 删除失败
+								console.log(error.message);
+								uni.showToast({
+									title: _this.i18n.error.deleteerror,
+									icon: 'none'
+								});
+								
+							})
+
+						}
+					},
+				})
+				
+			},
+			
+			// 编辑时间轴
+			edittimeline() {
+				uni.navigateTo({
+					url: `/pages/wishlist/handletimeline?wishId=${this.timelineitem.wishId}&timelineId=${this.timelineitem._id}&type=edit`
+				});
+			},
+			
+			// 分享时间轴
+			sharetimeline() {
+				this.$emit('sharetimeline', this.timelineitem)
+			},
 			
 		},
 	}

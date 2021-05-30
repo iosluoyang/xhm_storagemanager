@@ -201,7 +201,7 @@
 				
 				<view class="cu-time">{{ $moment(timelinekey).format('Do/MMM') }}</view>
 				
-				<wishTimeLineItem v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem"></wishTimeLineItem>
+				<wishTimeLineItem v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
 				
 				<!-- 
 				时间轴类型  
@@ -490,8 +490,7 @@
 		</view>
 		
 		<!-- 弹出视图 -->
-		<u-popup v-model="showpopup" :mode="popmode" border-radius="16">
-			
+		<u-popup v-model="showpopup" :mode="popmode" border-radius="16" :mask-close-able=" popuptype !== 'share' ">
 			
 			<!-- 链接展示 -->
 			<template v-if="popuptype == 'wishlink' && productExt">
@@ -594,8 +593,23 @@
 			</template>
 			
 			<!-- 中间输入内容 -->
-			<template v-if="popuptype === 'inputarea'">
-				<!--  -->
+			<template v-if="popuptype === 'share'">
+				
+				<view class="cu-dialog">
+					
+					<view class="cu-bar bg-white">
+						<view class="content">{{ i18n.wishlist.timeline.share }}</view>
+					</view>
+					<view class="padding-sm text-left">
+						<textarea style="height: 100rpx;" :focus="showpopup" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
+					</view>
+					<view class="cu-bar bg-white flex justify-around">
+						<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
+						<button open-type="share" class="cu-btn round bg-gradual-orange">{{i18n.base.confirm}}</button>
+					</view>
+				
+				</view>
+				
 			</template>
 			
 		</u-popup>
@@ -621,7 +635,7 @@
 				wishinfo: null, // 当前心愿详情
 				productExt: null, // 心愿商品拓展字段
 				timelinearrdic: {}, // 心愿时间轴数据
-				sharetimelineitem: null, // 要分享的时间轴数据
+				
 				swiperCur: 0, // 当前轮播图索引
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
@@ -755,7 +769,7 @@
 			// 当前要分享出去的时间轴数据
 			let sharetimelineitem = this.temptimelineitem
 			// 设置分享的内容
-			let title = this.sharecontent && this.sharecontent.length > 0 ? this.sharecontent : `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
+			let title = this.sharecontent ? this.sharecontent : `${this.i18n.wishlist.importproduct.iwant}-${this.wishinfo.productTitle}`
 			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&ifShare=true`
 			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? sharetimelineitem.imgs.split(',')[0] : this.wishinfo.imgs.split(',')[0]
 			let shareobj = {
@@ -1043,74 +1057,28 @@
 			// 弹出框点击取消
 			modalcancel() {
 				
-				this.ifshowmodal=false;
+				this.showpopup=false;
 				this.temptimelineitem = null
 				
-				// 如果是拒绝类型则清空拒绝原因  如果是分享类型则清空分享内容
-				if(this.modalType == 'refuse') {
-					this.refuseReason='';
-				}
-				else if(this.modalType == 'share') {
+				if(this.popuptype == 'share') {
 					this.sharecontent = ''
 				}
-				
-			},
-			
-			// 删除时间轴
-			deletetimeline(timelineitem,timelinekey,timelineitemindex) {
-				
-				uni.showModal({
-					content: _this.i18n.tip.deleteconfirm,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							// 开始删除
-							
-							uniCloud.callFunction({
-								name: 'wishlisttimeline',
-								data: {
-									type: 'delete',
-									info: {
-										_id: timelineitem._id
-									}
-								}
-							}).then(response => {
-								// 删除成功
-								uni.showToast({
-									title: _this.i18n.tip.deletesuccess,
-									icon: 'none'
-								});
-								
-								// 首先找到对应的日期数组
-								let datearr = _this.timelinearrdic[timelinekey]
-								// 然后删除该数组中的数据
-								datearr.splice(timelineitemindex,1)
-								// 强制更新
-								_this.$forceUpdate()
-								
-							}).catch(error => {
-								// 删除失败
-								uni.showToast({
-									title: _this.i18n.error.deleteerror,
-									icon: 'none'
-								});
-							})
-							
-						}
-					},
-				})
+				else if(this.popuptype == 'refuse') {
+					this.refuseReason = ''
+				}
 				
 			},
 			
 			// 点击分享时间轴
 			sharetimeline(timelineitem) {
-				this.temptimelineitem = timelineitem
+				
+				this.temptimelineitem = timelineitem // 赋值临时变量
 				this.sharecontent = timelineitem.content || ''
 				// 弹出输入框
-				this.modalType = 'share'
-				this.ifshowmodal = true
+				this.popmode = 'center'
+				this.popuptype = 'share'
+				this.showpopup = true
+				
 			},
 			
 			// 切换轮播图
