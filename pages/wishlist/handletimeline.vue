@@ -573,6 +573,7 @@
 			// 更改tree数据
 			treeDataChange(res) {
 				let newTreeData = {...res}
+				console.log(newTreeData);
 				// 将其中的一级属性图片更新
 				newTreeData.ArrC.forEach(item => {
 					item.img = item.img.url

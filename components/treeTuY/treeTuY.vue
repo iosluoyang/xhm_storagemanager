@@ -19,9 +19,22 @@
 					<!-- 一级目录 -->
 					<view class="cen_fenban_box" :style="'width:'+(flag?(data.ArrC.length):(data.ArrC.length+1))*200+'px;'"  v-if="dataFlag.title">
 						<view class="cen_fenban" v-for="(item,i) in data.ArrC" :key="i" @click="kongzhi(true,i)">
-							<view class="firstbox" style="height: 80px;">
-								<image :src="item.img.url" mode="aspectFill" style="width: 50px;height: 50px;"></image>
-								<input type="text" v-model="item.title" :disabled="flag" placeholder="请输入内容" />
+							<view class="contentview">
+								<uni-file-picker 
+									v-model="item.img"
+									:disabled="flag"
+									:disable-preview="flag"
+									limit="1" 
+									:del-icon="false" 
+									disable-preview 
+									:imageStyles="imageStyles" 
+									file-mediatype="image"
+									returnType="object"
+									@select="fileselect($event, i)" 
+									@success="filesuccess($event, i)"
+								></uni-file-picker>
+								
+								<input class="margin-top-sm" type="text" v-model="item.title" :disabled="flag" placeholder="请输入内容" />
 							</view>
 							<em class="center-x"></em>
 							<text v-if="!flag" class="delbtn cuIcon cuIcon-deletefill text-red" @click="delChild(data.ArrC,i)"></text>
@@ -82,6 +95,11 @@
 				dataFlag: {
 					title: true,
 					child: []
+				},
+				imageStyles: {
+					width: '50px',
+					height: '50px',
+					borderRadius: '8px'
 				}
 			}
 		},
@@ -103,6 +121,7 @@
 			data.ArrC.forEach(item => {
 				item.img = {url: item.img}
 			})
+			console.log(data);
 			this.data = data
 		},
 		methods: {
@@ -140,11 +159,10 @@
 					showCancel: !that.flag,
 					success(res) {
 						if (!that.flag) {
-							if (res.confirm) {
+							if (res.confirm) {	
 								that.$emit('dataChange', that.data)
 							} else {
-								that.data = { ...that.oldData
-								}
+								that.data = { ...that.oldData }
 							}
 						}
 						that.flag = !that.flag;
@@ -172,7 +190,44 @@
 					stock: ''
 				})
 				this.data = JSON.parse(JSON.stringify(this.data));
-			}
+			},
+			// 选择图片成功
+			fileselect(e,i) {
+				console.log(`图片选择成功`);
+				let tempFile = e.tempFiles[0]
+				// 更新当前的图片数据
+				let currentItem = this.data.ArrC[i]
+				currentItem.img = tempFile
+			},
+			
+			// 图片删除
+			filedelete(e) {
+				console.log(`图片删除成功`);
+			},
+			
+			// 图片上传
+			fileprogress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e,i) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				let tempFile = e.tempFiles[0]
+				// 更新当前的图片数据
+				let currentItem = this.data.ArrC[i]
+				currentItem.img = {url: tempFile.url}
+				console.log(currentItem);
+			},
+			
+			// 上传图片失败
+			filefail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
+			},
 		}
 	}
 </script>
