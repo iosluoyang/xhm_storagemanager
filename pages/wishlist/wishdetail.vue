@@ -201,7 +201,7 @@
 				
 				<view class="cu-time">{{ $moment(timelinekey).format('Do/MMM') }}</view>
 				
-				<wishTimeLineItem v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
+				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
 				
 				<!-- 
 				时间轴类型  

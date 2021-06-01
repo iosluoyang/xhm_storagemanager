@@ -1,5 +1,5 @@
 <template>
-	<view class="wishtimelineitem cu-item" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' " v-if="timelineitem">
+	<view class="wishtimelineitem" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' " v-if="timelineitem">
 		
 		<!-- 时间轴具体内容 -->
 		<view class="content">
