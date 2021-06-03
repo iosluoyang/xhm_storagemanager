@@ -129,7 +129,7 @@
 					<uni-collapse-item name="spec" :title="i18n.wishlist.specandextstr" :open="collapseOpen" showAnimation>
 						
 						<!-- 表格区域 -->
-						<view class="cu-bar bg-white solid-bottom">
+						<view class="cu-bar bg-white solid-bottom" @tap.stop="showSelector = true">
 							<view class="action">
 								<text class="cuIcon-title text-orange"></text>
 								{{i18n.wishlist.wishproductspecdetail}}
@@ -614,6 +614,9 @@
 			
 		</u-popup>
 		
+		<!-- 多规格弹框 -->
+		<wishSpecSelector v-if="wishinfo" :wishId="wishinfo._id" :ifshow.sync="showSelector"></wishSpecSelector>
+		
 	</view>
 </template>
 
@@ -623,6 +626,9 @@
 	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue'; // 使用table-com的多规格表格
 	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'; // 使用table-com的物流表格
 	import wishTimeLineItem from '@/components/wishtimelineitem/wishtimelineitem.vue'; // 单个时间轴组件
+	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
+	
+	
 	
 	var _this
 	
@@ -657,6 +663,8 @@
 				ifshowmodal: false, // 是否显示模态框
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
+				showSelector: false, // 是否显示多规格选择器
+				
 			};
 		},
 		
@@ -665,6 +673,7 @@
 			wishShippingTable,
 			wishTableSpec,
 			wishTimeLineItem,
+			wishSpecSelector,
 		},
 		
 		computed: {
