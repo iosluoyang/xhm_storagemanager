@@ -278,6 +278,7 @@
 				
 				// 构建商品数组 单个商品
 				// 计算总数量
+				if(!_this.wishinfo.specList) return 
 				let totalAmount = _this.wishinfo.specList.reduce((total, item) => {
 					return total + item.totalAmount
 				}, 0)

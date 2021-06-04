@@ -210,4 +210,26 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	// getlinkdetail 获取链接商品的详情
+	else if(type == 'getlinkdetail') {
+		
+		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
+		let text = info.text
+		const res = await uniCloud.httpclient.request(linkApi, {
+		    method: 'POST',
+			data: {
+				info: JSON.stringify({text: text})
+			},
+			dataAsQueryString: true, // 是否强制转换data为queryString
+			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
+		    contentType: 'json', // 指定以application/json发送data内的数据
+		    dataType: 'json', // 指定返回值为json格式，自动进行parse
+		})
+		console.log(`common中获取到的1688api的响应数据为`)
+		console.log(res);
+		if(res.status == 200 && res.data.errorCode == '000000') {
+			return res.data
+		}
+	}
+	
 };
