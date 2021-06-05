@@ -1329,7 +1329,7 @@
 		
 		.addbtn{
 			position: fixed;
-			z-index: 999;
+			z-index: 700;
 			width: 100rpx;
 			height: 100rpx;
 			bottom: 20rpx;
