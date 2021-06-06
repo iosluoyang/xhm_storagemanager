@@ -21,7 +21,7 @@
 					</view>
 					<!-- 编辑按钮 -->
 					<view class="editview margin-top-sm">
-						<button class="cu-btn radius bg-blue light" @click=" type = type == 'edit' ? 'normal' : 'edit' ">编辑</button>
+						<button class="cu-btn radius bg-blue light" @click=" type = type == 'edit' ? 'normal' : 'edit' "> {{ type == 'edit' ? i18n.base.confirm : i18n.base.edit }} </button>
 					</view>
 					
 				</view>
@@ -31,18 +31,25 @@
 			<!-- 规格选择视图 -->
 			<view class="realcontentview">
 				
-				<scroll-view scroll-x class="bg-white nav padding" scroll-with-animation :scroll-left="scrollLeft">
-					<view class="cu-item pos-relative" :class="firstindex==firstTabCur?'text-pink cur':''" v-for="(firstitem,firstindex) in specDataArr" :key="firstindex" @tap="firstTabSelect" :data-id="firstindex">
+				<!-- 一级属性区域 -->
+				<scroll-view scroll-x class="bg-white nav padding" scroll-with-animation :scroll-into-view=" `firstScrollView-${firstTabCur}` ">
+					<view class="cu-item pos-relative" :class="firstindex==firstTabCur?'text-pink cur':''" v-for="(firstitem,firstindex) in specDataArr" :key="firstindex" :id=" `firstScrollView-${firstindex}` " @tap="firstTabSelect" :data-id="firstindex">
 						
-						<template>
-							<text v-if="type == 'normal'">{{ firstitem.name }}</text>
-							<input v-if="type == 'edit'" :style="{ width: '150rpx' }" class="borderCDCDCD radius" type="text" v-model="firstitem.name" placeholder="eg: 颜色/color" />
+						<!-- 区分编辑状态和显示状态 -->
+						
+						<!-- 显示状态 -->
+						<template v-if="type == 'normal'">
+							<text >{{ firstitem.name }}</text>
+							<u-badge type='warning' absolute :offset="[5,0]" :count="calculatefirstamount(firstitem)" :overflow-count="999"></u-badge>
 						</template>
-						<!-- 角标 -->
-						<template>
-							<u-badge v-if="type == 'normal' " type='warning' absolute :offset="[5,0]" :count="calculatefirstamount(firstitem)" :overflow-count="999"></u-badge>
-							<text v-if="type == 'edit'" class="cuIcon text-pink cuIcon-roundclosefill pos-absolute" :style="{left: '-10rpx', top: '0',lineHeight: '30rpx',height: '30rpx'}" @click="deletefirst(firstindex)"></text>
-						</template>
+						
+						<!-- 编辑状态 注意此处阻止默认时间防止点击 -->
+						<view v-if="type == 'edit'" class="flex align-center justify-between">
+							<text class="cuIcon cuIcon-copy text-blue" @tap.stop="copyfirst(firstindex)"></text>
+							<input class="margin-left-sm margin-right-sm borderCDCDCD radius text-black" :style="{width: '300rpx'}" focus v-model="firstitem.name" placeholder="eg: 颜色/color" type="text" />
+							<text class="cuIcon cuIcon-deletefill text-red" @tap.stop="deletefirst(firstindex)"></text>
+						</view>
+						
 					</view>
 					
 					<!-- 编辑状态下的添加按钮 -->
@@ -64,33 +71,51 @@
 								<!-- 二级属性列表 -->
 								<u-cell-group :border="false">
 									
-									<u-cell-item v-for="(seconditem, secondindex) in firstitem.dataArr" :key="secondindex" :arrow="false" @click="secondTabCur = secondindex">
+									<u-cell-item v-for="(seconditem, secondindex) in firstitem.dataArr" :key="secondindex" :arrow="false" @click="secondTabCur = secondindex" hover-class="none">
 										
+										<!-- 标题区域 -->
 										<view slot="title" class="flex align-center">
 											
 											<template>
-												<text v-if="type == 'normal' && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink"></text>
-												<uni-file-picker v-if="type == 'edit'" v-model="seconditem.img" limit="1"></uni-file-picker>
+												<!-- 选择标签 -->
+												<text v-if="type == 'normal' && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink margin-right-sm"></text>
+												
+												<template v-if="type == 'edit' ">
+													<view class="flex align-center">
+														<!-- 拷贝按钮 -->
+														<text class="cuIcon cuIcon-copy text-blue margin-right-sm " @tap.stop="copysecond(firstindex,secondindex)"></text>
+														<!-- 文件上传组件 -->
+														<uni-file-picker v-if="type == 'edit'" v-model="seconditem.img" limit="1"></uni-file-picker>
+													</view>
+												</template>
+												
 											</template>
 											
 											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type == 'normal' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
 										
 										</view>
 										
+										<!-- 底部描述区域 -->
 										<view slot="label" class="priceview flex align-center">
 											
-											<text class="text-price text-red"></text>
+											<text class="text-price text-red margin-right-sm"></text>
 											<input class="text-red" :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" type="digit" :disabled="type == 'normal'" v-model="seconditem.price"></input>
 											
 										</view>
 										
+										<!-- 右侧区域 -->
 										<view slot="right-icon">
 											<!-- 步进器 -->
-											<u-number-box class="margin-bottom-sm" v-if=" type == 'normal' " v-model="seconditem.amount" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
+											<u-number-box v-if=" type == 'normal' " class="margin-bottom-sm" v-model="seconditem.amount" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
+											
+											<!-- 库存区域 -->
 											<view class="stockview flex align-center">
 												<text>库存:</text>
 												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="type == 'normal'" />
-												<text v-if="type == 'edit'" class="cuIcon cuIcon-roundclosefill text-pink margin-left" @click="deletesecond(firstindex, secondindex)"></text>
+												
+												<!-- 编辑状态下的删除按钮 -->
+												<text v-if="type == 'edit'" class="cuIcon cuIcon-delete text-red margin-left" @click="deletesecond(firstindex, secondindex)"></text>
+												
 											</view>
 										</view>
 										
@@ -98,7 +123,7 @@
 									
 									<!-- 编辑状态下的添加按钮 -->
 									<u-cell-item v-if="type == 'edit'" :arrow="false">
-										<button slot="title" class="cu-btn round bg-blue light" @click="addseconde(firstindex)">
+										<button slot="title" class="cu-btn round bg-blue light" @click="addseconde(firstindex)" hover-class="none">
 											<text class="cuIcon cuIcon-add"></text>
 											{{ i18n.base.add }}
 										</button>
@@ -161,7 +186,7 @@
 				return {
 					
 					show: this.$props.ifshow, // 是否显示弹框
-					type: 'edit', // 当前选择器类型  normal代表正常模式  edit代表编辑模式  默认normal
+					type: 'normal', // 当前选择器类型  normal代表正常模式  edit代表编辑模式  默认normal
 					
 					wishInfo: null, // 心愿详情数据
 					
@@ -169,7 +194,6 @@
 					
 					firstTabCur: 0, // 一级属性的选中索引
 					secondTabCur: 0, // 二级属性的选中索引
-					scrollLeft: 0,
 					
 					specDataArr: [], // 规格数据数组
 					
@@ -257,11 +281,13 @@
 								data: {
 									type: 'getlinkdetail',
 									info: {
-										text: this.wishInfo.productExt.pureUrl
+										text: 2,
+										// text: this.wishInfo.productExt.pureUrl
 									}
 								},
 								success(res) {
 									let productInfo = res.result.data.product
+									console.log(`当前的数据信息为`);
 									console.log(productInfo);
 									
 									_this.proName = productInfo.title || wishInfo.productTitle
@@ -274,6 +300,8 @@
 									
 								},
 								fail(error) {
+									console.log(`当前的数据信息为`);
+									console.log(error.message);
 									uni.showToast({
 										title: error.message,
 										icon: 'none'
@@ -421,11 +449,23 @@
 					this.secondTabCur = 0
 					
 				},
-				
+
+				// 拷贝一级属性
+				copyfirst(firstindex) {
+					let selectFirstItem = JSON.parse(JSON.stringify(this.specDataArr[firstindex]))
+					// 重置一级属性中的所有二级属性的数量为0
+					selectFirstItem.dataArr.forEach(item => { item.amount = 0 })
+					
+					this.specDataArr.push(selectFirstItem)
+					this.firstTabCur = this.specDataArr.length - 1
+					this.secondTabCur = 0
+					
+				},
+							
 				// 删除一级属性
 				deletefirst(firstindex) {
 					this.specDataArr.splice(firstindex,1)
-					this.firstTabCur = this.specDataArr.length > 0 ? this.specDataArr.length - 1 : 0
+					this.firstTabCur = firstindex == 0 ? 0 : firstindex - 1
 					this.secondTabCur = 0
 				},
 				
@@ -444,9 +484,19 @@
 						price: ''
 					}
 					dataArr.push(secondItemInfo)
-					// selectFirstItem.dataArr = dataArr
 					
-					// this.$set(this.specDataArr, firstindex, selectFirstItem)
+				},
+				
+				// 拷贝二级属性
+				copysecond(firstindex,secondindex) {
+					let selectFirstItem = this.specDataArr[firstindex]
+					let firstItemDataArr = selectFirstItem.dataArr
+					let addSecondItem = {...firstItemDataArr[secondindex], ...{amount: 0}}
+					firstItemDataArr.push(addSecondItem)
+					selectFirstItem.dataArr = firstItemDataArr
+					this.$set(this.specDataArr, firstindex, selectFirstItem)
+					
+					this.secondTabCur = firstItemDataArr.length - 1
 					
 				},
 				
@@ -456,7 +506,6 @@
 					let selectFirstItem = this.specDataArr[firstindex]
 					let dataArr = selectFirstItem.dataArr
 					dataArr.splice(secondindex, 1)
-					// this.$set(this.specDataArr, firstindex, selectFirstItem)
 				},
 				
 				// 查看图片
@@ -495,15 +544,20 @@
 				
 				// 切换一级属性
 				firstTabSelect(e) {
-					this.firstTabCur = e.currentTarget.dataset.id;
-					this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
+					let tapIndex = e.currentTarget.dataset.id
+					//防止溢出  在数组范围内再进行赋值
+					if(tapIndex < this.specDataArr.length) {
+						this.firstTabCur = tapIndex
+					}
 				},
 				
 				// 切换swiper动画结束
 				swiperAnimationFinish(e) {
-					let current = e.detail.current
-					this.firstTabCur = current
-					this.scrollLeft = this.firstTabCur * 60
+					let current = e.detail.current	
+					//防止溢出  在数组范围内再进行赋值
+					if(current < this.specDataArr.length) {
+						this.firstTabCur = current
+					}
 				},
 				
 				// 确定事件

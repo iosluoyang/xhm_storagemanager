@@ -709,7 +709,7 @@
 			interShippingTotalFeeStr() {
 				
 				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
-				if(this.productExt.boxVolume && this.interShippingSingleFeeStr) {
+				if(this.productExt && this.productExt.boxVolume && this.interShippingSingleFeeStr) {
 					let interShippingTotalFee = parseFloat(parseFloat(this.productExt.boxVolume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
 					let interShippingTotalFeeStr = `${this.productExt.boxVolume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
 					return interShippingTotalFeeStr
