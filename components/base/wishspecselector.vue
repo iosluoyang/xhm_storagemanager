@@ -171,7 +171,12 @@
 				wishId: {
 					type: String,
 					default: null,
-					required: true
+				},
+				
+				// 链接文本
+				crawText: {
+					type: String,
+					default: '',
 				},
 				
 				// 是否显示弹框
@@ -189,7 +194,7 @@
 					type: 'normal', // 当前选择器类型  normal代表正常模式  edit代表编辑模式  默认normal
 					
 					wishInfo: null, // 心愿详情数据
-					
+					productInfo: null, // 爬取商品数据
 					needTip: true, // 是否需要提示 默认为true
 					
 					firstTabCur: 0, // 一级属性的选中索引
@@ -223,15 +228,20 @@
 						console.log(this.firstTabCur);
 						let selectimg = this.specDataArr[this.firstTabCur].img
 						console.log(selectimg);
+						
+						let mainImg = ''
+						if(this.productInfo) {
+							mainImg = this.productInfo.imgs.split(',')[0]
+						}
+						
 						// 如果选择图片为数组则代表是一个属性 此时返回
 						if(Array.isArray(selectimg)) {
-							return selectimg[this.secondTabCur]
+							return selectimg[this.secondTabCur] || mainImg
 						}
 						else {
-							return selectimg
+							return selectimg || mainImg
 						}
 					}
-					return ''
 					
 				}
 			},
@@ -267,7 +277,7 @@
 				
 				// 根据心愿详情获取相关数据
 				getdetailinfo() {
-					
+										
 					// 根据id获取心愿详情
 					const db = uniCloud.database();
 					db.collection('wishlist').doc(this.wishId).get({getOne:true}).then(response => {
@@ -281,21 +291,29 @@
 								data: {
 									type: 'getlinkdetail',
 									info: {
-										text: 2,
-										// text: this.wishInfo.productExt.pureUrl
+										text: this.wishInfo.sourceLink
 									}
 								},
 								success(res) {
-									let productInfo = res.result.data.product
-									console.log(`当前的数据信息为`);
-									console.log(productInfo);
-									
-									_this.proName = productInfo.title || wishInfo.productTitle
-									_this.proPriceRange = productInfo.priceRange || wishInfo.targetPrice
-									
-									if(_this.type == 'normal') {
-										// 开始设置规格数组数据
+									if(res.result.code == 0) {
+										
+										let productInfo = res.result.data.product
+										_this.productInfo = productInfo
+										
+										console.log(`当前的数据信息为`);
+										console.log(_this.productInfo);
+										
+										_this.proName = productInfo.title || wishInfo.productTitle
+										_this.proPriceRange = productInfo.priceRange || wishInfo.targetPrice
+										
 										_this.setSpecListData(productInfo)
+										
+									}
+									else {
+										uni.showToast({
+											title: res.result.message,
+											icon: 'none'
+										});
 									}
 									
 								},
@@ -308,6 +326,7 @@
 									});
 								}
 							})
+							
 						}
 					}).catch(error => {
 						uni.showToast({
@@ -562,7 +581,66 @@
 				
 				// 确定事件
 				confirm() {
-					
+					// 如果是编辑状态则保存当前的数据
+					if(this.type == 'edit') {
+						
+						// 根据当前的dataArr值变更为数据库保存的值
+						let propValList = []
+						this.specDataArr.forEach(firstitem => {
+							
+							let specStockList = []
+							// 遍历每个一级属性下的二级属性
+							firstitem.dataArr.forEach(seconditem => {
+								let secondItemInfo = {
+									propVal: seconditem.name, //	规格属性名称值(一级属性值/二级属性值)
+									specId: seconditem.specId || '', //	规格id
+									stockCount: seconditem.amount, //	库存数量小于等于0代表已售罄
+									price: seconditem.price,//	价格
+								}
+								specStockList.push(secondItemInfo)
+							})
+							
+							let firstItemInfo = {
+								propVal: firstitem.name, //	规格属性名称值(红色，黄色)(一级)
+								img: firstitem.img, //	规格属性图片(一级规格属性图片)
+								specStockList: specStockList, //	规格库存价格列表
+							}
+							
+							propValList.push(firstItemInfo)
+							
+						})
+						
+						let globalSpecPropInfo = this.productInfo.specPropInfo // 规格属性
+						let specPropInfo = {
+							propName: globalSpecPropInfo.propName || '第一属性', // 规格属性名称 一级 （颜色）
+							secondPropName: globalSpecPropInfo.secondPropName || '第二属性',//	规格属性名称 二级(尺码)
+							propValList: propValList, //	规格属性名称值列表(一级属性)
+						}
+						
+						// 更新当前的规格数据
+						const db = uniCloud.database();
+						db.collection('wishlist')
+						.doc(this.wishId)
+						.update({specInfo: specPropInfo})
+						.then(response => {
+							// 更新成功
+							uni.showToast({
+								title: this.i18n.tip.fixsuccess,
+								icon: 'none'
+							});
+							this.type = 'normal'
+							
+						})
+						.catch(error => {
+							// 更新失败
+							console.log(`更新失败,${JSON.stringify(error.message)}`);
+							uni.showToast({
+								title: this.i18n.error.fixerror,
+								icon: 'none'
+							});
+						})
+						
+					}
 					// 统计数据
 					
 					this.show = !this.show

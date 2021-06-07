@@ -228,7 +228,18 @@ exports.main = async (event, context) => {
 		console.log(`common中获取到的1688api的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data.errorCode == '000000') {
-			return res.data
+			let result = {
+				code: 0,
+				data: res.data.data
+			}
+			return result
+		}
+		else {
+			let result = {
+				code: res.data.errorCode,
+				message: res.data.msg
+			}
+			return result
 		}
 	}
 	

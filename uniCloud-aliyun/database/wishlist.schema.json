@@ -118,27 +118,119 @@
 				}
 			}
 		},
-		"specList": {
-			"bsonType":"array",
-			"description":"心愿单商品的规格数组",
-			"arrayType":"object",
+		"specInfo": {
+			"bsonType":"object",
+			"description":"心愿单商品的规格对象",
 			"properties": {
-				"attributeName": {
+				"propName": {
 					"bsonType":"string",
-					"description":"一级属性的名称",
-					"defaultValue": ""
+					"description":"第一属性名称",
+					"defaultValue":"第一属性"
 				},
-				"img": {
+				"secondPropName": {
 					"bsonType":"string",
-					"description":"一级属性的图片",
-					"defaultValue": ""
+					"description":"第二属性名称",
+					"defaultValue":"第二属性"
 				},
-				"totalAmount": {
-					"bsonType":"int",
-					"description":"一级属性的总数量",
-					"defaultValue": 0
+				"propValList": {
+					"bsonType":"array",
+					"description":"第一属性的值集合",
+					"arrayType":"object",
+					"properties": {
+						"propVal": {
+							"bsonType":"string",
+							"description":"第一属性的名称值"
+						},
+						"img": {
+							"bsonType":"string",
+							"description":"第一属性的值图片"
+						},
+						"specStockList": {
+							"bsonType":"array",
+							"description":"第一属性下的二级属性集合",
+							"arrayType":"object",
+							"properties": {
+								"propVal": {
+									"bsonType":"string",
+									"description":"第一/二属性名称值"
+								},
+								"specId": {
+									"bsonType":"int",
+									"description":"规格id"
+								},
+								"stockCount": {
+									"bsonType":"int",
+									"description":"规格的库存数量"
+								},
+								"price": {
+									"bsonType":"string",
+									"description":"规格的价格"
+								}
+							}
+						}
+					}
 				}
 			}
+			
+		},
+		"selectSpecInfo": {
+			"bsonType":"object",
+			"description":"心愿单商品用户选择的规格对象",
+			"properties": {
+				"propName": {
+					"bsonType":"string",
+					"description":"第一属性名称",
+					"defaultValue":"第一属性"
+				},
+				"secondPropName": {
+					"bsonType":"string",
+					"description":"第二属性名称",
+					"defaultValue":"第二属性"
+				},
+				"propValList": {
+					"bsonType":"array",
+					"description":"第一属性的值集合",
+					"arrayType":"object",
+					"properties": {
+						"propVal": {
+							"bsonType":"string",
+							"description":"第一属性的名称值"
+						},
+						"img": {
+							"bsonType":"string",
+							"description":"第一属性的值图片"
+						},
+						"specStockList": {
+							"bsonType":"array",
+							"description":"第一属性下的二级属性集合",
+							"arrayType":"object",
+							"properties": {
+								"propVal": {
+									"bsonType":"string",
+									"description":"第一/二属性名称值"
+								},
+								"specId": {
+									"bsonType":"int",
+									"description":"规格id"
+								},
+								"stockCount": {
+									"bsonType":"int",
+									"description":"规格的库存数量"
+								},
+								"price": {
+									"bsonType":"string",
+									"description":"规格的价格"
+								},
+								"amount": {
+									"bsonType":"int",
+									"description":"规格的数量"
+								}
+							}
+						}
+					}
+				}
+			}
+			
 		}
 		
 	}
