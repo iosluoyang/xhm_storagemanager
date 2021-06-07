@@ -19,10 +19,6 @@
 					<view class="text-price text-red margin-top-sm">
 						{{ proPriceRange }}
 					</view>
-					<!-- 编辑按钮 -->
-					<view class="editview margin-top-sm">
-						<button class="cu-btn radius bg-blue light" @click=" type = type == 'edit' ? 'normal' : 'edit' "> {{ type == 'edit' ? i18n.base.confirm : i18n.base.edit }} </button>
-					</view>
 					
 				</view>
 				
@@ -167,16 +163,21 @@
 			
 			props: {
 				
-				// 心愿id
-				wishId: {
-					type: String,
+				// 规格对象
+				specPropInfo: {
+					type: Object,
 					default: null,
 				},
 				
-				// 链接文本
-				crawText: {
+				// 心愿id
+				// wishId: {
+				// 	type: String|Number,
+				// 	default: null,
+				// },
+				
+				type: {
 					type: String,
-					default: '',
+					default: 'normal', // normal正常选中 edit编辑
 				},
 				
 				// 是否显示弹框
@@ -191,10 +192,7 @@
 				return {
 					
 					show: this.$props.ifshow, // 是否显示弹框
-					type: 'normal', // 当前选择器类型  normal代表正常模式  edit代表编辑模式  默认normal
 					
-					wishInfo: null, // 心愿详情数据
-					productInfo: null, // 爬取商品数据
 					needTip: true, // 是否需要提示 默认为true
 					
 					firstTabCur: 0, // 一级属性的选中索引
@@ -224,14 +222,14 @@
 				specImg() {
 					
 					if( this.specDataArr &&  this.specDataArr.length > 0) {
-						console.log(this.specDataArr);
-						console.log(this.firstTabCur);
+						// console.log(this.specDataArr);
+						// console.log(this.firstTabCur);
 						let selectimg = this.specDataArr[this.firstTabCur].img
-						console.log(selectimg);
+						// console.log(selectimg);
 						
 						let mainImg = ''
 						if(this.productInfo) {
-							mainImg = this.productInfo.imgs.split(',')[0]
+							// mainImg = this.productInfo.imgs.split(',')[0]
 						}
 						
 						// 如果选择图片为数组则代表是一个属性 此时返回
@@ -268,8 +266,10 @@
 			created() {
 				
 				_this = this
-				// 获取详情信息
-				this.getdetailinfo()
+				
+				if(this.specPropInfo) {
+					this.setSpecListData(this.specPropInfo)
+				}
 				
 			},
 			
@@ -306,7 +306,7 @@
 										_this.proName = productInfo.title || wishInfo.productTitle
 										_this.proPriceRange = productInfo.priceRange || wishInfo.targetPrice
 										
-										_this.setSpecListData(productInfo)
+										_this.setSpecListData(productInfo.specPropInfo)
 										
 									}
 									else {
@@ -338,9 +338,7 @@
 				},
 				
 				// 设置规格数组数据
-				setSpecListData(productInfo) {
-					
-					let specPropInfo = productInfo.specPropInfo
+				setSpecListData(specPropInfo) {
 					
 					// 一级属性值
 					let dataArr = []
@@ -422,7 +420,6 @@
 						dataArr.push(firstItemInfo)
 						
 					}
-					
 					this.specDataArr = dataArr
 					
 				},
@@ -581,41 +578,47 @@
 				
 				// 确定事件
 				confirm() {
-					// 如果是编辑状态则保存当前的数据
-					if(this.type == 'edit') {
+					
+					// 整理数据
+					// 根据当前的dataArr值变更为数据库保存的值
+					let propValList = []
+					this.specDataArr.forEach(firstitem => {
 						
-						// 根据当前的dataArr值变更为数据库保存的值
-						let propValList = []
-						this.specDataArr.forEach(firstitem => {
-							
-							let specStockList = []
-							// 遍历每个一级属性下的二级属性
-							firstitem.dataArr.forEach(seconditem => {
-								let secondItemInfo = {
-									propVal: seconditem.name, //	规格属性名称值(一级属性值/二级属性值)
-									specId: seconditem.specId || '', //	规格id
-									stockCount: seconditem.amount, //	库存数量小于等于0代表已售罄
-									price: seconditem.price,//	价格
-								}
-								specStockList.push(secondItemInfo)
-							})
-							
-							let firstItemInfo = {
-								propVal: firstitem.name, //	规格属性名称值(红色，黄色)(一级)
-								img: firstitem.img, //	规格属性图片(一级规格属性图片)
-								specStockList: specStockList, //	规格库存价格列表
+						let specStockList = []
+						// 遍历每个一级属性下的二级属性
+						firstitem.dataArr.forEach(seconditem => {
+							let secondItemInfo = {
+								propVal: seconditem.name, //	规格属性名称值(一级属性值/二级属性值)
+								specId: seconditem.specId || '', //	规格id
+								stockCount: seconditem.stock, //	库存数量小于等于0代表已售罄
+								price: seconditem.price,//	价格
 							}
-							
-							propValList.push(firstItemInfo)
-							
+							// 正常选择下更新amount数量
+							if(this.type == 'normal') {
+								secondItemInfo['amount'] = seconditem.amount // 选择数量
+							}
+							specStockList.push(secondItemInfo)
 						})
 						
-						let globalSpecPropInfo = this.productInfo.specPropInfo // 规格属性
-						let specPropInfo = {
-							propName: globalSpecPropInfo.propName || '第一属性', // 规格属性名称 一级 （颜色）
-							secondPropName: globalSpecPropInfo.secondPropName || '第二属性',//	规格属性名称 二级(尺码)
-							propValList: propValList, //	规格属性名称值列表(一级属性)
+						let firstItemInfo = {
+							propVal: firstitem.name, //	规格属性名称值(红色，黄色)(一级)
+							img: firstitem.img, //	规格属性图片(一级规格属性图片)
+							specStockList: specStockList, //	规格库存价格列表
 						}
+						
+						propValList.push(firstItemInfo)
+						
+					})
+					
+					let globalSpecPropInfo = this.specPropInfo // 规格属性对象
+					let specPropInfo = {
+						propName: globalSpecPropInfo.propName || '第一属性', // 规格属性名称 一级 （颜色）
+						secondPropName: globalSpecPropInfo.secondPropName || '第二属性',//	规格属性名称 二级(尺码)
+						propValList: propValList, //	规格属性名称值列表(一级属性)
+					}
+					
+					// 如果是编辑状态则保存当前的数据
+					if(this.type == 'edit') {
 						
 						// 更新当前的规格数据
 						const db = uniCloud.database();
@@ -628,7 +631,9 @@
 								title: this.i18n.tip.fixsuccess,
 								icon: 'none'
 							});
-							this.type = 'normal'
+							
+							this.$emit('finishUpdate', specPropInfo)
+							this.show = !this.show
 							
 						})
 						.catch(error => {
@@ -641,13 +646,16 @@
 						})
 						
 					}
-					// 统计数据
+					// 如果是正常状态则为选中
+					else if(this.type == 'normal') {
+						
+						console.log(specPropInfo);
+						this.$emit('finishSelect', specPropInfo)
+						this.show = !this.show
+						
+					}
 					
-					this.show = !this.show
 				},
-				
-				//
-				
 				
 				
 			},

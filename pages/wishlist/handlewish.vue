@@ -16,6 +16,27 @@
 				</view>
 			</view>
 			
+			<!-- 源网站链接 -->
+			<view class="cu-form-group">
+				<view class="title">
+					<text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text>
+					{{i18n.wishlist.sourcelink}}:
+				</view>
+				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
+				<!-- <textarea auto-height :show-confirm-bar="false" v-model="sourceLink" @blur="analysisUrl" /> -->
+				<!-- #ifndef H5 -->
+				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
+				<!-- #endif -->
+				
+				<button class="cu-btn bg-gradual-pink shadow" @tap.stop="getlinkdetails">{{ i18n.base.search }}</button>
+			</view>
+			
+			<!-- 链接解析结果 -->
+			<view class="cu-form-group flex" v-if="productSecretCode || productPureUrl">
+				<view v-if="productSecretCode" class="flex-sub bg-blue light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productSecretCode)">{{ productSecretCode }}</view>
+				<view v-if="productPureUrl" class="flex-sub bg-yellow light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productPureUrl)">{{ productPureUrl }}</view>
+			</view>
+			
 			<!-- 商品标题 -->
 			<view class="cu-form-group">
 				<view class="title">{{i18n.wishlist.producttitle}} :</view>
@@ -29,25 +50,6 @@
 				<!-- #endif -->
 			</view>
 			
-			<!-- 源网站链接 -->
-			<view class="cu-form-group">
-				<view class="title">
-					<text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text>
-					{{i18n.wishlist.sourcelink}}:
-				</view>
-				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
-				<!-- <textarea auto-height :show-confirm-bar="false" v-model="sourceLink" @blur="analysisUrl" /> -->
-				<!-- #ifndef H5 -->
-				<button class="cu-btn bg-cyan shadow" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
-				<!-- #endif -->
-			</view>
-			
-			<!-- 链接解析结果 -->
-			<view class="cu-form-group flex" v-if="productSecretCode || productPureUrl">
-				<view v-if="productSecretCode" class="flex-sub bg-blue light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productSecretCode)">{{ productSecretCode }}</view>
-				<view v-if="productPureUrl" class="flex-sub bg-yellow light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productPureUrl)">{{ productPureUrl }}</view>
-			</view>
-			
 			<!-- 源网站价格 -->
 			<view class="cu-form-group">
 				
@@ -55,14 +57,14 @@
 				
 				<view class="content flex-sub flex align-center">
 					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="digit" class="borderCDCDCD radius" v-model="sourcePrice" @input="typesourcePrice" />
+					<input type="text" class="borderCDCDCD radius" v-model="sourcePrice" @input="typesourcePrice" />
 				</view>
 				
 				<!-- 源网站货币种类选择 -->
-				<view class="flex align-center margin-left">
+				<!-- <view class="flex align-center margin-left">
 					<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
 					<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
-				</view>
+				</view> -->
 
 			</view>
 			
@@ -81,7 +83,7 @@
 				
 				<view class="content flex-sub flex align-center">
 					<text :class="[ targetMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ targetMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="digit" class="borderCDCDCD radius" v-model="targetPrice" />
+					<input type="text" class="borderCDCDCD radius" v-model="targetPrice" />
 				</view>
 				
 				<!-- 目标货币种类选择 -->
@@ -93,11 +95,27 @@
 			</view>
 			
 			<!-- 目标数量 -->
-			<view class="cu-form-group solid-bottom">
-				<view class="title">{{i18n.wishlist.targetamount}} :</view>
-				<input type="text" v-model="targetAmount" />
-				<!-- <textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" /> -->
-			</view>
+			<template>
+				
+				<!-- 选择规格 -->
+				<view v-if="productInfo1688 && productInfo1688.specPropInfo" class="cu-list menu">
+					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
+						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
+						
+						<view v-if="selectSpecPropInfo" class="action">
+							<text class="text-grey text-sm">{{ showSelectSpecStr }}</text>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 输入数量 -->
+				<view v-else class="cu-form-group solid-bottom">
+					<view class="title">{{i18n.wishlist.targetamount}} :</view>
+					<input type="text" v-model="targetAmount" />
+					<!-- <textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" /> -->
+				</view>
+				
+			</template>
 			
 			<!-- 紧急程度  暂时屏蔽 -->
 			<view v-if="false" class="cu-form-group solid-bottom">
@@ -112,7 +130,7 @@
 			
 			<!-- 备注 -->
 			<view class="cu-form-group">
-				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.remark" />
+				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.content" />
 			</view>
 			
 			<!-- 图片上传 -->
@@ -180,15 +198,25 @@
 			</template>
 			
 		</view>
-				
+		
+		<!-- 多规格弹框 -->
+		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="productInfo1688.specPropInfo"  :ifshow.sync="showSelector" @finishSelect="specFinishSelect"></wishSpecSelector>
+		
 	</view>
 </template>
 
 <script>
 	
+	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
+	
 	var _this
 	
 	export default {
+		
+		components: {
+			wishSpecSelector
+		},
+		
 		data() {
 			return {
 				
@@ -211,9 +239,12 @@
 				boxValume: '', // 箱子体积
 				interShippingSingleFeeStr: '', // 国际运费单价
 				
+				productInfo1688: null, // 1688上的商品信息
+				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
+				selectSpecPropInfo: null, // 目标选中数量对象
 				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 9, // 图片上传的数量限制
@@ -226,6 +257,8 @@
 				modalType: 'content', // 弹框类型 默认为文本
 				showModal: false, // 是否显示modal
 				modalImg: '', // 图片提示框中的图片地址
+				
+				showSelector: false, // 是否显示多规格选择器  默认为否
 				
 			};
 		},
@@ -272,21 +305,25 @@
 		
 		computed: {
 			
-			// 国际运费总价
-			interShippingTotalFeeStr() {
+			// 选中规格返显
+			showSelectSpecStr() {
+				let str = ''
+				if(this.selectSpecPropInfo) {
+					
+					let totalAmount = 0
+					this.selectSpecPropInfo.propValList.forEach(firstitem => {
+						firstitem.specStockList.forEach(seconditem => {
+							totalAmount += Number(seconditem.amount)
+						})
+					})
+					
+					str = `共${totalAmount.toString()}个`
+					
+				}
+				return str
 				
-				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
-				if(this.boxValume && this.interShippingSingleFeeStr) {
-					let interShippingTotalFee = parseFloat(parseFloat(this.boxValume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
-					let interShippingTotalFeeStr = `${this.boxValume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
-					return interShippingTotalFeeStr
-				}
-				else {
-					return '……'
-				}
 			},
 			
-			//
 		},
 		
 		methods: {
@@ -372,6 +409,68 @@
 				
 			},
 			
+			// 查找链接详情内容
+			getlinkdetails() {
+				
+				_this.ifloading = true
+				
+				// 开始加载规格信息
+				uniCloud.callFunction({
+					name: 'wishlist',
+					data: {
+						type: 'getlinkdetail',
+						info: {
+							text: this.sourceLink
+						}
+					},
+					success(res) {
+						_this.ifloading = false
+						if(res.result.code == 0) {
+							
+							let productInfo1688 = res.result.data.product
+							_this.productInfo1688 = productInfo1688
+							
+							console.log(`当前的数据信息为`);
+							console.log(productInfo1688);
+							
+							// 选择性替换
+							uni.showModal({
+								content: `系统检测到该链接为1688上的商品:\n《${productInfo1688.title}》\n是否进行数据替换?`,
+								showCancel: true,
+								cancelText: _this.i18n.base.cancel,
+								confirmText: _this.i18n.base.confirm,
+								success: res => {
+									if(res.confirm) {
+										_this.productTitle = productInfo1688.title
+										_this.sourcePrice = productInfo1688.priceRange
+										let imgsArr = productInfo1688.imgs.split(',') // 商品图片
+										_this.imgArr = imgsArr.map(item => ({url: item}))
+									}
+								}
+							});
+							
+						}
+						else {
+							// uni.showToast({
+							// 	title: res.result.message,
+							// 	icon: 'none'
+							// });
+						}
+						
+					},
+					fail(error) {
+						_this.ifloading = false
+						console.log(`当前的数据信息为`);
+						console.log(error.message);
+						// uni.showToast({
+						// 	title: error.message,
+						// 	icon: 'none'
+						// });
+					}
+				})
+				
+			},
+			
 			// 显示提示弹框
 			showTipModal(type) {
 				let modalImg = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/32115416-4de9-439e-9cd3-ce844306167c.gif'
@@ -420,8 +519,20 @@
 					if(productPureUrl) {
 						this.productPureUrl = productPureUrl
 					}
+					
+					// 如果口令和链接都存在则开始自动爬取商品数据
+					// if(productPureUrl && productSecretCode) {
+					// 	this.getlinkdetails()
+					// }
 				}
 				
+			},
+			
+			// 选择完规格
+			specFinishSelect(selectSpecPropInfo) {
+				console.log(`当前选择完规格的数据为`);
+				console.log(selectSpecPropInfo);
+				this.selectSpecPropInfo = selectSpecPropInfo
 			},
 			
 			// 复制内容
@@ -546,21 +657,21 @@
 					return false
 				}
 				// 检查是否有目标价格
-				else if(!this.targetPrice) {
-					uni.showToast({
-						title: this.i18n.wishlist.timeline.targetpriceerror,
-						icon: 'none'
-					});
-					return false
-				}
+				// else if(!this.targetPrice) {
+				// 	uni.showToast({
+				// 		title: this.i18n.wishlist.timeline.targetpriceerror,
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				// 检查是否有目标数量
-				else if(!this.targetAmount) {
-					uni.showToast({
-						title: this.i18n.wishlist.targetamount,
-						icon: 'none'
-					});
-					return false
-				}
+				// else if(!this.targetAmount) {
+				// 	uni.showToast({
+				// 		title: this.i18n.wishlist.targetamount,
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				// 检查是否有图片
 				else if(this.imgArr.length == 0) {
 					uni.showToast({
@@ -602,6 +713,7 @@
 					targetPrice: _this.targetPrice, // 目标价格
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetAmount: _this.targetAmount, // 目标数量
+					selectSpecInfo: _this.selectSpecInfo, // 规格数量
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
