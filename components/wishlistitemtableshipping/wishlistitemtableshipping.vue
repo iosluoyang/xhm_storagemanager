@@ -9,7 +9,7 @@
 				:headerWeight="true"
 				:minHeight="[70,120]"
 				:defaultColWidth="165"
-				headerBgColor="#6739b6"
+				headerBgColor="#0081ff"
 				contentBgColor="#fff"
 				headerFtColor="#fff"
 				contentFtColor="#3e3e3e"
@@ -138,14 +138,16 @@
 				
 				this.tableHeader = headers
 				
+				let productExt = this.wishinfo.productExt
+				
 				// 设置表格数据
 				let contents = [
 					{
-						interShippingName: 'carGo',
-						interShippingCode: 'BL-SPUG',
+						interShippingName: this.wishinfo?.productExt?.interShippingName || '',
+						interShippingCode: this.wishinfo?.productExt?.interShippingCode || '',
 						shippingImg: this.wishinfo.imgs.split(',')[0] || '',
-						domeShippingName: "中通快递",
-						domeShippingNum: 'ZT335679479982774904',
+						domeShippingName: this.wishinfo?.productExt?.domeShippingName || '',
+						domeShippingNum: this.wishinfo?.productExt?.domeShippingNum || '',
 						boxContainerNum: this.wishinfo?.productExt?.boxContainNum || '',
 						boxVolume: this.wishinfo?.productExt?.boxVolume || '',
 						boxWeight: this.wishinfo?.productExt?.boxWeight || '',

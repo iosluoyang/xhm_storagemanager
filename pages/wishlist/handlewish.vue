@@ -103,7 +103,7 @@
 						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
 						
 						<view v-if="selectSpecPropInfo" class="action">
-							<text class="text-grey text-sm">{{ showSelectSpecStr }}</text>
+							<text class="text-grey text-sm">{{ `共${selectShowTotalAmount.toString()}个` }}</text>
 						</view>
 					</view>
 				</view>
@@ -156,51 +156,44 @@
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
 		
-		<!-- 订阅消息modal框 -->
-		<view class="cu-modal" :class=" showModal ? 'show' : '' ">
+		<!-- 中间弹出框 -->
+		<u-popup class="popupview" v-model="showModal" mode="center" border-radius="10" width="80%" z-index="600" :mask-close-able="false">
 			
-			<template>
+			<!-- 图片展示 -->
+			<view v-if="modalType == 'img'" class="contentview">
 				
-				<!-- 图片弹框内容 -->
-				<view class="cu-dialog" v-if="modalType == 'img'">
-					<view class="bg-img" :style="{ backgroundImage: 'url('+modalImg+')',height: '700rpx' }"></view>
-					
-					<view class="cu-bar bg-gradual-pink">
-						<view class="action margin-0 flex-sub  solid-left" @tap="showModal = false">{{ i18n.base.confirm }}</view>
+				<image :src="modalImg" :style="{width: '100%'}" mode="widthFix"></image>
+				<button class="cu-btn margin-top padding block bg-gradual-pink" @click="showModal = false">{{ i18n.base.confirm }}</button>
+				
+			</view>
+			
+			<!-- 文字展示 -->
+			<view v-if="modalType == 'content'" class="bg-white contentview">
+				
+				<view class="titleview padding-xl text-lg text-center text-bold text-black">{{ modalTitle }}</view>
+				
+				<view class="contentview padding text-df text-center">{{ modalContent }}</view>
+				
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<button class="cu-btn bg-grey" @tap="hideModal">{{ i18n.base.cancel }}</button>
+					</view>
+					<view class="action">
+						<button class="cu-btn bg-gradual-pink margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
 					</view>
 				</view>
 				
-				<!-- 文字弹框内容 -->
-				<view class="cu-dialog" v-if="modalType == 'content'">
-					
-					<view class="cu-bar bg-white justify-end">
-						<view class="content">{{ modalTitle }}</view>
-						<view class="action" @tap="hideModal">
-							<text class="cuIcon-close text-pink"></text>
-						</view>
-					</view>
-					
-					<view class="padding-xl">
-						{{ modalContent }}
-					</view>
-					
-					<view class="cu-bar bg-white">
-						<view class="action">
-							<button class="cu-btn bg-grey" @tap="hideModal">{{ i18n.base.cancel }}</button>
-						</view>
-						<view class="action">
-							<button class="cu-btn bg-green margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
-						</view>
-					</view>
-					
-				</view>
-				
-			</template>
+			</view>
 			
-		</view>
+		</u-popup>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="productInfo1688.specPropInfo"  :ifshow.sync="showSelector" @finishSelect="specFinishSelect"></wishSpecSelector>
+		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="productInfo1688.specPropInfo"  :ifshow.sync="showSelector"
+							:defaultProImg="imgArr && imgArr.length > 0 ? imgArr[0].url : '' "
+							:defaultProTitle="productTitle"
+							:defaultProPrice="sourcePrice"
+							@finishSelect="specFinishSelect">
+		</wishSpecSelector>
 		
 	</view>
 </template>
@@ -305,22 +298,23 @@
 		
 		computed: {
 			
-			// 选中规格返显
-			showSelectSpecStr() {
-				let str = ''
+			// 选中规格数量总和
+			selectShowTotalAmount() {
+				
+				let totalAmount = 0
 				if(this.selectSpecPropInfo) {
 					
-					let totalAmount = 0
 					this.selectSpecPropInfo.propValList.forEach(firstitem => {
 						firstitem.specStockList.forEach(seconditem => {
 							totalAmount += Number(seconditem.amount)
 						})
 					})
 					
-					str = `共${totalAmount.toString()}个`
+					this.targetAmount = totalAmount
 					
 				}
-				return str
+				
+				return totalAmount
 				
 			},
 			
@@ -425,13 +419,14 @@
 					},
 					success(res) {
 						_this.ifloading = false
+						console.log(`获取成功${JSON.stringify(res)}`);
 						if(res.result.code == 0) {
 							
 							let productInfo1688 = res.result.data.product
 							_this.productInfo1688 = productInfo1688
 							
-							console.log(`当前的数据信息为`);
-							console.log(productInfo1688);
+							// console.log(`当前的数据信息为`);
+							// console.log(productInfo1688);
 							
 							// 选择性替换
 							uni.showModal({
@@ -451,21 +446,21 @@
 							
 						}
 						else {
-							// uni.showToast({
-							// 	title: res.result.message,
-							// 	icon: 'none'
-							// });
+							uni.showToast({
+								title: res.result.message,
+								icon: 'none'
+							});
 						}
 						
 					},
 					fail(error) {
 						_this.ifloading = false
-						console.log(`当前的数据信息为`);
+						console.log(`获取失败${JSON.stringify(error)}`);
 						console.log(error.message);
-						// uni.showToast({
-						// 	title: error.message,
-						// 	icon: 'none'
-						// });
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
 					}
 				})
 				
@@ -473,6 +468,7 @@
 			
 			// 显示提示弹框
 			showTipModal(type) {
+				
 				let modalImg = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/32115416-4de9-439e-9cd3-ce844306167c.gif'
 				console.log(type);
 				// 来源链接
@@ -543,7 +539,7 @@
 					data: content,
 					success() {
 						uni.showToast({
-							title: this.i18n.tip.copysuccess,
+							title: _this.i18n.tip.copysuccess,
 							icon: 'none'
 						});
 					}
@@ -555,7 +551,7 @@
 			// 输入源网站价格
 			typesourcePrice(e) {
 				let sourcePrice = e.detail.value
-				this.targetPrice = sourcePrice
+				this.sourcePrice = sourcePrice
 				this.targetMoneyType = this.sourceMoneyType
 			},
 			
@@ -713,11 +709,16 @@
 					targetPrice: _this.targetPrice, // 目标价格
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetAmount: _this.targetAmount, // 目标数量
-					selectSpecInfo: _this.selectSpecInfo, // 规格数量
+					selectSpecPropInfo: _this.selectSpecPropInfo, // 选择的规格数量
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
 					productExt: productExt, // 商品的拓展字段
+				}
+				
+				if(_this.productInfo1688) {
+					info['specPropInfo'] = _this.productInfo1688.specPropInfo
+					info['productInfo1688'] = _this.productInfo1688
 				}
 				
 				// 新增 或者 拷贝
@@ -873,6 +874,12 @@
 				.uni-collapse-cell__content{
 					background-color: #FFFFFF;
 				}
+			}
+		}
+		
+		/deep/.popupview{
+			.u-mode-center-box{
+				background-color: transparent !important;
 			}
 		}
 	}

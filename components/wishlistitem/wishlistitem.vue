@@ -20,7 +20,7 @@
 					<view class="flex align-center justify-between width100">
 						
 						<view class="flex-sub priceview margin-top-sm">
-							<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.targetPrice}` }}</text>
+							<text class="text-red text-xl margin-right">{{ `${ownwishitem.targetMoneyType === 'RMB' ? '¥' : ownwishitem.targetMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text>
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${ownwishitem.sourceMoneyType === 'RMB' ? '¥' : ownwishitem.sourceMoneyType === 'THB' ? '฿' : ''}${ownwishitem.sourcePrice}` }}</text> -->
 						</view>
 						

@@ -383,8 +383,9 @@ const zh = {
 		price: "价格",
 		found: "我发现",
 		wishdetail: "心愿详情",
-		specandextstr: "规格及参数",
+		detail1688params: "1688商品参数",
 		wishproductspecdetail: "商品规格信息",
+		wishproductshippingdetail: "物流信息",
 		wishproductextdetail: "商品参数信息",
 		calculateShippingStr: "计算运费",
 		spectable: {

@@ -276,15 +276,58 @@
 				// 		totalAmount: 900,
 				// 	}]
 				
-				// 构建商品数组 单个商品
+				// 将商品已选数量映射为表格展示
+				let specList = []
+				
+				// 映射数据
+				if(_this.wishinfo && _this.wishinfo.selectSpecPropInfo) {
+					
+					let firstList =  _this.wishinfo.selectSpecPropInfo.propValList
+					firstList.forEach(firstitem => {
+						let totalAmount = 0
+						
+						let childList = []
+						// 遍历二级属性
+						firstitem.specStockList.forEach(seconditem => {
+							
+							if(seconditem.amount && seconditem.amount > 0) {
+								let childListItem = {
+									attributeName: seconditem.propVal,
+									amount: seconditem.amount,
+									price: seconditem.price,
+									specId: seconditem.specId,
+								}
+								totalAmount += Number(seconditem.amount)
+								childList.push(childListItem)
+							}
+							
+						})
+						
+						let firstImg = Array.isArray(firstitem.img) && firstitem.img.length > 0 ? firstitem.img[0] : firstitem.img
+						let specListItem = {
+							attributeName: firstitem.propVal,
+							img: firstImg,
+							childList: childList,
+							totalAmount: totalAmount
+						}
+						
+						if(totalAmount > 0) {
+							specList.push(specListItem)
+						}
+						
+					})
+					
+				}
+				console.log(specList);
+				
+				if(specList.length == 0) {
+					return
+				}
+				
 				// 计算总数量
-				if(!_this.wishinfo.specList) return 
-				let totalAmount = _this.wishinfo.specList.reduce((total, item) => {
+				let totalAmount = specList.reduce((total, item) => {
 					return total + item.totalAmount
 				}, 0)
-				let productList = [
-					{..._this.wishinfo, ...{totalAmount: totalAmount}}
-				]
 				
 				// 设置表头
 				let tableHeaderArr = [
@@ -375,6 +418,8 @@
 				
 				// 表格内容数据数组
 				let tableDataArr = []
+				
+				let productList = [{..._this.wishinfo, ...{specList: specList}, ...{totalAmount: totalAmount}}]
 				
 				productList.forEach( (proitem, proindex) => {
 					

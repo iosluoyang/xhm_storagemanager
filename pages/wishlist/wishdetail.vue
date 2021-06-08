@@ -51,7 +51,7 @@
 						<template>
 						
 							<!-- 显示备注 -->
-							<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longtap="$basejs.copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
+							<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
 							
 							<!-- 没有备注时显示昵称和时间 -->
 							<view v-else class="publishcontent flex-sub margin-left">
@@ -86,7 +86,7 @@
 					<view class="priceandamountview margin-top-sm flex align-center justify-between">
 						
 						<view class="priceview flex-sub">
-							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
+							<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
 						</view>
 						
@@ -122,54 +122,76 @@
 				
 			</view>
 			
-			<!-- 详细参数区域-->
-			<view v-if="wishinfo.productExt" class="detaildataview margin">
+			<!-- 其他信息区域-->
+			<view class="detaildataview margin">
 				
-				<uni-collapse accordion  @change="(activeNameArr) => { collapseOpen = activeNameArr.includes('spec') }">
-					<uni-collapse-item name="spec" :title="i18n.wishlist.specandextstr" :open="collapseOpen" showAnimation>
+				<!-- 订购规格table -->
+				<view v-if="wishinfo && wishinfo.selectSpecPropInfo" class="wishspectable">
+					<view class="cu-bar bg-white solid-bottom">
+						<view class="action">
+							<text class="cuIcon-title text-orange"></text>
+							{{i18n.wishlist.wishproductspecdetail}}
+						</view>
+					</view>
+					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
+				</view>
+				
+				<!-- 物流信息表格 -->
+				<view v-if="wishinfo && wishinfo.productExt" class="shippingtable">
+					
+					<view class="cu-bar bg-white solid-bottom">
+						<view class="action">
+							<text class="cuIcon-title text-blue"></text>
+							{{i18n.wishlist.wishproductshippingdetail}}
+						</view>
+					</view>
+					<view class="shippingtable">
+						<wishShippingTable :wishinfo="wishinfo"></wishShippingTable>
+					</view>
+					
+				</view>
+				
+				<uni-collapse accordion  @change="(activeNameArr) => { collapseOpen = activeNameArr.includes('1688detail') }">
+					<uni-collapse-item name="1688detail" :title="i18n.wishlist.detail1688params" :open="collapseOpen" showAnimation>
 						
 						<!-- 表格区域 -->
-						<view class="cu-bar bg-white solid-bottom" @tap.stop="showSelector = true">
+						<!-- <view class="cu-bar bg-white solid-bottom" @tap.stop="showSelector = true">
 							<view class="action">
 								<text class="cuIcon-title text-orange"></text>
 								{{i18n.wishlist.wishproductspecdetail}}
 							</view>
-						</view>
+						</view> -->
 						
 						<!-- 规格table -->
-						<view class="wishspectable">
-							<wishTableSpec v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
-						</view>
+						<!-- <view class="wishspectable">
+							<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
+						</view> -->
 						
 						<!-- <view class="spectable margin-top-sm">
 							<wishSpecTable v-if="wishinfo" :wishinfo="wishinfo"></wishSpecTable>
 						</view> -->
 						
-						<!-- <view class="shippingtable margin-top-sm">
-							<wishShippingTable v-if="wishinfo" :wishinfo="wishinfo"></wishShippingTable>
-						</view> -->
-						
-						<!-- 其他拓展信息 -->
-						<view v-if="extArr" class="extinfoview">
+						<!--  -->
+						<view v-if="productInfo1688" class="productinfo1688">
 							
-							<view class="cu-bar bg-white solid-bottom">
-								<view class="action">
-									<text class="cuIcon-title text-orange"></text>
-									{{ i18n.wishlist.wishproductextdetail }} 
-								</view>
-							</view>
-							<view class="cu-list menu sm-border">
+							<!-- 1688属性信息 -->
+							<view v-if="extArr && extArr.length > 0" class="cu-list menu sm-border 1688attributeListView">
 								
 								<view class="cu-item" v-for="(item, index) in extArr" :key="index">
 									<view class="content basis-sm">
 										<text class="text-grey text-cut">{{ item.keyStr }}</text>
 									</view>
-									<view class="action basis-df text-right">
-										<!-- 计算运费项 -->
-										<button v-if=" item.id === 'internationalShippingFee' " class="margin-right-sm cu-btn radius bg-gradual-blue sm" @click="  popuptype = 'shippingtool'; popmode='top'; showpopup=true; ">{{ i18n.wishlist.calculateShippingStr }}</button>
-										<text class="text-grey text-sm">{{ item.value }}</text>
+									<view class="action">
+										<text class="text-grey text-sm">{{item.value }} </text>
 									</view>
 								</view>
+								
+							</view>
+							
+							<!-- 详情图片信息 -->
+							<view v-if="productInfo1688.detailImgs" class="1688detaiImgsView">
+								
+								<image v-for="(img, index) in productInfo1688.detailImgs.split(',')" :key="index" :src="img" mode="widthFix" @click="previewImgs(productInfo1688.detailImgs, index)"></image>
 								
 							</view>
 							
@@ -613,10 +635,7 @@
 			</template>
 			
 		</u-popup>
-		
-		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="wishinfo" :wishId="wishinfo._id" :ifshow.sync="showSelector"></wishSpecSelector>
-		
+				
 	</view>
 </template>
 
@@ -626,8 +645,6 @@
 	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue'; // 使用table-com的多规格表格
 	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'; // 使用table-com的物流表格
 	import wishTimeLineItem from '@/components/wishtimelineitem/wishtimelineitem.vue'; // 单个时间轴组件
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
-	
 	
 	
 	var _this
@@ -639,14 +656,15 @@
 				id: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishinfo: null, // 当前心愿详情
-				productExt: null, // 心愿商品拓展字段
+				productExt: null, // 心愿拓展字段
+				productInfo1688: null, // 附属的1688商品数据
 				timelinearrdic: {}, // 心愿时间轴数据
 				
 				swiperCur: 0, // 当前轮播图索引
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
 				imgsArr: [], // 轮播图的图片数组索引
 				
-				collapseOpen: true, // 是否展开规格订购信息  默认展开
+				collapseOpen: false, // 是否展开规格订购信息  默认不展开
 				extArr: [], // 拓展信息展示数组
 				
 				interShippingSingleFeeStr: '', // 国际运费单价
@@ -673,7 +691,6 @@
 			wishShippingTable,
 			wishTableSpec,
 			wishTimeLineItem,
-			wishSpecSelector,
 		},
 		
 		computed: {
@@ -818,8 +835,8 @@
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
-					.where(`_id == '${_this.id}' `)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specList')
+					.doc(_this.id)
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,selectSpecPropInfo,productInfo1688')
 					.get({
 						getOne:true
 					})
@@ -833,9 +850,13 @@
 							// 解析心愿商品拓展字段
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
-							
 							// 设置拓展展示字段
-							_this.setshowproductextinfo()
+							// _this.setshowproductextinfo(productExt)
+							
+							// 设置1688商品详情信息
+							let productInfo1688 = detaildata.productInfo1688
+							_this.productInfo1688 = productInfo1688
+							_this.set1688attributelist(productInfo1688.attributeList)
 							
 						}
 						else {
@@ -858,7 +879,7 @@
 			},
 			
 			// 设置展示的拓展字段
-			setshowproductextinfo() {
+			setshowproductextinfo(productExt) {
 				
 				// 解析要展示的拓展字段
 				let extArr = []
@@ -873,39 +894,57 @@
 				let boxSizeItem = {
 					keyStr: `${_this.i18n.wishlist.boxSize}(cm)`,
 					id: 'boxSize',
-					value: _this.productExt.boxLength ? `${_this.productExt.boxLength}cm x ${_this.productExt.boxWidth}cm x ${_this.productExt.boxHeight}cm` : '/'
+					value: productExt.boxLength ? `${productExt.boxLength}cm x ${productExt.boxWidth}cm x ${productExt.boxHeight}cm` : '/'
 				}
 				
 				// 箱体体积
 				let boxVolumeItem = {
 					keyStr: `${_this.i18n.wishlist.boxVolume}(m³)`,
 					id: 'boxVolume',
-					value: _this.productExt.boxVolume || '/'
+					value: productExt.boxVolume || '/'
 				}
 				
 				// 装箱数量
 				let boxContainNumItem = {
 					keyStr: `${_this.i18n.wishlist.boxContainerNum}(pcs/box)`,
 					id: 'boxContainNum',
-					value: _this.productExt.boxContainerNum || '/'
+					value: productExt.boxContainerNum || '/'
 				}
 				
 				// 国内运费
 				let domesticShippingItem = {
 					keyStr: _this.i18n.wishlist.domesticShippingFee,
 					id: 'domesticShippingFee',
-					value: _this.productExt.domesticShippingFee || '/'
+					value: productExt.domesticShippingFee || '/'
 				}
 				
 				// 国际运费
 				let internationalShippingItem = {
 					keyStr: _this.i18n.wishlist.internationalShippingFee,
 					id: 'internationalShippingFee',
-					value: _this.productExt.internationalShippingFee || ''
+					value: productExt.internationalShippingFee || ''
 				}
 				
 				extArr = [boxSizeItem, boxVolumeItem, boxContainNumItem, domesticShippingItem, internationalShippingItem]
 				
+				this.extArr = extArr
+				
+			},
+			
+			// 设置1688的属性展示
+			set1688attributelist(attributeList) {
+				
+				let extArr = []
+				if(attributeList) {
+					attributeList.forEach(eachitem => {
+						let Item = {
+							keyStr: eachitem.attributeName,
+							id: eachitem.attributeName,
+							value: eachitem.attributeVal
+						}
+						extArr.push(Item)
+					})
+				}
 				this.extArr = extArr
 				
 			},

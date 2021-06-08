@@ -47,7 +47,7 @@
 			"description": "目标价格类型"
 		},
 		"targetAmount": {
-			"bsonType":"string",
+			"bsonType":"string || int",
 			"description": "目标数量"
 		},
 		"hurryLevel": {
@@ -118,7 +118,7 @@
 				}
 			}
 		},
-		"specInfo": {
+		"specPropInfo": {
 			"bsonType":"object",
 			"description":"心愿单商品的规格对象",
 			"properties": {
@@ -173,7 +173,7 @@
 			}
 			
 		},
-		"selectSpecInfo": {
+		"selectSpecPropInfo": {
 			"bsonType":"object",
 			"description":"心愿单商品用户选择的规格对象",
 			"properties": {
@@ -231,6 +231,11 @@
 				}
 			}
 			
+		},
+		"productInfo1688": {
+			"bsonType":"object",
+			"description":"从1688上获取的商品内容对象",
+			"defaultValue":null
 		}
 		
 	}

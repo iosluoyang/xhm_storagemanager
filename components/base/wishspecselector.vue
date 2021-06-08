@@ -14,11 +14,9 @@
 				<view class="proInfoView" style="max-width: calc(100% - 250rpx)">
 					
 					<!-- 商品名称 -->
-					<view class="text-df t_twoline">{{ proName }}</view>
+					<view v-if="defaultProTitle" class="text-df t_twoline">{{ defaultProTitle }}</view>
 					<!-- 价格区域 -->
-					<view class="text-price text-red margin-top-sm">
-						{{ proPriceRange }}
-					</view>
+					<view v-if="defaultProPrice" class="text-price text-red margin-top-sm">{{ defaultProPrice }}</view>
 					
 				</view>
 				
@@ -102,7 +100,7 @@
 										<!-- 右侧区域 -->
 										<view slot="right-icon">
 											<!-- 步进器 -->
-											<u-number-box v-if=" type == 'normal' " class="margin-bottom-sm" v-model="seconditem.amount" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
+											<u-number-box v-if=" type == 'normal' " class="margin-bottom-sm" v-model="seconditem.amount" :max="seconditem.stock" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
 											
 											<!-- 库存区域 -->
 											<view class="stockview flex align-center">
@@ -163,17 +161,35 @@
 			
 			props: {
 				
+				// 默认商品主图
+				defaultProImg: {
+					type: String,
+					default: null
+				},
+				
+				// 默认商品名称
+				defaultProTitle: {
+					type: String,
+					default: null
+				},
+				
+				// 默认商品价格
+				defaultProPrice: {
+					type: String,
+					default: null
+				},
+				
 				// 规格对象
 				specPropInfo: {
 					type: Object,
 					default: null,
 				},
 				
-				// 心愿id
-				// wishId: {
-				// 	type: String|Number,
-				// 	default: null,
-				// },
+				// 心愿id  编辑时有值
+				wishId: {
+					type: String | Number,
+					default: null
+				},
 				
 				type: {
 					type: String,
@@ -199,9 +215,7 @@
 					secondTabCur: 0, // 二级属性的选中索引
 					
 					specDataArr: [], // 规格数据数组
-					
-					proName: '',
-					proPriceRange: '',
+
 					
 				}
 			},
@@ -221,24 +235,22 @@
 				
 				specImg() {
 					
+					let defaultProImg = this.defaultProImg
+					
 					if( this.specDataArr &&  this.specDataArr.length > 0) {
-						// console.log(this.specDataArr);
-						// console.log(this.firstTabCur);
+
 						let selectimg = this.specDataArr[this.firstTabCur].img
-						// console.log(selectimg);
 						
-						let mainImg = ''
-						if(this.productInfo) {
-							// mainImg = this.productInfo.imgs.split(',')[0]
-						}
-						
-						// 如果选择图片为数组则代表是一个属性 此时返回
+						// 如果选择图片为数组则代表是仅有一个属性 此时返回当前二级索引下的图片
 						if(Array.isArray(selectimg)) {
-							return selectimg[this.secondTabCur] || mainImg
+							return selectimg[this.secondTabCur] || defaultProImg
 						}
 						else {
-							return selectimg || mainImg
+							return selectimg || defaultProImg
 						}
+					}
+					else {
+						return defaultProImg
 					}
 					
 				}
@@ -248,14 +260,14 @@
 				
 				ifshow(newValue, oldValue) {
 					if(newValue !== oldValue) {
-						console.log(`检测到ifshow参数发生变化`);
+						// console.log(`检测到ifshow参数发生变化`);
 						this.show = newValue
 					}
 				},
 				
 				show(newValue, oldValue) {
 					if(newValue !== oldValue) {
-						console.log(`检测到show状态发生变化`);
+						// console.log(`检测到show状态发生变化`);
 						// 更新props参数保持一致
 						this.$emit('update:ifshow', newValue)
 					}
@@ -267,6 +279,7 @@
 				
 				_this = this
 				
+				// 组装规格数据
 				if(this.specPropInfo) {
 					this.setSpecListData(this.specPropInfo)
 				}
@@ -275,7 +288,7 @@
 			
 			methods: {
 				
-				// 根据心愿详情获取相关数据
+				// 根据心愿详情获取相关数据 删除
 				getdetailinfo() {
 										
 					// 根据id获取心愿详情
@@ -299,13 +312,7 @@
 										
 										let productInfo = res.result.data.product
 										_this.productInfo = productInfo
-										
-										console.log(`当前的数据信息为`);
-										console.log(_this.productInfo);
-										
-										_this.proName = productInfo.title || wishInfo.productTitle
-										_this.proPriceRange = productInfo.priceRange || wishInfo.targetPrice
-										
+								
 										_this.setSpecListData(productInfo.specPropInfo)
 										
 									}
@@ -530,7 +537,7 @@
 					let imgArr = []
 					let selectCurrent = 0
 					
-					// 如果选择图片为数组则代表是一个属性
+					// 如果选择图片为数组则代表是仅有一个属性
 					if(Array.isArray(this.specDataArr[this.firstTabCur].img)) {
 						imgArr = this.specDataArr[this.firstTabCur].img
 						selectCurrent = this.secondTabCur
@@ -576,10 +583,9 @@
 					}
 				},
 				
-				// 确定事件
-				confirm() {
+				// 整理当前dataArr数据获取最终specPropInfo
+				getPropInfobyDataArr() {
 					
-					// 整理数据
 					// 根据当前的dataArr值变更为数据库保存的值
 					let propValList = []
 					this.specDataArr.forEach(firstitem => {
@@ -612,44 +618,65 @@
 					
 					let globalSpecPropInfo = this.specPropInfo // 规格属性对象
 					let specPropInfo = {
-						propName: globalSpecPropInfo.propName || '第一属性', // 规格属性名称 一级 （颜色）
-						secondPropName: globalSpecPropInfo.secondPropName || '第二属性',//	规格属性名称 二级(尺码)
+						propName: globalSpecPropInfo && globalSpecPropInfo.propName || '第一属性', // 规格属性名称 一级 （颜色）
+						secondPropName: globalSpecPropInfo && globalSpecPropInfo.secondPropName || '第二属性',//	规格属性名称 二级(尺码)
 						propValList: propValList, //	规格属性名称值列表(一级属性)
 					}
+					
+					return specPropInfo
+					
+				},
+				
+				// 确定事件
+				confirm() {
+					
+					// 整理数据
+					let specPropInfo = this.getPropInfobyDataArr()
 					
 					// 如果是编辑状态则保存当前的数据
 					if(this.type == 'edit') {
 						
-						// 更新当前的规格数据
-						const db = uniCloud.database();
-						db.collection('wishlist')
-						.doc(this.wishId)
-						.update({specInfo: specPropInfo})
-						.then(response => {
-							// 更新成功
-							uni.showToast({
-								title: this.i18n.tip.fixsuccess,
-								icon: 'none'
-							});
-							
-							this.$emit('finishUpdate', specPropInfo)
-							this.show = !this.show
-							
-						})
-						.catch(error => {
-							// 更新失败
-							console.log(`更新失败,${JSON.stringify(error.message)}`);
-							uni.showToast({
-								title: this.i18n.error.fixerror,
-								icon: 'none'
-							});
-						})
+						uni.showModal({
+							content: this.i18n.tip.optionconfirm,
+							showCancel: true,
+							cancelText: this.i18n.base.cancel,
+							confirmText: this.i18n.base.confirm,
+							success: res => {
+								if(res.confirm) {
+									
+									// 更新当前的规格数据
+									const db = uniCloud.database();
+									db.collection('wishlist')
+									.doc(this.wishId)
+									.update({specInfo: specPropInfo})
+									.then(response => {
+										// 更新成功
+										uni.showToast({
+											title: this.i18n.tip.fixsuccess,
+											icon: 'none'
+										});
+										
+										this.$emit('finishUpdate', specPropInfo)
+										this.show = !this.show
+										
+									})
+									.catch(error => {
+										// 更新失败
+										console.log(`更新失败,${JSON.stringify(error.message)}`);
+										uni.showToast({
+											title: this.i18n.error.fixerror,
+											icon: 'none'
+										});
+									})
+									
+								}
+							}
+						});
 						
 					}
 					// 如果是正常状态则为选中
 					else if(this.type == 'normal') {
 						
-						console.log(specPropInfo);
 						this.$emit('finishSelect', specPropInfo)
 						this.show = !this.show
 						
@@ -665,27 +692,5 @@
 </script>
 
 <style lang="scss" scope>
-	
-	
-	/deep/.wishspecselectorview{
-		
-		.contentview{
-			
-			.prospecview{
-				.specImg{
-					
-				}
-			}
-			
-			.firstscrollview{
-				
-				.eachfirstitem{
-					
-				}
-				
-			}
-			
-		}
-	}
 	
 </style>

@@ -29,10 +29,10 @@
 				<!-- 商品标题和备注 链接 -->
 				<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
 					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longtap="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
+					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
 					<view class="bottomview margin-top-sm flex justify-between align-center">
 						<view class="priceview flex align-center">
-							<text class="text-red text-xl margin-right">{{ `${wishinfo.targetMoneyType === 'RMB' ? '¥' : wishinfo.targetMoneyType === 'THB' ? '฿' : ''}${wishinfo.targetPrice}` }}</text>
+							<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
 							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
 							<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
 						</view>

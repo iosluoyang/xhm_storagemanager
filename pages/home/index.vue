@@ -229,7 +229,7 @@
 				// 	elements = [scanitem,typeitem,goodsitem,customeritem,personalitem,logisticitem,wishlistitem]
 				// }
 				
-				elements = [goodsitem, wishlistitem, personalitem]
+				elements = [wishlistitem, personalitem]
 				
 				this.elements = elements
 				
