@@ -14,7 +14,7 @@
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					
 					<!-- 商品标题 -->
-					<view class="text-bold text-xl margin-top-sm">{{ownwishitem.productTitle}}</view>
+					<view class="text-bold text-xl margin-top-sm text-cut width100">{{ownwishitem.productTitle}}</view>
 					
 					<!-- 商品价格和数量 -->
 					<view class="flex align-center justify-between width100">

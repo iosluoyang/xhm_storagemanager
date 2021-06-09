@@ -160,10 +160,10 @@
 		<u-popup class="popupview" v-model="showModal" mode="center" border-radius="10" width="80%" z-index="600" :mask-close-able="false">
 			
 			<!-- 图片展示 -->
-			<view v-if="modalType == 'img'" class="contentview">
+			<view v-if="modalType == 'img'" class="contentview t_center">
 				
-				<image :src="modalImg" :style="{width: '100%'}" mode="widthFix"></image>
-				<button class="cu-btn margin-top padding block bg-gradual-pink" @click="showModal = false">{{ i18n.base.confirm }}</button>
+				<image :src="modalImg" :style="{width: '100%'}" mode="aspectFit"></image>
+				<button class="cu-btn margin-top padding width50 round bg-gradual-pink" @click="showModal = false">{{ i18n.base.confirm }}</button>
 				
 			</view>
 			
@@ -188,7 +188,7 @@
 		</u-popup>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="productInfo1688.specPropInfo"  :ifshow.sync="showSelector"
+		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="  productInfo1688.specPropInfo"  :ifshow.sync="showSelector"
 							:defaultProImg="imgArr && imgArr.length > 0 ? imgArr[0].url : '' "
 							:defaultProTitle="productTitle"
 							:defaultProPrice="sourcePrice"
@@ -218,19 +218,19 @@
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
 				
+				producExt: {}, // 默认的商品拓展参数
+				
 				productSecretCode: '', // 商品编码口令
 				productPureUrl: '', //商品纯链接
 				
 				sourcePrice: '', // 源网站价格
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
-				collapseOpen: false, // 是否展开商品更多  默认不展开
 				
 				boxContainNum: '', // 一箱有几个
 				boxLength: '', // 箱子长度
 				boxWidth: '', // 箱子宽度
 				boxHeight: '', // 箱子高度
 				boxValume: '', // 箱子体积
-				interShippingSingleFeeStr: '', // 国际运费单价
 				
 				productInfo1688: null, // 1688上的商品信息
 				
@@ -313,7 +313,7 @@
 					this.targetAmount = totalAmount
 					
 				}
-				
+				this.targetAmount = totalAmount
 				return totalAmount
 				
 			},
@@ -332,7 +332,7 @@
 				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,selectSpecPropInfo,specPropInfo,productInfo1688')
 				.get({
 					getOne:true
 				})
@@ -358,28 +358,13 @@
 						// 解析商品链接
 						this.analysisUrl()
 						
-						// 解析心愿商品拓展字段
+						// 心愿商品拓展字段
 						let productExt = info.productExt
-						if(productExt) {
-							let boxContainNum = productExt.boxContainNum
-							let boxLength = productExt.boxLength
-							let boxWidth = productExt.boxWidth
-							let boxHeight = productExt.boxHeight
-							
-							if(boxContainNum) {this.boxContainNum = boxContainNum}
-							if(boxLength && boxWidth && boxHeight) {
-								this.boxLength = boxLength
-								this.boxWidth = boxWidth
-								this.boxHeight = boxHeight
-								// 计算体积
-								this.calculatevalume()
-							}
-							
-							if(boxContainNum || boxLength || boxWidth || boxHeight) {
-								this.collapseOpen = true
-							}
-							
-						}
+						this.producExt = productExt
+						
+						// 1688商品详情
+						let productInfo1688 = info.productInfo1688
+						this.productInfo1688 = productInfo1688
 						
 					}
 					else {
@@ -423,7 +408,6 @@
 						if(res.result.code == 0) {
 							
 							let productInfo1688 = res.result.data.product
-							_this.productInfo1688 = productInfo1688
 							
 							// console.log(`当前的数据信息为`);
 							// console.log(productInfo1688);
@@ -436,10 +420,16 @@
 								confirmText: _this.i18n.base.confirm,
 								success: res => {
 									if(res.confirm) {
+										_this.productInfo1688 = productInfo1688
 										_this.productTitle = productInfo1688.title
 										_this.sourcePrice = productInfo1688.priceRange
 										let imgsArr = productInfo1688.imgs.split(',') // 商品图片
 										_this.imgArr = imgsArr.map(item => ({url: item}))
+										
+										setTimeout(function() {
+											_this.showSelector = true
+										}, 300);
+										
 									}
 								}
 							});
@@ -652,22 +642,22 @@
 					});
 					return false
 				}
-				// 检查是否有目标价格
-				// else if(!this.targetPrice) {
-				// 	uni.showToast({
-				// 		title: this.i18n.wishlist.timeline.targetpriceerror,
-				// 		icon: 'none'
-				// 	});
-				// 	return false
-				// }
+				// 检查是否有源价格
+				else if(!this.sourcePrice) {
+					uni.showToast({
+						title: this.i18n.wishlist.timeline.inputpriceerror,
+						icon: 'none'
+					});
+					return false
+				}
 				// 检查是否有目标数量
-				// else if(!this.targetAmount) {
-				// 	uni.showToast({
-				// 		title: this.i18n.wishlist.targetamount,
-				// 		icon: 'none'
-				// 	});
-				// 	return false
-				// }
+				else if(!this.targetAmount) {
+					uni.showToast({
+						title: this.i18n.wishlist.targetamount,
+						icon: 'none'
+					});
+					return false
+				}
 				// 检查是否有图片
 				else if(this.imgArr.length == 0) {
 					uni.showToast({
@@ -693,12 +683,9 @@
 				// 商品拓展字段
 				let productExt = {
 					secretCode: this.productSecretCode,// 商品口令
-					pureUrl: this.productPureUrl, // 商品纯链接
-					boxContainNum: this.boxContainNum,
-					boxLength: this.boxLength,
-					boxWidth: this.boxWidth,
-					boxHeight: this.boxHeight,
+					pureUrl: this.productPureUrl // 商品纯链接
 				}
+				let uploadProductExt = {...this.producExt, ...productExt}
 				
 				// 上传图片成功 开始上传所有数据
 				let info = {
@@ -713,7 +700,7 @@
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
-					productExt: productExt, // 商品的拓展字段
+					productExt: uploadProductExt, // 商品的拓展字段
 				}
 				
 				if(_this.productInfo1688) {

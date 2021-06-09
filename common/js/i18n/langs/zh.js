@@ -443,7 +443,7 @@ const zh = {
 			addcomment: "说点什么",
 			addext: "补充信息",
 			found: "发现商品",
-			targetpriceerror: "请输入目标价格",
+			inputpriceerror: "请输入价格",
 			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始",
 			finishsign: "心愿单完成",
