@@ -89,6 +89,7 @@ const zh = {
 		needtoregister: "该账户暂未注册,请先注册",
 		loginsuccess: "登录成功",
 		logoutsuccess: "登出成功",
+		needtoinputcontent: "请输入内容",
 		needstorenametip: "请输入店铺名称",
 		needshippingnametip: "请输入物流公司名称",
 		copysuccess: "复制成功",
