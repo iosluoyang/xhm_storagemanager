@@ -171,7 +171,6 @@
 					}
 				}
 			}
-			
 		},
 		"selectSpecPropInfo": {
 			"bsonType":"object",

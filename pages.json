@@ -155,6 +155,12 @@
 			"root":"pages/wishlist",
 			"pages": [
 				{
+					"path":"linkprodetail",
+					"style": {
+						"navigationBarTitleText":"商品详情"
+					}
+				},
+				{
 					"path":"index",
 					"style": {
 						"navigationBarTitleText":"心愿单"

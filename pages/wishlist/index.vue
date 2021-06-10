@@ -6,13 +6,12 @@
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
-		
 		<!-- 搜索区域 -->
 		<view class="searchview margin">
 			
 			<!-- 搜索框 -->
 			<u-field class="round"
-						style="background-color: #F5F5F5;"
+					style="background-color: #F5F5F5;"
 					v-model="searchText" placeholder="请复制1688网址"
 					:border-bottom="false" label-width="0"
 					clear-size="45"
@@ -28,7 +27,6 @@
 			</view>
 			
 		</view>
-		
 		
 		<!-- 功能区域 -->
 		<view class="grid col-2 padding-sm margin-top-sm">
@@ -95,54 +93,11 @@
 					return
 				}
 				else {
-					this.getlinkdetails()
+					let searchParam = encodeURI(this.searchText)
+					uni.navigateTo({
+						url: `/pages/wishlist/linkprodetail?searchText=${searchParam}`
+					});
 				}
-				
-			},
-			
-			// 查找链接详情内容
-			getlinkdetails() {
-				
-				_this.ifloading = true
-				
-				// 开始加载规格信息
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getlinkdetail',
-						info: {
-							text: this.searchText
-						}
-					},
-					success(res) {
-						_this.ifloading = false
-						console.log(`获取成功${JSON.stringify(res)}`);
-						if(res.result.code == 0) {
-							
-							let productInfo1688 = res.result.data.product
-							
-							console.log(`当前的数据信息为`);
-							console.log(productInfo1688);
-							
-						}
-						else {
-							uni.showToast({
-								title: res.result.message,
-								icon: 'none'
-							});
-						}
-						
-					},
-					fail(error) {
-						_this.ifloading = false
-						console.log(`获取失败${JSON.stringify(error)}`);
-						console.log(error.message);
-						uni.showToast({
-							title: error.message,
-							icon: 'none'
-						});
-					}
-				})
 				
 			},
 			
