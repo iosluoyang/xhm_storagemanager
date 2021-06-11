@@ -27,7 +27,10 @@
 			</swiper>
 			
 			<!-- 标题售价等区域 -->
-			<view class="titleview">
+			<view class="titleheaderview">
+				
+				<view class="title text-bold text-xl">{{ linkProduct.title }}</view>
+				<view class="text-price text-red margin-top-sm">{{ linkProduct.priceRange }}</view>
 				
 			</view>
 			
