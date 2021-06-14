@@ -12,46 +12,46 @@
             	"navigationBarTitleText":"登录"
 			}
 		}
-		,{
-		    "path" : "pages/goodstype/index",
-		    "style" : {
-				"navigationBarTitleText":"商品分类",
-				"navigationStyle":"custom"
-			}
-		}
-		,{
-		    "path" : "pages/goods/goodslist",
-			"style" : {
-				"navigationBarTitleText":"商品列表",
-				"app-plus" : {
-					"bounce" : "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
-				}
-			}
-		}
-		,{
-		    "path" : "pages/goods/goodsdetail",
-		    "style" : {
-				"navigationBarTitleText":"商品详情"
-			}
-		}
-		,{
-		    "path" : "pages/goods/handlegoods",
-		    "style" : {
-				"navigationBarTitleText":"新增/编辑商品"
-			}
-		}
-		,{
-		    "path" : "pages/stock/index",
-		    "style" : {
-				"navigationBarTitleText":"库存管理"
-			}
-		}
-		,{
-		    "path" : "pages/stock/handlestock",
-		    "style" : {
-				"navigationBarTitleText":"库存操作"
-			}
-		}
+		// ,{
+		//     "path" : "pages/goodstype/index",
+		//     "style" : {
+		// 		"navigationBarTitleText":"商品分类",
+		// 		"navigationStyle":"custom"
+		// 	}
+		// }
+		// ,{
+		//     "path" : "pages/goods/goodslist",
+		// 	"style" : {
+		// 		"navigationBarTitleText":"商品列表",
+		// 		"app-plus" : {
+		// 			"bounce" : "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
+		// 		}
+		// 	}
+		// }
+		// ,{
+		//     "path" : "pages/goods/goodsdetail",
+		//     "style" : {
+		// 		"navigationBarTitleText":"商品详情"
+		// 	}
+		// }
+		// ,{
+		//     "path" : "pages/goods/handlegoods",
+		//     "style" : {
+		// 		"navigationBarTitleText":"新增/编辑商品"
+		// 	}
+		// }
+		// ,{
+		//     "path" : "pages/stock/index",
+		//     "style" : {
+		// 		"navigationBarTitleText":"库存管理"
+		// 	}
+		// }
+		// ,{
+		//     "path" : "pages/stock/handlestock",
+		//     "style" : {
+		// 		"navigationBarTitleText":"库存操作"
+		// 	}
+		// }
         ,{
             "path" : "pages/me/index",
             "style" : {
@@ -76,54 +76,54 @@
             	"navigationBarTitleText":"个人详情"
             }
         }
-        ,{
-            "path" : "pages/managepeople/index",
-            "style" : {
-				"navigationBarTitleText":"人员管理"
-			}
-        }
-        ,{
-            "path" : "pages/managepeople/handlemember",
-            "style" : {
-				"navigationBarTitleText":"添加成员/编辑成员"
-			}
-        }
-        ,{
-            "path" : "pages/managepeople/operationlog/index",
-            "style" : {
-				"navigationBarTitleText":"操作日志"
-			}
-        }
+   //      ,{
+   //          "path" : "pages/managepeople/index",
+   //          "style" : {
+			// 	"navigationBarTitleText":"人员管理"
+			// }
+   //      }
+   //      ,{
+   //          "path" : "pages/managepeople/handlemember",
+   //          "style" : {
+			// 	"navigationBarTitleText":"添加成员/编辑成员"
+			// }
+   //      }
+   //      ,{
+   //          "path" : "pages/managepeople/operationlog/index",
+   //          "style" : {
+			// 	"navigationBarTitleText":"操作日志"
+			// }
+   //      }
         ,{
             "path" : "pages/me/buildqrcode",
             "style" : {
 				"navigationBarTitleText":"生成二维码"
 			}
         }
-        ,{
-            "path" : "pages/goods/handlepriceandstock",
-            "style" : {
-				"navigationBarTitleText":"修改商品价格"
-			}
-        }
+   //      ,{
+   //          "path" : "pages/goods/handlepriceandstock",
+   //          "style" : {
+			// 	"navigationBarTitleText":"修改商品价格"
+			// }
+   //      }
         ,{
             "path" : "pages/me/workingtime",
             "style" : {
 				"navigationBarTitleText":"工作时间"
 			}
         }
-        ,{
-            "path" : "pages/customer/index",
-            "style" : {
-				"navigationBarTitleText":"客户关系"
-			}
-        }
-        ,{
-            "path" : "pages/customer/handlemember",
-            "style" : {
-				"navigationBarTitleText":"客户管理"
-			}
-        }
+   //      ,{
+   //          "path" : "pages/customer/index",
+   //          "style" : {
+			// 	"navigationBarTitleText":"客户关系"
+			// }
+   //      }
+   //      ,{
+   //          "path" : "pages/customer/handlemember",
+   //          "style" : {
+			// 	"navigationBarTitleText":"客户管理"
+			// }
+   //      }
         ,{
             "path" : "pages/notice/index",
             "style" : {
@@ -136,18 +136,18 @@
 				"navigationBarTitleText":"公告管理"
 			}
         }
-        ,{
-            "path" : "pages/logistic/index",
-            "style" : {
-				"navigationBarTitleText":"物流管理"
-			}
-        }
-        ,{
-            "path" : "pages/logistic/checklogisticresult",
-            "style" : {
-				"navigationBarTitleText":"查询物流"
-			}
-        }
+   //      ,{
+   //          "path" : "pages/logistic/index",
+   //          "style" : {
+			// 	"navigationBarTitleText":"物流管理"
+			// }
+   //      }
+   //      ,{
+   //          "path" : "pages/logistic/checklogisticresult",
+   //          "style" : {
+			// 	"navigationBarTitleText":"查询物流"
+			// }
+   //      }
     ],
 	"subPackages": [
 		// 心愿单分包
