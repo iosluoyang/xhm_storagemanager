@@ -23,12 +23,10 @@
 					{{i18n.wishlist.sourcelink}}:
 				</view>
 				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
-				<!-- <textarea auto-height :show-confirm-bar="false" v-model="sourceLink" @blur="analysisUrl" /> -->
 				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
 				<!-- #endif -->
 				
-				<button class="cu-btn bg-gradual-pink shadow" @tap.stop="getlinkdetails">{{ i18n.base.search }}</button>
 			</view>
 			
 			<!-- 链接解析结果 -->
@@ -98,7 +96,7 @@
 			<template>
 				
 				<!-- 选择规格 -->
-				<view v-if="productInfo1688 && productInfo1688.specPropInfo" class="cu-list menu">
+				<view v-if="specPropInfo" class="cu-list menu">
 					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
 						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
 						
@@ -111,8 +109,7 @@
 				<!-- 输入数量 -->
 				<view v-else class="cu-form-group solid-bottom">
 					<view class="title">{{i18n.wishlist.targetamount}} :</view>
-					<input type="text" v-model="targetAmount" />
-					<!-- <textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" /> -->
+					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" />
 				</view>
 				
 			</template>
@@ -187,29 +184,15 @@
 			
 		</u-popup>
 		
-		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="productInfo1688 && productInfo1688.specPropInfo" :specPropInfo="  productInfo1688.specPropInfo"  :ifshow.sync="showSelector"
-							:defaultProImg="imgArr && imgArr.length > 0 ? imgArr[0].url : '' "
-							:defaultProTitle="productTitle"
-							:defaultProPrice="sourcePrice"
-							@finishSelect="specFinishSelect">
-		</wishSpecSelector>
-		
 	</view>
 </template>
 
 <script>
-	
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
-	
+		
 	var _this
 	
 	export default {
-		
-		components: {
-			wishSpecSelector
-		},
-		
+				
 		data() {
 			return {
 				
@@ -217,26 +200,19 @@
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
 				sourceLink: '', // 源网站链接
-				
-				producExt: {}, // 默认的商品拓展参数
-				
+								
 				productSecretCode: '', // 商品编码口令
 				productPureUrl: '', //商品纯链接
 				
 				sourcePrice: '', // 源网站价格
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 				
-				boxContainNum: '', // 一箱有几个
-				boxLength: '', // 箱子长度
-				boxWidth: '', // 箱子宽度
-				boxHeight: '', // 箱子高度
-				boxValume: '', // 箱子体积
-				
 				productInfo1688: null, // 1688上的商品信息
 				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
+				specPropInfo: null, // 心愿规格数组
 				selectSpecPropInfo: null, // 目标选中数量对象
 				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
@@ -263,36 +239,22 @@
 			this.type = option.type // add 新增  edit编辑 copy拷贝
 			this.id = option.id // 心愿详情id(编辑或者拷贝的原心愿id)
 			
+			// 1688商品详情
+			let productInfo1688 = uni.getStorageSync('productInfo1688')
+			if(productInfo1688) {
+				// 设置1688数据
+				this.set1688productInfo(productInfo1688)
+				uni.removeStorageSync('productInfo1688')
+			}
+			
 			// 如果是编辑或者拷贝状态则获取心愿详情
 			if(this.type === 'edit' || this.type === 'copy') {
 				this.getwishdetail()
 			}
 			
-			// 加载紧急程度数据源数组
-			let hurrylevelDataArr = [
-				{
-					level: 1,
-					name: this.i18n.wishlist.hurryleveldata.level1
-				},
-				{
-					level: 2,
-					name: this.i18n.wishlist.hurryleveldata.level2
-				},
-				{
-					level: 3,
-					name: this.i18n.wishlist.hurryleveldata.level3
-				},
-				{
-					level: 4,
-					name: this.i18n.wishlist.hurryleveldata.level4
-				},
-				{
-					level: 5,
-					name: this.i18n.wishlist.hurryleveldata.level5
-				}
-			]
 			
-			this.hurrylevelDataArr = hurrylevelDataArr
+			// 设置紧急程度数组
+			// this.setHurryLevelArr()
 			
 		},
 		
@@ -309,8 +271,6 @@
 							totalAmount += Number(seconditem.amount)
 						})
 					})
-					
-					this.targetAmount = totalAmount
 					
 				}
 				this.targetAmount = totalAmount
@@ -332,7 +292,7 @@
 				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,selectSpecPropInfo,specPropInfo,productInfo1688')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,selectSpecPropInfo')
 				.get({
 					getOne:true
 				})
@@ -355,16 +315,13 @@
 						let imgsArr = info.imgs.split(',') // 商品图片
 						this.imgArr = imgsArr.map(item => ({url: item}))
 						
+						this.productExt = info.productExt
+						this.specPropInfo = info.specPropInfo
+						this.selectSpecPropInfo = info.selectSpecPropInfo
+						
+						
 						// 解析商品链接
 						this.analysisUrl()
-						
-						// 心愿商品拓展字段
-						let productExt = info.productExt
-						this.producExt = productExt
-						
-						// 1688商品详情
-						let productInfo1688 = info.productInfo1688
-						this.productInfo1688 = productInfo1688
 						
 					}
 					else {
@@ -388,71 +345,48 @@
 				
 			},
 			
-			// 查找链接详情内容
-			getlinkdetails() {
+			// 解析1688商品数据
+			set1688productInfo(productInfo1688) {
 				
-				_this.ifloading = true
+				_this.productInfo1688 = productInfo1688
+				_this.sourceLink = productInfo1688.sourceLink
+				_this.analysisUrl() // 解析链接
+				_this.productTitle = productInfo1688.title
+				_this.sourcePrice = productInfo1688.priceRange
+				let imgsArr = productInfo1688.imgs.split(',') // 商品图片
+				_this.imgArr = imgsArr.map(item => ({url: item}))
+				_this.specPropInfo = productInfo1688.specPropInfo // 心愿规格数据
+				_this.selectSpecPropInfo = productInfo1688.selectSpecPropInfo // 选中规格
 				
-				// 开始加载规格信息
-				uniCloud.callFunction({
-					name: 'wishlist',
-					data: {
-						type: 'getlinkdetail',
-						info: {
-							text: this.sourceLink
-						}
+			},
+			
+			// 设置紧急程度数组
+			setHurryLevelArr() {
+				
+				let hurrylevelDataArr = [
+					{
+						level: 1,
+						name: this.i18n.wishlist.hurryleveldata.level1
 					},
-					success(res) {
-						_this.ifloading = false
-						console.log(`获取成功${JSON.stringify(res)}`);
-						if(res.result.code == 0) {
-							
-							let productInfo1688 = res.result.data.product
-							
-							// console.log(`当前的数据信息为`);
-							// console.log(productInfo1688);
-							
-							// 选择性替换
-							uni.showModal({
-								content: `系统检测到该链接为1688上的商品:\n《${productInfo1688.title}》\n是否进行数据替换?`,
-								showCancel: true,
-								cancelText: _this.i18n.base.cancel,
-								confirmText: _this.i18n.base.confirm,
-								success: res => {
-									if(res.confirm) {
-										_this.productInfo1688 = productInfo1688
-										_this.productTitle = productInfo1688.title
-										_this.sourcePrice = productInfo1688.priceRange
-										let imgsArr = productInfo1688.imgs.split(',') // 商品图片
-										_this.imgArr = imgsArr.map(item => ({url: item}))
-										
-										setTimeout(function() {
-											_this.showSelector = true
-										}, 300);
-										
-									}
-								}
-							});
-							
-						}
-						else {
-							uni.showToast({
-								title: res.result.message,
-								icon: 'none'
-							});
-						}
-						
+					{
+						level: 2,
+						name: this.i18n.wishlist.hurryleveldata.level2
 					},
-					fail(error) {
-						_this.ifloading = false
-						console.log(`获取失败${JSON.stringify(error)}`);
-						console.log(error.message);
-						uni.showToast({
-							title: error.message,
-							icon: 'none'
-						});
+					{
+						level: 3,
+						name: this.i18n.wishlist.hurryleveldata.level3
+					},
+					{
+						level: 4,
+						name: this.i18n.wishlist.hurryleveldata.level4
+					},
+					{
+						level: 5,
+						name: this.i18n.wishlist.hurryleveldata.level5
 					}
-				})
+				]
+				
+				this.hurrylevelDataArr = hurrylevelDataArr
 				
 			},
 			
@@ -506,21 +440,10 @@
 						this.productPureUrl = productPureUrl
 					}
 					
-					// 如果口令和链接都存在则开始自动爬取商品数据
-					// if(productPureUrl && productSecretCode) {
-					// 	this.getlinkdetails()
-					// }
 				}
 				
 			},
-			
-			// 选择完规格
-			specFinishSelect(selectSpecPropInfo) {
-				console.log(`当前选择完规格的数据为`);
-				console.log(selectSpecPropInfo);
-				this.selectSpecPropInfo = selectSpecPropInfo
-			},
-			
+						
 			// 复制内容
 			copyStr(content) {
 				
@@ -543,21 +466,6 @@
 				let sourcePrice = e.detail.value
 				this.sourcePrice = sourcePrice
 				this.targetMoneyType = this.sourceMoneyType
-			},
-			
-			// 计算货物体积
-			calculatevalume() {
-				// 如果商品的长宽高没有填完则提示用户 否则进行计算
-				if(this.boxLength && this.boxWidth && this.boxHeight) {
-					this.boxValume = parseFloat(parseFloat(this.boxLength/100) * parseFloat(this.boxWidth/100) * parseFloat(this.boxHeight/100)).toFixed(4)
-				}
-				else {
-					this.boxValume = ''
-					uni.showToast({
-						title: '请输入长宽高',
-						icon: 'none'
-					});
-				}
 			},
 			
 			// 紧急程度更改
@@ -696,16 +604,12 @@
 					targetPrice: _this.targetPrice, // 目标价格
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetAmount: _this.targetAmount, // 目标数量
-					selectSpecPropInfo: _this.selectSpecPropInfo, // 选择的规格数量
+					specPropInfo: _this.specPropInfo, // 规格对象
+					selectSpecPropInfo: _this.selectSpecPropInfo, // 选择的规格对象
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
 					productExt: uploadProductExt, // 商品的拓展字段
-				}
-				
-				if(_this.productInfo1688) {
-					info['specPropInfo'] = _this.productInfo1688.specPropInfo
-					info['productInfo1688'] = _this.productInfo1688
 				}
 				
 				// 新增 或者 拷贝
