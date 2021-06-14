@@ -44,7 +44,7 @@
 			<!-- tab内容区域 -->
 			<view class="tabcontentview padding-left-sm padding-right-sm">
 				
-				<view v-for="(item, index) in tabArr" :key="item.key">
+				<view v-for="(item, tabIndex) in tabArr" :key="item.key">
 					
 					<!-- 如果是详情 -->
 					<view v-if="item.key == 'detail'" v-show="tabArr[TabCur].key == item.key" class="detailimgsview">
