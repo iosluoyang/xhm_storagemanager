@@ -33,7 +33,7 @@
 			</view>
 			
 			<!-- tab视图 -->
-			<u-sticky offset-top="0" enable h5-nav-height="44" z-index="555">
+			<u-sticky :offset-top="stickyTop" z-index="555">
 				<scroll-view scroll-x class="bg-white nav text-center">
 					<view class="cu-item" :class="index==TabCur?'text-pink cur':''" v-for="(item,index) in tabArr" :key="index" @tap="tabSelect" :data-id="index">
 						{{ item.title }}
@@ -47,13 +47,14 @@
 				<view v-for="(item, tabIndex) in tabArr" :key="item.key">
 					
 					<!-- 如果是详情 -->
-					<view v-if="item.key == 'detail'" v-show="tabArr[TabCur].key == item.key" class="detailimgsview">
+					<view v-if="item.key == 'detail' && tabIndex == TabCur" class="detailimgsview">
 						<u-image v-for="(img,index) in linkProduct.detailImgs.split(',')" :key="index" :src="img" mode="widthFix" @click="previewImgs(linkProduct.detailImgs, index)"></u-image>
 					</view>
 					
 					<!-- 如果是属性 -->
-					<view v-else-if="item.key == 'attribute'" v-show="tabArr[TabCur].key == item.key" class="cu-list menu sm-border 1688attributeListView">
-						<view class="cu-item" v-for="(item, index) in linkProduct.attributeList" :key="index">
+					<view v-else-if=" item.key == 'attribute' && tabIndex == TabCur " class="cu-list menu sm-border 1688attributeListView">
+						{{ JSON.stringify(linkProduct.attributeList) }}
+						<view class="cu-item" v-for="(item, itemindex) in linkProduct.attributeList" :key="itemindex">
 							<view class="content basis-sm">
 								<text class="text-grey text-cut">{{ item.attributeName }}</text>
 							</view>
@@ -64,7 +65,7 @@
 					</view>
 					
 					<!-- 如果是交易须知 -->
-					<view v-else-if="item.key == 'tradeprotocol'" v-show="tabArr[TabCur].key == item.key" class="tradeproptocolview">
+					<view v-else-if=" item.key == 'tradeprotocol' && tabIndex == TabCur " class="tradeproptocolview">
 						<u-parse :html="tradeprotocolcontent" :selectable="true" :show-with-animation="true" autoscroll></u-parse>
 					</view>
 					
@@ -143,6 +144,24 @@
 			};
 		},
 		
+		computed: {
+			
+			// sticky的偏高值
+			stickyTop() {
+				// #ifdef H5
+				return 0
+				// #endif
+				
+				// #ifndef H5
+				let toprpx = this.CustomBar / uni.getSystemInfoSync().windowWidth * 750
+				console.log(`当前导航栏高度为:${this.CustomBar}`);
+				console.log(`当前计算的top值为${toprpx}`);// 注意转成rpx单位
+				return toprpx
+				// #endif
+			}
+			
+		},
+		
 		onLoad(option) {
 			
 			_this = this
@@ -156,7 +175,7 @@
 				return
 			}
 			
-			this.searchText = decodeURI(searchText)
+			this.searchText = decodeURIComponent(searchText)
 			this.loadDetailData()
 			
 		},
@@ -194,19 +213,16 @@
 						}
 						else {
 							uni.showModal({
-								content: `系统暂未找到该商品,请检查链接是否正确,可以选择重试或者手动添加心愿单`,
+								content: `系统暂未找到该商品,是否手动添加心愿单`,
 								showCancel: true,
-								cancelText: `重试`,
-								confirmText: '手动添加',
+								cancelText: _this.i18n.base.cancel,
+								confirmText: _this.i18n.base.confirm,
 								success: res => {
-									if(res.cancel) {
-										_this.loadDetailData()
-									}
-									else if(res.confirm) {
+									if(res.confirm) {
 										uni.redirectTo({
 											url: '/pages/wishlist/handlewish?type=add'
 										});
-									}
+									} 
 								}
 							});
 							// uni.showToast({

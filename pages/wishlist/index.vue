@@ -93,7 +93,8 @@
 					return
 				}
 				else {
-					let searchParam = encodeURI(this.searchText)
+					let searchParam = encodeURIComponent(this.searchText)
+					console.log(`当前搜索文本为:${searchParam}`);
 					uni.navigateTo({
 						url: `/pages/wishlist/linkprodetail?searchText=${searchParam}`
 					});

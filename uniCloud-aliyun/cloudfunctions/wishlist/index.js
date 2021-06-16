@@ -215,6 +215,7 @@ exports.main = async (event, context) => {
 		
 		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
 		let text = info.text
+		console.log(`参数为:${text}`);
 		const res = await uniCloud.httpclient.request(linkApi, {
 		    method: 'POST',
 			data: {
