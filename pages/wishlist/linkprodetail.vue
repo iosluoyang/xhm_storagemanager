@@ -54,6 +54,7 @@
 					<!-- 如果是属性 -->
 					<view v-else-if=" item.key == 'attribute' && tabIndex == TabCur " class="cu-list menu sm-border 1688attributeListView">
 						{{ JSON.stringify(linkProduct.attributeList) }}
+						
 						<view class="cu-item" v-for="(item, itemindex) in linkProduct.attributeList" :key="itemindex">
 							<view class="content basis-sm">
 								<text class="text-grey text-cut">{{ item.attributeName }}</text>
