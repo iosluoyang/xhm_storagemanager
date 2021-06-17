@@ -7,6 +7,10 @@ import i18nmodule from '@/common/js/i18n/i18n.js'
 
 let i18n = i18nmodule.messages[i18nmodule.locale].index
 
+// #ifdef MP-WEIXIN
+var plugin = requirePlugin("WechatSI")
+// #endif
+
 // 定义角色枚举
 const roleEnum = {
 	admin: 'admin',
@@ -502,7 +506,47 @@ export function getwishtagname(achieveFlag) {
 	}
 }
 
+// 微信小程序中翻译封装方法
+// sourcecontent 源内容
+// ENToCN 是否为英文转中文 默认为否
+// 返回一个promise
+export function translatecontent(sourcecontent, ENToCN=false) {
+	
+	let promise = new Promise((resolve, reject) => {
+		
+		// #ifdef MP-WEIXIN
+		
+		plugin.translate({
+		    lfrom: ENToCN ? 'en_US' : "zh_CN",
+		    lto: ENToCN ? "zh_CN" : "en_US",
+		    content: sourcecontent,
+		    success: function(res) {
+		        if(res.retcode == 0) {
+		            console.log("翻译结果为:", res.result)
+					let result = res.result
+					resolve(result)
+		        } else {
+		            console.warn("翻译失败", res)
+					reject(sourcecontent)
+		        }
+		    },
+		    fail: function(res) {
+		        console.log("网络失败",res)
+				reject(sourcecontent)
+		    }
+		})
+		
+		// #endif
+		
+		// #ifndef MP-WEIXIN
+		resolve(sourcecontent)
+		// #endif
+		
+	})
+	
+	return promise
 
+}
 
 export default {
 	roleEnum, // 角色枚举类型
@@ -522,4 +566,5 @@ export default {
 	getrolenameandcolor, // 获取角色的名称和背景颜色
 	getwishtagbgcolorclassname, // 获取心愿背景颜色
 	getwishtagname, // 获取心愿tag名称
+	translatecontent, // 翻译内容
 }
