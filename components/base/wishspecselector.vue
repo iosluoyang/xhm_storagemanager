@@ -161,10 +161,10 @@
 			
 			props: {
 				
-				// 默认商品主图
+				// 默认商品主图(外部无需传入)
 				defaultProImg: {
 					type: String,
-					default: null
+					default: '/static/publicicon/logo.png'
 				},
 				
 				// 默认商品名称
@@ -187,7 +187,7 @@
 				
 				// 心愿id  编辑时有值
 				wishId: {
-					type: String | Number,
+					type: [String, Number],
 					default: null
 				},
 				
@@ -207,7 +207,7 @@
 			data() {
 				return {
 					
-					show: this.$props.ifshow, // 是否显示弹框
+					show: this.ifshow, // 是否显示弹框
 					
 					needTip: true, // 是否需要提示 默认为true
 					
@@ -216,7 +216,6 @@
 					
 					specDataArr: [], // 规格数据数组
 
-					
 				}
 			},
 			
@@ -254,6 +253,7 @@
 					}
 					
 				}
+				
 			},
 			
 			watch: {
@@ -273,6 +273,18 @@
 					}
 				},
 				
+				specPropInfo: {
+					handler(newValue, oldValue) {
+						if(newValue) {
+							console.log(`检测到规格数据发生变化`);
+							// 组装规格数据
+							this.setSpecListData(newValue)
+						}
+					},
+					deep: true,
+					immediate: true
+				}
+				
 			},
 			
 			created() {
@@ -280,69 +292,10 @@
 				_this = this
 				
 				// 组装规格数据
-				if(this.specPropInfo) {
-					this.setSpecListData(this.specPropInfo)
-				}
 				
 			},
 			
 			methods: {
-				
-				// 根据心愿详情获取相关数据 删除
-				getdetailinfo() {
-										
-					// 根据id获取心愿详情
-					const db = uniCloud.database();
-					db.collection('wishlist').doc(this.wishId).get({getOne:true}).then(response => {
-						if(response.result.code == 0) {
-							let wishInfo = response.result.data
-							this.wishInfo = wishInfo
-							
-							// 开始加载规格信息
-							uniCloud.callFunction({
-								name: 'wishlist',
-								data: {
-									type: 'getlinkdetail',
-									info: {
-										text: this.wishInfo.sourceLink
-									}
-								},
-								success(res) {
-									if(res.result.code == 0) {
-										
-										let productInfo = res.result.data.product
-										_this.productInfo = productInfo
-								
-										_this.setSpecListData(productInfo.specPropInfo)
-										
-									}
-									else {
-										uni.showToast({
-											title: res.result.message,
-											icon: 'none'
-										});
-									}
-									
-								},
-								fail(error) {
-									console.log(`当前的数据信息为`);
-									console.log(error.message);
-									uni.showToast({
-										title: error.message,
-										icon: 'none'
-									});
-								}
-							})
-							
-						}
-					}).catch(error => {
-						uni.showToast({
-							title: error.message,
-							icon: 'none'
-						});
-					})
-					
-				},
 				
 				// 设置规格数组数据
 				setSpecListData(specPropInfo) {

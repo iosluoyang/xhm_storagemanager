@@ -117,15 +117,6 @@
 					
 				</template>
 				
-				<!-- 设置商品规格价格库存区域 -->
-				<template v-if=" type == 'found' ">
-					<view class="setspecview">
-						
-						<treeTuY v-if="treeData" :serverData="treeData" @dataChange="treeDataChange"></treeTuY>
-						
-					</view>
-				</template>
-				
 				<!-- 下方的为其他字段 视情况而定 -->
 				
 				<!-- 目标价格 仅当发现新商品时才有 暂时隐藏 -->
@@ -168,7 +159,7 @@
 					
 					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
 					
-					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-unfold']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
+					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
 				
 				</view>
 				
@@ -258,15 +249,13 @@
 </template>
 
 <script>
-	
-	import treeTuY from '@/components/treeTuY/treeTuY.vue'
-	
+		
 	var _this
 	
 	export default {
 		
 		components: {
-			treeTuY
+			
 		},
 		
 		data() {
@@ -290,9 +279,6 @@
 				showpopup: false, // 是否显示弹框
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
-				
-				treeData: null, // 规格数的数据
-				specList: null, // 规格数组数据
 				
 			};
 		},
@@ -341,38 +327,7 @@
 							if(_this.wishinfo.productExt) {
 								_this.productExt = _this.wishinfo.productExt
 							}
-							
-							let specList = _this.wishinfo.specList
-							let ArrC = []
-							specList.forEach( firstitem => {
-								
-								let child = []
-								firstitem.childList.forEach( seconditem => {
-									let secondinfo = {
-										title: seconditem.attributeName,
-										price: seconditem.price,
-										stock: seconditem.amount
-									}
-									child.push(secondinfo)
-								})
-								
-								let firstinfo = {
-									title: firstitem.attributeName,
-									img: firstitem.img,
-									child: child
-								}
-								ArrC.push(firstinfo)
-								
-							})
-							
-							// 心愿的规格数组
-							let specTreeData = {
-								title: '规格',
-								ArrC: ArrC
-							}
-							
-							this.treeData = specTreeData
-							
+
 						}
 						else {
 							uni.showToast({
@@ -569,51 +524,7 @@
 				})
 				
 			},
-			
-			// 更改tree数据
-			treeDataChange(res) {
-				let newTreeData = {...res}
-				console.log(newTreeData);
-				// 将其中的一级属性图片更新
-				newTreeData.ArrC.forEach(item => {
-					item.img = item.img.url
-				})
-				console.log(`最新的tree数据为`);
-				console.log(newTreeData);
-				this.treeData = newTreeData
-				
-				let specList = []
-				newTreeData.ArrC.forEach(firstitem => {
-					
-					// 遍历每一个二级规格
-					let totalAmount = 0
-					let childList = []
-					firstitem.child.forEach(seconditem => {
-						let childItem = {
-							attributeName: seconditem.title,
-							price: seconditem.price,
-							amount: seconditem.stock
-						}
-						totalAmount += parseInt(seconditem.stock)
-						childList.push(childItem)
-					})
-					let firstItem = {
-						attributeName: firstitem.title,
-						img: firstitem.img,
-						childList: childList,
-						totalAmount: totalAmount
-					}
-					specList.push(firstItem)
-					
-				})
-				
-				console.log(`汇总完毕的规格数组为:`);
-				console.log(specList);
-				if(specList) {
-					this.specList = specList
-				}
-			},
-			
+		
 			// 上传时间轴数据
 			async uploaddata() {
 				

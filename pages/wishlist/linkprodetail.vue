@@ -11,7 +11,7 @@
 			
 			<!-- 轮播图 -->
 			<swiper class="card-swiper square-dot" :indicator-dots="true" :circular="true"
-			 :autoplay="true" interval="5000" duration="500" @change="swiperChange">
+			 :autoplay="true" interval="3000" duration="300" @change="swiperChange">
 				<swiper-item v-for="(item,index) in linkProduct.imgs.split(',')" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
 								indicator-color="#8799a3"
@@ -46,11 +46,20 @@
 				
 				<!-- 如果是详情 -->
 				<view v-show="TabCur == 0" class="detailimgsview">
-					<u-image v-for="(img,index) in linkProduct.detailImgs.split(',')" :key="index" :src="img" mode="widthFix" @click="previewImgs(linkProduct.detailImgs, index)"></u-image>
+					<u-image v-for="(img,index) in linkProduct.detailImgs.split(',')" :key="index" :src="img" mode="widthFix" @click="previewImgs(linkProduct.detailImgs, index)">
+						<u-loading slot="loading"></u-loading>
+					</u-image>
 				</view>
 				
 				<!-- 如果是属性 -->
 				<view v-show="TabCur == 1" class="1688attributeListView">
+					
+					<!-- <u-cell-item :arrow="false" hover-class="none">
+						<button slot="title" class="cu-btn round bg-grey" @click=" lang = lang == 'zh' ? 'en' : 'zh' ">
+							<text class=" margin-right-sm cuIcon cuIcon-communityfill text-white"></text>
+							{{ i18n.base.changelang }}
+						</button>
+					</u-cell-item> -->
 					
 					<u-cell-item v-for="(item, index) in attributeList" :key="index"
 								:title="item.attributeName" :value="item.attributeVal"
@@ -58,11 +67,13 @@
 					>
 					
 						<!-- #ifdef MP-WEIXIN -->
-						<text slot="icon" class=" margin-right cuIcon cuIcon-communityfill lg" @click=" translatecelltitle(item)"></text>
-						<text slot="right-icon" class=" margin-left cuIcon cuIcon-communityfill lg" @click=" translatecellvalue(item)"></text>
+						<text slot="icon" class=" margin-right cuIcon cuIcon-communityfill lg" @click="translatecelltitle(item)"></text>
+						<text slot="right-icon" class=" margin-left cuIcon cuIcon-communityfill lg" @click="translatecellvalue(item)"></text>
 						<!-- #endif -->
 					
 					</u-cell-item>
+					
+					
 					
 				</view>
 				
@@ -106,8 +117,9 @@
 		<mescroll-top :value="ifshowtoTop" :option="toTopopt" @click="clicktoTop"></mescroll-top>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="specPropInfo" :specPropInfo="specPropInfo"  :ifshow.sync="showSelector"
-							:defaultProImg="linkProduct.imgs && linkProduct.imgs.split(',').length > 0 ? linkProduct.imgs.split(',')[0] : '' "
+		<wishSpecSelector	v-if="linkProduct && specPropInfo"
+							:specPropInfo="specPropInfo" 
+							:ifshow.sync="showSelector"
 							:defaultProTitle="linkProduct.title"
 							:defaultProPrice="linkProduct.priceRange"
 							@finishSelect="specFinishSelect">
@@ -134,6 +146,8 @@
 			return {
 				
 				ifloading: false, // 是否正在加载
+				lang: 'zh', // 语言
+				
 				searchText: '', // 搜索文本
 				linkProduct: null, // 外链商品详情
 				attributeList: [], // 属性数组
@@ -247,17 +261,15 @@
 					},
 					success(res) {
 						_this.ifloading = false
-						console.log(`获取成功${JSON.stringify(res)}`);
+						// console.log(`获取成功${JSON.stringify(res)}`);
 						if(res.result.code == 0) {
 							
 							let linkProduct = res.result.data.product
 							
 							console.log(`当前的数据信息为`);
-							console.log(linkProduct);
+							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
 							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
-							delete linkProduct.attributeList
-							delete linkProduct.specPropInfo
 							
 							_this.linkProduct = linkProduct
 							
@@ -356,7 +368,8 @@
 				console.log(selectSpecPropInfo);
 				// 跳转心愿单发布详情页面
 				if(selectSpecPropInfo) {
-					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: this.specPropInfo}, ...{selectSpecPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
+					let newLinkProduct = {...this.linkProduct, ...{selectSpecPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
+					console.log(newLinkProduct);
 					uni.setStorageSync('productInfo1688', newLinkProduct)
 					uni.navigateTo({
 						url: '/pages/wishlist/handlewish?type=add'

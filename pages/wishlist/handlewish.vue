@@ -96,17 +96,17 @@
 			<template>
 				
 				<!-- 选择规格 -->
-				<view v-if="specPropInfo" class="cu-list menu">
+				<view v-if="specPropInfo || selectSpecPropInfo" class="cu-list menu">
 					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
 						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
 						
-						<view v-if="selectSpecPropInfo" class="action">
+						<view class="action">
 							<text class="text-grey text-sm">{{ `共${selectShowTotalAmount.toString()}个` }}</text>
 						</view>
 					</view>
 				</view>
 				
-				<!-- 输入数量 -->
+				<!-- 输入规格数量 -->
 				<view v-else class="cu-form-group solid-bottom">
 					<view class="title">{{i18n.wishlist.targetamount}} :</view>
 					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" />
@@ -184,14 +184,28 @@
 			
 		</u-popup>
 		
+		<!-- 多规格弹框 -->
+		<wishSpecSelector	v-if="selectSpecPropInfo"
+							:specPropInfo="selectSpecPropInfo" 
+							:ifshow.sync="showSelector"
+							:defaultProTitle="productTitle"
+							:defaultProPrice="sourcePrice"
+							@finishSelect="specFinishSelect">
+		</wishSpecSelector>
+		
 	</view>
 </template>
 
 <script>
 		
 	var _this
+	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
 	
 	export default {
+		
+		components: {
+			wishSpecSelector
+		},
 				
 		data() {
 			return {
@@ -220,6 +234,7 @@
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
 				remark: '', // 备注
+				remarkFocus: false, // 备注是否聚焦 默认否
 				
 				modalTitle: '弹框标题',
 				modalContent: '弹框内容',
@@ -289,7 +304,7 @@
 				
 				// 使用opendb获取详情数据
 				const db = uniCloud.database();
-				let wherestr = ` creatUser._id == $cloudEnv_uid && _id == '${_this.id}' `
+				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
 				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,selectSpecPropInfo')
@@ -305,6 +320,8 @@
 						
 						this.productTitle = info.productTitle // 商品标题
 						this.sourceLink = info.sourceLink // 源网站链接
+						// 解析商品链接
+						this.analysisUrl()
 						this.sourcePrice = info.sourcePrice // 源网站价格
 						this.sourceMoneyType = info.sourceMoneyType // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 						this.targetPrice = info.targetPrice // 目标价格
@@ -318,10 +335,6 @@
 						this.productExt = info.productExt
 						this.specPropInfo = info.specPropInfo
 						this.selectSpecPropInfo = info.selectSpecPropInfo
-						
-						
-						// 解析商品链接
-						this.analysisUrl()
 						
 					}
 					else {
@@ -348,6 +361,8 @@
 			// 解析1688商品数据
 			set1688productInfo(productInfo1688) {
 				
+				_this.ifloading = true
+				
 				_this.productInfo1688 = productInfo1688
 				_this.sourceLink = productInfo1688.sourceLink
 				_this.analysisUrl() // 解析链接
@@ -358,6 +373,17 @@
 				_this.specPropInfo = productInfo1688.specPropInfo // 心愿规格数据
 				_this.selectSpecPropInfo = productInfo1688.selectSpecPropInfo // 选中规格
 				
+				_this.$nextTick(function(){
+					_this.ifloading = false
+				})
+				
+			},
+			
+			// 选择完规格
+			specFinishSelect(selectSpecPropInfo) {
+				console.log(`当前选择完规格的数据为`);
+				console.log(selectSpecPropInfo);
+				this.selectSpecPropInfo = selectSpecPropInfo
 			},
 			
 			// 设置紧急程度数组
@@ -606,10 +632,10 @@
 					targetAmount: _this.targetAmount, // 目标数量
 					specPropInfo: _this.specPropInfo, // 规格对象
 					selectSpecPropInfo: _this.selectSpecPropInfo, // 选择的规格对象
+					productExt: uploadProductExt, // 商品的拓展字段
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
-					productExt: uploadProductExt, // 商品的拓展字段
 				}
 				
 				// 新增 或者 拷贝

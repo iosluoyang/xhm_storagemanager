@@ -214,6 +214,16 @@
 			
 		},
 		
+		watch: {
+			wishinfo: {
+				handler(newValue, oldValue) {
+					this.setTableData()
+				},
+				deep: true,
+				immedicate: true
+			}
+		},
+		
 		data() {
 			return {
 
