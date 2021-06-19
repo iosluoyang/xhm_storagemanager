@@ -83,6 +83,8 @@ const zh = {
 		logistic: "物流管理",
 		checklogistic: "物流查询",
 		wishlist: "心愿单",
+		linkprocategory: "商品分类",
+		linkprolist: "商品列表",
 	},
 	
 	// 提示
@@ -290,7 +292,7 @@ const zh = {
 		creditprice: "授信价",
 		
 		stock: "库存",
-		sellnum: "日销量",
+		sellnum: "销量",
 		specindex: "规格索引",
 		filter: {
 			goodstype: "商品分类",

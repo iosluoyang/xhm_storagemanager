@@ -149,6 +149,8 @@
 				lang: 'zh', // 语言
 				
 				searchText: '', // 搜索文本
+				thirdPid: '', // 第三方pid
+				
 				linkProduct: null, // 外链商品详情
 				attributeList: [], // 属性数组
 				specPropInfo: null, // 规格对象
@@ -204,15 +206,11 @@
 			_this = this
 			
 			let searchText = option.searchText
-			if(!searchText) {
-				uni.showToast({
-					title: this.i18n.tip.needtoinputcontent,
-					icon: 'none'
-				});
-				return
-			}
+			if(searchText) { this.searchText = decodeURIComponent(searchText) }
 			
-			this.searchText = decodeURIComponent(searchText)
+			let thirdPid = option.thirdPid
+			if(thirdPid) this.thirdPid = thirdPid
+			
 			this.loadDetailData()
 			
 		},
@@ -256,7 +254,8 @@
 					data: {
 						type: 'getlinkdetail',
 						info: {
-							text: this.searchText
+							text: this.searchText,
+							thirdPid: this.thirdPid
 						}
 					},
 					success(res) {

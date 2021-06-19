@@ -215,11 +215,12 @@ exports.main = async (event, context) => {
 		
 		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
 		let text = info.text
-		console.log(`参数为:${text}`);
+		let thirdPid = info.thirdPid
+		console.log(`参数为:text->${text}  thirdPid->${thirdPid}`);
 		const res = await uniCloud.httpclient.request(linkApi, {
 		    method: 'POST',
 			data: {
-				info: JSON.stringify({text: text})
+				info: JSON.stringify({text: text, thirdPid: thirdPid})
 			},
 			dataAsQueryString: true, // 是否强制转换data为queryString
 			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
@@ -242,6 +243,74 @@ exports.main = async (event, context) => {
 			}
 			return result
 		}
+	}
+	
+	// getlinkprocategory 获取链接商品分类
+	else if(type == 'getlinkprocategory') {
+		
+		let productCategoryApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/types.ac`
+		const res = await uniCloud.httpclient.request(productCategoryApi, {
+		    method: 'POST',
+			data: {
+				info: JSON.stringify({})
+			},
+			dataAsQueryString: true, // 是否强制转换data为queryString
+			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
+		    contentType: 'json', // 指定以application/json发送data内的数据
+		    dataType: 'json', // 指定返回值为json格式，自动进行parse
+		})
+		console.log(`common中获取到的1688分类api的响应数据为`)
+		console.log(res);
+		if(res.status == 200 && res.data.errorCode == '000000') {
+			let result = {
+				code: 0,
+				data: res.data.data
+			}
+			return result
+		}
+		else {
+			let result = {
+				code: res.data.errorCode,
+				message: res.data.msg
+			}
+			return result
+		}
+		
+	}
+	
+	// getlinkprolist 获取连接商品列表
+	else if(type == 'getlinkprolist') {
+		
+		console.log(`获取分类的参数为`);
+		console.log(info);
+		let productListApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productsearch1688.ac`
+		const res = await uniCloud.httpclient.request(productListApi, {
+		    method: 'POST',
+			data: {
+				info: JSON.stringify(info)
+			},
+			dataAsQueryString: true, // 是否强制转换data为queryString
+			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
+		    contentType: 'json', // 指定以application/json发送data内的数据
+		    dataType: 'json', // 指定返回值为json格式，自动进行parse
+		})
+		console.log(`common中获取到的1688商品列表api的响应数据为`)
+		console.log(res);
+		if(res.status == 200 && res.data.errorCode == '000000') {
+			let result = {
+				code: 0,
+				data: res.data.data
+			}
+			return result
+		}
+		else {
+			let result = {
+				code: res.data.errorCode,
+				message: res.data.msg
+			}
+			return result
+		}
+		
 	}
 	
 };

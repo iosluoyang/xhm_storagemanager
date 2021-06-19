@@ -45,6 +45,13 @@
 				</view>
 			</view>
 			
+			<view class="padding-sm">
+				<view class="padding radius text-center shadow-blur shadow-warp bg-blue" @tap.stop="gotoproductcategory">
+					<view class="text-lg cuIcon-emojifill text-white"></view>
+					<view class="margin-top-sm text-Abc">Product Category</view>
+				</view>
+			</view>
+			
 		</view>
 		
 		<!-- 加载条 -->
@@ -113,6 +120,13 @@
 			checkwishlist() {
 				uni.navigateTo({
 					url: '/pages/wishlist/list'
+				});
+			},
+			
+			// 跳转商品分类页面
+			gotoproductcategory() {
+				uni.navigateTo({
+					url: '/pages/wishlist/linkprocategory'
 				});
 			},
 			
