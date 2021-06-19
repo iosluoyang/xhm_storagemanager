@@ -73,6 +73,11 @@ Vue.mixin({
 			// return this.$t('index')
 		},
 		
+		// 当前语言类型
+		currentLang() {
+			return this.$i18n.locale
+		},
+		
 		// 配置文件对象
 		configData() {
 			return this.$store.getters.configData

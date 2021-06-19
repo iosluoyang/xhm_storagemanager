@@ -133,7 +133,7 @@
             "disableHostCheck" : true,
             "proxy" : {
                 "/apiapp/aliyunsts" : {
-                    "target" : "https://jxc.xiaohemu.net/user/test/apiapp/aliyunsts", // H5
+                    "target" : "https://xhm.xiaohemu.net/tshuser/pro/apiapp/aliyunsts", // H5
                     "changeOrigin" : true,
                     "ws" : true,
                     "pathRewrite" : {
@@ -141,7 +141,7 @@
                     }
                 },
                 "/apiapp" : {
-                    "target" : "https://jxc.xiaohemu.net/user/test/apiapp", // H5
+                    "target" : "https://xhm.xiaohemu.net/tshuser/pro/apiapp", // H5
                     "changeOrigin" : true,
                     "ws" : true,
                     "pathRewrite" : {

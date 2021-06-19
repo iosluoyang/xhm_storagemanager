@@ -54,12 +54,12 @@
 				<!-- 如果是属性 -->
 				<view v-show="TabCur == 1" class="1688attributeListView">
 					
-					<!-- <u-cell-item :arrow="false" hover-class="none">
-						<button slot="title" class="cu-btn round bg-grey" @click=" lang = lang == 'zh' ? 'en' : 'zh' ">
+					<u-cell-item :arrow="false" hover-class="none">
+						<button slot="title" class="cu-btn round bg-grey" @click="translateattribute">
 							<text class=" margin-right-sm cuIcon cuIcon-communityfill text-white"></text>
-							{{ i18n.base.changelang }}
+							{{ i18n.base.translatethis }}
 						</button>
-					</u-cell-item> -->
+					</u-cell-item>
 					
 					<u-cell-item v-for="(item, index) in attributeList" :key="index"
 								:title="item.attributeName" :value="item.attributeVal"
@@ -67,8 +67,8 @@
 					>
 					
 						<!-- #ifdef MP-WEIXIN -->
-						<text slot="icon" class=" margin-right cuIcon cuIcon-communityfill lg" @click="translatecelltitle(item)"></text>
-						<text slot="right-icon" class=" margin-left cuIcon cuIcon-communityfill lg" @click="translatecellvalue(item)"></text>
+						<!-- <text slot="icon" class=" margin-right cuIcon cuIcon-communityfill lg" @click="translatecelltitle(item)"></text>
+						<text slot="right-icon" class=" margin-left cuIcon cuIcon-communityfill lg" @click="translatecellvalue(item)"></text> -->
 						<!-- #endif -->
 					
 					</u-cell-item>
@@ -217,6 +217,69 @@
 		
 		methods: {
 			
+			// 翻译属性值和属性名
+			translateattribute() {
+				
+				let data = {
+					lang: _this.currentLang,
+					pid: _this.linkProduct.pid
+				}
+				
+				// 开始加载规格信息
+				uniCloud.callFunction({
+					name: 'wishlist',
+					data: {
+						type: 'gettranslateattribute',
+						info: data
+					},
+					success(res) {
+						// console.log(`获取成功${JSON.stringify(res)}`);
+						if(res.result.code == 0) {
+							
+							let attributeList = res.result.data.list
+							
+							console.log(`当前的数据信息为`);
+							console.log(attributeList);
+							_this.attributeList = attributeList // 属性数组
+							
+						}
+						else {
+							uni.showToast({
+								title: res.result.message,
+								icon: 'none'
+							});
+						}
+						
+					},
+					fail(error) {
+						console.log(`获取失败${JSON.stringify(error)}`);
+						console.log(error.message);
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
+					}
+				})
+				
+				// _this.$api.productapi.get1688proattirbutetranslate(data).then(response => {
+				// 	// 获取成功
+					
+				// 	let attributeList = response.data.list
+					
+				// 	console.log(`当前的数据信息为`);
+				// 	console.log(attributeList);
+				// 	_this.attributeList = attributeList // 属性数组
+					
+					
+				// }).catch(error => {
+				// 	uni.showToast({
+				// 		title: error.msg || error,
+				// 		icon: 'none'
+				// 	});
+				// })
+				
+			},
+			
 			// 翻译属性名
 			translatecelltitle(item) {
 				
@@ -247,18 +310,19 @@
 			loadDetailData() {
 				
 				_this.ifloading = true
-				
+				let data = {
+					text: this.searchText,
+					thirdPid: this.thirdPid
+				}
 				// 开始加载规格信息
 				uniCloud.callFunction({
 					name: 'wishlist',
 					data: {
 						type: 'getlinkdetail',
-						info: {
-							text: this.searchText,
-							thirdPid: this.thirdPid
-						}
+						info: data,
 					},
 					success(res) {
+						
 						_this.ifloading = false
 						// console.log(`获取成功${JSON.stringify(res)}`);
 						if(res.result.code == 0) {
@@ -307,6 +371,47 @@
 						});
 					}
 				})
+				
+				// _this.$api.productapi.get1688prodetail(data).then(response => {
+					
+				// 	_this.ifloading = false
+					
+				// 	let linkProduct = response.data.product
+					
+				// 	console.log(`当前的数据信息为`);
+				// 	console.log(linkProduct);
+				// 	_this.attributeList = linkProduct.attributeList // 属性数组
+				// 	_this.specPropInfo = linkProduct.specPropInfo // 规格对象
+					
+				// 	_this.linkProduct = linkProduct
+					
+				// 	// 设置tab切换
+				// 	_this.setTabData()
+					
+				// }).catch(error => {
+				// 	_this.ifloading = false
+				// 	console.log(`获取失败${JSON.stringify(error)}`);
+				// 	console.log(error.msg || error);
+				// 	// uni.showToast({
+				// 	// 	title: error.msg,
+				// 	// 	icon: 'none'
+				// 	// });
+					
+				// 	uni.showModal({
+				// 		content: `系统暂未找到该商品,是否手动添加心愿单`,
+				// 		showCancel: true,
+				// 		cancelText: _this.i18n.base.cancel,
+				// 		confirmText: _this.i18n.base.confirm,
+				// 		success: res => {
+				// 			if(res.confirm) {
+				// 				uni.redirectTo({
+				// 					url: '/pages/wishlist/handlewish?type=add'
+				// 				});
+				// 			} 
+				// 		}
+				// 	});
+					
+				// })
 				
 			},
 			

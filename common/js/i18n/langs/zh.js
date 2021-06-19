@@ -23,7 +23,7 @@ const zh = {
 		select: "请选择",
 		cancel: "取消",
 		confirm: "确定",
-		changelang: "切换语言",
+		translatethis: "翻译此处",
 		print: "打印",
 		download: "下载",
 		click: "点击",

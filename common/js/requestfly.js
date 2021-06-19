@@ -114,12 +114,13 @@ newfly.interceptors.request.use(requestinterceptor)
 */
 var responseinterceptor = function(response) {
 	
+	// console.log(`本次接口返回的信息为:${JSON.stringify(response)}`);
 	console.log(`本次接口返回的状态为:\n${JSON.stringify(response.data.msg)}`)
 	
 	const res = response.data
 
 	// 首先进行验签操作 当sign数据为非 no sign 字样的时候进行验签
-	if (res.sign !== 'no sign') {
+	if (fres.sign !== 'no sign') {
 		var timestamp = res.timestamp
 
 		// 前端进行签名字符串 使用MD5的方式进行签名，待签名字符串为， timestamp=xxx&app_key

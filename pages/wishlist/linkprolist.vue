@@ -258,6 +258,39 @@
 					}
 				})
 				
+				// 开始加载数据
+				// this.$api.productapi.get1688prosearch(data).then(res => {
+				// 	// 获取成功
+					
+				// 	let list = res.data.list || []
+					
+				// 	console.log(`当前的数据信息为`);
+				// 	console.log(list);
+					
+				// 	//如果是第一页的话则获取分页时间
+				// 	if(pageNum === 1){
+				// 		dataArr = [] //清空数据源
+				// 		let date = res.data.date
+				// 		page.date = date
+				// 	}
+					
+				// 	//将请求的数据添加至现有数据源中
+				// 	dataArr = dataArr.concat(list)
+					
+				// 	_this.dataArr = dataArr
+								
+				// 	// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
+				// 	let hasNext = list.length > 0
+				// 	_this.mescroll.endSuccess(list.length,hasNext)
+					
+				// }).catch(error => {
+				// 	uni.showToast({
+				// 		title: error.msg || error,
+				// 		icon: 'none'
+				// 	});
+				// 	_this.mescroll.endErr()
+				// })
+				
 			},
 			
 			// 点击详情

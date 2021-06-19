@@ -6,6 +6,7 @@ import stockapi from '@/api/stock.js'
 import customerapi from '@/api/customer.js'
 import noticeapi from '@/api/notice.js'
 import reportapi from '@/api/report.js'
+import productapi from '@/api/product.js'
 
 
 export default {
@@ -17,4 +18,5 @@ export default {
 	customerapi, // 客户相关api接口
 	noticeapi, // 公告相关api接口
 	reportapi, // 数据统计相关api接口
+	productapi, // 商品新相关的api接口
 }
