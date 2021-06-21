@@ -172,69 +172,20 @@
 				}
 			}
 		},
-		"selectSpecPropInfo": {
-			"bsonType":"object",
-			"description":"心愿单商品用户选择的规格对象",
-			"properties": {
-				"propName": {
-					"bsonType":"string",
-					"description":"第一属性名称",
-					"defaultValue":"第一属性"
-				},
-				"secondPropName": {
-					"bsonType":"string",
-					"description":"第二属性名称",
-					"defaultValue":"第二属性"
-				},
-				"propValList": {
-					"bsonType":"array",
-					"description":"第一属性的值集合",
-					"arrayType":"object",
-					"properties": {
-						"propVal": {
-							"bsonType":"string",
-							"description":"第一属性的名称值"
-						},
-						"img": {
-							"bsonType":"string",
-							"description":"第一属性的值图片"
-						},
-						"specStockList": {
-							"bsonType":"array",
-							"description":"第一属性下的二级属性集合",
-							"arrayType":"object",
-							"properties": {
-								"propVal": {
-									"bsonType":"string",
-									"description":"第一/二属性名称值"
-								},
-								"specId": {
-									"bsonType":"int",
-									"description":"规格id"
-								},
-								"stockCount": {
-									"bsonType":"int",
-									"description":"规格的库存数量"
-								},
-								"price": {
-									"bsonType":"string",
-									"description":"规格的价格"
-								},
-								"amount": {
-									"bsonType":"int",
-									"description":"规格的数量"
-								}
-							}
-						}
-					}
-				}
-			}
-			
+		"thirdPidType": {
+			"bsonType":"string",
+			"description":"第三方商品的类型",
+			"enum": [
+				"pro-1688",
+				"pro-taobao",
+				"pro-shopee"
+			],
+			"defaultValue":"pro-1688"
 		},
-		"productInfo1688": {
-			"bsonType":"object",
-			"description":"从1688上获取的商品内容对象",
-			"defaultValue":null
+		"thirdPid": {
+			"bsonType":"int",
+			"description":"第三方商品的pid",
+			"foreignKey":"linkproduct1688.pid"
 		}
 		
 	}

@@ -4,6 +4,9 @@ var moment = require('moment')
 const db = uniCloud.database()
 const dbCmd = db.command // 数据库指令
 
+const { translateContent } = require('hello-common')
+
+
 const uniID = require('uni-id')
 
 exports.main = async (event, context) => {
@@ -210,41 +213,6 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
-	// getlinkdetail 获取链接商品的详情
-	else if(type == 'getlinkdetail') {
-		
-		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
-		let text = info.text
-		let thirdPid = info.thirdPid
-		console.log(`参数为:text->${text}  thirdPid->${thirdPid}`);
-		const res = await uniCloud.httpclient.request(linkApi, {
-		    method: 'POST',
-			data: {
-				info: JSON.stringify(info)
-			},
-			dataAsQueryString: true, // 是否强制转换data为queryString
-			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
-		    contentType: 'json', // 指定以application/json发送data内的数据
-		    dataType: 'json', // 指定返回值为json格式，自动进行parse
-		})
-		console.log(`common中获取到的1688api的响应数据为`)
-		console.log(res);
-		if(res.status == 200 && res.data.errorCode == '000000') {
-			let result = {
-				code: 0,
-				data: res.data.data
-			}
-			return result
-		}
-		else {
-			let result = {
-				code: res.data.errorCode,
-				message: res.data.msg
-			}
-			return result
-		}
-	}
-	
 	// getlinkprocategory 获取链接商品分类
 	else if(type == 'getlinkprocategory') {
 		
@@ -259,7 +227,7 @@ exports.main = async (event, context) => {
 		    contentType: 'json', // 指定以application/json发送data内的数据
 		    dataType: 'json', // 指定返回值为json格式，自动进行parse
 		})
-		console.log(`common中获取到的1688分类api的响应数据为`)
+		console.log(`wishlist中获取到的1688分类api的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data.errorCode == '000000') {
 			let result = {
@@ -294,7 +262,7 @@ exports.main = async (event, context) => {
 		    contentType: 'json', // 指定以application/json发送data内的数据
 		    dataType: 'json', // 指定返回值为json格式，自动进行parse
 		})
-		console.log(`common中获取到的1688商品列表api的响应数据为`)
+		console.log(`wishlist中获取到的1688商品列表api的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data.errorCode == '000000') {
 			let result = {
@@ -313,10 +281,77 @@ exports.main = async (event, context) => {
 		
 	}
 	
+	// getlinkdetail 获取链接商品的详情
+	else if(type == 'getlinkdetail') {
+		
+		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
+		let text = info.text
+		let thirdPid = info.thirdPid
+		console.log(`参数为:text->${text}  thirdPid->${thirdPid}`);
+		const res = await uniCloud.httpclient.request(linkApi, {
+		    method: 'POST',
+			data: {
+				info: JSON.stringify(info)
+			},
+			dataAsQueryString: true, // 是否强制转换data为queryString
+			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
+		    contentType: 'json', // 指定以application/json发送data内的数据
+		    dataType: 'json', // 指定返回值为json格式，自动进行parse
+		})
+		console.log(`wishlist中获取到的1688api商品详情的响应数据为`)
+		console.log(res);
+		if(res.status == 200 && res.data && res.data.errorCode == '000000') {
+			let result = {
+				code: 0,
+				data: res.data.data
+			}
+			
+			// 尝试将第三方商品数据入库
+			try{
+				
+				// 将当前查询出来的第三方商品信息入1688商品数据库
+				let thirdProductInfo = res.data.data.product
+				let thirdPid = thirdProductInfo.pid
+				const linkproductcollection = db.collection('linkproduct1688')
+				let linkprocheckres = await linkproductcollection.where({pid: thirdPid}).get()
+				console.log(`第三方商品入库查询回调为:`);
+				console.log(linkprocheckres);
+				let linkproaddorupdateres = null
+				if(linkprocheckres.affectedDocs == 0) {
+					linkproaddorupdateres = await linkproductcollection.add(thirdProductInfo)
+				}
+				else {
+					let docId = linkprocheckres.data[0]._id
+					linkproaddorupdateres = await linkproductcollection.doc(docId).update(thirdProductInfo)
+				}
+				console.log(`第三方商品入库新增或者更新回调为:`);
+				console.log(linkproaddorupdateres);
+				
+			}catch(e){
+				//TODO handle the exception
+				console.log(`第三方商品入库回调失败,原因为`);
+				console.log(e);
+			}finally{
+				return result
+			}
+			
+		}
+		else {
+			let result = {
+				code: res.data.errorCode,
+				message: res.data.msg
+			}
+			return result
+		}
+	}
+	
 	// gettranslateattribute 获取链接商品属性翻译版本
 	else if(type == 'gettranslateattribute') {
 		
 		console.log(`获取翻译的属性数组为`);
+		// 如果翻译语种为zh的话则替换为cn
+		if(info.lang == 'zh') {info.lang = 'cn'}
+		
 		let productAttributeTranslateApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productAttributeTranslate.ac`
 		const res = await uniCloud.httpclient.request(productAttributeTranslateApi, {
 		    method: 'POST',
@@ -328,7 +363,7 @@ exports.main = async (event, context) => {
 		    contentType: 'json', // 指定以application/json发送data内的数据
 		    dataType: 'json', // 指定返回值为json格式，自动进行parse
 		})
-		console.log(`common中获取到的1688商品属性翻译版本api的响应数据为`)
+		console.log(`wishlist中获取到的1688商品属性翻译版本api的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data.errorCode == '000000') {
 			let result = {

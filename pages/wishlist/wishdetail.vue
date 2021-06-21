@@ -1211,10 +1211,11 @@
 			
 			// 查看1688商品详情数据
 			check1688prodetail() {
-				let searchText = encodeURIComponent(this.wishinfo.sourceLink)
-				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?searchText=${searchText}`
-				});
+				console.log(this.wishinfo);
+				// let searchText = encodeURIComponent(this.wishinfo.sourceLink)
+				// uni.navigateTo({
+				// 	url: `/pages/wishlist/linkprodetail?searchText=${searchText}`
+				// });
 			},
 			
 			// 编辑时间轴数据
