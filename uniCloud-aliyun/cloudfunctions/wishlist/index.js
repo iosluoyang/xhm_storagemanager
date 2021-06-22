@@ -311,21 +311,12 @@ exports.main = async (event, context) => {
 				
 				// 将当前查询出来的第三方商品信息入1688商品数据库
 				let thirdProductInfo = res.data.data.product
-				let thirdPid = thirdProductInfo.pid
+				let pid = thirdProductInfo.pid
+				let thirdPid = thirdProductInfo.thirdPid
 				const linkproductcollection = db.collection('linkproduct1688')
-				let linkprocheckres = await linkproductcollection.where({pid: thirdPid}).get()
-				console.log(`第三方商品入库查询回调为:`);
-				console.log(linkprocheckres);
-				let linkproaddorupdateres = null
-				if(linkprocheckres.affectedDocs == 0) {
-					linkproaddorupdateres = await linkproductcollection.add(thirdProductInfo)
-				}
-				else {
-					let docId = linkprocheckres.data[0]._id
-					linkproaddorupdateres = await linkproductcollection.doc(docId).update(thirdProductInfo)
-				}
-				console.log(`第三方商品入库新增或者更新回调为:`);
-				console.log(linkproaddorupdateres);
+				let linkprockres = await linkproductcollection.doc(thirdPid).set(thirdProductInfo)
+				console.log(`第三方商品入库回调为:`);
+				console.log(linkprockres);
 				
 			}catch(e){
 				//TODO handle the exception

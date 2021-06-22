@@ -222,6 +222,8 @@
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 				
 				productInfo1688: null, // 1688上的商品信息
+				thirdPidType: '', // 第三方商品类型
+				thirdPid: '', // 第三方商品pid
 				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
@@ -306,7 +308,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 				.get({
 					getOne:true
 				})
@@ -330,6 +332,9 @@
 						this.remark = info.remark // 备注信息
 						let imgsArr = info.imgs.split(',') // 商品图片
 						this.imgArr = imgsArr.map(item => ({url: item}))
+						
+						this.thirdPidType = info.thirdPidType
+						this.thirdPid = info.thirdPid
 						
 						this.productExt = info.productExt
 						this.specPropInfo = info.specPropInfo
@@ -369,6 +374,8 @@
 				let imgsArr = productInfo1688.imgs.split(',') // 商品图片
 				_this.imgArr = imgsArr.map(item => ({url: item}))
 				_this.specPropInfo = productInfo1688.specPropInfo // 心愿单规格数据
+				_this.thirdPidType = 'pro-1688' // 默认第三方商品类型为1688
+				_this.thirdPid = productInfo1688.thirdPid // 第三方商品pid
 				
 				_this.$nextTick(function(){
 					_this.ifloading = false
@@ -632,6 +639,8 @@
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
+					thirdPidType: _this.thirdPidType, // 第三方商品类型
+					thirdPid: _this.thirdPid, // 第三方商品pid
 				}
 				
 				// 新增 或者 拷贝

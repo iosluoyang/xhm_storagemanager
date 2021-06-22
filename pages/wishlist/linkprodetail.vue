@@ -339,7 +339,7 @@
 							
 							let linkProduct = res.result.data.product
 							
-							console.log(`当前的数据信息为`);
+							// console.log(`当前的数据信息为`);
 							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
 							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
@@ -347,9 +347,9 @@
 							_this.linkProduct = linkProduct
 							
 							// 获取翻译版本的属性列表
-							_this.$nextTick(function(){
-								_this.translateattribute()
-							})
+							// _this.$nextTick(function(){
+							// 	_this.translateattribute()
+							// })
 							
 							// 设置tab切换
 							_this.setTabData()

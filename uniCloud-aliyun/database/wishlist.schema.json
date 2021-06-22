@@ -183,9 +183,9 @@
 			"defaultValue":"pro-1688"
 		},
 		"thirdPid": {
-			"bsonType":"int",
+			"bsonType":"string",
 			"description":"第三方商品的pid",
-			"foreignKey":"linkproduct1688.pid"
+			"foreignKey":"linkproduct1688.thirdPid"
 		}
 		
 	}

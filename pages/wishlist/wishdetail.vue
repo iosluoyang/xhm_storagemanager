@@ -839,7 +839,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,selectSpecPropInfo,productInfo1688')
+					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 					.get({
 						getOne:true
 					})
@@ -855,11 +855,6 @@
 							_this.productExt = productExt
 							// 设置拓展展示字段
 							_this.setshowproductextinfo(productExt)
-							
-							// 设置1688商品详情信息
-							let productInfo1688 = detaildata.productInfo1688
-							_this.productInfo1688 = productInfo1688
-							// _this.set1688attributelist(productInfo1688.attributeList)
 							
 						}
 						else {
@@ -930,24 +925,6 @@
 				
 				extArr = [boxSizeItem, boxVolumeItem, boxContainNumItem, domesticShippingItem, internationalShippingItem]
 				
-				this.extArr = extArr
-				
-			},
-			
-			// 设置1688的属性展示
-			set1688attributelist(attributeList) {
-				
-				let extArr = []
-				if(attributeList) {
-					attributeList.forEach(eachitem => {
-						let Item = {
-							keyStr: eachitem.attributeName,
-							id: eachitem.attributeName,
-							value: eachitem.attributeVal
-						}
-						extArr.push(Item)
-					})
-				}
 				this.extArr = extArr
 				
 			},
@@ -1211,11 +1188,13 @@
 			
 			// 查看1688商品详情数据
 			check1688prodetail() {
+				
 				console.log(this.wishinfo);
-				// let searchText = encodeURIComponent(this.wishinfo.sourceLink)
-				// uni.navigateTo({
-				// 	url: `/pages/wishlist/linkprodetail?searchText=${searchText}`
-				// });
+				let thirdPid = this.wishinfo.thirdPid
+				uni.navigateTo({
+					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
+				});
+
 			},
 			
 			// 编辑时间轴数据
