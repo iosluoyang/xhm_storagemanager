@@ -213,7 +213,7 @@
 		</view>
 		
 		<!-- 时间轴 -->
-		<view v-if="false && wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " class="timelineview solid-top">
+		<view v-if="wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " class="timelineview solid-top">
 			
 			<view class="cu-bar bg-white">
 				<view class="action">
@@ -224,7 +224,7 @@
 			
 			<view class="cu-timeline" v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
 				
-				<view class="cu-time">{{ $moment(timelinekey).format('Do/MMM') }}</view>
+				<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
 				
 				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
 				

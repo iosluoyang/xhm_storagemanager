@@ -5,15 +5,15 @@
 			<block slot="content">{{ i18n.wishlist.wishdetail }}</block>
 		</cu-custom>
 		
-		<!-- 该心愿详情信息 -->
+		<!-- 心愿详情信息 -->
 		<view class="wishdetailview bg-white padding-sm solid-bottom">
 			
-			<view class="cu-bar">
+			<!-- <view class="cu-bar">
 				<view class="action">
 					<text class="cuIcon-titles text-green"></text>
 					<text class="text-bold text-black">{{i18n.wishlist.wishdetail}}</text>
 				</view>
-			</view>
+			</view> -->
 			
 			<!-- 心愿商品基本信息 -->
 			<view v-if="wishinfo" class="prodetailview padding-sm flex align-center">
@@ -136,21 +136,6 @@
 						<button class="cu-btn sm round margin-right" :class="moneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="moneyType='RMB'">¥</button>
 						<button class="cu-btn sm round " :class="moneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="moneyType='THB'">฿</button>
 					</view>
-					
-				</view>
-				
-				<!-- 目标网站链接 仅当发现新商品时才有 暂时隐藏 -->
-				<view v-if="type==='found' && false" class="cu-form-group ">
-					
-					<text class="cuIcon cuIcon-link text-green"></text>
-					
-					<view class="title">{{i18n.wishlist.targetlink}} :</view>
-					<input type="text" confirm-type="next" v-model="targetLink" />
-					
-					<!-- 粘贴按钮 -->
-					<!-- #ifndef H5 -->
-					<button class="cu-btn bg-cyan shadow" @tap.stop="pastefromclipboard('targetLink')">{{i18n.base.paste}}</button>
-					<!-- #endif -->
 					
 				</view>
 				
@@ -369,7 +354,6 @@
 						_this.content = info.content || ''
 						_this.moneyType = info.moneyType || 'RMB'
 						_this.price = info.price || ''
-						_this.targetLink = info.link || ''
 						
 						// 遍历图片
 						let imgArr = []

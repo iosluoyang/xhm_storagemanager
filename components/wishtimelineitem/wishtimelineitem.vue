@@ -1,5 +1,5 @@
 <template>
-	<view class="wishtimelineitem" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' " v-if="timelineitem">
+	<view v-if="timelineitem" class="wishtimelineitem" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' ">
 		
 		<!-- 时间轴具体内容 -->
 		<view class="content">
@@ -8,9 +8,9 @@
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
 				<view class="leftview flex align-center">
 					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
-					<view class="flex flex-direction text-df">
+					<view class="flex flex-direction">
 						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
-						<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text>
+						<uni-dateformat class="ommenttime text-sm text-gray" :date="timelineitem.creatTime" />
 					</view>
 				</view>
 			</view>
@@ -50,7 +50,7 @@
 			</view>
 			
 			<!-- 按钮操作区域 -->
-			<view v-if="timelineitem.creatUser" class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+			<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
 				
 				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline"></button>
 				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline"></button>
@@ -59,7 +59,6 @@
 				<!-- #endif -->
 				
 			</view>
-			
 			
 		</view>
 		
@@ -368,7 +367,7 @@
 										icon: 'none'
 									});
 									
-								}, 800);
+								}, 500);
 								
 							})
 							.catch(error => {
