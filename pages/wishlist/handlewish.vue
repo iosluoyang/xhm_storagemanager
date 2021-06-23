@@ -96,7 +96,7 @@
 			<template>
 				
 				<!-- 选择规格 -->
-				<view v-if="specPropInfo || selectSpecPropInfo" class="cu-list menu">
+				<view v-if="specPropInfo" class="cu-list menu">
 					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
 						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
 						
@@ -185,8 +185,8 @@
 		</u-popup>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector	v-if="selectSpecPropInfo"
-							:specPropInfo="selectSpecPropInfo" 
+		<wishSpecSelector	v-if="specPropInfo"
+							:specPropInfo="specPropInfo" 
 							:ifshow.sync="showSelector"
 							:defaultProTitle="productTitle"
 							:defaultProPrice="sourcePrice"
@@ -222,12 +222,13 @@
 				sourceMoneyType: 'RMB', // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 				
 				productInfo1688: null, // 1688上的商品信息
+				thirdPidType: '', // 第三方商品类型
+				thirdPid: '', // 第三方商品pid
 				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
 				specPropInfo: null, // 心愿规格数组
-				selectSpecPropInfo: null, // 目标选中数量对象
 				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 9, // 图片上传的数量限制
@@ -279,9 +280,9 @@
 			selectShowTotalAmount() {
 				
 				let totalAmount = 0
-				if(this.selectSpecPropInfo) {
+				if(this.specPropInfo) {
 					
-					this.selectSpecPropInfo.propValList.forEach(firstitem => {
+					this.specPropInfo.propValList.forEach(firstitem => {
 						firstitem.specStockList.forEach(seconditem => {
 							totalAmount += Number(seconditem.amount)
 						})
@@ -307,7 +308,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,selectSpecPropInfo')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 				.get({
 					getOne:true
 				})
@@ -332,9 +333,11 @@
 						let imgsArr = info.imgs.split(',') // 商品图片
 						this.imgArr = imgsArr.map(item => ({url: item}))
 						
+						this.thirdPidType = info.thirdPidType
+						this.thirdPid = info.thirdPid
+						
 						this.productExt = info.productExt
 						this.specPropInfo = info.specPropInfo
-						this.selectSpecPropInfo = info.selectSpecPropInfo
 						
 					}
 					else {
@@ -370,8 +373,9 @@
 				_this.sourcePrice = productInfo1688.priceRange
 				let imgsArr = productInfo1688.imgs.split(',') // 商品图片
 				_this.imgArr = imgsArr.map(item => ({url: item}))
-				_this.specPropInfo = productInfo1688.specPropInfo // 心愿规格数据
-				_this.selectSpecPropInfo = productInfo1688.selectSpecPropInfo // 选中规格
+				_this.specPropInfo = productInfo1688.specPropInfo // 心愿单规格数据
+				_this.thirdPidType = 'pro-1688' // 默认第三方商品类型为1688
+				_this.thirdPid = productInfo1688.thirdPid // 第三方商品pid
 				
 				_this.$nextTick(function(){
 					_this.ifloading = false
@@ -383,7 +387,7 @@
 			specFinishSelect(selectSpecPropInfo) {
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
-				this.selectSpecPropInfo = selectSpecPropInfo
+				this.specPropInfo = selectSpecPropInfo
 			},
 			
 			// 设置紧急程度数组
@@ -631,11 +635,12 @@
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetAmount: _this.targetAmount, // 目标数量
 					specPropInfo: _this.specPropInfo, // 规格对象
-					selectSpecPropInfo: _this.selectSpecPropInfo, // 选择的规格对象
 					productExt: uploadProductExt, // 商品的拓展字段
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型
 					remark: _this.remark, // 备注信息
 					imgs: imgs, // 图片字符串集合
+					thirdPidType: _this.thirdPidType, // 第三方商品类型
+					thirdPid: _this.thirdPid, // 第三方商品pid
 				}
 				
 				// 新增 或者 拷贝

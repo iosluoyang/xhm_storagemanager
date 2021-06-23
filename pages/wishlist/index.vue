@@ -22,8 +22,20 @@
 			</u-field>
 			
 			<!-- 搜索按钮 -->
-			<view class="cu-bar btn-group margin">
-				<button class="cu-btn bg-gradual-pink shadow-blur round lg" @click="startSearch">{{ i18n.base.search }}</button>
+			<view class="cu-bar btn-group margin-top">
+				<button class="cu-btn bg-gradual-pink shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
+			</view>
+			
+			<!-- 搜索历史区域 -->
+			<view v-if="searchrecord1688" class="searchrecord bg-white">
+				
+				<text class="cu-bar text-sm">搜索历史</text>
+				<view v-for="(item, index) in searchrecord1688" :key="index"
+						:style="[{animationDelay: (index + 1)*0.1 + 's'}]"
+						class="text-sm bg-gray round text-cut margin-bottom-sm padding-sm" 
+						:class="[toggleDelay?'animation-slide-bottom':'']"
+						@tap.stop=" searchText=item; startSearch() ">{{ item }}</view>
+				
 			</view>
 			
 		</view>
@@ -67,14 +79,27 @@
 		data() {
 			return {
 				searchText: '', // 搜索文本
+				searchrecord1688: null, // 搜索历史
+				searchrecordmaxnum: 5, // 搜索历史最大数量
+				toggleDelay: false, // 搜索历史动画是否开启
 				ifloading: false, // 是否正在加载中
 			};
 		},
 		
 		onLoad() {
 			_this = this
+			
 		},
-				
+		
+		onShow() {
+			// 加载搜索历史
+			let searchrecord1688 = uni.getStorageSync('searchrecord1688')
+			this.searchrecord1688 = searchrecord1688
+			setTimeout(function() {
+				_this.toggleDelay = true
+			}, 300);
+		},
+			
 		methods: {
 			
 			// 粘贴内容
@@ -100,12 +125,37 @@
 					return
 				}
 				else {
-					let searchParam = encodeURIComponent(this.searchText)
-					console.log(`当前搜索文本为:${searchParam}`);
+					console.log(`当前搜索文本为:${this.searchText}`);
+					
+					// 存储搜索历史
+					this.addSearchRecord(this.searchText)
+					
+					// 将搜索文本存储在本地
+					uni.setStorageSync('linkprosearchtext',this.searchText)
+					
+					// 清空搜索文本
+					this.searchText = ''
+					
 					uni.navigateTo({
-						url: `/pages/wishlist/linkprodetail?searchText=${searchParam}`
+						url: `/pages/wishlist/linkprodetail?type=searchText`
 					});
+					
 				}
+				
+			},
+			
+			// 添加到搜索记录
+			addSearchRecord(searchText) {
+				
+				// 将搜索文本存储在本地
+				let searchrecord1688Arr = uni.getStorageSync('searchrecord1688') || []
+				if(searchrecord1688Arr.length >= this.searchrecordmaxnum) {
+					searchrecord1688Arr = searchrecord1688Arr.slice(0, this.searchrecordmaxnum - 1)
+				}
+				// 添加头部
+				searchrecord1688Arr.unshift(searchText)
+				// 存储搜索历史
+				uni.setStorageSync('searchrecord1688', searchrecord1688Arr)
 				
 			},
 			

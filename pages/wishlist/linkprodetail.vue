@@ -10,7 +10,8 @@
 		<view v-if="linkProduct" class="prodetailview" style="padding-bottom: 50px;">
 			
 			<!-- 轮播图 -->
-			<swiper class="card-swiper square-dot" :indicator-dots="true" :circular="true"
+			<!-- card-swiper screen-swiper square-dot round-dot -->
+			<swiper class="card-swiper square-dot bg-gradual-pink" :indicator-dots="true" :circular="true"
 			 :autoplay="true" interval="3000" duration="300" @change="swiperChange">
 				<swiper-item v-for="(item,index) in linkProduct.imgs.split(',')" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
@@ -18,7 +19,7 @@
 								indicator-active-color="#0081ff"
 								@tap.stop="previewImgs(linkProduct.imgs, index)"
 				>
-								
+				
 					<view class="swiper-item">
 						<image :src="item" mode="aspectFill"></image>
 					</view>
@@ -27,8 +28,8 @@
 			</swiper>
 			
 			<!-- 标题售价等区域 -->
-			<view class="titleheaderview padding-left-sm padding-right-sm">
-				<view class="title text-bold text-xl" @longpress="$basejs.copytoclipboard(linkProduct.title)">{{ linkProduct.title }}</view>
+			<view class="titleheaderview margin-top padding-left-sm padding-right-sm">
+				<view class="title text-black text-bold text-xl" @longpress="$basejs.copytoclipboard(linkProduct.title)">{{ linkProduct.title }}</view>
 				<view class="text-price text-lg text-red margin-top-sm">{{ linkProduct.priceRange }}</view>
 			</view>
 			
@@ -148,6 +149,8 @@
 				ifloading: false, // 是否正在加载
 				lang: 'zh', // 语言
 				
+				type: 'searchText', // searchText代表通过搜索文本进行搜索  thirdPid代表通过第三方pid进行搜索
+				
 				searchText: '', // 搜索文本
 				thirdPid: '', // 第三方pid
 				
@@ -205,8 +208,15 @@
 			
 			_this = this
 			
-			let searchText = option.searchText
-			if(searchText) { this.searchText = decodeURIComponent(searchText) }
+			if(option.type) {
+				this.type = option.type
+			}
+			
+			let searchText = uni.getStorageSync('linkprosearchtext')
+			if(searchText) { 
+				this.searchText = searchText
+				uni.removeStorageSync('linkprosearchtext')
+			}
 			
 			let thirdPid = option.thirdPid
 			if(thirdPid) this.thirdPid = thirdPid
@@ -329,12 +339,17 @@
 							
 							let linkProduct = res.result.data.product
 							
-							console.log(`当前的数据信息为`);
+							// console.log(`当前的数据信息为`);
 							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
 							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
 							
 							_this.linkProduct = linkProduct
+							
+							// 获取翻译版本的属性列表
+							// _this.$nextTick(function(){
+							// 	_this.translateattribute()
+							// })
 							
 							// 设置tab切换
 							_this.setTabData()
@@ -470,9 +485,9 @@
 			specFinishSelect(selectSpecPropInfo) {
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
-				// 跳转心愿单发布详情页面
+				// 跳转心愿单发布详情页面 替换规格对象为选择过之后的规格对象
 				if(selectSpecPropInfo) {
-					let newLinkProduct = {...this.linkProduct, ...{selectSpecPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
+					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
 					console.log(newLinkProduct);
 					uni.setStorageSync('productInfo1688', newLinkProduct)
 					uni.navigateTo({
