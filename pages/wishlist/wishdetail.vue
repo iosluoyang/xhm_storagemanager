@@ -1191,6 +1191,9 @@
 				
 				console.log(this.wishinfo);
 				let thirdPid = this.wishinfo.thirdPid
+				
+				// 将原链接存储在本地
+				uni.setStorageSync('linkprosearchtext',this.wishinfo.sourceLink)
 				uni.navigateTo({
 					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
 				});

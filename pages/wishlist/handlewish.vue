@@ -96,7 +96,7 @@
 			<template>
 				
 				<!-- 选择规格 -->
-				<view v-if="specPropInfo || selectSpecPropInfo" class="cu-list menu">
+				<view v-if="specPropInfo" class="cu-list menu">
 					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
 						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
 						
