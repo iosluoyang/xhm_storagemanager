@@ -1964,7 +1964,7 @@ button.cuIcon.lg {
          时间轴
  ==================== */
 
-.cu-timeline {
+/* .cu-timeline {
 	display: block;
 	background-color: #ffffff;
 }
@@ -2044,7 +2044,90 @@ button.cuIcon.lg {
 
 .cu-timeline>.cu-item>.content+.content {
 	margin-top: 20upx;
+} */
+
+.cu-timeline {
+	display: block;
+	background-color: #ffffff;
 }
+
+.cu-timeline .cu-time {
+	width: 120upx;
+	text-align: center;
+	padding: 20upx 0;
+	font-size: 26upx;
+	color: #888;
+	display: block;
+}
+
+.cu-timeline .cu-item {
+	padding: 30upx 30upx 30upx 120upx;
+	position: relative;
+	display: block;
+	z-index: 0;
+}
+
+.cu-timeline .cu-item:not([class*="text-"]) {
+	color: #ccc;
+}
+
+.cu-timeline .cu-item::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 1upx;
+	background-color: #ddd;
+	left: 60upx;
+	height: 100%;
+	top: 0;
+	z-index: 8;
+}
+
+.cu-timeline .cu-item::before {
+	font-family: "cuIcon";
+	display: block;
+	position: absolute;
+	top: 36upx;
+	z-index: 9;
+	background-color: #ffffff;
+	width: 50upx;
+	height: 50upx;
+	text-align: center;
+	border: none;
+	line-height: 50upx;
+	left: 36upx;
+}
+
+.cu-timeline .cu-item:not([class*="cuIcon-"])::before {
+	content: "\e763";
+}
+
+.cu-timeline .cu-item[class*="cuIcon-"]::before {
+	background-color: #ffffff;
+	width: 50upx;
+	height: 50upx;
+	text-align: center;
+	border: none;
+	line-height: 50upx;
+	left: 36upx;
+}
+
+.cu-timeline .cu-item .content {
+	padding: 30upx;
+	border-radius: 6upx;
+	display: block;
+	line-height: 1.6;
+}
+
+.cu-timeline .cu-item .content:not([class*="bg-"]) {
+	background-color: #f1f1f1;
+	color: #333333;
+}
+
+.cu-timeline .cu-item .content+.content {
+	margin-top: 20upx;
+}
+
 
 /* ==================
          聊天

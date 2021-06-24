@@ -656,6 +656,10 @@
 						_this.ifloading = true
 						
 						const db = uniCloud.database();
+						// 增加编辑时间
+						info['editTime'] = db.env.now
+						info['editUser'] = db.env.uid
+						
 						db.collection('wishlisttimeline').doc(_this.timelineId)
 						.update(info)
 						.then(res => {

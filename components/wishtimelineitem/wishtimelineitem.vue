@@ -1,8 +1,19 @@
 <template>
-	<view v-if="timelineitem" class="wishtimelineitem" :class=" ifDisappear ? ' animation-fade animation-reverse' : '' ">
+	<view v-if="timelineitem" class="wishtimelineitem" :class=" [ ifDisappear ? ' animation-fade animation-reverse' : ''] ">
+		
+		<!-- 心愿开始类型  type=0 -->
+		<view v-if="timelineitem.type == 0" class="content bg-pink shadow-blur">
+			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
+			<text class="margin-left">{{ i18n.wishlist.timeline.startsign }}</text>
+		</view>
+		
+		<!-- 心愿单编辑类型  type=2 -->
+		<view v-else-if="timelineitem.type == 2" class="content bg-gray shadow-blur">
+			
+		</view>
 		
 		<!-- 时间轴具体内容 -->
-		<view class="content">
+		<view v-else class="content">
 			
 			<!-- 时间轴发布人信息 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
@@ -18,6 +29,12 @@
 			<!-- 文本内容 -->
 			<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
 				{{timelineitem.content}}
+			</view>
+			
+			<!-- 编辑操作区域 -->
+			<view v-if="timelineitem.editTime" class="editoptionview padding-top-sm solid-top text-wrap text-sm text-gray">
+				<uni-dateformat :date="timelineitem.editTime" format="MM/dd hh:mm:ss" />
+				<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 			</view>
 			
 			<!-- 图片 -->
@@ -308,6 +325,12 @@
 <script>
 	
 	export default {
+		
+		options: {
+			styleIsolation: 'apply-shared',
+			addGlobalClass: true,
+		},
+		
 		name:"wishtimelineitem",
 		
 		props: {
@@ -329,6 +352,19 @@
 		},
 		
 		methods: {
+			
+			// 获取当前时间轴的cu-item类名
+			getItemClass(timelineitem) {
+				
+				let itemClass = 'cu-item '
+				// type=0 时间轴开始
+				if(timelineitem.type == 0) {
+					itemClass += 'cuIcon-evaluate_fill text-pink'
+				}
+				
+				return itemClass
+				
+			},
 			
 			// 查看原图
 			previewImgs(imgsStr,index) {
@@ -403,5 +439,7 @@
 </script>
 
 <style lang="scss" scoped>
+
+
 
 </style>

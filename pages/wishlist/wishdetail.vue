@@ -253,7 +253,8 @@
 									<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 									<view class="flex flex-direction text-df">
 										<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
-										<text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text>
+										<!-- <text class="commenttime text-sm text-gray">{{$moment(timelineitem.creatTime).format('MM/DD HH:mm:ss')}}</text> -->
+										<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
 									</view>
 								</view>
 							</view>
@@ -269,26 +270,6 @@
 								<view class="grid col-3 grid-square">
 									<view class="bg-img" v-for="(img,index) in timelineitem.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(timelineitem.imgs, index)"></view>
 								</view>
-								
-							</view>
-							
-							<!-- 价格 -->
-							<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
-								
-								<text class="cuIcon cuIcon-moneybagfill text-red"></text>
-								<text class="text-red text-xl margin-left-sm">{{ `${timelineitem.moneyType === 'RMB' ? '¥' : timelineitem.moneyType === 'THB' ? '฿' : ''}${timelineitem.price}` }}</text>
-								
-							</view>
-							
-							<!-- 评论链接区域 -->
-							<view v-if="timelineitem.link" class="linkview flex align-center margin-top-sm">
-								
-								<text class="cuIcon cuIcon-link text-green"></text>
-								<text class="text-sm text-gray margin-left-sm">{{ timelineitem.link }}</text>
-								<!-- 复制按钮 -->
-								<!-- #ifndef H5 -->
-								<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
-								<!-- #endif -->
 								
 							</view>
 							
@@ -967,7 +948,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlisttimeline,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{avatar,nickname},content,imgs,type,wishId,creatTime')
+				.field('creatUser{avatar,nickname},editUser{avatar,nickname},content,imgs,type,wishId,creatTime,editTime')
 				.orderBy('creatTime desc')
 				.get()
 				.then(res => {
@@ -1010,6 +991,7 @@
 							}
 						})
 						_this.timelinearrdic = newtimelinearrdic
+						console.log(_this.timelinearrdic);
 						
 					}
 					// 获取失败
@@ -1033,55 +1015,6 @@
 					_this.ifloading = false
 				})
 				
-				return
-				
-				uniCloud.callFunction({
-					name:'wishlisttimeline',
-					data: {
-						type: 'getlist',
-						info: {
-							wishId: _this.id
-						}
-					}
-				}).then(res => {
-					
-					_this.ifloading = false // 结束缓冲动画
-					
-					if(res) {
-						let timelinelist = res.result.data
-												
-						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
-						let newtimelinearrdic = {}
-						timelinelist.forEach((timelineitem, index) => {
-							let creatTime = timelineitem.creatTime
-							// 获取日期
-							let creatDate = _this.$moment(creatTime).format('YYYY-MM-DD')
-							if(newtimelinearrdic[creatDate]) {
-								let samedatearr = newtimelinearrdic[creatDate]
-								samedatearr.push(timelineitem)
-							}
-							else {
-								newtimelinearrdic[creatDate] = [timelineitem]
-							}
-						})
-						console.log(newtimelinearrdic)
-						_this.timelinearrdic = newtimelinearrdic
-
-					}
-					else {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
-					}
-				}).catch(error => {
-					_this.ifloading = false // 结束缓冲动画
-					
-					uni.showToast({
-						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
-				})
 			},
 			
 			// 弹出框点击取消
@@ -1371,7 +1304,7 @@
 			left: 50%;
 			transform: translate(-50%);
 		}
-
+		
 	}
 	
 </style>
