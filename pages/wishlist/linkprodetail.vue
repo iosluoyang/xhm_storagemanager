@@ -7,11 +7,11 @@
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
-		<view v-if="linkProduct" class="prodetailview" style="padding-bottom: 50px;">
+		<view v-if="linkProduct" class="prodetailview">
 			
 			<!-- 轮播图 -->
 			<!-- card-swiper screen-swiper square-dot round-dot -->
-			<swiper class="card-swiper square-dot bg-gradual-pink" :indicator-dots="true" :circular="true"
+			<swiper class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
 			 :autoplay="true" interval="3000" duration="300" @change="swiperChange">
 				<swiper-item v-for="(item,index) in linkProduct.imgs.split(',')" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
@@ -88,7 +88,7 @@
 		</view>
 		
 		<!-- 底部操作条 -->
-		<view style="position: fixed;bottom: 0;left: 0;right: 0;z-index: 666;" class="bottomoptionview cu-bar bg-white tabbar border shop">
+		<view v-if="linkProduct" class="bottomoptionview cu-bar bg-white tabbar border shop">
 			
 			<!-- 联系客服按钮 -->
 			<!-- #ifdef MP-WEIXIN -->
@@ -99,7 +99,7 @@
 			<!-- #endif -->
 			
 			<!-- 收藏按钮 -->
-			<view class="action" @click="isFavor = !isFavor">
+			<view class="action" @click="favorPro">
 				<view :class="[ isFavor ? 'cuIcon-favorfill text-orange' : 'cuIcon-favor' ]"></view>
 				{{ i18n.base.favor }}
 			</view>
@@ -118,7 +118,7 @@
 		<mescroll-top :value="ifshowtoTop" :option="toTopopt" @click="clicktoTop"></mescroll-top>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector	v-if="linkProduct && specPropInfo"
+		<wishSpecSelector v-if="linkProduct && specPropInfo"
 							:specPropInfo="specPropInfo" 
 							:ifshow.sync="showSelector"
 							:defaultProTitle="linkProduct.title"
@@ -343,6 +343,7 @@
 							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
 							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
+							_this.isFavor = linkProduct.favorFlag == 1 // 是否收藏
 							
 							_this.linkProduct = linkProduct
 							
@@ -481,6 +482,67 @@
 				this.TabCur = e.currentTarget.dataset.id;
 			},
 			
+			// 收藏商品
+			favorPro() {
+				let linkProduct = this.linkProduct
+				const db = uniCloud.database();
+				
+				// 如果是收藏则添加记录  如果是取消收藏则删除记录
+				if(this.isFavor) {
+					// 取消收藏
+					const dbCmd = db.command
+					db.collection('favorpro').where(dbCmd.or({thirdPid: linkProduct.thirdPid},{pid: linkProduct.pid})).remove()
+					.then(res => {
+						
+						if(res.result.code == 0) {
+							uni.showToast({
+								title: this.i18n.tip.unfavorsuccess,
+								icon: 'none'
+							});
+							_this.isFavor = false
+						}
+						else {
+							uni.showToast({
+								title: res.result.message,
+								icon: 'none'
+							});
+						}
+						
+					}).catch(error => {
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
+					})
+				}
+				else {
+					// 开始收藏
+					let data = {thirdPid: linkProduct.thirdPid,pid: linkProduct.pid}
+					db.collection('favorpro').add(data).then(res => {
+						if(res.result.code == 0) {
+							uni.showToast({
+								title: this.i18n.tip.favorsuccess,
+								icon: 'none'
+							});
+							_this.isFavor = true
+						}
+						else {
+							uni.showToast({
+								title: res.result.message,
+								icon: 'none'
+							});
+						}
+						
+					}).catch(error => {
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
+					})
+				}
+				
+			},
+			
 			// 选择完规格
 			specFinishSelect(selectSpecPropInfo) {
 				console.log(`当前选择完规格的数据为`);
@@ -503,5 +565,14 @@
 </script>
 
 <style lang="scss" scoped>
-
+	.linkprodetailview{
+		
+		.bottomoptionview{
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin-top: 50px;
+		}
+	}
 </style>

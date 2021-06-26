@@ -23,8 +23,7 @@
 						</view>
 						<view class="item-container">
 							<view class="thumb-box" v-for="(item1, index1) in item.childList" :key="index1" @tap.stop="clickSecondItem(item1)">
-								<!-- <image class="item-menu-image" :src="item1.icon" mode=""></image> -->
-								<image class="item-menu-image" src="/static/publicicon/logo.png" mode="aspectFill"></image>
+								<image class="item-menu-image round" :src=" item1.img ? item1.img : '/static/publicicon/logo.png' " mode="aspectFill"></image>
 								<view class="item-menu-name">{{item1.typeName}}</view>
 							</view>
 						</view>

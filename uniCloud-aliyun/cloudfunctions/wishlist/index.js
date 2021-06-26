@@ -301,16 +301,37 @@ exports.main = async (event, context) => {
 		console.log(`wishlist中获取到的1688api商品详情的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data && res.data.errorCode == '000000') {
+			
+			let data = res.data.data
+			
+			// 查询当前商品是否被查询用户收藏
+			let favorFlag = 0 // 默认为未收藏
+			// 如果用户登录则开始查询
+			if(uid) {
+				let favorcollection = db.collection('favorpro')
+				let favorres =  await favorcollection.where({creatUser: uid, thirdPid: data.product.thirdPid}).get({getOne: true})
+				console.log(`查询收藏表的数据为:`);
+				console.log(favorres);
+				if(favorres.affectedDocs > 0) {
+					// 找到了收藏表中的数据 则为已收藏状态
+					favorFlag = 1
+				}
+			}
+			
+			// 写入收藏字段
+			let newData = {...data}
+			newData.product['favorFlag'] = favorFlag
+			
 			let result = {
 				code: 0,
-				data: res.data.data
+				data: newData
 			}
 			
 			// 尝试将第三方商品数据入库
 			try{
 				
 				// 将当前查询出来的第三方商品信息入1688商品数据库
-				let thirdProductInfo = res.data.data.product
+				let thirdProductInfo = data.product
 				let pid = thirdProductInfo.pid
 				let thirdPid = thirdProductInfo.thirdPid
 				const linkproductcollection = db.collection('linkproduct1688')

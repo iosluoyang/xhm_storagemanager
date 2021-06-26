@@ -1,0 +1,41 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description":"收藏商品列表",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"favorTime": {
+			"description": "收藏时间",
+			"forceDefaultValue": {
+			  "$env": "now"
+			}
+		},
+		"creatUser": {
+			"bsonType":"string",
+			"description": "收藏者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue":{
+				"$env":"uid"
+			} // 强制设置creatUid的值为当前登录用户的id
+		},
+		"thirdPid": {
+			"bsonType":"string",
+			"description": "收藏商品的第三方pid",
+			"foreignKey":"linkproduct1688.thirdPid" // 使用foreignKey表示，此字段关联linkproduct1688表的thirdPid
+		},
+		"pid": {
+			"bsonType":"int",
+			"description": "收藏商品的pid",
+			"foreignKey":"linkproduct1688.pid" // 使用foreignKey表示，此字段关联linkproduct1688表的pid
+		}
+	}
+}

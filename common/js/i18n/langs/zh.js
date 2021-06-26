@@ -102,6 +102,8 @@ const zh = {
 		addsuccess: "添加成功",
 		fixsuccess: "修改成功",
 		savesuccess: "保存成功",
+		favorsuccess: "收藏成功",
+		unfavorsuccess: "取消收藏成功",
 		deletesuccess: "删除成功",
 		resetsuccess: "重置成功",
 		pleaselogin: "请登录",
