@@ -9,7 +9,9 @@
 		
 		<!-- 心愿单编辑类型  type=2 -->
 		<view v-else-if="timelineitem.type == 2" class="content bg-gray shadow-blur">
-			
+			<text class="cuIcon cuIcon-edit text-blue margin-right"></text>
+			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
+			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
 		
 		<!-- 时间轴具体内容 -->

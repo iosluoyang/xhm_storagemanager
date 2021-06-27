@@ -567,12 +567,13 @@
 <style lang="scss" scoped>
 	.linkprodetailview{
 		
+		padding-bottom: 50px;
+		
 		.bottomoptionview{
 			position: fixed;
 			left: 0;
 			right: 0;
 			bottom: 0;
-			margin-top: 50px;
 		}
 	}
 </style>

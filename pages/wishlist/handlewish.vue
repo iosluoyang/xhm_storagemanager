@@ -253,21 +253,23 @@
 			_this = this
 			
 			this.type = option.type // add 新增  edit编辑 copy拷贝
-			this.id = option.id // 心愿详情id(编辑或者拷贝的原心愿id)
 			
-			// 1688商品详情
-			let productInfo1688 = uni.getStorageSync('productInfo1688')
-			if(productInfo1688) {
-				// 设置1688数据
-				this.set1688productInfo(productInfo1688)
-				uni.removeStorageSync('productInfo1688')
+			// 如果是新增
+			if(this.type === 'add') {
+				// 如果有第三方商品信息则自动加载数据
+				let productInfo1688 = uni.getStorageSync('productInfo1688')
+				if(productInfo1688) {
+					// 设置1688数据
+					this.set1688productInfo(productInfo1688)
+					uni.removeStorageSync('productInfo1688')
+				}
 			}
 			
 			// 如果是编辑或者拷贝状态则获取心愿详情
 			if(this.type === 'edit' || this.type === 'copy') {
+				this.id = option.id // 心愿详情id(编辑或者拷贝的原心愿id)
 				this.getwishdetail()
 			}
-			
 			
 			// 设置紧急程度数组
 			// this.setHurryLevelArr()
@@ -690,12 +692,30 @@
 					const db = uniCloud.database();
 					db.collection('wishlist').doc(_this.id).update(info)
 					.then(res => {
-						// 更新成功
-						uni.$emit('updatewishdetail')
-						uni.$emit('updatewishlist')
-						
-						let modalTitle = _this.i18n.tip.fixsuccess
-						_this.checksubscribe(modalTitle) // 更新成功后检查订阅消息
+						// 增加一个编辑的时间轴
+						let timelineinfo = {
+							type: 2,
+							wishId: _this.id,
+						}
+						db.collection('wishlisttimeline').add(timelineinfo).then(response => {
+							// 新增编辑时间轴成功
+							
+							// 更新成功
+							uni.$emit('updatewishdetail')
+							uni.$emit('updatewishlist')
+							// 更新事件轴数据
+							uni.$emit('updatetimeline')
+							
+							let modalTitle = _this.i18n.tip.fixsuccess
+							_this.checksubscribe(modalTitle) // 更新成功后检查订阅消息
+							
+						}).catch(err => {
+							console.log(`新增编辑时间轴失败,原因为${err.message}`);
+							uni.showToast({
+								title: _this.i18n.error.fixerror,
+								icon: 'none'
+							});
+						})
 						
 					})
 					.catch(err => {
@@ -729,11 +749,11 @@
 				uni.showToast({
 					title: modalTitle,
 					icon: 'none',
-					duration: 1500
+					duration: 1000
 				});
 				setTimeout(function() {
 					uni.navigateBack();
-				}, 1500);
+				}, 1000);
 				// #endif
 				
 			},

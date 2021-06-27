@@ -617,7 +617,7 @@
 								
 								setTimeout(function() {
 									uni.navigateBack();
-								}, 1500);
+								}, 1000);
 								
 							}
 							// 新增失败
@@ -682,7 +682,7 @@
 								
 								setTimeout(function() {
 									uni.navigateBack();
-								}, 1500);
+								}, 1000);
 							}
 							// 编辑失败
 							else {

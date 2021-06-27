@@ -226,7 +226,7 @@
 				
 				<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
 				
-				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineindex" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
+				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
 				
 				<!-- 
 				时间轴类型  
@@ -990,7 +990,9 @@
 								newtimelinearrdic[creatDate] = [timelineitem]
 							}
 						})
-						_this.timelinearrdic = newtimelinearrdic
+						_this.timelinearrdic = Object.assign({}, newtimelinearrdic)
+						// _this.$set(_this.timelinearrdic, newtimelinearrdic)
+						// _this.timelinearrdic = newtimelinearrdic
 						console.log(_this.timelinearrdic);
 						
 					}

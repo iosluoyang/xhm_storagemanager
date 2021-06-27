@@ -38,21 +38,21 @@
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
 		"editTime": {
+			"bsonType":"timestamp",
 			"description": "编辑时间"
 		},
 		"content" : {
 			"bsonType":"string",
-			"description":"时间轴内容",
-			"defaultValue":""
+			"description":"时间轴内容"
 		},
 		"imgs": {
 			"bsonType":"string",
-			"description":"时间轴图片",
-			"defaultValue":""
+			"description":"时间轴图片"
 		},
 		"type": {
 			"bsonType":"int",
-			"description":"时间轴类型  0心愿单创建  1心愿单普通时间轴更新  2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成"
+			"description":"时间轴类型  0心愿单创建时间轴  1普通内容时间轴  2心愿单编辑时间轴  3待确认时间轴  4确认通过时间轴  5心愿单拒绝时间轴  6心愿单完成时间轴",
+			"enum": [0,1,2,3,4,5,6]
 		},
 		"link": {
 			"bsonType":"string",
@@ -64,9 +64,9 @@
 		},
 		"moneyType": {
 			"bsonType":"string",
-			"description":"货币种类 RMB 人民币 THB 泰铢"
+			"description":"货币种类 RMB 人民币 THB 泰铢",
+			"enum": ["RMB", "THB"]
 		}
-		
 		
 	}
 }
