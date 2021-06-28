@@ -1,7 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
-	"description":"心愿单列表数据表",
+	"description": "心愿单列表数据表",
 	"required": [],
 	"permission": {
 		"read": true, // " 'merchant' in auth.role "
@@ -16,19 +16,19 @@
 		"creatTime": {
 			"description": "创建时间",
 			"forceDefaultValue": {
-			  "$env": "now"
+				"$env": "now"
 			}
 		},
 		"creatUser": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "发布者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
-			"forceDefaultValue":{
-				"$env":"uid"
+			"forceDefaultValue": {
+				"$env": "uid"
 			} // 强制设置creatUid的值为当前登录用户的id
 		},
 		"productTitle": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "商品标题"
 		},
 		"sourceLink": {
@@ -47,124 +47,124 @@
 			"description": "目标价格类型"
 		},
 		"targetAmount": {
-			"bsonType":"string || int",
+			"bsonType": "string || int",
 			"description": "目标数量"
 		},
 		"hurryLevel": {
-			"bsonType":"int",
+			"bsonType": "int",
 			"description": "紧急程度 1 2 3 4 5"
 		},
 		"remark": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "备注"
 		},
 		"imgs": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "图片字符串 逗号拼接"
 		},
 		"achieveFlag": {
-			"bsonType":"int",
+			"bsonType": "int",
 			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭",
 			"defaultValue": 0
 		},
 		"remindFlag": {
-			"bsonType":"int",
-			"description":"是否需要提醒的标识  0否 1是",
+			"bsonType": "int",
+			"description": "是否需要提醒的标识  0否 1是",
 			"defaultValue": 0
 		},
 		"productExt": {
-			"bsonType":"object",
-			"description":"心愿单商品的拓展字段",
+			"bsonType": "object",
+			"description": "心愿单商品的拓展字段",
 			"properties": {
 				"secretCode": {
-					"bsonType":"string",
-					"description":"商品口令",
-					"defaultValue":""
+					"bsonType": "string",
+					"description": "商品口令",
+					"defaultValue": ""
 				},
 				"pureUrl": {
-					"bsonType":"string",
-					"description":"商品纯链接",
-					"defaultValue":""
+					"bsonType": "string",
+					"description": "商品纯链接",
+					"defaultValue": ""
 				},
 				"boxContainNum": {
-					"bsonType":"int",
-					"description":"一箱的商品数量",
-					"defaultValue":""
+					"bsonType": "int",
+					"description": "一箱的商品数量",
+					"defaultValue": ""
 				},
 				"boxLength": {
-					"bsonType":"int",
-					"description":"一箱的长度",
-					"defaultValue":""
+					"bsonType": "int",
+					"description": "一箱的长度",
+					"defaultValue": ""
 				},
 				"boxWidth": {
-					"bsonType":"int",
-					"description":"一箱的宽度",
-					"defaultValue":""
+					"bsonType": "int",
+					"description": "一箱的宽度",
+					"defaultValue": ""
 				},
 				"boxHeight": {
-					"bsonType":"int",
-					"description":"一箱的高度",
-					"defaultValue":""
+					"bsonType": "int",
+					"description": "一箱的高度",
+					"defaultValue": ""
 				},
 				"boxVolume": {
-					"bsonType":"string",
-					"description":"箱子体积",
-					"defaultValue":""
+					"bsonType": "string",
+					"description": "箱子体积",
+					"defaultValue": ""
 				},
 				"boxWeight": {
-					"bsonType":"string",
-					"description":"箱子重量,单位kg",
-					"defaultValue":""
+					"bsonType": "string",
+					"description": "箱子重量,单位kg",
+					"defaultValue": ""
 				}
 			}
 		},
 		"specPropInfo": {
-			"bsonType":"object",
-			"description":"心愿单商品的规格对象",
+			"bsonType": "object",
+			"description": "心愿单商品的规格对象",
 			"properties": {
 				"propName": {
-					"bsonType":"string",
-					"description":"第一属性名称",
-					"defaultValue":"第一属性"
+					"bsonType": "string",
+					"description": "第一属性名称",
+					"defaultValue": "第一属性"
 				},
 				"secondPropName": {
-					"bsonType":"string",
-					"description":"第二属性名称",
-					"defaultValue":"第二属性"
+					"bsonType": "string",
+					"description": "第二属性名称",
+					"defaultValue": "第二属性"
 				},
 				"propValList": {
-					"bsonType":"array",
-					"description":"第一属性的值集合",
-					"arrayType":"object",
+					"bsonType": "array",
+					"description": "第一属性的值集合",
+					"arrayType": "object",
 					"properties": {
 						"propVal": {
-							"bsonType":"string",
-							"description":"第一属性的名称值"
+							"bsonType": "string",
+							"description": "第一属性的名称值"
 						},
 						"img": {
-							"bsonType":"string",
-							"description":"第一属性的值图片"
+							"bsonType": "string",
+							"description": "第一属性的值图片"
 						},
 						"specStockList": {
-							"bsonType":"array",
-							"description":"第一属性下的二级属性集合",
-							"arrayType":"object",
+							"bsonType": "array",
+							"description": "第一属性下的二级属性集合",
+							"arrayType": "object",
 							"properties": {
 								"propVal": {
-									"bsonType":"string",
-									"description":"第一/二属性名称值"
+									"bsonType": "string",
+									"description": "第一/二属性名称值"
 								},
 								"specId": {
-									"bsonType":"int",
-									"description":"规格id"
+									"bsonType": "int",
+									"description": "规格id"
 								},
 								"stockCount": {
-									"bsonType":"int",
-									"description":"规格的库存数量"
+									"bsonType": "int",
+									"description": "规格的库存数量"
 								},
 								"price": {
-									"bsonType":"string",
-									"description":"规格的价格"
+									"bsonType": "string",
+									"description": "规格的价格"
 								}
 							}
 						}
@@ -173,20 +173,20 @@
 			}
 		},
 		"thirdPidType": {
-			"bsonType":"string",
-			"description":"第三方商品的类型",
+			"bsonType": "string",
+			"description": "第三方商品的类型",
 			"enum": [
 				"pro-1688",
 				"pro-taobao",
 				"pro-shopee"
 			],
-			"defaultValue":"pro-1688"
+			"defaultValue": "pro-1688"
 		},
 		"thirdPid": {
-			"bsonType":"string",
-			"description":"第三方商品的pid",
-			"foreignKey":"linkproduct1688.thirdPid"
+			"bsonType": "string",
+			"description": "第三方商品的pid",
+			"foreignKey": "linkproduct1688.thirdPid"
 		}
-		
+
 	}
 }

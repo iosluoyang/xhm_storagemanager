@@ -3,7 +3,7 @@
 		
 		<u-table class="u-table multiprotable" fontSize="20" padding="10rpx 0">
 			
-			<!-- 首先遍历表头 -->
+			<!-- 表头 -->
 			<u-tr v-if="tableHeaderArr" class="u-tr tableheader">
 				<u-td class='u-td eachheaderitem' v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
 					
@@ -38,21 +38,20 @@
 				</u-td>
 			</u-tr>
 			
-			<!-- 填充表格内容数据 -->
-			<!-- 每一个商品数据 -->
-			<u-tr v-if="tableDataArr" class="u-tr tableeachrow" v-for="(contentitem, contentindex) in tableDataArr" :key="contentindex">
-				
+			<!-- 填充表格规格内容数据 -->
+			<u-tr class="u-tr tableeachrow">
+								
 				<!-- 每一列的数据要和header保持一致 -->
 				<u-td class="u-td" v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
 					
 					<!-- 如果类型为正常文本展示则直接展示 -->
 					<template v-if="headeritem.type == 'text'">
-						<text class="text-wrap" :class=" [ headeritem.key == 'totalAmount' ? 'text-bold text-pink text-lg' : '' ] ">{{ contentitem[headeritem.key] }}</text>
+						<text class="text-wrap" :class=" [ headeritem.key == 'totalAmount' ? 'text-bold text-pink text-lg' : '' ] ">{{ tableData[headeritem.key] }}</text>
 					</template>
 					
 					<!-- 如果类型为图片则渲染图片组件 -->
 					<template v-else-if="headeritem.type == 'img'">
-						<u-image  width="100%" height="60" mode="aspectFit" :src="contentitem[headeritem.key]" @click="previewImg(contentitem[headeritem.key])"></u-image>
+						<u-image  width="100%" height="60" mode="aspectFit" :src="tableData[headeritem.key]" @click="previewImg(tableData[headeritem.key])"></u-image>
 					</template>
 					
 					<!-- 如果类型为数组则该列渲染多个行数据 -->
@@ -62,7 +61,7 @@
 						<template v-if="headeritem.key == 'specList'">
 							
 							<!-- 商品的每一个一级规格行数据 -->
-							<u-tr class="u-tr subtr" v-for="(subitem, subitemindex) in contentitem[headeritem.key]" :key="subitemindex">
+							<u-tr class="u-tr subtr" v-for="(subitem, subitemindex) in tableData[headeritem.key]" :key="subitemindex">
 								
 								<!-- 二级表头与数据一一对应 -->
 								<u-td class="u-td subtd" v-for="(subheaditem, subheaditemindex) in headeritem.childList" :key="subheaditemindex" :width="subheaditem.width">
@@ -95,7 +94,7 @@
 												<template v-if="sub3item.type == 'text'">
 													<text class="text-wrap text-df">{{ sub2item[sub3item.key] }}</text>
 												</template>
-
+			
 											</u-td>
 											
 										</u-tr>
@@ -113,6 +112,32 @@
 				</u-td>
 				
 			</u-tr>
+			
+			<!-- 分隔栏 -->
+			<u-tr class="u-tr tableeachsummaryrow bg-yellow">
+				<u-td class="u-td">
+					<text class="text-bold text-black">{{ `金额合计` }}</text>
+				</u-td>
+			</u-tr>
+			
+			<!-- 总结区域表头 -->
+			<u-tr class="u-tr">
+				<u-th class="u-th">商品总价</u-th>
+				<u-th class="u-th">国内运费</u-th>
+				<u-th class="u-th">平台服务费</u-th>
+				<u-th class="u-th">应付总价</u-th>
+			</u-tr>
+			
+			<!-- 总结区域内容 -->
+			<u-tr class="u-tr">
+				<u-td class="u-td">{{ tableData.totalProPrice }}</u-td>
+				<u-td class="u-td">{{ wishinfo && wishinfo.productExt && wishinfo.productExt.domesticShippingFee || '/' }}</u-td>
+				<u-td class="u-td">{{ tableData.totalServiceFee }}</u-td>
+				<u-td class="u-td">
+					<text class="text-red text-bold text-lg">{{ totalPrice }}</text>
+				</u-td>
+			</u-tr>
+			
 			
 		</u-table>
 		
@@ -147,15 +172,33 @@
 			}
 		},
 		
+		computed: {
+			
+			// 显示总价格
+			totalPrice() {
+				
+				if(this.tableData) {
+					let totalProPrice = parseFloat(this.tableData.totalProPrice).toFixed(2)
+					let totalDomesticShippingFee = parseFloat(this.wishinfo && this.wishinfo.productExt && this.wishinfo.productExt.domesticShippingFee || 0).toFixed(2)
+					let totalServiceFee = parseFloat(this.tableData.totalServiceFee).toFixed(2)
+					let totalPrice = +totalProPrice + +totalDomesticShippingFee + +totalServiceFee
+					totalPrice = parseFloat(totalPrice).toFixed(2)
+					return totalPrice
+				}
+				return '/'
+			}
+		
+		},
+		
 		data() {
 			return {
-
+				
+				singleServiceFee: 20, // 单个规格服务费
 				tableHeaderArr: null, // 表头数组
-				tableDataArr: null, // 表格内容数组
+				tableData: null, // 表格内容数据
 				
 			};
 		},
-		
 		
 		created() {
 			_this = this
@@ -180,6 +223,7 @@
 					let firstList =  _this.wishinfo.specPropInfo.propValList
 					firstList.forEach(firstitem => {
 						let totalAmount = 0
+						let totalProPrice = 0
 						
 						let childList = []
 						// 遍历二级属性
@@ -193,6 +237,7 @@
 									specId: seconditem.specId,
 								}
 								totalAmount += Number(seconditem.amount)
+								totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
 								childList.push(childListItem)
 							}
 							
@@ -203,7 +248,8 @@
 							attributeName: firstitem.propVal,
 							img: firstImg || proMainImg,
 							childList: childList,
-							totalAmount: totalAmount
+							totalAmount: totalAmount,
+							totalProPrice: totalProPrice
 						}
 						
 						if(totalAmount > 0) {
@@ -213,16 +259,21 @@
 					})
 					
 				}
-				console.log(specList);
 				
 				if(specList.length == 0) {
 					return
 				}
 				
-				// 计算总数量
-				let totalAmount = specList.reduce((total, item) => {
-					return total + item.totalAmount
-				}, 0)
+				// 遍历规格数组获取商品总价
+				let totalAmount = 0
+				let totalProPrice = 0
+				let totalSpecAmount = specList.length
+				let totalServiceFee =  parseFloat(this.singleServiceFee).toFixed(2)
+				specList.forEach(eachitem => {
+					totalAmount += Number(eachitem.totalAmount)
+					totalProPrice += +parseFloat(eachitem.totalProPrice).toFixed(2)
+				})
+				totalProPrice = parseFloat(totalProPrice).toFixed(2)
 				
 				//设置三级表头
 				let tableHeader3Arr = [
@@ -332,11 +383,11 @@
 						type: 'text',
 						width: '10%',
 						// #ifdef MP-WEIXIN
-						ifShow: false
+						ifShow: false,
 						// #endif
 						
 						// #ifndef MP-WEIXIN
-						ifShow: true
+						ifShow: true,
 						// #endif
 					},
 					
@@ -344,39 +395,32 @@
 				
 				tableHeaderArr = tableHeaderArr.filter(item => (item.ifShow))
 				_this.tableHeaderArr = tableHeaderArr
+								
+				// 表格内容数据
+				let tableData = {
+					totalProPrice: totalProPrice,
+					totalServiceFee: totalServiceFee
+				}
+				let productData = {..._this.wishinfo, ...{specList: specList}, ...{totalAmount: totalAmount}}
 				
-				
-				// 表格内容数据数组
-				let tableDataArr = []
-				
-				let productList = [{..._this.wishinfo, ...{specList: specList}, ...{totalAmount: totalAmount}}]
-				
-				productList.forEach( (proitem, proindex) => {
-					
-					let eachtabledata = {}
-					
-					// 根据表头内容进行数据填充
-					tableHeaderArr.forEach(headeritem => {
-						let key = headeritem.key // 取值key
-						// 如果key值为索引则赋值当前商品列表的索引
-						if(key == 'index') {
-							eachtabledata[key] = (proindex + 1).toString()
-						}
-						// 如果是主图则展示商品的第一张图片
-						else if(key == 'mainImg') {
-							eachtabledata[key] = proMainImg								
-						}
-						else {
-							eachtabledata[key] = proitem[key] // 赋值value
-						}
-						
-					})
-											
-					tableDataArr.push(eachtabledata)
+				// 根据表头内容进行数据填充
+				tableHeaderArr.forEach(headeritem => {
+					let key = headeritem.key // 取值key
+					// 如果key值为索引则赋值当前商品列表的索引
+					if(key == 'index') {
+						tableData[key] = (proindex + 1).toString()
+					}
+					// 如果是主图则展示商品的第一张图片
+					else if(key == 'mainImg') {
+						tableData[key] = proMainImg								
+					}
+					else {
+						tableData[key] = productData[key] // 赋值value
+					}
 					
 				})
 				
-				this.tableDataArr = tableDataArr
+				this.tableData = tableData
 				
 			},
 			

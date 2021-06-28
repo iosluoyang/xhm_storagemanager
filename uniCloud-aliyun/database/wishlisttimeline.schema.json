@@ -1,7 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
-	"description":"心愿单时间轴表",
+	"description": "心愿单时间轴表",
 	"required": [],
 	"permission": {
 		"read": true,
@@ -14,59 +14,59 @@
 			"description": "ID，系统自动生成"
 		},
 		"wishId": {
-			"bsonType":"string",
-			"description":"该时间轴对应的心愿id",
-			"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+			"bsonType": "string",
+			"description": "该时间轴对应的心愿id",
+			"foreignKey": "wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
 		},
 		"creatUser": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "创建者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue": {
-				"$env":"uid"
+				"$env": "uid"
 			} // 强制设置该字段为当前创建者用户的uid
 		},
 		"creatTime": {
 			"description": "创建时间",
 			"forceDefaultValue": {
-			  "$env": "now"
+				"$env": "now"
 			} // 强制设置创建时间为服务器当前时间
 		},
 		"editUser": {
-			"bsonType":"string",
+			"bsonType": "string",
 			"description": "修改者的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
 		"editTime": {
-			"bsonType":"timestamp",
+			"bsonType": "timestamp",
 			"description": "编辑时间"
 		},
-		"content" : {
-			"bsonType":"string",
-			"description":"时间轴内容"
+		"content": {
+			"bsonType": "string",
+			"description": "时间轴内容"
 		},
 		"imgs": {
-			"bsonType":"string",
-			"description":"时间轴图片"
+			"bsonType": "string",
+			"description": "时间轴图片"
 		},
 		"type": {
-			"bsonType":"int",
-			"description":"时间轴类型  0心愿单创建时间轴  1普通内容时间轴  2心愿单编辑时间轴  3待确认时间轴  4确认通过时间轴  5心愿单拒绝时间轴  6心愿单完成时间轴",
-			"enum": [0,1,2,3,4,5,6]
+			"bsonType": "int",
+			"description": "时间轴类型  0心愿单创建时间轴  1普通内容时间轴  2心愿单编辑时间轴  3待确认时间轴  4确认通过时间轴  5心愿单拒绝时间轴  6心愿单完成时间轴",
+			"enum": [0, 1, 2, 3, 4, 5, 6]
 		},
 		"link": {
-			"bsonType":"string",
-			"description":"时间轴的链接"
+			"bsonType": "string",
+			"description": "时间轴的链接"
 		},
 		"price": {
-			"bsonType":"string",
-			"description":"时间轴价格"
+			"bsonType": "string",
+			"description": "时间轴价格"
 		},
 		"moneyType": {
-			"bsonType":"string",
-			"description":"货币种类 RMB 人民币 THB 泰铢",
+			"bsonType": "string",
+			"description": "货币种类 RMB 人民币 THB 泰铢",
 			"enum": ["RMB", "THB"]
 		}
-		
+
 	}
 }

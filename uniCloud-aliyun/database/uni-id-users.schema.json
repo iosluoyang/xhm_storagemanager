@@ -1,6 +1,6 @@
 {
 	"bsonType": "object",
-	"description":"用户表",
+	"description": "用户表",
 	"required": [],
 	"permission": {
 		"read": true, // 前端非admin的读取记录权限控制。默认值是false，即可以不写。可以简单的true/false，也可以写表达式
@@ -57,7 +57,7 @@
 			"title": "头像地址",
 			"description": "头像地址",
 			"trim": "both",
-			"defaultValue":"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/ff3c957c-604a-4242-a965-007aa4005613.png"
+			"defaultValue": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/ff3c957c-604a-4242-a965-007aa4005613.png"
 		},
 		"comment": {
 			"bsonType": "string",

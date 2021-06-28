@@ -14,28 +14,28 @@
 		},
 		"name": {
 			"bsonType": "string",
-			"description":"物流公司名称"
+			"description": "物流公司名称"
 		},
 		"logo": {
-			"description":"物流公司logo",
-			"bsonType":"string",
-			"defaultValue":"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/6c9904e5-c142-4777-b669-4f92623477b5.png"
+			"description": "物流公司logo",
+			"bsonType": "string",
+			"defaultValue": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/6c9904e5-c142-4777-b669-4f92623477b5.png"
 		},
 		"admin": {
-			"bsonType":"string",
-			"description":"物流公司管理员",
-			"foreignKey":"uni-id-users._id"
+			"bsonType": "string",
+			"description": "物流公司管理员",
+			"foreignKey": "uni-id-users._id"
 		},
 		"employee": {
-			"bsonType":"array",
-			"description":"物流公司雇员数组",
+			"bsonType": "array",
+			"description": "物流公司雇员数组",
 			"enum": {
-				"collection":"uni-id-users"
+				"collection": "uni-id-users"
 			}
 		},
 		"businessType": {
-			"description":"物流公司经营范围",
-			"bsonType":"string"
+			"description": "物流公司经营范围",
+			"bsonType": "string"
 		}
 	}
 }

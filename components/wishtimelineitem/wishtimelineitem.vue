@@ -69,7 +69,7 @@
 			</view>
 			
 			<!-- 编辑记录区域 -->
-			<view v-if="timelineitem.editTime" class="editoptionview padding-top-sm solid-top text-wrap text-sm text-gray">
+			<view v-if="timelineitem.editTime" class="editoptionview padding-top-sm solid-top text-wrap text-sm text-gray padding-left-sm padding-right-sm">
 				<uni-dateformat :date="timelineitem.editTime" format="MM/dd hh:mm:ss" />
 				<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}` }}</text>
 			</view>
