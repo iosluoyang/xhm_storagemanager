@@ -14,6 +14,12 @@
 			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
 		
+		<!-- 心愿单完成类型 type=6 -->
+		<view v-else-if="timelineitem.type == 6" class="content bg-green shadow-blur">
+			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
+			<text class="margin-left">{{ i18n.wishlist.timeline.finishsign }}</text>
+		</view>
+		
 		<!-- 时间轴具体内容 -->
 		<view v-else class="content">
 			
@@ -31,12 +37,6 @@
 			<!-- 文本内容 -->
 			<view v-if="timelineitem.content" class="margin-top-sm t_wrap">
 				{{timelineitem.content}}
-			</view>
-			
-			<!-- 编辑操作区域 -->
-			<view v-if="timelineitem.editTime" class="editoptionview padding-top-sm solid-top text-wrap text-sm text-gray">
-				<uni-dateformat :date="timelineitem.editTime" format="MM/dd hh:mm:ss" />
-				<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 			</view>
 			
 			<!-- 图片 -->
@@ -66,6 +66,12 @@
 				<button class="cu-btn bg-cyan shadow sm margin-left" style="flex-shrink: 0;" @tap.stop="$basejs.copytoclipboard(timelineitem.link)">{{i18n.base.copy}}</button>
 				<!-- #endif -->
 				
+			</view>
+			
+			<!-- 编辑记录区域 -->
+			<view v-if="timelineitem.editTime" class="editoptionview padding-top-sm solid-top text-wrap text-sm text-gray">
+				<uni-dateformat :date="timelineitem.editTime" format="MM/dd hh:mm:ss" />
+				<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}` }}</text>
 			</view>
 			
 			<!-- 按钮操作区域 -->
@@ -347,6 +353,17 @@
 				timelineitem: this.timelineInfo, // 当前的时间轴数据
 				ifDisappear: false, // 是否消失
 			};
+		},
+		
+		watch: {
+			
+			// 深度监听时间轴数据变更
+			timelineInfo: {
+				handler(newValue, oldValue) {
+					this.timelineitem = newValue
+				},
+				deep: true
+			}
 		},
 		
 		created() {

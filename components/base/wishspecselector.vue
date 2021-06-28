@@ -630,6 +630,16 @@
 					// 如果是正常状态则为选中
 					else if(this.type == 'normal') {
 						
+						// 判断如果没有选择数量则进行提示
+						
+						if(this.totalAmount == 0) {
+							uni.showToast({
+								title: this.i18n.error.lackspec,
+								icon: 'none'
+							});
+							return
+						}
+						
 						this.$emit('finishSelect', specPropInfo)
 						this.show = !this.show
 						

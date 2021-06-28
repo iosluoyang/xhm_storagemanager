@@ -134,7 +134,7 @@
 			<view class="detaildataview margin">
 				
 				<!-- 订购规格table -->
-				<view v-if="wishinfo && wishinfo.selectSpecPropInfo" class="wishspectable">
+				<view v-if="wishinfo && wishinfo.specPropInfo" class="wishspectable">
 					<view class="cu-bar bg-white solid-bottom">
 						<view class="action">
 							<text class="cuIcon-title text-orange"></text>
@@ -144,35 +144,8 @@
 					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
 				</view>
 				
-				<!-- 物流信息表格 -->
-				<view v-if="false && wishinfo && wishinfo.productExt" class="shippingtable">
-					
-					<view class="cu-bar bg-white solid-bottom">
-						<view class="action">
-							<text class="cuIcon-title text-blue"></text>
-							{{i18n.wishlist.wishproductshippingdetail}}
-						</view>
-					</view>
-					<view class="shippingtable">
-						<wishShippingTable :wishinfo="wishinfo"></wishShippingTable>
-					</view>
-					
-				</view>
-				
 				<!-- 手风琴区域 -->
 				<u-collapse accordion :head-style="{color: '#0081ff'}">
-					
-					<!-- 商品规格信息 -->
-					<u-collapse-item v-if="false && wishinfo && wishinfo.selectSpecPropInfo" :title="i18n.wishlist.wishproductspecdetail" :open="true">
-						
-						<view slot="title" class="cu-bar bg-white">
-							<view class="action">
-								<text class="cuIcon-title text-orange"></text>
-								{{i18n.wishlist.wishproductspecdetail}}
-							</view>
-						</view>
-						<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
-					</u-collapse-item>
 					
 					<!-- 拓展信息 -->
 					<u-collapse-item v-if="extArr && extArr.length > 0" :title="i18n.wishlist.wishproductextdetail" :open="true">
@@ -626,8 +599,6 @@
 <script>
 	
 	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
-	import wishSpecTable from '@/components/wishlistitemtablespec/wishlistitemtablespec.vue'; // 使用table-com的多规格表格
-	import wishShippingTable from '@/components/wishlistitemtableshipping/wishlistitemtableshipping.vue'; // 使用table-com的物流表格
 	import wishTimeLineItem from '@/components/wishtimelineitem/wishtimelineitem.vue'; // 单个时间轴组件
 	
 	
@@ -671,8 +642,6 @@
 		},
 		
 		components: {
-			wishSpecTable,
-			wishShippingTable,
 			wishTableSpec,
 			wishTimeLineItem,
 		},
