@@ -27,6 +27,11 @@
 				"$env": "uid"
 			} // 强制设置creatUid的值为当前登录用户的id
 		},
+		"agentUser": {
+			"bsonType": "string",
+			"description": "代理员的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
 		"productTitle": {
 			"bsonType": "string",
 			"description": "商品标题"

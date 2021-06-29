@@ -114,9 +114,9 @@
 			</u-tr>
 			
 			<!-- 分隔栏 -->
-			<u-tr class="u-tr tableeachsummaryrow bg-yellow">
+			<u-tr class="u-tr tableeachsummaryrow">
 				<u-td class="u-td">
-					<text class="text-bold text-black">{{ `金额合计` }}</text>
+					<text class="text-bold text-black bg-yellow">{{ `金额合计` }}</text>
 				</u-td>
 			</u-tr>
 			

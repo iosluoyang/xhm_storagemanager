@@ -205,7 +205,6 @@
 					name: 'Wishlist',
 					color: 'mauve',
 					cuIcon: 'like',
-					url: '/pages/wishlist/index'
 				}
 				
 				// 个人中心功能
@@ -291,6 +290,15 @@
 										confirmText: _this.i18n.base.confirm
 									});
 								})
+							}
+								break;
+							// 心愿单
+							case 'wishlist':
+							{
+								let jumpurl = _this.user && _this.user.role && _this.user.role.includes('PRODUCT_AGENT') ? '/pages/wishlist/list' : '/pages/wishlist/index'
+								uni.navigateTo({
+									url: jumpurl
+								});
 							}
 								break;
 							default:

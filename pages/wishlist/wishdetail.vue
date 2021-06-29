@@ -113,7 +113,10 @@
 						<!-- #endif -->
 						
 						<!-- 再次购买按钮 -->
-						<button class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+						<button v-if="user && (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE'))" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+						
+						<!-- 代理关联心愿按钮 -->
+						<button v-if="user && user.role.includes('PRODUCT_AGENT') && !wishinfo.agentUser" class="cu-btn round bg-gradual-blue cuIcon-attention margin-right-sm" @tap.stop="agentBindWish"></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
 						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
@@ -431,8 +434,8 @@
 			
 		</view>
 		
-		<!-- 添加按钮 悬浮 -->
-		<view class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<!-- 添加按钮 悬浮 登录后才有 -->
+		<view v-if=" user && ( (user.role.includes('PRODUCT_AGENT') && wishinfo.agentUser && user._id == wishinfo.agentUser._id) || (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) ) " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100rpx;"></text>
 		</view>
 		
@@ -556,17 +559,17 @@
 					<!-- 国际运费单价 -->
 					<view class="cu-form-group">
 						<view class="title">{{ '国际运费单价' }}</view>
-						<input class="text-right" type="number" placeholder="请输入国际运费单价" :focus="showpopup && popuptype == 'shippingtool' " v-model="interShippingSingleFeeStr">
+						<input class="text-right" type="number" placeholder="请输入国际运费单价" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
 					</view>
 					
 					<!-- 预估国际运费总价 -->
-					<view class="cu-form-group">
-						<view class="title">{{ '预估运费' }}</view>
+					<view class="cu-form-group padding-top padding-bottom">
+						<view class="title" :style="{'flex-shrink': '0'}">{{ '预估运费' }}</view>
 						<view class="rightcontent">
 							<text class="text-sm text-red">{{ interShippingTotalFeeStr }}</text>
 						</view>
 					</view>
-					
+				
 				</view>
 				
 			</template>
@@ -580,7 +583,7 @@
 						<view class="content">{{ i18n.wishlist.timeline.share }}</view>
 					</view>
 					<view class="padding-sm text-left">
-						<textarea style="height: 100rpx;" :focus="showpopup" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
+						<textarea auto-height disable-default-padding :focus="showpopup" :show-confirm-bar="false" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
 					</view>
 					<view class="cu-bar bg-white flex justify-around">
 						<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
@@ -789,7 +792,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 					.get({
 						getOne:true
 					})
@@ -798,6 +801,7 @@
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
 							detaildata.creatUser = detaildata.creatUser[0]
+							detaildata.agentUser = detaildata.agentUser && detaildata.agentUser.length > 0 ? detaildata.agentUser[0] : null
 							_this.wishinfo = detaildata
 							
 							// 解析心愿商品拓展字段
@@ -885,7 +889,7 @@
 				if(productExt && productExt.boxVolume) {
 					this.popuptype = 'shippingtool'
 					this.showpopup = true
-					this.popmode = 'left'
+					this.popmode = 'center'
 				}
 				else {
 					uni.showToast({
@@ -1041,6 +1045,46 @@
 					url: `/pages/wishlist/handlewish?type=copy&id=${wishitem._id}`
 				});
 			}, 
+			
+			// 代理员认领心愿
+			agentBindWish() {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 开始关联商品
+							let wishinfo = _this.wishinfo
+							const db = uniCloud.database();
+							db.collection('wishlist').doc(wishinfo._id)
+							.update({agentUser:db.env.uid})
+							.then(response => {
+								// 关联成功
+								uni.showToast({
+									title: _this.i18n.tip.addsuccess,
+									icon: 'none'
+								});
+								// 刷新数据
+								_this.loaddetaildata()
+								_this.loadtimelinedata()
+							})
+							.catch(error => {
+								// 关联失败
+								uni.showToast({
+									title: error.message,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+				
+			},
 			
 			// 编辑心愿
 			editwish() {
