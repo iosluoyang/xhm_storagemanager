@@ -32,6 +32,11 @@
 			"description": "代理员的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
+		"agentFlag": {
+			"bsonType":"int",
+			"description":"是否已经关联代理人的标识",
+			"defaultValue": 0 // 默认没有关联
+		},
 		"productTitle": {
 			"bsonType": "string",
 			"description": "商品标题"

@@ -115,9 +115,6 @@
 						<!-- 再次购买按钮 -->
 						<button v-if="user && (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE'))" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
 						
-						<!-- 代理关联心愿按钮 -->
-						<button v-if="user && user.role.includes('PRODUCT_AGENT') && !wishinfo.agentUser" class="cu-btn round bg-gradual-blue cuIcon-attention margin-right-sm" @tap.stop="agentBindWish"></button>
-						
 						<!-- 编辑按钮 仅自己可编辑 -->
 						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
@@ -435,7 +432,25 @@
 		</view>
 		
 		<!-- 添加按钮 悬浮 登录后才有 -->
-		<view v-if=" user && ( (user.role.includes('PRODUCT_AGENT') && wishinfo.agentUser && user._id == wishinfo.agentUser._id) || (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) ) " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+		<!-- 悬浮按钮 -->
+		<view class="floatbtn">
+			
+			<!-- 如果是供应商则判断是否是自己 -->
+			<!-- <template v-if="">
+				<view class="cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
+					<text class="cuIcon-add" style="font-size: 100rpx;"></text>
+				</view>
+			</template> -->
+			
+			<!-- 如果是代理员则判断是否 -->
+			<!-- <template>
+				<view class="cu-btn round bg-gradual-blue shadow-blur cuIcon lg" @tap.stop="agentBindWish">
+					<text class="cuIcon-flashbuyfill" style="font-size: 100rpx;"></text>
+				</view>
+			</template> -->
+			
+		</view>
+		<view v-if=" wishinfo && user && ( (user.role.includes('PRODUCT_AGENT') && wishinfo.agentUser && user._id == wishinfo.agentUser._id) || (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) ) " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
 			<text class="cuIcon-add" style="font-size: 100rpx;"></text>
 		</view>
 		
@@ -1046,7 +1061,7 @@
 				});
 			}, 
 			
-			// 代理员认领心愿
+			// 代理员关联心愿
 			agentBindWish() {
 				
 				uni.showModal({
@@ -1061,16 +1076,31 @@
 							let wishinfo = _this.wishinfo
 							const db = uniCloud.database();
 							db.collection('wishlist').doc(wishinfo._id)
-							.update({agentUser:db.env.uid})
+							.update({agentUser:db.env.uid, agentFlag: 1})
 							.then(response => {
 								// 关联成功
 								uni.showToast({
 									title: _this.i18n.tip.addsuccess,
 									icon: 'none'
 								});
-								// 刷新数据
-								_this.loaddetaildata()
-								_this.loadtimelinedata()
+								
+								// 添加一个代理人关联心愿时间轴记录
+								db.collection('wishlisttimeline')
+								.add({type: 90,wishId: wishinfo._id})
+								.then(response => {
+									// 创建时间轴成功
+									console.log(`创建关联时间轴成功`);
+									// 刷新数据
+									_this.loaddetaildata()
+									_this.loadtimelinedata()
+								})
+								.catch(error => {
+									uni.showToast({
+										title: error.message,
+										icon: 'none'
+									});
+								})
+								
 							})
 							.catch(error => {
 								// 关联失败

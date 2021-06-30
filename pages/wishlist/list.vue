@@ -283,16 +283,17 @@
 				if(this.user.role.includes('PRODUCT_AGENT')) {
 					// 如果是查询全部则查询所有还没有关联代理员的心愿单
 					// 否则查询该代理员下的不同状态下的心愿单
-					wherestr = achieveFlag == -1 ? ` size(agentUser) == 0 ` : ` achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
-					console.log(wherestr);
+					wherestr = achieveFlag == -1 ? ` (agentFlag == 0 || agentUser._id == $cloudEnv_uid) ` : ` achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
+					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
 				}
+				// 普通供应商
 				else if(this.user.role.includes('MERCHANT_ADMIN') || this.user.role.includes('MERCHANT_EMPLOYEE')) {
 					wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				}
 				
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
+					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
 					.orderBy(` remindFlag desc, creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
@@ -300,6 +301,7 @@
 					.then(response => {
 						// 加载成功
 						let list = response.result.data || []
+						console.log(list);
 						
 						// 手动将creatUser的数据从数组转换为对象
 						list.forEach(item => {

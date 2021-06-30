@@ -43,7 +43,6 @@
 						<image v-if="ownwishitem.creatUser && ownwishitem.creatUser.avatar" class="cu-avatar round lg" :src="ownwishitem.creatUser.avatar"></image>
 						<view v-else class="cu-avatar round lg">
 							<text class="cuIcon-people"></text>
-							
 						</view>
 					</template>
 					
@@ -73,9 +72,24 @@
 								<!-- <text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
 								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}} -->
 								<!-- <button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button> -->
-							
-								<!-- 再次购买按钮 -->
-								<button class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+								
+								<!-- 再次购买或者代理心愿按钮 -->
+								<template>
+									
+									<!-- 再次购买按钮 商家角色-->
+									<button v-if="user && (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE'))" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+									
+									<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
+									<button v-if="user && user.role.includes('PRODUCT_AGENT') && ownwishitem.agentFlag == 0" 
+											class="cu-btn round bg-gradual-blue animation-reverse"
+											:class="[bindAnimation ? 'animation-scale-down' : '']"
+											@tap.stop="agentBindWish">
+										<text class="cuIcon cuIcon-flashbuyfill lg"></text>
+										{{ i18n.wishlist.agentbindwish }}
+									</button>
+								
+								</template>
+								
 							
 							</view>
 						
@@ -114,6 +128,7 @@
 			data() {
 				return {
 					
+					bindAnimation: false, // 是否显示绑定动画  默认为否
 					ownwishitem: this.wishitem,
 					
 				}
@@ -163,7 +178,6 @@
 			
 			created() {
 				
-				
 			},
 			
 			methods: {
@@ -181,6 +195,71 @@
 					let copyId = this.ownwishitem._id
 					uni.navigateTo({
 						url: `/pages/wishlist/handlewish?type=copy&id=${copyId}`
+					});
+					
+				},
+				
+				// 代理员关联心愿
+				agentBindWish() {
+					
+					const _this = this
+					
+					uni.showModal({
+						content: _this.i18n.tip.optionconfirm,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								
+								// 开始关联商品
+								_this.bindAnimation = true
+								
+								let wishinfo = _this.ownwishitem
+								const db = uniCloud.database();
+								db.collection('wishlist').doc(wishinfo._id)
+								.update({agentUser:db.env.uid, agentFlag: 1})
+								.then(response => {
+
+									// 关联成功
+									uni.showToast({
+										title: _this.i18n.tip.addsuccess,
+										icon: 'none'
+									});
+									
+									// 添加一个代理人关联心愿时间轴记录
+									db.collection('wishlisttimeline')
+									.add({type: 90,wishId: wishinfo._id})
+									.then(response => {
+										// 创建时间轴成功
+										// 更改数据
+										_this.ownwishitem.agentFlag = 1
+										
+									})
+									.catch(error => {
+										uni.showToast({
+											title: error.message,
+											icon: 'none'
+										});
+										setTimeout(function() {
+											_this.bindAnimation = false
+										}, 1000);
+									})
+									
+								})
+								.catch(error => {
+									// 关联失败
+									uni.showToast({
+										title: error.message,
+										icon: 'none'
+									});
+									setTimeout(function() {
+										_this.bindAnimation = false
+									}, 1000);
+								})
+								
+							}
+						}
 					});
 					
 				},

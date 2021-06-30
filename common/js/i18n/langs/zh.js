@@ -465,6 +465,7 @@ const zh = {
 			iwant: "我想要",
 		},
 		buyagain: '再次购买',
+		agentbindwish: "代理心愿",
 		
 	},
 	

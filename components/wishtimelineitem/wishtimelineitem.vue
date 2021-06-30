@@ -14,6 +14,25 @@
 			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
 		
+		<!-- 心愿单关联代理人类型  type=90 -->
+		<view v-else-if="timelineitem.type == 90" class="content bg-gradual-blue shadow-blur">
+			<!-- 时间轴发布人信息 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction">
+						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view class="margin-top-sm t_wrap">
+				{{`您好,我是您的商品代理人,从现在开始为您提供服务`}}
+			</view>
+		</view>
+		
 		<!-- 心愿单完成类型 type=6 -->
 		<view v-else-if="timelineitem.type == 6" class="content bg-green shadow-blur">
 			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
@@ -29,7 +48,7 @@
 					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 					<view class="flex flex-direction">
 						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
-						<uni-dateformat class="ommenttime text-sm text-gray" :date="timelineitem.creatTime" />
+						<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" />
 					</view>
 				</view>
 			</view>

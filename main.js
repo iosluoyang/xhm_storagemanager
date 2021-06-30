@@ -99,7 +99,8 @@ Vue.mixin({
 		// 用户信息
 		user() {
 			return store.getters.user
-		}
+		},
+		
 	},
 	
 	onShow() {

@@ -9,8 +9,10 @@
 // 详细JQL语法，请参考 https://uniapp.dcloud.net.cn/uniCloud/clientdb?id=jsquery
 
 const db = uniCloud.database();
-
+const dbCmd = db.command;
 // 删除全部时间轴数据
-db.collection('wishlisttimeline').remove()
+// db.collection('wishlisttimeline').remove()
 
-db.collection('wishlist').remove()
+// db.collection('wishlist').remove()
+
+// db.collection('wishlist').where(`agentUser != null`).update({agentFlag: 1})

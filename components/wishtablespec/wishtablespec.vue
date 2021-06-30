@@ -113,31 +113,35 @@
 				
 			</u-tr>
 			
-			<!-- 分隔栏 -->
-			<u-tr class="u-tr tableeachsummaryrow">
-				<u-td class="u-td">
-					<text class="text-bold text-black bg-yellow">{{ `金额合计` }}</text>
-				</u-td>
-			</u-tr>
-			
-			<!-- 总结区域表头 -->
-			<u-tr class="u-tr">
-				<u-th class="u-th">商品总价</u-th>
-				<u-th class="u-th">国内运费</u-th>
-				<u-th class="u-th">平台服务费</u-th>
-				<u-th class="u-th">应付总价</u-th>
-			</u-tr>
-			
-			<!-- 总结区域内容 -->
-			<u-tr class="u-tr">
-				<u-td class="u-td">{{ tableData.totalProPrice }}</u-td>
-				<u-td class="u-td">{{ wishinfo && wishinfo.productExt && wishinfo.productExt.domesticShippingFee || '/' }}</u-td>
-				<u-td class="u-td">{{ tableData.totalServiceFee }}</u-td>
-				<u-td class="u-td">
-					<text class="text-red text-bold text-lg">{{ totalPrice }}</text>
-				</u-td>
-			</u-tr>
-			
+			<!-- 金额汇总区域  当心愿单为非进行中的状态时显示 -->
+			<template v-if="wishinfo.achieveFlag !== 0">
+				
+				<!-- 分隔栏 -->
+				<u-tr class="u-tr tableeachsummaryrow">
+					<u-td class="u-td">
+						<text class="text-bold text-black bg-yellow">{{ `金额合计` }}</text>
+					</u-td>
+				</u-tr>
+				
+				<!-- 总结区域表头 -->
+				<u-tr class="u-tr">
+					<u-th class="u-th">商品总价</u-th>
+					<u-th class="u-th">国内运费</u-th>
+					<u-th class="u-th">平台服务费</u-th>
+					<u-th class="u-th">应付总价</u-th>
+				</u-tr>
+				
+				<!-- 总结区域内容 -->
+				<u-tr class="u-tr">
+					<u-td class="u-td">{{ tableData.totalProPrice }}</u-td>
+					<u-td class="u-td">{{ wishinfo && wishinfo.productExt && wishinfo.productExt.domesticShippingFee || '/' }}</u-td>
+					<u-td class="u-td">{{ tableData.totalServiceFee }}</u-td>
+					<u-td class="u-td">
+						<text class="text-red text-bold text-lg">{{ totalPrice }}</text>
+					</u-td>
+				</u-tr>
+				
+			</template>
 			
 		</u-table>
 		
