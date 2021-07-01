@@ -431,27 +431,33 @@
 			
 		</view>
 		
-		<!-- 添加按钮 悬浮 登录后才有 -->
-		<!-- 悬浮按钮 -->
-		<view class="floatbtn">
+		<!-- 悬浮按钮区域 -->
+		<view v-if="wishinfo && user" class="floatview">
 			
-			<!-- 如果是供应商则判断是否是自己 -->
-			<!-- <template v-if="">
-				<view class="cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
-					<text class="cuIcon-add" style="font-size: 100rpx;"></text>
-				</view>
-			</template> -->
+			<!-- 如果是代理员 -->
+			<template v-if="user.role.includes('PRODUCT_AGENT')">
+				
+				<!-- 没有被关联时显示关联按钮 -->
+				<button v-if="wishinfo.agentFlag == 0" class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+					<text class="cuIcon-emojiflashfill"></text>
+				</button>
+				
+				<!-- 被关联时根据是否是自己关联的心愿来显示添加按钮 -->
+				<button v-else-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<text class="cuIcon-add"></text>
+				</button>
+				
+			</template>
 			
-			<!-- 如果是代理员则判断是否 -->
-			<!-- <template>
-				<view class="cu-btn round bg-gradual-blue shadow-blur cuIcon lg" @tap.stop="agentBindWish">
-					<text class="cuIcon-flashbuyfill" style="font-size: 100rpx;"></text>
-				</view>
-			</template> -->
+			<!-- 如果是供应商 -->
+			<template v-else-if="user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')">
+				
+				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<text class="cuIcon-add"></text>
+				</button>
+				
+			</template>
 			
-		</view>
-		<view v-if=" wishinfo && user && ( (user.role.includes('PRODUCT_AGENT') && wishinfo.agentUser && user._id == wishinfo.agentUser._id) || (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) ) " class="addbtn cu-btn round bg-gradual-purple shadow-blur cuIcon lg" @tap.stop="updatewishtimeline">
-			<text class="cuIcon-add" style="font-size: 100rpx;"></text>
 		</view>
 		
 		<!-- 加载条 -->
@@ -807,7 +813,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 					.get({
 						getOne:true
 					})
@@ -1340,14 +1346,18 @@
 			}
 		}
 		
-		.addbtn{
+		.floatview{
 			position: fixed;
 			z-index: 700;
-			width: 100rpx;
-			height: 100rpx;
 			bottom: 20rpx;
 			left: 50%;
 			transform: translate(-50%);
+			
+			.eachbtn{
+				width: 100rpx;
+				height: 100rpx;
+				font-size: 80rpx;
+			}
 		}
 		
 	}
