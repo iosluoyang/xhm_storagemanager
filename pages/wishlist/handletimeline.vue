@@ -59,9 +59,9 @@
 			<!-- 选择更新时间轴的类型 -->
 			<view class="cu-bar btn-group">
 				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
-				<text class="text-gray">/</text>
+				<!-- <text class="text-gray">/</text> -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
-				<text class="text-gray">/</text>
+				<!-- <text class="text-gray">/</text> -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink sm' ]" @tap.stop="type='found'">{{ i18n.wishlist.timeline.found }}</button>
 			</view>
 			

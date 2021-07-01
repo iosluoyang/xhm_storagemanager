@@ -450,7 +450,7 @@
 			</template>
 			
 			<!-- 如果是供应商 -->
-			<template v-else-if="user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')">
+			<template v-else-if="(user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) && user._id == wishinfo.creatUser._id ">
 				
 				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 					<text class="cuIcon-add"></text>
