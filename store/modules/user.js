@@ -42,7 +42,10 @@ const mutations = {
 	},
 	SET_USER: (state, user) => {
 		let userwithuid = user ? {...user, ...{uid: user._id}} : null // 增加user的uid字段
-		
+		// 更改user的role为单个值
+		if(userwithuid) {
+			userwithuid.role = userwithuid.role && Array.isArray(userwithuid.role) && userwithuid.role.length > 0 ? userwithuid.role[0] : null
+		}
 		state.user = userwithuid
 		
 		//如果user存在则存储到本地 如果不存在则移除本地缓存

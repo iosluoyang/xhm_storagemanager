@@ -280,14 +280,14 @@
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
 				// 代理员
-				if(this.user.role.includes('PRODUCT_AGENT')) {
+				if(this.user.role == 'PRODUCT_AGENT') {
 					// 如果是查询全部则查询所有还没有关联代理员的心愿单
 					// 否则查询该代理员下的不同状态下的心愿单
 					wherestr = achieveFlag == -1 ? ` (agentFlag == 0 || agentUser._id == $cloudEnv_uid) ` : ` achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
 					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
 				}
 				// 普通供应商
-				else if(this.user.role.includes('MERCHANT_ADMIN') || this.user.role.includes('MERCHANT_EMPLOYEE')) {
+				else if(this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
 					wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
 				}
 				

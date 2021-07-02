@@ -77,10 +77,10 @@
 								<template>
 									
 									<!-- 再次购买按钮 商家角色-->
-									<button v-if="user && (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE'))" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
 									
 									<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
-									<button v-if="user && user.role.includes('PRODUCT_AGENT') && ownwishitem.agentFlag == 0" 
+									<button v-if="user && user.role == 'PRODUCT_AGENT' && ownwishitem.agentFlag == 0" 
 											class="cu-btn round bg-gradual-blue animation-reverse"
 											:class="[bindAnimation ? 'animation-scale-down' : '']"
 											@tap.stop="agentBindWish">

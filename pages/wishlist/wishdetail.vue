@@ -113,7 +113,7 @@
 						<!-- #endif -->
 						
 						<!-- 再次购买按钮 -->
-						<button v-if="user && (user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE'))" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
+						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain(wishinfo)"></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 -->
 						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
@@ -435,7 +435,7 @@
 		<view v-if="wishinfo && user" class="floatview">
 			
 			<!-- 如果是代理员 -->
-			<template v-if="user.role.includes('PRODUCT_AGENT')">
+			<template v-if=" user.role == 'PRODUCT_AGENT' ">
 				
 				<!-- 没有被关联时显示关联按钮 -->
 				<button v-if="wishinfo.agentFlag == 0" class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
@@ -450,7 +450,7 @@
 			</template>
 			
 			<!-- 如果是供应商 -->
-			<template v-else-if="(user.role.includes('MERCHANT_ADMIN') || user.role.includes('MERCHANT_EMPLOYEE')) && user._id == wishinfo.creatUser._id ">
+			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id ">
 				
 				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 					<text class="cuIcon-add"></text>
@@ -459,6 +459,14 @@
 			</template>
 			
 		</view>
+		
+		<!-- 悬浮按钮 -->
+		<uni-fab v-if="wishinfo && user"
+					:pattern="{ color: '#3c3e49', selectedColor: '#6739b6', buttonColor: '#6739b6' }"
+					horizontal='left' vertical="bottom" direction="horizontal" 
+					:popMenu=" user.role == 'PRODUCT_AGENT' && user._id == wishinfo.agentUser._id "
+					:content="fabContentArr"
+					@fabClick=""></uni-fab>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
@@ -653,6 +661,8 @@
 				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
 				sharecontent: '', // 分享内容文本
 				
+				fabContentArr: [], // 悬浮按钮展开菜单
+				
 				popuptype: 'wishlink' , //模态框的类型  shippingtool为运费工具  wishlink为心愿链接展示  inputarea为输入内容类型  默认为心愿链接展示
 				popmode: 'bottom', // 模态框的方向类型  默认为bottom
 				showpopup: false, // 是否显示模态框
@@ -831,6 +841,9 @@
 							// 设置拓展展示字段
 							_this.setshowproductextinfo(productExt)
 							
+							// 设置悬浮按钮的展示内容
+							_this.setFabContentArr()
+							
 						}
 						else {
 							uni.showToast({
@@ -918,6 +931,18 @@
 						icon: 'none'
 					});
 				}
+			},
+			
+			// 设置悬浮按钮的内容
+			setFabContentArr() {
+				
+				// 区分供应商还是代理员
+				if(this.wishinfo && this.user) {
+					
+					
+					
+				}
+				
 			},
 			
 			// 计算货物体积

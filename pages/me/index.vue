@@ -190,13 +190,13 @@
 			if(this.iflogin) {
 				
 				// 如果有超级管理员角色
-				if(this.user.role.includes('ADMIN')) {
+				if(this.user.role == 'ADMIN') {
 					// 添加公告选项
 					panelList.push(noticeitem)
 				}
 				
 				// 如果有商家角色
-				if(this.user.role.includes('MERCHANT_ADMIN')) {
+				if(this.user.role == 'MERCHANT_ADMIN') {
 					// 添加店铺管理选项
 					panelList.push(storemanageitem)
 				}

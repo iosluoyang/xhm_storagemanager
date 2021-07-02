@@ -326,7 +326,7 @@
 							// 心愿单
 							case 'wishlist':
 							{
-								let jumpurl = _this.user && _this.user.role && _this.user.role.includes('PRODUCT_AGENT') ? '/pages/wishlist/list' : '/pages/wishlist/index'
+								let jumpurl = _this.user && _this.user.role && _this.user.role == 'PRODUCT_AGENT' ? '/pages/wishlist/list' : '/pages/wishlist/index'
 								uni.navigateTo({
 									url: jumpurl
 								});
