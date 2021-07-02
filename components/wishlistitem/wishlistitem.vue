@@ -84,7 +84,7 @@
 											class="cu-btn round bg-gradual-blue animation-reverse"
 											:class="[bindAnimation ? 'animation-scale-down' : '']"
 											@tap.stop="agentBindWish">
-										<text class="cuIcon cuIcon-emojiflashfill lg"></text>
+										<text class="cuIcon cuIcon-servicefill margin-right-sm"></text>
 										{{ i18n.wishlist.agentbindwish }}
 									</button>
 								

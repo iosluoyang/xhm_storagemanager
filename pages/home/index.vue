@@ -28,6 +28,37 @@
 			
 		</scroll-view>
 		
+		<!-- 当前用户头像区域 -->
+		<view class="userview">
+			
+			<!-- 用户登录时显示用户头像昵称和标签 -->
+			<view v-if="user" class="flex align-center" @tap.stop="jumpToPersonal">
+				
+				<view class="cu-avatar lg round" :style="{backgroundImage: `url(${user.avatar})`}"></view>
+				
+				<view class="flex flex-direction margin-left-sm">
+					
+					<view class="text-lg text-white text-bold">
+						{{ user.nickname }}
+					</view>
+					
+					<view class="usertag flex align-center margin-top-sm">
+						<view class="usertag cu-tag radius margin-right-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
+							{{ $basejs.getrolenameandcolor(item).title }}
+						</view>
+					</view>
+					
+				</view>
+				
+			</view>
+			
+			<!-- 当用户未登录时显示未登录的默认头像 -->
+			<view v-else class="cu-avatar round lg" @tap.stop="login">
+				<text class="cuIcon-people"></text>
+			</view>
+			
+		</view>
+		
 		<!-- 切换语言按钮 -->
 		<button class="languagebtn xl cu-btn radius bg-white text-black" @tap.stop="ifshowmodal=true">{{ `语言/Lang` }}</button>
 		
@@ -321,6 +352,20 @@
 				this.setmainoption()
 			},
 			
+			// 跳转个人页面
+			jumpToPersonal() {
+				uni.navigateTo({
+					url: '/pages/me/index'
+				});
+			},
+			
+			// 登录
+			login() {
+				uni.navigateTo({
+					url: '/pages/base/login'
+				});
+			},
+			
 			// 获取首页公告
 			gethomenotice() {
 				
@@ -516,11 +561,18 @@
 			
 		}
 		
+		.userview{
+			position: fixed;
+			top: 180rpx;
+			left: 20rpx;
+		}
+		
 		.languagebtn{
 			position: fixed;
-			top: 200upx;
-			right: 20upx;
+			top: 200rpx;
+			right: 20rpx;
 		}
+		
 		
 	}
 	

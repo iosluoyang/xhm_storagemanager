@@ -439,7 +439,7 @@
 				
 				<!-- 没有被关联时显示关联按钮 -->
 				<button v-if="wishinfo.agentFlag == 0" class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
-					<text class="cuIcon-emojiflashfill"></text>
+					<text class="cuIcon-servicefill"></text>
 				</button>
 				
 				<!-- 被关联时根据是否是自己关联的心愿来显示添加按钮 -->
