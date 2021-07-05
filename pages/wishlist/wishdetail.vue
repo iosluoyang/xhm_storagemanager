@@ -461,12 +461,13 @@
 		</view>
 		
 		<!-- 悬浮按钮 -->
-		<uni-fab v-if="wishinfo && user"
+		<!-- <uni-fab v-if="wishinfo && user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id)"
 					:pattern="{ color: '#3c3e49', selectedColor: '#6739b6', buttonColor: '#6739b6' }"
 					horizontal='left' vertical="bottom" direction="horizontal" 
 					:popMenu=" user.role == 'PRODUCT_AGENT' && user._id == wishinfo.agentUser._id "
 					:content="fabContentArr"
-					@fabClick=""></uni-fab>
+					@fabClick="">
+		</uni-fab> -->
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
@@ -842,7 +843,7 @@
 							_this.setshowproductextinfo(productExt)
 							
 							// 设置悬浮按钮的展示内容
-							_this.setFabContentArr()
+							// _this.setFabContentArr()
 							
 						}
 						else {
@@ -936,12 +937,21 @@
 			// 设置悬浮按钮的内容
 			setFabContentArr() {
 				
-				// 区分供应商还是代理员
-				if(this.wishinfo && this.user) {
-					
-					
-					
-				}
+				let content = [
+					{
+						iconPath: '',
+						selectedIconPath: '',
+						text: '发言',
+						active: false,
+					},
+					{
+						iconPath: '',
+						selectedIconPath: '',
+						text: '更新心愿',
+						active: false,
+					}
+				]
+				return content
 				
 			},
 			

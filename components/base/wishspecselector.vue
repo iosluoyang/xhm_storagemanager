@@ -32,7 +32,7 @@
 						<!-- 区分编辑状态和显示状态 -->
 						
 						<!-- 显示状态 -->
-						<template v-if="type == 'normal'">
+						<template v-if="type == 'normal' || type == 'editPrice'">
 							<text >{{ firstitem.name }}</text>
 							<u-badge type='warning' absolute :offset="[5,0]" :count="calculatefirstamount(firstitem)" :overflow-count="999"></u-badge>
 						</template>
@@ -72,7 +72,7 @@
 											
 											<template>
 												<!-- 选择标签 -->
-												<text v-if="type == 'normal' && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink margin-right-sm"></text>
+												<text v-if="(type == 'normal' || type == 'editPrice') && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink margin-right-sm"></text>
 												
 												<template v-if="type == 'edit' ">
 													<view class="flex align-center">
@@ -85,7 +85,7 @@
 												
 											</template>
 											
-											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type == 'normal' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
+											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type != 'edit' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
 										
 										</view>
 										
@@ -93,19 +93,19 @@
 										<view slot="label" class="priceview flex align-center">
 											
 											<text class="text-price text-red margin-right-sm"></text>
-											<input class="text-red" :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" type="digit" :disabled="type == 'normal'" v-model="seconditem.price"></input>
+											<input class="text-red" :class="[ (type == 'edit' || type == 'editPrice') ? 'borderCDCDCD radius width50' : 'width100' ]" type="digit" :disabled="type == 'normal'" v-model="seconditem.price"></input>
 											
 										</view>
 										
 										<!-- 右侧区域 -->
 										<view slot="right-icon">
 											<!-- 步进器 -->
-											<u-number-box v-if=" type == 'normal' " class="margin-bottom-sm" v-model="seconditem.amount" :max="seconditem.stock" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
+											<u-number-box v-if=" (type == 'normal' || type == 'editPrice') " class="margin-bottom-sm" :disabled=" type != 'normal' " v-model="seconditem.amount" :max="seconditem.stock" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
 											
 											<!-- 库存区域 -->
 											<view class="stockview flex align-center">
 												<text>库存:</text>
-												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="type == 'normal'" />
+												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="type != 'edit'" />
 												
 												<!-- 编辑状态下的删除按钮 -->
 												<text v-if="type == 'edit'" class="cuIcon cuIcon-delete text-red margin-left" @click="deletesecond(firstindex, secondindex)"></text>
@@ -193,7 +193,7 @@
 				
 				type: {
 					type: String,
-					default: 'normal', // normal正常选中 edit编辑
+					default: 'normal', // normal正常选中 edit编辑 editPrice编辑价格
 				},
 				
 				// 是否显示弹框
@@ -552,8 +552,8 @@
 								stockCount: seconditem.stock, //	库存数量小于等于0代表已售罄
 								price: seconditem.price,//	价格
 							}
-							// 正常选择下更新amount数量
-							if(this.type == 'normal') {
+							// 正常选择或者编辑价格时更新amount数量
+							if(this.type == 'normal' || this.type == 'editPrice') {
 								secondItemInfo['amount'] = seconditem.amount // 选择数量
 							}
 							specStockList.push(secondItemInfo)
@@ -586,7 +586,7 @@
 					// 整理数据
 					let specPropInfo = this.getPropInfobyDataArr()
 					
-					// 如果是编辑状态则保存当前的数据
+					// 如果是全编辑状态则保存当前的数据
 					if(this.type == 'edit') {
 						
 						uni.showModal({
@@ -627,8 +627,9 @@
 						});
 						
 					}
-					// 如果是正常状态则为选中
-					else if(this.type == 'normal') {
+					
+					// 如果是正常状态或者编辑价格则为选中
+					else if(this.type == 'normal' || this.type == 'editPrice') {
 						
 						// 判断如果没有选择数量则进行提示
 						

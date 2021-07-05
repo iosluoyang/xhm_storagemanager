@@ -114,7 +114,8 @@
 			</u-tr>
 			
 			<!-- 金额汇总区域  当心愿单为非进行中的状态时显示 -->
-			<template v-if="wishinfo.achieveFlag !== 0">
+			<!--  v-if="wishinfo.achieveFlag !== 0" -->
+			<template>
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">

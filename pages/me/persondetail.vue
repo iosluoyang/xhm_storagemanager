@@ -27,9 +27,9 @@
 			<!-- 用户身份 -->
 			 <view class="cu-form-group">
 				<view class="title flex-sub">{{i18n.me.persondetail.usertype}}</view>
-				<view class="content flex-treble grid col-4">
-					<view class="usertag cu-tag radius margin-right-sm margin-top-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
-						{{ $basejs.getrolenameandcolor(item).title }}
+				<view class="content">
+					<view class="usertag cu-tag radius" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
+						{{ $basejs.getrolenameandcolor(user.role).title }}
 					</view>
 				</view>
 			</view>

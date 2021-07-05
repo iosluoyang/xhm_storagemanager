@@ -8,13 +8,6 @@
 		<!-- 心愿详情信息 -->
 		<view class="wishdetailview bg-white padding-sm solid-bottom">
 			
-			<!-- <view class="cu-bar">
-				<view class="action">
-					<text class="cuIcon-titles text-green"></text>
-					<text class="text-bold text-black">{{i18n.wishlist.wishdetail}}</text>
-				</view>
-			</view> -->
-			
 			<!-- 心愿商品基本信息 -->
 			<view v-if="wishinfo" class="prodetailview padding-sm flex align-center">
 				
@@ -49,24 +42,56 @@
 		<!-- 时间轴更新内容 -->
 		<view class="timelinecontentview bg-white padding-sm">
 			
-			<view class="cu-bar">
+			<!-- <view class="cu-bar">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
 					<text>{{ i18n.wishlist.timeline[type] }}</text>
 				</view>
-			</view>
+			</view> -->
 			
 			<!-- 选择更新时间轴的类型 -->
-			<view class="cu-bar btn-group">
+			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo && wishinfo.agentUser == user._id" class="cu-bar btn-group">
+				
+				<!-- 普通时间轴 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
-				<!-- <text class="text-gray">/</text> -->
+				
+				<!-- 补充心愿拓展信息 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
-				<!-- <text class="text-gray">/</text> -->
-				<button class="cu-btn shadow-blur round" :class="[type === 'found' ? 'bg-pink' : 'line-pink sm' ]" @tap.stop="type='found'">{{ i18n.wishlist.timeline.found }}</button>
+				
+				<!-- 确定报价单信息 -->
+				<button class="cu-btn shadow-blur round" :class="[type === 'confirmquotation' ? 'bg-gradual-purple' : 'line-purple sm' ]" @tap.stop="type='confirmquotation'">{{ i18n.wishlist.timeline.confirmquotation }}</button>
+				
 			</view>
 			
 			<!-- 表单区域 -->
 			<form>
+				
+				<!-- 普通时间轴区域 -->
+				<template v-if=" type == 'addcomment' ">
+					
+					<!-- 备注 -->
+					<view class="cu-form-group solid-bottom pos-relative">
+						
+						<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
+						
+						<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
+					
+					</view>
+					
+					<!-- 图片上传 -->
+					<view class="cu-bar bg-white margin-top">
+						<view class="action">{{i18n.wishlist.uploadimg}}</view>
+						<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
+					</view>
+					
+					<view class="bg-white padding">
+						<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
+						return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+						@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+						</uni-file-picker>
+					</view>
+					
+				</template>
 				
 				<!-- 拓展信息区域 -->
 				<template v-if=" type == 'addext' ">
@@ -117,50 +142,13 @@
 					
 				</template>
 				
-				<!-- 下方的为其他字段 视情况而定 -->
-				
-				<!-- 目标价格 仅当发现新商品时才有 暂时隐藏 -->
-				<view v-if="type==='found' && false" class="cu-form-group">
+				<!-- 确认报价区域 -->
+				<template v-if=" type == 'confirmquotation' ">
 					
-					<text class="cuIcon cuIcon-moneybag text-red"></text>
+					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo"></wishTableSpec>
 					
-					<view class="title">{{i18n.wishlist.price}} :</view>
+					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.editquotation }}</button>
 					
-					<view class="content flex-sub flex align-center">
-						<text :class="[ moneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ moneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-						<input type="digit" class="borderCDCDCD radius" v-model="price" />
-					</view>
-					
-					<!-- 目标货币种类选择 -->
-					<view class="flex align-center margin-left">
-						<button class="cu-btn sm round margin-right" :class="moneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="moneyType='RMB'">¥</button>
-						<button class="cu-btn sm round " :class="moneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="moneyType='THB'">฿</button>
-					</view>
-					
-				</view>
-				
-				<!-- 备注 当为发现新商品或者发布评论时有  -->
-				<view v-if="type === 'addcomment' || type === 'found' " class="cu-form-group solid-bottom pos-relative">
-					
-					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
-					
-					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
-				
-				</view>
-				
-				<!-- 图片上传 -->
-				<template v-if="type === 'addcomment' || type === 'found' ">
-					<view class="cu-bar bg-white margin-top">
-						<view class="action">{{i18n.wishlist.uploadimg}}</view>
-						<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
-					</view>
-					
-					<view class="bg-white padding">
-						<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
-						return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
-						@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
-						</uni-file-picker>
-					</view>
 				</template>
 				
 			</form>
@@ -230,26 +218,52 @@
 			
 		</u-popup>
 		
+		<!-- 多规格弹框 -->
+		<wishSpecSelector	v-if="tmpWishInfo"
+							type="editPrice"
+							:specPropInfo="tmpWishInfo.specPropInfo" 
+							:ifshow.sync="showSelector"
+							:defaultProTitle="tmpWishInfo.productTitle"
+							:defaultProPrice="tmpWishInfo.sourcePrice"
+							@finishSelect="specFinishSelect">
+		</wishSpecSelector>
+		
 	</view>
 </template>
 
 <script>
-		
+	
+	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
+	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
+	
 	var _this
+	
 	
 	export default {
 		
 		components: {
-			
+			wishTableSpec,
+			wishSpecSelector,
 		},
 		
 		data() {
 			return {
-				type: "addcomment", // 页面类型 found 发现新商品 addext为添加额外信息 addcomment 添加普通评论
-				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add
+				type: "addcomment", // 页面类型 addcomment 添加普通评论addext为补充商品资料信息 confirmquotation为确认报价单
+				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add 为普通时间轴时使用
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
-				productExt: null ,// 心愿商品的拓展字段
+				tmpWishInfo: null, // 临时心愿变量
+				productExt: {
+					boxContainerNum: '',
+					boxLength: '',
+					boxWidth: '',
+					boxHeight: '',
+					boxVolume: '',
+					domesticShippingFee: '',
+					internationalShippingName: '',
+					internationalShippingCode: '',
+				} ,// 心愿商品的拓展字段
+				specPropInfo: null, // 规格信息
 				timelineId: null, // 当前时间轴id
 				timelineInfo: null, // 时间轴数据
 				
@@ -262,6 +276,7 @@
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
 				showpopup: false, // 是否显示弹框
+				showSelector: false, // 是否显示规格选择器
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
 				
@@ -303,11 +318,11 @@
 						getOne:true
 					})
 					.then(res => {
-						console.log(`获取详情信息成功`);
-						console.log(res);
+						
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
 							_this.wishinfo = detaildata
+							_this.tmpWishInfo = _this.wishinfo
 							
 							if(_this.wishinfo.productExt) {
 								_this.productExt = _this.wishinfo.productExt
@@ -339,7 +354,9 @@
 				_this.ifloading = true // 开始加载动画
 				
 				const db = uniCloud.database();
-				db.collection('wishlisttimeline').doc(_this.timelineId).get({getOne: true})
+				db.collection('wishlisttimeline')
+				.doc(_this.timelineId)
+				.get({getOne: true})
 				.then(res => {
 					
 					if(res.result.code == 0) {
@@ -352,8 +369,6 @@
 						// type: timelinetype, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 						_this.type = info.type == 1 ? 'addcomment' : _this.type
 						_this.content = info.content || ''
-						_this.moneyType = info.moneyType || 'RMB'
-						_this.price = info.price || ''
 						
 						// 遍历图片
 						let imgArr = []
@@ -485,7 +500,6 @@
 					if(res.result.code == 0) {
 						// 更新成功
 						uni.$emit('updatewishdetail')
-						uni.$emit('updatetimeline')
 						
 						uni.showToast({
 							title: _this.i18n.tip.fixsuccess,
@@ -508,7 +522,15 @@
 				})
 				
 			},
-		
+			
+			// 选择完规格
+			specFinishSelect(selectSpecPropInfo) {
+				console.log(`当前选择完规格的数据为`);
+				console.log(selectSpecPropInfo);
+				this.$set(this.tmpWishInfo, 'specPropInfo', selectSpecPropInfo) // 变更临时变量的规格数据
+				console.log(this.tmpWishInfo);
+			},
+			
 			// 上传时间轴数据
 			async uploaddata() {
 				
@@ -531,8 +553,8 @@
 				else if(this.type === 'addext') {
 					// 暂无需要校验的字段  均可为空
 				}
-				// 添加商品规格汇总时
-				else if(this.type === 'found') {
+				// 确认报价单时
+				else if(this.type === 'confirmquotation') {
 					// 上传规格数据
 					const db = uniCloud.database();
 					await db.collection('wishlist')
@@ -551,6 +573,7 @@
 						});
 					})
 					
+					return
 				}
 				
 				// 检查是否需要上传图片
@@ -574,22 +597,13 @@
 					type: 1, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  
 				}
 				
-				// 如果是发现新产品则需要上传链接 金额和货币类型等额外的参数
-				if(_this.type == 'found') {
-					let foundinfo = {
-						type: 3, // 如果是发现新产品则时间轴类型为3待确认
-					}
-					info = {...info, ...foundinfo}  // 合并基础参数和发现新产品的参数
-				}
-				
-				
 				// 开始提交数据
 				
 				// 新增
 				if(_this.pagetype == 'add') {
 
-					// 如果是时间轴操作
-					if( this.type === 'addcomment' || this.type === 'found' ) {
+					// 如果是普通时间轴操作
+					if( this.type === 'addcomment' ) {
 						// 开始使用openDB进行数据上传
 						_this.ifloading = true
 						
@@ -651,7 +665,7 @@
 				else if(_this.pagetype == 'edit') {
 					
 					// 如果是时间轴操作
-					if( this.type === 'addcomment' || this.type === 'found' ) {
+					if( this.type === 'addcomment' ) {
 						// 开始使用openDB进行数据上传
 						_this.ifloading = true
 						

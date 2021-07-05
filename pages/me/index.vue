@@ -21,16 +21,18 @@
 				<!-- 个人资料 包含昵称和标签以及个人简介 -->
 				<view class="contentview">
 					
-					<!-- 上面视图 昵称 -->
-					<view class="username text-white text-bold text-xl margin-right-sm">
-						{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
-					</view>
-					
-					<!-- 标签 -->
-					<view v-if="iflogin" class="usertag grid col-3">
-						<view class="usertag cu-tag radius margin-right-sm margin-top-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
-							{{ $basejs.getrolenameandcolor(item).title }}
+					<view class="topview flex align-center">
+						
+						<!-- 昵称 -->
+						<view class="username text-white text-bold text-xl margin-right-sm">
+							{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
 						</view>
+						
+						<!-- 标签 -->
+						<view v-if="iflogin" class="usertag cu-tag radius" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
+							{{ $basejs.getrolenameandcolor(user.role).title }}
+						</view>
+						
 					</view>
 					
 					<!-- 下面视图 包含个人简介 -->

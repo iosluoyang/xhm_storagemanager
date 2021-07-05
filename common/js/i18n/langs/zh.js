@@ -450,7 +450,7 @@ const zh = {
 			title: "时间轴",
 			addcomment: "说点什么",
 			addext: "补充信息",
-			found: "发现商品",
+			confirmquotation: "确认报价",
 			inputpriceerror: "请输入价格",
 			timelinecontenterror: "请输入更新内容",
 			startsign: "心愿单开始",
@@ -466,6 +466,7 @@ const zh = {
 		},
 		buyagain: '再次购买',
 		agentbindwish: "代理心愿",
+		editquotation: "修改报价单",
 		
 	},
 	

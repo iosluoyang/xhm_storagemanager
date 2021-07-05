@@ -43,8 +43,8 @@
 					</view>
 					
 					<view class="usertag flex align-center margin-top-sm">
-						<view class="usertag cu-tag radius margin-right-sm" v-for="(item, index) in user.role" :key="index" :class="[ $basejs.getrolenameandcolor(item).bgColor ]">
-							{{ $basejs.getrolenameandcolor(item).title }}
+						<view class="usertag cu-tag radius margin-right-sm" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
+							{{ $basejs.getrolenameandcolor(user.role).title }}
 						</view>
 					</view>
 					
