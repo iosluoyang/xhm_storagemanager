@@ -565,25 +565,21 @@
 						console.log(`更新成功`);
 						// 新增一条待确认时间轴
 						
-						const db = uniCloud.database();
 						let timelineinfo = {
 							wishId: _this.wishId, // 当前心愿单的id
 							type: 3, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  99 代理人关联心愿
 						}
 						db.collection('wishlisttimeline')
-						.add(info)
+						.add(timelineinfo)
 						.then(res => {
 							// 新增成功
 							if(res.result.code == 0) {
 								
 								// 更新事件轴数据
 								uni.$emit('updatetimeline')
-								
-								// 如果是待确认状态则更新心愿单列表和详情
-								if(info.type == 3) {
-									uni.$emit('updatewishlist')
-									uni.$emit('updatewishdetail')
-								}
+								// 更新心愿单列表和详情
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
 								
 								uni.showToast({
 									title: _this.i18n.tip.fixsuccess,
