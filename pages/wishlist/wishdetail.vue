@@ -141,7 +141,7 @@
 							{{i18n.wishlist.wishproductspecdetail}}
 						</view>
 					</view>
-					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo"></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" :type=" wishinfo.achieveFlag == 0 ? 'spec' : 'priceandspec' " ></wishTableSpec>
 				</view>
 				
 				<!-- 手风琴区域 -->

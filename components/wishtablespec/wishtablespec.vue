@@ -113,9 +113,8 @@
 				
 			</u-tr>
 			
-			<!-- 金额汇总区域  当心愿单为非进行中的状态时显示 -->
-			<!--  v-if="wishinfo.achieveFlag !== 0" -->
-			<template>
+			<!-- 金额汇总区域 -->
+			<template v-if="type == 'priceandspec'">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
@@ -164,6 +163,12 @@
 				type: Object,
 				default: null
 			},
+			
+			// 表格类型  spec为仅展示规格数据  priceandspec为展示规格和金额汇总数据
+			type: {
+				type: String,
+				default: 'spec'
+			}
 			
 		},
 		

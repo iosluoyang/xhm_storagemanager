@@ -145,7 +145,7 @@
 				<!-- 确认报价区域 -->
 				<template v-if=" type == 'confirmquotation' ">
 					
-					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo"></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" type="priceandspec"></wishTableSpec>
 					
 					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.editquotation }}</button>
 					
@@ -559,11 +559,60 @@
 					const db = uniCloud.database();
 					await db.collection('wishlist')
 					.doc(_this.wishId)
-					.update({specList: _this.specList})
+					.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1})
 					.then(response => {
 						// 更新成功
 						console.log(`更新成功`);
-						// 继续后面的操作
+						// 新增一条待确认时间轴
+						
+						const db = uniCloud.database();
+						let timelineinfo = {
+							wishId: _this.wishId, // 当前心愿单的id
+							type: 3, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  99 代理人关联心愿
+						}
+						db.collection('wishlisttimeline')
+						.add(info)
+						.then(res => {
+							// 新增成功
+							if(res.result.code == 0) {
+								
+								// 更新事件轴数据
+								uni.$emit('updatetimeline')
+								
+								// 如果是待确认状态则更新心愿单列表和详情
+								if(info.type == 3) {
+									uni.$emit('updatewishlist')
+									uni.$emit('updatewishdetail')
+								}
+								
+								uni.showToast({
+									title: _this.i18n.tip.fixsuccess,
+									icon: 'none',
+								});
+								
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1000);
+							}
+							// 新增失败
+							else {
+								console.log(res.result.message);
+								// 发布失败
+								uni.showToast({
+									title: _this.i18n.error.fixerror,
+									icon: 'none'
+								});
+							}
+						})
+						.catch(err => {
+							console.log(err.message);
+							// 发布失败
+							uni.showToast({
+								title: _this.i18n.error.fixerror,
+								icon: 'none'
+							});
+						})
+						
 					})
 					.catch(error => {
 						console.log(error.message);
