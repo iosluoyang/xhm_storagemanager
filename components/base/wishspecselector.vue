@@ -32,12 +32,12 @@
 						<!-- 区分编辑状态和显示状态 -->
 						
 						<!-- 显示状态 -->
-						<template v-if="type == 'normal' || type == 'editPrice'">
+						<template v-if="type == 'normal'">
 							<text >{{ firstitem.name }}</text>
 							<u-badge type='warning' absolute :offset="[5,0]" :count="calculatefirstamount(firstitem)" :overflow-count="999"></u-badge>
 						</template>
 						
-						<!-- 编辑状态 注意此处阻止默认时间防止点击 -->
+						<!-- 编辑状态 注意此处阻止默认事件防止点击 -->
 						<view v-if="type == 'edit'" class="flex align-center justify-between">
 							<text class="cuIcon cuIcon-copy text-blue" @tap.stop="copyfirst(firstindex)"></text>
 							<input class="margin-left-sm margin-right-sm borderCDCDCD radius text-black" :style="{width: '300rpx'}" focus v-model="firstitem.name" placeholder="eg: 颜色/color" type="text" />
@@ -72,7 +72,7 @@
 											
 											<template>
 												<!-- 选择标签 -->
-												<text v-if="(type == 'normal' || type == 'editPrice') && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink margin-right-sm"></text>
+												<text v-if="seconditem.amount && seconditem.amount > 0" class="cuIcon cuIcon-roundcheckfill text-pink margin-right-sm"></text>
 												
 												<template v-if="type == 'edit' ">
 													<view class="flex align-center">
@@ -85,7 +85,7 @@
 												
 											</template>
 											
-											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type != 'edit' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
+											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type == 'normal' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
 										
 										</view>
 										
@@ -93,19 +93,19 @@
 										<view slot="label" class="priceview flex align-center">
 											
 											<text class="text-price text-red margin-right-sm"></text>
-											<input class="text-red" :class="[ (type == 'edit' || type == 'editPrice') ? 'borderCDCDCD radius width50' : 'width100' ]" type="digit" :disabled="type == 'normal'" v-model="seconditem.price"></input>
+											<input class="text-red" :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" type="digit" :disabled="type == 'normal'" v-model="seconditem.price"></input>
 											
 										</view>
 										
 										<!-- 右侧区域 -->
 										<view slot="right-icon">
 											<!-- 步进器 -->
-											<u-number-box v-if=" (type == 'normal' || type == 'editPrice') " class="margin-bottom-sm" :disabled=" type != 'normal' " v-model="seconditem.amount" :max="seconditem.stock" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
+											<u-number-box class="margin-bottom-sm" v-model="seconditem.amount" :max="seconditem.stock" @blur="secondTabCur = secondindex" @change="secondTabCur = secondindex"></u-number-box>
 											
 											<!-- 库存区域 -->
 											<view class="stockview flex align-center">
 												<text>库存:</text>
-												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="type != 'edit'" />
+												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="true" />
 												
 												<!-- 编辑状态下的删除按钮 -->
 												<text v-if="type == 'edit'" class="cuIcon cuIcon-delete text-red margin-left" @click="deletesecond(firstindex, secondindex)"></text>
@@ -133,7 +133,7 @@
 			</view>
 			
 			<!-- 总结区域 -->
-			<view v-if="type == 'normal'" class="summaryview margin-top flex align-center justify-end padding-right">
+			<view class="summaryview margin-top flex align-center justify-end padding-right">
 				
 				<view class="text-bold text-black">{{ `共${totalAmount}件` }}</view>
 				
@@ -193,7 +193,7 @@
 				
 				type: {
 					type: String,
-					default: 'normal', // normal正常选中 edit编辑 editPrice编辑价格
+					default: 'normal', // normal正常选中 edit编辑
 				},
 				
 				// 是否显示弹框
@@ -551,11 +551,9 @@
 								specId: seconditem.specId || '', //	规格id
 								stockCount: seconditem.stock, //	库存数量小于等于0代表已售罄
 								price: seconditem.price,//	价格
+								amount: seconditem.amount, // 数量
 							}
-							// 正常选择或者编辑价格时更新amount数量
-							if(this.type == 'normal' || this.type == 'editPrice') {
-								secondItemInfo['amount'] = seconditem.amount // 选择数量
-							}
+
 							specStockList.push(secondItemInfo)
 						})
 						
@@ -586,53 +584,7 @@
 					// 整理数据
 					let specPropInfo = this.getPropInfobyDataArr()
 					
-					// 如果是全编辑状态则保存当前的数据
-					if(this.type == 'edit') {
-						
-						uni.showModal({
-							content: this.i18n.tip.optionconfirm,
-							showCancel: true,
-							cancelText: this.i18n.base.cancel,
-							confirmText: this.i18n.base.confirm,
-							success: res => {
-								if(res.confirm) {
-									
-									// 更新当前的规格数据
-									const db = uniCloud.database();
-									db.collection('wishlist')
-									.doc(this.wishId)
-									.update({specInfo: specPropInfo})
-									.then(response => {
-										// 更新成功
-										uni.showToast({
-											title: this.i18n.tip.fixsuccess,
-											icon: 'none'
-										});
-										
-										this.$emit('finishUpdate', specPropInfo)
-										this.show = !this.show
-										
-									})
-									.catch(error => {
-										// 更新失败
-										console.log(`更新失败,${JSON.stringify(error.message)}`);
-										uni.showToast({
-											title: this.i18n.error.fixerror,
-											icon: 'none'
-										});
-									})
-									
-								}
-							}
-						});
-						
-					}
-					
-					// 如果是正常状态或者编辑价格则为选中
-					else if(this.type == 'normal' || this.type == 'editPrice') {
-						
-						// 判断如果没有选择数量则进行提示
-						
+					if(this.type == 'normal') {
 						if(this.totalAmount == 0) {
 							uni.showToast({
 								title: this.i18n.error.lackspec,
@@ -640,11 +592,70 @@
 							});
 							return
 						}
-						
-						this.$emit('finishSelect', specPropInfo)
-						this.show = !this.show
-						
 					}
+					
+					this.$emit('finishSelect', specPropInfo)
+					this.show = !this.show
+					
+					// // 如果是全编辑状态则保存当前的数据
+					// if(this.type == 'edit') {
+						
+					// 	uni.showModal({
+					// 		content: this.i18n.tip.optionconfirm,
+					// 		showCancel: true,
+					// 		cancelText: this.i18n.base.cancel,
+					// 		confirmText: this.i18n.base.confirm,
+					// 		success: res => {
+					// 			if(res.confirm) {
+									
+					// 				// 更新当前的规格数据
+					// 				const db = uniCloud.database();
+					// 				db.collection('wishlist')
+					// 				.doc(this.wishId)
+					// 				.update({specPropInfo: specPropInfo})
+					// 				.then(response => {
+					// 					// 更新成功
+					// 					uni.showToast({
+					// 						title: this.i18n.tip.fixsuccess,
+					// 						icon: 'none'
+					// 					});
+										
+					// 					this.$emit('finishUpdate', specPropInfo)
+					// 					this.show = !this.show
+										
+					// 				})
+					// 				.catch(error => {
+					// 					// 更新失败
+					// 					console.log(`更新失败,${JSON.stringify(error.message)}`);
+					// 					uni.showToast({
+					// 						title: this.i18n.error.fixerror,
+					// 						icon: 'none'
+					// 					});
+					// 				})
+									
+					// 			}
+					// 		}
+					// 	});
+						
+					// }
+					
+					// // 如果是正常状态或者编辑价格则为选中
+					// else if(this.type == 'normal') {
+						
+					// 	// 判断如果没有选择数量则进行提示
+						
+					// 	if(this.totalAmount == 0) {
+					// 		uni.showToast({
+					// 			title: this.i18n.error.lackspec,
+					// 			icon: 'none'
+					// 		});
+					// 		return
+					// 	}
+						
+					// 	this.$emit('finishSelect', specPropInfo)
+					// 	this.show = !this.show
+						
+					// }
 					
 				},
 				

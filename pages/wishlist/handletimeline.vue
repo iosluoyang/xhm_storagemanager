@@ -220,7 +220,8 @@
 		
 		<!-- 多规格弹框 -->
 		<wishSpecSelector	v-if="tmpWishInfo"
-							type="editPrice"
+							:wishId="tmpWishInfo._id"
+							type="edit"
 							:specPropInfo="tmpWishInfo.specPropInfo" 
 							:ifshow.sync="showSelector"
 							:defaultProTitle="tmpWishInfo.productTitle"

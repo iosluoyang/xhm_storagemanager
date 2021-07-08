@@ -14,6 +14,9 @@
 			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
 		
+		<!-- 心愿单确认类型 type=3 -->
+		
+		
 		<!-- 心愿单关联代理人类型  type=90 -->
 		<view v-else-if="timelineitem.type == 90" class="content bg-gradual-blue shadow-blur">
 			<!-- 时间轴发布人信息 -->
