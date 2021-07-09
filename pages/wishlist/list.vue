@@ -188,10 +188,10 @@
 			// 获取操作条上的角标数量
 			getbadgenum() {
 				
-				// 暂时还未能获取自身uid下的数量
 				const db = uniCloud.database();
+				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUser == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? `agentUser == $cloudEnv_uid` : ''
 				db.collection('wishlist')
-					.where('creatUser == $cloudEnv_uid')
+					.where(wherestr)
 					.groupBy('achieveFlag')
 					.groupField('count(*) as count')
 					.get()

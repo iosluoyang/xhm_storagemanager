@@ -15,6 +15,141 @@
 		</view>
 		
 		<!-- 心愿单确认类型 type=3 -->
+		<view v-else-if="timelineitem.type == 3 " class="content bg-gradual-red shadow-blur">
+			
+			<!-- 发布人 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction">
+						<text class="text-white">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view class="margin-top-sm t_wrap">
+				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
+			</view>
+			
+			<!-- 总价 -->
+			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+				
+				<text class="cuIcon cuIcon-moneybagfill text-white"></text>
+				<text class="text-white text-xl margin-left-sm"> RMB {{ timelineitem.price }}</text>
+				
+			</view>
+			
+			<!-- 按钮操作区域 -->
+			<view class="btnview margin-top-sm flex align-center justify-between solid-top padding-top-sm">
+				
+				<view class="leftview flex align-center">
+					<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+					<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+				</view>
+				
+				<view class="rightview flex align-center">
+					
+				</view>
+				
+			</view>
+			
+		</view>
+		
+		<!-- 心愿单同意类型 type=4 -->
+		<view v-else-if="timelineitem.type == 4 " class="content bg-gradual-green shadow-blur">
+			
+			<!-- 发布人 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction">
+						<text class="text-black">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view class="margin-top-sm t_wrap">
+				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
+			</view>
+			
+			<!-- 总价 -->
+			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+				
+				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+				<text class="text-red text-xl margin-left-sm"> RMB {{ timelineitem.price }}</text>
+				
+			</view>
+			
+			<!-- 同意区域 -->
+			<view class="agreeview margin-left-sm padding-sm solid">
+				
+				<!-- 同意人 -->
+				<view class="agreeUserview flex align-center">
+					<view class="leftview flex align-center">
+						<image class="cu-avatar round sm" :src="timelineitem.optionUser.avatar" mode="aspectFill"></image>
+						<view class="flex margin-left-sm flex-direction text-sm">
+							<text class="usernameview text-black text-sm">{{ timelineitem.optionUser.nickname }}</text>
+							<uni-dateformat class="optiontime text-sm text-black" :date="timelineitem.optionTime" />
+						</view>
+					</view>
+				</view>
+				
+				<view class="text-black text-bold margin-top-sm">{{ `已同意该报价单` }}</view>
+			
+			</view>
+			
+		</view>
+		
+		<!-- 心愿单拒绝类型 type=5 -->
+		<view v-else-if="timelineitem.type == 5 " class="content bg-gray shadow-blur">
+			
+			<!-- 发布人 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction">
+						<text class="text-black">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view class="margin-top-sm t_wrap">
+				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
+			</view>
+			
+			<!-- 总价 -->
+			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
+				
+				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
+				<text class="text-gray text-xl margin-left-sm" style="text-decoration: line-through;"> RMB {{ timelineitem.price }}</text>
+				
+			</view>
+			
+			<!-- 拒绝区域 -->
+			<view class="refuseview margin-left-sm padding-sm solid">
+				
+				<!-- 拒绝人 -->
+				<view class="refuseUserview flex align-center">
+					<view class="leftview flex align-center">
+						<image class="cu-avatar round sm" :src="timelineitem.optionUser.avatar" mode="aspectFill"></image>
+						<view class="flex margin-left-sm flex-direction text-sm">
+							<text class="usernameview text-black text-sm text-cut">{{ timelineitem.optionUser.nickname }}</text>
+							<uni-dateformat class="optiontime text-sm text-black" :date="timelineitem.optionTime" />
+						</view>
+					</view>
+				</view>
+				
+				<view class="text-black text-bold margin-top-sm">{{ `拒绝了该报价单` }}</view>
+			
+			</view>
+			
+		</view>
 		
 		
 		<!-- 心愿单关联代理人类型  type=90 -->
@@ -97,10 +232,10 @@
 			</view>
 			
 			<!-- 按钮操作区域 -->
-			<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+			<view v-if="user._id == timelineitem.creatUser._id" class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
 				
-				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline"></button>
-				<button v-if="user._id == timelineitem.creatUser._id" class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline"></button>
+				<button class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline"></button>
+				<button class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline"></button>
 				<!-- #ifdef MP -->
 				<button class="cu-btn cuIcon-share round bg-white margin-left-sm" @tap.stop="sharetimeline"></button>
 				<!-- #endif -->
@@ -354,6 +489,8 @@
 
 <script>
 	
+	var _this
+	
 	export default {
 		
 		options: {
@@ -389,7 +526,7 @@
 		},
 		
 		created() {
-			
+			_this = this
 		},
 		
 		methods: {
@@ -473,6 +610,102 @@
 			// 分享时间轴
 			sharetimeline() {
 				this.$emit('sharetimeline', this.timelineitem)
+			},
+			
+			// 拒绝时间轴报价单
+			refusetimeline(timelineitem) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							const db = uniCloud.database();
+							db.collection('wishlist').doc(timelineitem.wishId).update({achieveFlag: 0})
+							.then(response => {
+								// 拒绝成功  回退当前心愿为进行中
+								
+								//将当前时间轴数据变更状态
+								db.collection('wishlisttimeline').doc(timelineitem._id).update({type: 5,  optionTime: db.env.now, optionUser: db.env.uid})
+								.then(response => {
+									// 操作成功
+								})
+								.catch(error => {
+									uni.showToast({
+										title: error.message,
+										icon: 'none'
+									});
+								})
+								
+								// 更新数据
+								uni.$emit('updatetimeline')
+								// 更新心愿单列表和详情
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+
+							})
+							.catch(error => {
+								uni.showToast({
+									title: error.message,
+									icon: 'none'
+								});
+							})
+							
+						}
+					},
+				})
+				
+			},
+			
+			// 同意时间轴报价单
+			agreetimeline(timelineitem) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							const db = uniCloud.database();
+							db.collection('wishlist').doc(timelineitem.wishId).update({achieveFlag: 2})
+							.then(response => {
+								// 同意成功 
+								
+								//将当前时间轴数据变更状态
+								db.collection('wishlisttimeline').doc(timelineitem._id).update({type: 4, optionTime: db.env.now, optionUser: db.env.uid})
+								.then(response => {
+									// 操作成功
+								})
+								.catch(error => {
+									uni.showToast({
+										title: error.message,
+										icon: 'none'
+									});
+								})
+								
+								// 更新数据
+								uni.$emit('updatetimeline')
+								// 更新心愿单列表和详情
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+								
+							})
+							.catch(error => {
+								uni.showToast({
+									title: error.message,
+									icon: 'none'
+								});
+							})
+							
+						}
+					},
+				})
+				
 			},
 			
 		},

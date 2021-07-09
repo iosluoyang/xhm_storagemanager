@@ -41,6 +41,15 @@
 			"bsonType": "timestamp",
 			"description": "编辑时间"
 		},
+		"optionUser": {
+			"bsonType": "string",
+			"description": "操作者的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"optionTime": {
+			"bsonType": "timestamp",
+			"description": "操作时间"
+		},
 		"content": {
 			"bsonType": "string",
 			"description": "时间轴内容"
@@ -64,7 +73,8 @@
 		"moneyType": {
 			"bsonType": "string",
 			"description": "货币种类 RMB 人民币 THB 泰铢",
-			"enum": ["RMB", "THB"]
+			"enum": ["RMB", "THB"],
+			"defaultValue":"RMB"
 		}
 
 	}

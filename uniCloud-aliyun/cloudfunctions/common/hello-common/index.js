@@ -32,38 +32,20 @@ async function getWxAccessToken() {
 }
 
 // 发送微信小程序订阅消息
-async function sendWxMiniMsg() {
+async function sendWxMiniMsg(param) {
 	// 当前时间字符串
 	let currenttimestr = moment().add(8,'h').format('YYYY-MM-DD HH:mm') // 注意服务器时间要比客户端时间晚8个小时 所以这里要增加8个小时
 	// 首先获取accesstoken
 	let accesstoken = await getWxAccessToken()
-	// 调用post请求发送小程序订阅消息(订单变更)
-	let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
-	let openId = 'o89E541Xo_81C8xIdjDROd9AlgEw'
-	let wishid = '607ce716c9c9b90001439457'
-	let page = `pages/wishlist/wishdetail?id=${wishid}`
 	let sendMsgApi = `https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${accesstoken}`
 	let res = await uniCloud.httpclient.request(sendMsgApi, {
 		method: 'POST',
 		data: {
 			access_token: accesstoken, // 接口调用凭证
-			touser: openId, // 接收者（用户）的 openid
-			template_id: orderchangetmpId, // 所需下发的订阅模板id
-			page: page, // 小程序跳转的页面
-			data: {
-				/*
-				订单标题{{thing2.DATA}}
-				订单状态{{phrase3.DATA}}
-				订单备注{{thing4.DATA}}
-				操作时间{{time5.DATA}}
-				温馨提示{{thing8.DATA}}
-				*/
-			   thing2: {value: "我是订单标题"},
-			   phrase3: {value: "待确认"},
-			   thing4: {value: "总金额为300元,国内运费为20元"},
-			   time5: {value: currenttimestr},
-			   thing8: {value: "订单状态变更,请尽快确认"}
-			},
+			touser: param.touser, // 接收者（用户）的 openid
+			template_id: param.template_id, // 所需下发的订阅模板id
+			page: param.page, // 小程序跳转的页面
+			data: param.data, // 消息体的数据
 			/*
 			跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版
 			*/
@@ -77,14 +59,28 @@ async function sendWxMiniMsg() {
 		dataType: 'json' // 指定返回值为json格式，自动进行parse
 	})
 	
+	console.log(`hello-common中sendWxMiniMsg的返回结果为:`);
+	console.log(res);
+	
 	// 接口调用成功
-	if(res.status == 200) {
+	if(res.status == 200 && res.data.errcode == 0) {
 		let data = res.data
 		console.log(`获取到的返回数据为:${JSON.stringify(data)}`);
+		res = {
+			errCode: 0,
+			message: "发送消息成功"
+		}
 	}
 	else {
 		console.log(`发送订阅消息失败`);
+		console.log(res.data.errmsg);
+		res = {
+			errCode: res.data.errcode,
+			message: res.data.errmsg
+		}
 	}
+	
+	return res
 
 }
 

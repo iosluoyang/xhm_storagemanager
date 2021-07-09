@@ -42,13 +42,6 @@
 		<!-- 时间轴更新内容 -->
 		<view class="timelinecontentview bg-white padding-sm">
 			
-			<!-- <view class="cu-bar">
-				<view class="action">
-					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text>{{ i18n.wishlist.timeline[type] }}</text>
-				</view>
-			</view> -->
-			
 			<!-- 选择更新时间轴的类型 -->
 			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo && wishinfo.agentUser == user._id" class="cu-bar btn-group">
 				
@@ -145,7 +138,7 @@
 				<!-- 确认报价区域 -->
 				<template v-if=" type == 'confirmquotation' ">
 					
-					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" type="priceandspec"></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
 					
 					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.editquotation }}</button>
 					
@@ -328,7 +321,7 @@
 							if(_this.wishinfo.productExt) {
 								_this.productExt = _this.wishinfo.productExt
 							}
-
+					
 						}
 						else {
 							uni.showToast({
@@ -532,8 +525,8 @@
 				console.log(this.tmpWishInfo);
 			},
 			
-			// 上传时间轴数据
-			async uploaddata() {
+			// 上传数据
+			uploaddata() {
 				
 				// 进行数据检查
 				
@@ -552,76 +545,127 @@
 				}
 				// 补充拓展信息时
 				else if(this.type === 'addext') {
-					// 暂无需要校验的字段  均可为空
+					// productExt不能所有数值均为空
+					let productExt = this.productExt
+					if(!productExt.boxContainerNum && !productExt.boxLength && !productExt.boxWidth && !productExt.boxHeight 
+						&& !productExt.boxVolume && !productExt.domesticShippingFee && !productExt.internationalShippingName
+						&& !productExt.internationalShippingCode) 
+					{
+						uni.showToast({
+							title: this.i18n.error.lackcontent,
+							icon: 'none'
+						});
+						return
+					}
+					
+					// 开始更新补充信息
+					_this.updateproext()
+					return
 				}
 				// 确认报价单时
 				else if(this.type === 'confirmquotation') {
-					// 上传规格数据
-					const db = uniCloud.database();
-					await db.collection('wishlist')
-					.doc(_this.wishId)
-					.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1})
-					.then(response => {
-						// 更新成功
-						console.log(`更新成功`);
-						// 新增一条待确认时间轴
-						
-						let timelineinfo = {
-							wishId: _this.wishId, // 当前心愿单的id
-							type: 3, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  99 代理人关联心愿
-						}
-						db.collection('wishlisttimeline')
-						.add(timelineinfo)
-						.then(res => {
-							// 新增成功
-							if(res.result.code == 0) {
-								
-								// 更新事件轴数据
-								uni.$emit('updatetimeline')
-								// 更新心愿单列表和详情
-								uni.$emit('updatewishlist')
-								uni.$emit('updatewishdetail')
-								
-								uni.showToast({
-									title: _this.i18n.tip.fixsuccess,
-									icon: 'none',
-								});
-								
-								setTimeout(function() {
-									uni.navigateBack();
-								}, 1000);
-							}
-							// 新增失败
-							else {
-								console.log(res.result.message);
-								// 发布失败
-								uni.showToast({
-									title: _this.i18n.error.fixerror,
-									icon: 'none'
-								});
-							}
-						})
-						.catch(err => {
-							console.log(err.message);
-							// 发布失败
-							uni.showToast({
-								title: _this.i18n.error.fixerror,
-								icon: 'none'
-							});
-						})
-						
-					})
-					.catch(error => {
-						console.log(error.message);
+					
+					// 上传规格数据前校验国内运费
+					if(!_this.productExt.domesticShippingFee) {
 						uni.showToast({
-							title: _this.i18n.error.fixerror,
+							title: _this.i18n.tip.needdomesticshippingfee,
 							icon: 'none'
 						});
-					})
+						setTimeout(function() {
+							_this.type = 'addext'
+						}, 1000);
+						
+						return
+					}
+					
+					// 进行二次确认提醒代理员
+					uni.showModal({
+						content: `当前报价单一经确认,即将推送给用户,是否确认提交?`,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								
+								// 开始上传确认的规格数据
+								const db = uniCloud.database();
+								db.collection('wishlist')
+								.doc(_this.wishId)
+								.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1})
+								.then(response => {
+									
+									// 更新成功
+									console.log(`更新成功`);
+									// 计算当前报价单的最新报价
+									let totalPrice = _this.$refs.wishtablespec.getTotalPrice()
+																		
+									// 新增一条待确认时间轴
+									let timelineinfo = {
+										wishId: _this.wishId, // 当前心愿单的id
+										price: totalPrice, // 当前报价单的总价
+										type: 3, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  99 代理人关联心愿
+									}
+									db.collection('wishlisttimeline')
+									.add(timelineinfo)
+									.then(res => {
+										// 新增成功
+										if(res.result.code == 0) {
+											
+											// 更新事件轴数据
+											uni.$emit('updatetimeline')
+											// 更新心愿单列表和详情
+											uni.$emit('updatewishlist')
+											uni.$emit('updatewishdetail')
+											
+											uni.showToast({
+												title: _this.i18n.tip.fixsuccess,
+												icon: 'none',
+											});
+											
+											// 推送提醒消息
+											_this.pushnoticemsg()
+											
+											setTimeout(function() {
+												uni.navigateBack();
+											}, 1000);
+										}
+										// 新增失败
+										else {
+											console.log(res.result.message);
+											// 发布失败
+											uni.showToast({
+												title: _this.i18n.error.fixerror,
+												icon: 'none'
+											});
+										}
+									})
+									.catch(err => {
+										console.log(err.message);
+										// 发布失败
+										uni.showToast({
+											title: _this.i18n.error.fixerror,
+											icon: 'none'
+										});
+									})
+									
+								})
+								.catch(error => {
+									console.log(error.message);
+									uni.showToast({
+										title: _this.i18n.error.fixerror,
+										icon: 'none'
+									});
+								})
+								
+							}
+						}
+					});
 					
 					return
 				}
 				
+				
+				// 开始上传普通时间轴数据
 				// 检查是否需要上传图片
 				if(this.imgArr.find(item => { return item.progress == 0 })) {
 					// 开始上传图片
@@ -701,16 +745,12 @@
 						})
 						
 					}
-					// 如果是拓展信息操作
-					else if(this.type === 'addext') {
-						_this.updateproext()
-					}
 					
 				}
 				// 编辑
 				else if(_this.pagetype == 'edit') {
 					
-					// 如果是时间轴操作
+					// 如果是普通时间轴操作
 					if( this.type === 'addcomment' ) {
 						// 开始使用openDB进行数据上传
 						_this.ifloading = true
@@ -767,13 +807,42 @@
 						})
 						
 					}
-					// 如果是拓展信息操作
-					else if(this.type === 'addext') {
-						_this.updateproext()
-					}
 					
 				}
 				
+			},
+			
+			// 推送消息
+			pushnoticemsg() {
+				
+				// #ifdef MP-WEIXIN
+				
+				uniCloud.callFunction({
+					name: 'base',
+					data: {
+						type: 'sendwxmsg',
+						info: {
+							msgtype: 'confirmquotation',
+							wishId: _this.wishId,
+							productTitle: _this.wishinfo.productTitle,
+							agentUserName: _this.user.userName
+						}
+					}
+				}).then(response => {
+					// 发送微信消息成功
+					if(response.result.errCode == 0) {
+						console.log(`发送微信订阅消息成功`);
+					}
+					else {
+						console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
+					}
+		
+				}).catch(error => {
+					console.log(error.message);
+				})
+				
+				// #endif
+
 			},
 			
 		},

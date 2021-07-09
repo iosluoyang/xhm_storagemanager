@@ -98,6 +98,7 @@ const zh = {
 		needtoinputcontent: "请输入内容",
 		needstorenametip: "请输入店铺名称",
 		needshippingnametip: "请输入物流公司名称",
+		needdomesticshippingfee: "请填写国内运费",
 		copysuccess: "复制成功",
 		addsuccess: "添加成功",
 		fixsuccess: "修改成功",
@@ -164,7 +165,7 @@ const zh = {
 		uploaderror: "上传失败",
 		lackemail: "您还未补充邮箱,是否前往补充邮箱地址?",
 		overtimeerror: "开始时间不能晚于结束时间",
-		
+		lackcontent: "缺少内容",
 		
 	},
 	

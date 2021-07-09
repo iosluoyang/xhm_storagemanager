@@ -772,18 +772,20 @@
 				// #ifdef MP-WEIXIN
 				
 				// 增加订阅模板消息的功能
-				let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
+				let agentbindwishId = this.$store.getters.configData.wxminiNoticeTemplateDic.agentbindwish
+				let confirmquotationId = this.$store.getters.configData.wxminiNoticeTemplateDic.confirmquotation
+				
 				uni.requestSubscribeMessage({
-					tmplIds: [orderchangetmpId],
+					tmplIds: [agentbindwishId,confirmquotationId],
 					success(res){
 						let errMsg = res.errMsg
 						console.log(errMsg);
 						if(errMsg == 'requestSubscribeMessage:ok') {
-							console.log(res[orderchangetmpId]);
+							console.log(res[agentbindwishId]);
 							// 用户同意订阅
-							if(res[orderchangetmpId] == 'accept') {
+							if(res[agentbindwishId] == 'accept') {
 								console.log(`用户订阅消息成功`);
-							} else if(res[orderchangetmpId] == 'reject') {
+							} else if(res[agentbindwishId] == 'reject') {
 								console.log(`用户拒绝订阅消息`);
 							}
 						}

@@ -141,45 +141,8 @@
 							{{i18n.wishlist.wishproductspecdetail}}
 						</view>
 					</view>
-					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" :type=" wishinfo.achieveFlag == 0 ? 'spec' : 'priceandspec' " ></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" sourcefrom="wishdetail" ></wishTableSpec>
 				</view>
-				
-				<!-- 手风琴区域 -->
-				<u-collapse accordion :head-style="{color: '#0081ff'}">
-					
-					<!-- 拓展信息 -->
-					<u-collapse-item v-if="extArr && extArr.length > 0" :title="i18n.wishlist.wishproductextdetail" :open="true">
-						
-						<view slot="title" class="cu-bar bg-white">
-							<view class="action">
-								<text class="cuIcon-title text-blue"></text>
-								{{i18n.wishlist.wishproductextdetail}}
-							</view>
-						</view>
-						
-						<view class="cu-list menu sm-border extview">
-							
-							<view class="cu-item" v-for="(item, index) in extArr" :key="index">
-								<view class="content basis-sm">
-									<text class="text-grey text-cut">{{ item.keyStr }}</text>
-								</view>
-								<view class="action">
-									
-									<template v-if="item.id == 'internationalShippingFee' ">
-										<button class="cu-btn cuIcon-keyboard bg-gradual-blue" @click="openshippingtool">{{ i18n.shipping.calcualteshipping }}</button>
-									</template>
-									<template v-else>
-										<text class="text-grey text-sm">{{item.value }} </text>
-									</template>
-									
-								</view>
-							</view>
-							
-						</view>
-						
-					</u-collapse-item>
-					
-				</u-collapse>
 				
 			</view>
 			
@@ -977,7 +940,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlisttimeline,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{avatar,nickname},editUser{avatar,nickname},content,imgs,type,wishId,creatTime,editTime')
+				.field('creatUser{avatar,nickname},editUser{avatar,nickname},optionUser{avatar,nickname},content,imgs,price,type,wishId,creatTime,editTime,optionTime')
 				.orderBy('creatTime desc')
 				.get()
 				.then(res => {
@@ -995,11 +958,8 @@
 							if(item.editUser) {
 								item.editUser = item.editUser[0] ? item.editUser[0] : null
 							}
-							if(item.refuseUser) {
-								item.refuseUser = item.refuseUser[0] ? item.refuseUser[0] : null
-							}
-							if(item.agreeUser) {
-								item.agreeUser = item.agreeUser[0] ? item.agreeUser[0] : null
+							if(item.optionUser) {
+								item.optionUser = item.optionUser[0] ? item.optionUser[0] : null
 							}
 						})
 						
@@ -1141,6 +1101,9 @@
 										icon: 'none'
 									});
 								})
+								
+								// 发送代理员关联消息通知
+								_this.pushnoticemsg('agentbindwish')
 								
 							})
 							.catch(error => {
@@ -1356,6 +1319,41 @@
 							
 						}
 					},
+				})
+				
+			},
+			
+			// 推送消息
+			pushnoticemsg(msgtype) {
+				
+				let info
+				// 根据不同的消息类型准备不同的数据内容
+				if(msgtype == 'agentbindwish') {
+					info = {
+						msgtype: msgtype,
+						wishId: _this.wishId,
+						productTitle: _this.wishinfo.productTitle,
+						agentUserName: _this.user.nickname
+					}
+				}
+				
+				uniCloud.callFunction({
+					name: 'base',
+					data: {
+						type: 'sendwxmsg',
+						info: info
+					}
+				}).then(response => {
+					// 发送微信消息成功
+					if(response.result.errCode == 0) {
+						console.log(`发送微信订阅消息成功`);
+					}
+					else {
+						console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
+					}
+		
+				}).catch(error => {
+					console.log(error.message);
 				})
 				
 			},

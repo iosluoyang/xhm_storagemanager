@@ -114,12 +114,13 @@
 			</u-tr>
 			
 			<!-- 金额汇总区域 -->
-			<template v-if="type == 'priceandspec'">
+			<!-- 心愿详情中如果心愿为进行中则不显示  其他情况下均显示 -->
+			<template v-if=" sourcefrom == 'wishdetail' && wishinfo.achieveFlag == 0 ? false : true ">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
 					<u-td class="u-td">
-						<text class="text-bold text-black bg-yellow">{{ `金额合计` }}</text>
+						<text class="text-bold text-white bg-gradual-red">{{ `金额合计` }}</text>
 					</u-td>
 				</u-tr>
 				
@@ -139,6 +140,37 @@
 					<u-td class="u-td">
 						<text class="text-red text-bold text-lg">{{ totalPrice }}</text>
 					</u-td>
+				</u-tr>
+				
+			</template>
+			
+			<!-- 补充信息区域 -->
+			<!-- 心愿详情一直显示  编辑时间轴不显示 -->
+			<template v-if=" sourcefrom != 'handletimeline' && wishinfo && wishinfo.productExt">
+				
+				<!-- 分隔栏 -->
+				<u-tr class="u-tr tableeachsummaryrow">
+					<u-td class="u-td">
+						<text class="text-bold text-white bg-gradual-blue">{{ i18n.wishlist.wishproductextdetail }}</text>
+					</u-td>
+				</u-tr>
+				
+				<!-- 总结区域表头 -->
+				<u-tr class="u-tr">
+					<u-th class="u-th">{{ i18n.wishlist.boxContainerNum }}(pcs/box)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.boxSize }}(cm)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.boxVolume }}(m³)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.internationalShippingName }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.internationalShippingCode }}</u-th>
+				</u-tr>
+				
+				<!-- 总结区域内容 -->
+				<u-tr class="u-tr">
+					<u-td class="u-td">{{ wishinfo.productExt.boxContainerNum || '/' }}</u-td>
+					<u-td class="u-td">{{ wishinfo.productExt.boxLength ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight}` : '/' }}</u-td>
+					<u-td class="u-td">{{ wishinfo.productExt.boxVolume || '/' }}</u-td>
+					<u-td class="u-td">{{ wishinfo.productExt.internationalShippingName || '/' }}</u-td>
+					<u-td class="u-td">{{ wishinfo.productExt.internationalShippingCode || '/' }}</u-td>
 				</u-tr>
 				
 			</template>
@@ -164,10 +196,10 @@
 				default: null
 			},
 			
-			// 表格类型  spec为仅展示规格数据  priceandspec为展示规格和金额汇总数据
-			type: {
+			// 表格展示来源  sourcefrom:  wishdetail 心愿详情	handletimeline 时间轴编辑
+			sourcefrom: {
 				type: String,
-				default: 'spec'
+				default: 'wishdetail'
 			}
 			
 		},
@@ -441,6 +473,11 @@
 					urls:imgs,
 					current:0
 				})
+			},
+			
+			// 获取计算的总价
+			getTotalPrice() {
+				return this.totalPrice
 			},
 			
 		},

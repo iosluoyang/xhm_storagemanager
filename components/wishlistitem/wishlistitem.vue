@@ -108,6 +108,8 @@
 
 <script>
 	
+	var _this
+	
 	export default {
 		
 			name:'wishlistitem',
@@ -177,7 +179,7 @@
 			},
 			
 			created() {
-				
+				_this = this
 			},
 			
 			methods: {
@@ -246,6 +248,9 @@
 										}, 1000);
 									})
 									
+									// 发送代理员关联消息通知
+									_this.pushnoticemsg('agentbindwish')
+									
 								})
 								.catch(error => {
 									// 关联失败
@@ -261,6 +266,41 @@
 							}
 						}
 					});
+					
+				},
+				
+				// 推送消息
+				pushnoticemsg(msgtype) {
+					
+					let info
+					// 根据不同的消息类型准备不同的数据内容
+					if(msgtype == 'agentbindwish') {
+						info = {
+							msgtype: msgtype,
+							wishId: _this.ownwishitem._id,
+							productTitle: _this.ownwishitem.productTitle,
+							agentUserName: _this.user.nickname
+						}
+					}
+					
+					uniCloud.callFunction({
+						name: 'base',
+						data: {
+							type: 'sendwxmsg',
+							info: info
+						}
+					}).then(response => {
+						// 发送微信消息成功
+						if(response.result.errCode == 0) {
+							console.log(`发送微信订阅消息成功`);
+						}
+						else {
+							console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
+						}
+						
+					}).catch(error => {
+						console.log(error.message);
+					})
 					
 				},
 				

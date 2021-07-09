@@ -57,11 +57,6 @@ exports.main = async (event, context) => {
 	// getlist 分页查询所有的公告列表
 	else if(type == 'getlist') {
 		
-		let accesstoken = getWxAccessToken()
-		console.log(`accesstoken = ${accesstoken}`);
-		// 发送微信订阅消息
-		sendWxMiniMsg()
-		
 		let date = info.date
 		let pageSize = info.pageSize
 		let pageNum = info.pageNum
