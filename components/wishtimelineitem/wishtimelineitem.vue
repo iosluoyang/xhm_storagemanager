@@ -14,39 +14,58 @@
 			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
 		
-		<!-- 心愿单确认类型 type=3 -->
-		<view v-else-if="timelineitem.type == 3 " class="content bg-gradual-red shadow-blur">
-			
-			<!-- 发布人 -->
+		<!-- 心愿单关联代理人类型  type=90 -->
+		<view v-else-if="timelineitem.type == 90" class="content bg-gradual-blue shadow-blur">
+			<!-- 时间轴发布人信息 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
 				<view class="leftview flex align-center">
 					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 					<view class="flex flex-direction">
-						<text class="text-white">{{ timelineitem.creatUser.nickname }}</text>
-						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" />
 					</view>
 				</view>
 			</view>
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
+				{{`您好,我是您的商品代理人,从现在开始为您提供服务`}}
+			</view>
+		</view>
+		
+		<!-- 心愿单待确认类型 type=3 -->
+		<view v-else-if="timelineitem.type == 3 " class="content bg-gradual-orange shadow-blur shadow-blur">
+			
+			<!-- 发布人 -->
+			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
+				<view class="leftview flex align-center">
+					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
+					<view class="flex flex-direction">
+						<text class="text-df text-black">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" />
+					</view>
+				</view>
+			</view>
+			
+			<!-- 文本内容 -->
+			<view class="margin-top-sm t_wrap text-white">
 				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
 			</view>
 			
 			<!-- 总价 -->
 			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
 				
-				<text class="cuIcon cuIcon-moneybagfill text-white"></text>
+				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
 				<text class="text-white text-xl margin-left-sm"> RMB {{ timelineitem.price }}</text>
 				
 			</view>
 			
-			<!-- 按钮操作区域 -->
-			<view class="btnview margin-top-sm flex align-center justify-between solid-top padding-top-sm">
+			<!-- 按钮操作区域   -->
+			<view v-if="wishInfo.creatUser._id == user._id " class="btnview margin-top-sm flex align-center justify-between solid-top padding-top-sm">
 				
 				<view class="leftview flex align-center">
-					<button class="cu-btn round bg-gray margin-right" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
-					<button class="cu-btn round bg-pink" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+					<button class="cu-btn round margin-right" :style="{background: '#aaaaaa'}" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+					<button class="cu-btn round" :style="{background: '#e03997'}" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
 				</view>
 				
 				<view class="rightview flex align-center">
@@ -58,22 +77,22 @@
 		</view>
 		
 		<!-- 心愿单同意类型 type=4 -->
-		<view v-else-if="timelineitem.type == 4 " class="content bg-gradual-green shadow-blur">
+		<view v-else-if="timelineitem.type == 4 " class="content bg-gradual-blue shadow-blur">
 			
 			<!-- 发布人 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
 				<view class="leftview flex align-center">
 					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 					<view class="flex flex-direction">
-						<text class="text-black">{{ timelineitem.creatUser.nickname }}</text>
-						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+						<text class="text-df text-black">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" />
 					</view>
 				</view>
 			</view>
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
+				{{ user.role == 'PRODUCT_AGENT' ? '客户已经确认报价单,请尽快下单进货' : '您已确认报价单, 代理员将尽快为您下单进货,请耐心等待' }}
 			</view>
 			
 			<!-- 总价 -->
@@ -85,7 +104,7 @@
 			</view>
 			
 			<!-- 同意区域 -->
-			<view class="agreeview margin-left-sm padding-sm solid">
+			<view class="agreeview margin-left-sm margin-top-sm padding-sm solid">
 				
 				<!-- 同意人 -->
 				<view class="agreeUserview flex align-center">
@@ -93,13 +112,18 @@
 						<image class="cu-avatar round sm" :src="timelineitem.optionUser.avatar" mode="aspectFill"></image>
 						<view class="flex margin-left-sm flex-direction text-sm">
 							<text class="usernameview text-black text-sm">{{ timelineitem.optionUser.nickname }}</text>
-							<uni-dateformat class="optiontime text-sm text-black" :date="timelineitem.optionTime" />
+							<uni-dateformat class="optiontime text-sm text-gray" :date="timelineitem.optionTime" />
 						</view>
 					</view>
 				</view>
 				
 				<view class="text-black text-bold margin-top-sm">{{ `已同意该报价单` }}</view>
 			
+			</view>
+			
+			<!-- 操作按钮区域  仅代理有 -->
+			<view v-if=" wishInfo.agentUser._id == user._id " class="btnview margin-top-sm flex align-center">
+				<button class="cu-btn round" :style="{background: '#ffffff'}">{{ `下单进货` }}</button>
 			</view>
 			
 		</view>
@@ -112,8 +136,8 @@
 				<view class="leftview flex align-center">
 					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
 					<view class="flex flex-direction">
-						<text class="text-black">{{ timelineitem.creatUser.nickname }}</text>
-						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
+						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
+						<uni-dateformat class="commenttime text-sm text-gray" :date="timelineitem.creatTime" />
 					</view>
 				</view>
 			</view>
@@ -132,7 +156,7 @@
 			</view>
 			
 			<!-- 拒绝区域 -->
-			<view class="refuseview margin-left-sm padding-sm solid">
+			<view class="refuseview margin-left-sm margin-top-sm padding-sm solid">
 				
 				<!-- 拒绝人 -->
 				<view class="refuseUserview flex align-center">
@@ -149,26 +173,6 @@
 			
 			</view>
 			
-		</view>
-		
-		
-		<!-- 心愿单关联代理人类型  type=90 -->
-		<view v-else-if="timelineitem.type == 90" class="content bg-gradual-blue shadow-blur">
-			<!-- 时间轴发布人信息 -->
-			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
-				<view class="leftview flex align-center">
-					<image class="cu-avatar round margin-right-sm" :src="timelineitem.creatUser.avatar" mode="aspectFill"></image>
-					<view class="flex flex-direction">
-						<text class="text-df">{{ timelineitem.creatUser.nickname }}</text>
-						<uni-dateformat class="commenttime text-sm text-yellow" :date="timelineitem.creatTime" />
-					</view>
-				</view>
-			</view>
-			
-			<!-- 文本内容 -->
-			<view class="margin-top-sm t_wrap">
-				{{`您好,我是您的商品代理人,从现在开始为您提供服务`}}
-			</view>
 		</view>
 		
 		<!-- 心愿单完成类型 type=6 -->
@@ -502,6 +506,11 @@
 		
 		props: {
 			timelineInfo: {
+				type: Object,
+				default: null
+			},
+			
+			wishInfo: {
 				type: Object,
 				default: null
 			},

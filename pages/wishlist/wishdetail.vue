@@ -162,7 +162,7 @@
 				
 				<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
 				
-				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" @sharetimeline="sharetimeline"></wishTimeLineItem>
+				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" :wishInfo="wishinfo" @sharetimeline="sharetimeline"></wishTimeLineItem>
 				
 				<!-- 
 				时间轴类型  

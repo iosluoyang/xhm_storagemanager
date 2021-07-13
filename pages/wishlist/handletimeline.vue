@@ -622,8 +622,8 @@
 												icon: 'none',
 											});
 											
-											// 推送提醒消息
-											_this.pushnoticemsg()
+											// 推送确认报价单的提醒消息
+											_this.pushnoticemsg('confirmquotation')
 											
 											setTimeout(function() {
 												uni.navigateBack();
@@ -813,19 +813,17 @@
 			},
 			
 			// 推送消息
-			pushnoticemsg() {
-				
-				// #ifdef MP-WEIXIN
+			pushnoticemsg(msgtype) {
 				
 				uniCloud.callFunction({
 					name: 'base',
 					data: {
 						type: 'sendwxmsg',
 						info: {
-							msgtype: 'confirmquotation',
+							msgtype: msgtype,
 							wishId: _this.wishId,
 							productTitle: _this.wishinfo.productTitle,
-							agentUserName: _this.user.userName
+							agentUserName: _this.user.nickname
 						}
 					}
 				}).then(response => {
@@ -836,12 +834,10 @@
 					else {
 						console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
 					}
-		
+						
 				}).catch(error => {
 					console.log(error.message);
 				})
-				
-				// #endif
 
 			},
 			

@@ -55,7 +55,7 @@ exports.main = async (event, context) => {
 				thing5: {value: tips} // 温馨提示
 			}
 			
-			page = `/pages/wishlist/wishdetail?id=${info.wishId}`
+			page = `/pages/wishlist/wishdetail?id=${info.wishId}&ifShare=true`
 			
 		}
 		
@@ -67,12 +67,12 @@ exports.main = async (event, context) => {
 			
 			data = {
 				thing2: {value: info.productTitle}, // 心愿标题
-				thing1: {value: info.agentUserName}, // 代理员名称
+				thing12: {value: info.agentUserName}, // 代理员名称
 				time5: {value: currenttimestr}, // 操作时间
 				thing8: {value: tips} // 备注
 			}
 			
-			page = `/pages/wishlist/wishdetail?id=${info.wishId}`
+			page = `/pages/wishlist/wishdetail?id=${info.wishId}&ifShare=true`
 			
 		}
 		
