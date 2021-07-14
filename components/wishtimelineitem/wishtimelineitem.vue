@@ -64,8 +64,8 @@
 			<view v-if="wishInfo.creatUser._id == user._id " class="btnview margin-top-sm flex align-center justify-between solid-top padding-top-sm">
 				
 				<view class="leftview flex align-center">
-					<button class="cu-btn round margin-right" :style="{background: '#aaaaaa'}" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
-					<button class="cu-btn round" :style="{background: '#e03997'}" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
+					<button class="cu-btn round text-white margin-right" :style="{background: '#8799a3'}" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+					<button class="cu-btn round text-white" :style="{background: '#8dc63f'}" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
 				</view>
 				
 				<view class="rightview flex align-center">
@@ -540,21 +540,13 @@
 		
 		methods: {
 			
-			// 获取当前时间轴的cu-item类名
-			getItemClass(timelineitem) {
-				
-				let itemClass = 'cu-item '
-				// type=0 时间轴开始
-				if(timelineitem.type == 0) {
-					itemClass += 'cuIcon-evaluate_fill text-pink'
-				}
-				
-				return itemClass
-				
-			},
-			
 			// 查看原图
 			previewImgs(imgsStr,index) {
+				
+				// 发送推送消息
+				this.pushnoticemsg('agreequotation')
+				
+				return
 				uni.previewImage({
 					current:index,
 					urls: imgsStr.split(',')
@@ -637,8 +629,13 @@
 							.then(response => {
 								// 拒绝成功  回退当前心愿为进行中
 								
+								// 发送推送消息
+								this.pushnoticemsg('refusequotation')
+								
 								//将当前时间轴数据变更状态
-								db.collection('wishlisttimeline').doc(timelineitem._id).update({type: 5,  optionTime: db.env.now, optionUser: db.env.uid})
+								db.collection('wishlisttimeline')
+								.doc(timelineitem._id)
+								.update({type: 5,  optionTime: db.env.now, optionUser: db.env.uid})
 								.then(response => {
 									// 操作成功
 								})
@@ -681,12 +678,18 @@
 						if(res.confirm) {
 							
 							const db = uniCloud.database();
-							db.collection('wishlist').doc(timelineitem.wishId).update({achieveFlag: 2})
+							db.collection('wishlist')
+							.doc(timelineitem.wishId)
+							.update({achieveFlag: 2})
 							.then(response => {
 								// 同意成功 
+								// 发送推送消息
+								this.pushnoticemsg('agreequotation')
 								
 								//将当前时间轴数据变更状态
-								db.collection('wishlisttimeline').doc(timelineitem._id).update({type: 4, optionTime: db.env.now, optionUser: db.env.uid})
+								db.collection('wishlisttimeline')
+								.doc(timelineitem._id)
+								.update({type: 4, optionTime: db.env.now, optionUser: db.env.uid})
 								.then(response => {
 									// 操作成功
 								})
@@ -715,6 +718,33 @@
 					},
 				})
 				
+			},
+			
+			// 推送消息
+			pushnoticemsg(msgtype) {
+				
+				uniCloud.callFunction({
+					name: 'base',
+					data: {
+						type: 'sendwxmsg',
+						info: {
+							msgtype: msgtype,
+							wishId: _this.wishInfo._id
+						}
+					}
+				}).then(response => {
+					// 发送微信消息成功
+					if(response.result.errCode == 0) {
+						console.log(`发送微信订阅消息成功`);
+					}
+					else {
+						console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
+					}
+						
+				}).catch(error => {
+					console.log(error.message);
+				})
+			
 			},
 			
 		},

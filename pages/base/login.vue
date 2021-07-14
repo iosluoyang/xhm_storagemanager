@@ -59,14 +59,14 @@
 			</button>
 			
 			<!-- 其他登录 -->
-			<!-- <view class="other_loginview width100 margin-top-xl flex align-center justify-center padding-top"> -->
+			<view class="other_loginview width100 margin-top-xl flex align-center justify-center padding-top">
 				
 				<!-- #ifdef MP -->
 				<!-- 微信登录按钮 -->
-				<!-- <u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon> -->
+				<u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon>
 				<!-- #endif -->
 				
-			<!-- </view> -->
+			</view>
 			
 		</view>
 		
@@ -446,7 +446,7 @@
 								else {
 									uni.navigateBack();
 									uni.showToast({
-										title: `微信绑定失败:${res.result.message},您稍后可在个人中心进行绑定`,
+										title: `${res.result.message}`,
 										icon: 'none'
 									});
 								}

@@ -107,7 +107,6 @@ exports.main = async (event, context) => {
 	
 	// 绑定微信
 	else if(type == 'bindwx') {
-		
 		// 用户wxcode
 		let wxcode = info.wxcode
 		let res = await uniIDIns.bindWeixin({

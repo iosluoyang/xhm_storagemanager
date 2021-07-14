@@ -4,9 +4,6 @@ var moment = require('moment')
 const db = uniCloud.database()
 const dbCmd = db.command // 数据库指令
 
-const { translateContent } = require('hello-common')
-
-
 const uniID = require('uni-id')
 
 exports.main = async (event, context) => {

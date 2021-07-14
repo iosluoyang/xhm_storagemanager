@@ -1331,9 +1331,7 @@
 				if(msgtype == 'agentbindwish') {
 					info = {
 						msgtype: msgtype,
-						wishId: _this.wishId,
-						productTitle: _this.wishinfo.productTitle,
-						agentUserName: _this.user.nickname
+						wishId: _this.wishinfo._id
 					}
 				}
 				

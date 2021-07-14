@@ -621,9 +621,12 @@
 												title: _this.i18n.tip.fixsuccess,
 												icon: 'none',
 											});
-											
+										
 											// 推送确认报价单的提醒消息
 											_this.pushnoticemsg('confirmquotation')
+											
+											// 代理员订阅提醒消息
+											_this.subscribenoticemsg()
 											
 											setTimeout(function() {
 												uni.navigateBack();
@@ -812,6 +815,47 @@
 				
 			},
 			
+			// 订阅消息
+			subscribenoticemsg() {
+				
+				// 开始获取订阅
+				// #ifdef MP-WEIXIN
+				
+				// 增加订阅模板消息的功能
+				let agentbindwishId = this.$store.getters.configData.wxminiNoticeTemplateDic.agentbindwish
+				let confirmquotationId = this.$store.getters.configData.wxminiNoticeTemplateDic.confirmquotation
+				
+				uni.requestSubscribeMessage({
+					tmplIds: [agentbindwishId,confirmquotationId],
+					success(res){
+						let errMsg = res.errMsg
+						console.log(errMsg);
+						if(errMsg == 'requestSubscribeMessage:ok') {
+							console.log(res[agentbindwishId]);
+							// 用户同意订阅
+							if(res[agentbindwishId] == 'accept') {
+								console.log(`用户订阅消息成功`);
+							} else if(res[agentbindwishId] == 'reject') {
+								console.log(`用户拒绝订阅消息`);
+							}
+						}
+						else {
+							console.log(`订阅消息失败`);
+						}
+					},
+					fail(err) {
+						console.log(`订阅消息失败`);
+						console.log(err.errMsg);
+					},
+					complete() {
+						console.log(`订阅消息接口完成`);
+					}
+				})
+				
+				// #endif
+				
+			},
+			
 			// 推送消息
 			pushnoticemsg(msgtype) {
 				
@@ -821,9 +865,7 @@
 						type: 'sendwxmsg',
 						info: {
 							msgtype: msgtype,
-							wishId: _this.wishId,
-							productTitle: _this.wishinfo.productTitle,
-							agentUserName: _this.user.nickname
+							wishId: _this.wishId
 						}
 					}
 				}).then(response => {

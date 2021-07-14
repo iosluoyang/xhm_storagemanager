@@ -4,7 +4,8 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow" @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
+		<!-- @longpress.stop="changewishliststatus" -->
+		<view class="cu-item shadow" @tap.stop="gotowishdetail">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
@@ -277,9 +278,7 @@
 					if(msgtype == 'agentbindwish') {
 						info = {
 							msgtype: msgtype,
-							wishId: _this.ownwishitem._id,
-							productTitle: _this.ownwishitem.productTitle,
-							agentUserName: _this.user.nickname
+							wishId: _this.ownwishitem._id
 						}
 					}
 					
