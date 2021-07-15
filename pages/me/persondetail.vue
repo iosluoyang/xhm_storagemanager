@@ -68,6 +68,21 @@
 				<input type="text" v-model="userInfo.email" />
 			</view>
 			
+			<!-- #ifdef MP-WEIXIN -->
+			<!-- 是否绑定微信 -->
+			<view class="cu-form-group">
+				
+				<view class="title">
+					<text class="cuIcon cuIcon-weixin text-green margin-right-sm"></text>
+					微信/WeChat
+				</view>
+				
+				<u-switch v-model="ifBindWx" @change="bindwx"></u-switch>
+				<!-- <switch :checked="ifBindWx" @change="bindwx" /> -->
+				
+			</view>
+			<!-- #endif -->
+			
 			<!-- 个人简介 -->
 			<view class="cu-form-group">
 				<textarea maxlength="-1"  v-model="userInfo.comment" :placeholder="i18n.me.persondetail.signature"></textarea>
@@ -88,6 +103,7 @@
 
 <script>
 	
+	var _this
 	const db = uniCloud.database();
 	const dbCollectionName = 'uni-id-users';
 		
@@ -109,12 +125,16 @@
 				pickerIndex: 0, // 默认选中第0个
 				pickerRange: [], // 单选数据内容
 				
+				ifBindWx: false, // 是否绑定了微信
+				
 				ifmodify: false, // 是否正在修改  默认为否
 				btnanimationname: null, // 当前按钮动画  默认为null
 			};
 		},
 		
 		onLoad() {
+			
+			_this = this
 			
 			// 选择要更新和展示的用户信息
 			this.userInfo = {
@@ -158,6 +178,22 @@
 			if(pickerIndex > -1) {
 				this.pickerIndex = pickerIndex
 			}
+			
+			// 设置是否绑定了微信
+			if(this.user && this.user.wx_openid && this.user.wx_openid['mp-weixin']) {
+				this.ifBindWx = true
+			}
+			
+		},
+		
+		computed: {
+			
+			// ifBindWx() {
+				
+			// 	let ifBindWx = Boolean(this.user && this.user.wx_openid && this.user.wx_openid['mp-weixin'])
+			// 	return ifBindWx
+				
+			// }
 			
 		},
 		
@@ -203,7 +239,118 @@
 				let gendervalue = this.pickerRange[this.pickerIndex].value
 				this.$set(this.userInfo, 'gender', gendervalue)
 			},
-						
+			
+			// 绑定微信
+			bindwx(value) {
+				
+				// 已绑定  进行解绑
+				if(!value) {
+					
+					uni.showLoading({
+						mask: true
+					})
+					uniCloud.callFunction({
+						name: 'user',
+						data: {
+							type: 'unbindwx',
+							info: {}
+						},
+						success(res) {
+							if(res.result.code == 0) {
+								// 解绑成功
+								_this.ifBindWx = false
+								uni.showToast({
+									title: _this.i18n.tip.fixsuccess,
+									icon: 'none'
+								});
+								
+								// 重新获取用户信息
+								_this.$store.dispatch('user/getuserdetail').then(() => {
+									// 获取成功
+								}).catch(error => {
+									// 获取失败
+									uni.showToast({
+										title: _this.i18n.error.networkerror,
+										icon: 'none'
+									});
+								})
+							}
+							else {
+								_this.ifBindWx = true
+								uni.showToast({
+									title: `${res.result.message}`,
+									icon: 'none'
+								});
+							}
+						},
+						complete() {
+							uni.hideLoading()
+						}
+					})
+					
+				}
+				// 未绑定 进行绑定
+				else {
+					
+					// #ifdef MP-WEIXIN
+					// 开始绑定微信
+					uni.login({
+						provider: 'weixin',
+						success(res) {
+							let code = res.code
+							// 开始绑定
+							uni.showLoading({mask: true})
+							uniCloud.callFunction({
+								name: 'user',
+								data: {
+									type: 'bindwx',
+									info: {
+										wxcode: code
+									}
+								},
+								success(res) {
+									if(res.result.code == 0) {
+										// 绑定成功
+										uni.showToast({
+											title: _this.i18n.tip.fixsuccess,
+											icon: 'none'
+										});
+										
+										_this.ifBindWx = true
+										
+										// 重新获取用户信息
+										_this.$store.dispatch('user/getuserdetail').then(() => {
+											// 获取成功
+										}).catch(error => {
+											// 获取失败
+											uni.showToast({
+												title: _this.i18n.error.networkerror,
+												icon: 'none'
+											});
+										})
+										
+									}
+									// 绑定失败
+									else {
+										_this.ifBindWx = false
+										uni.showToast({
+											title: `${res.result.message}`,
+											icon: 'none'
+										});
+									}
+								},
+								complete() {
+									uni.hideLoading()
+								}
+							})
+						}
+					})
+					// #endif
+					
+				}
+				
+			},
+			
 			// 修改个人资料
 			modifydetail() {
 				

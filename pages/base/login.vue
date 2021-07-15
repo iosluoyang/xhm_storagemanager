@@ -192,10 +192,6 @@
 					
 				}
 				
-				// 开始操作
-				
-				_this.isLoading = true
-				
 				// 开始登录操作
 				if(this.type == 'login') {
 					
@@ -203,8 +199,12 @@
 						account: _this.account,
 						password: _this.password,
 					}
+					
+					uni.showLoading()
+					
 					_this.$store.dispatch('user/login', data).then(res => {
 						console.log(`登录成功`);
+						uni.hideLoading()
 						
 						// 如果非微信小程序平台则直接判定为登录成功
 						// #ifndef MP-WEIXIN
@@ -224,6 +224,8 @@
 						console.log(`当前登录账号对应的微信openIdObj为${JSON.stringify(wxopenIdObj)}`);
 						
 						// 获取当前微信账号的openid进行对比
+						uni.showLoading()
+						
 						uni.login({
 							provider: 'weixin',
 							success(res) {
@@ -238,6 +240,7 @@
 										}
 									},
 									success(res) {
+										uni.hideLoading()
 										// 获取成功
 										if(res.result.code == 0) {
 											let openid = res.result.openid
@@ -300,7 +303,7 @@
 											// 当前账号不存在openid 说明未绑定过微信
 											else {
 												uni.showModal({
-													content: '当前登录账号未绑定该微信,是否进行绑定?绑定后可直接通过该微信登录无需再次输入账号密码',
+													content: '当前登录账号未绑定微信,是否进行绑定?\n绑定后可直接使用微信登录',
 													showCancel: true,
 													cancelText: _this.i18n.base.cancel,
 													confirmText: _this.i18n.base.confirm,
@@ -329,18 +332,24 @@
 												icon: 'none'
 											});
 										}
+									},
+									fail() {
+										ui.hideLoading()
 									}
 								})
+							},
+							fail() {
+								uni.hideLoading()
+								uni.navigateBack();
 							}
 						})
 					
 						// #endif
 						
-						
 					}).catch(err => {
+						uni.hideLoading()
 						// 用户不存在
 						if(err.code == 10002) {
-
 							uni.showModal({
 								title: _this.i18n.base.tip,
 								content: _this.i18n.tip.needtoregister,
@@ -361,8 +370,6 @@
 							});
 						}
 						console.log(err);
-					}).finally(() => {
-						_this.isLoading = false
 					})
 					
 				}
@@ -386,8 +393,8 @@
 						});
 						
 						// 注册成功后将店铺或者物流公司的管理员与该用户进行绑定
-						const db = uniCloud.database();
-						db.collection('store')
+						// const db = uniCloud.database();
+						// db.collection('store')
 						
 						// 进行自动登录
 						setTimeout(function() {
@@ -425,6 +432,7 @@
 					success(res) {
 						let code = res.code
 						// 开始绑定
+						uni.showLoading()
 						uniCloud.callFunction({
 							name: 'user',
 							data: {
@@ -436,7 +444,6 @@
 							success(res) {
 								if(res.result.code == 0) {
 									// 绑定成功
-									uni.navigateBack();
 									uni.showToast({
 										title: _this.i18n.tip.loginsuccess,
 										icon: 'none'
@@ -444,12 +451,17 @@
 								}
 								// 绑定失败
 								else {
-									uni.navigateBack();
 									uni.showToast({
 										title: `${res.result.message}`,
 										icon: 'none'
 									});
 								}
+							},
+							complete() {
+								uni.hideLoading()
+								setTimeout(function() {
+									uni.navigateBack();
+								}, 1500);
 							}
 						})
 					}
@@ -461,6 +473,7 @@
 			wxlogin() {
 				
 				let data = {invitecode: _this.invitecode}
+				uni.showLoading()
 				_this.$store.dispatch('user/wxlogin', data).then(res => {
 					// 登录成功
 					uni.navigateBack();
@@ -473,6 +486,8 @@
 						title: err.msg,
 						icon: 'none'
 					});
+				}).finally(() => {
+					uni.hideLoading()
 				})
 				
 			},

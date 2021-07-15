@@ -122,9 +122,7 @@ exports.main = async (event, context) => {
 	// 解绑微信
 	else if(type == 'unbindwx') {
 		
-		const res = await uniIDIns.unbindWeixin({
-			uid: uid
-		})
+		const res = await uniIDIns.unbindWeixin(uid)
 		console.log(`user云函数中解绑微信的操作信息为`);
 		console.log(res);
 		return res
