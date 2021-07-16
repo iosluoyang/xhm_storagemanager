@@ -63,7 +63,7 @@
 				
 				<!-- #ifdef MP -->
 				<!-- 微信登录按钮 -->
-				<u-icon name='weixin-fill' size="100" color="#83DC42" @click="wxlogin"></u-icon>
+				<u-icon name='weixin-fill' size="100" color="#83DC42" @click="clickWxlogin"></u-icon>
 				<!-- #endif -->
 				
 			</view>
@@ -470,27 +470,136 @@
 			},
 			
 			//微信登录
-			wxlogin() {
+			clickWxlogin() {
 				
-				let data = {invitecode: _this.invitecode}
+				// 获取微信openId
+				
+				// 获取当前微信账号的openid进行对比
+				uni.showLoading()
+				
+				uni.login({
+					provider: 'weixin',
+					success(res) {
+						let code = res.code
+						// 调用云函数获取当前微信的openid
+						uniCloud.callFunction({
+							name: 'user',
+							data: {
+								type: 'getwxopenid',
+								info: {
+									wxcode: code
+								}
+							},
+							success(res) {
+								uni.hideLoading()
+								// 获取成功
+								if(res.result.code == 0) {
+									let openid = res.result.openid
+									console.log(`获取到的微信openid为${openid}`);
+									console.log(`查看是否存在该openid的用户`);
+									
+									// 根据此openid看该微信用户是否之前已经登录过
+									// 如果有对应的用户信息则直接登录
+									// 如果没有对应的用户信息则代表未曾登录过,此时提示使用账号密码登录
+									
+									const db = uniCloud.database();
+									const dbCmd = db.command
+									db.collection('uni-id-users')
+									.where({
+										'wx_openid': {
+											'mp-weixin': openid
+										}
+									})
+									// .where(`wx_openid && wx_openid['mp-weixin'] == '${openid}'`)
+									.get({getOne: true})
+									.then(res => {
+										// 获取成功
+										if(res.result.code == 0) {
+											let existuser = res.result.data
+											// console.log(`找到该openid对应的用户为`);
+											// console.log(existuser);
+											
+											// 找到有存在的用户 说明该微信用户已经登陆绑定过账号密码
+											if(existuser) {
+												// 直接进行微信登录操作
+												_this.wxMiniLogin()
+											}
+											// 未找到该openid对应的用户 此时提示用户首先进行注册
+											else {
+												uni.showModal({
+													content: `该微信暂时还未绑定任何账号,请先使用账号登录后绑定该微信即可`,
+													showCancel: false,
+													confirmText: _this.i18n.base.confirm,
+													success: res => {
+														
+													}
+												});
+											}
+										}
+									})
+									.catch(error => {
+										console.log(error);
+										uni.showToast({
+											title: error.message,
+											icon: 'none'
+										});
+									})
+									
+								}
+								// 获取失败
+								else {
+									uni.showToast({
+										title: res.result.message,
+										icon: 'none'
+									});
+								}
+							},
+							fail(err) {
+								ui.hideLoading()
+								uni.showToast({
+									title: err.message,
+									icon: 'none'
+								});
+							}
+						})
+					},
+					fail(err) {
+						// 登录失败
+						uni.hideLoading()
+						uni.showToast({
+							title: JSON.stringify(err),
+							icon: 'none'
+						});
+					}
+				})
+				
+			},
+			
+			// 微信小程序登录
+			wxMiniLogin() {
+				
+				// let data = {invitecode: _this.invitecode, role: _this.role}
+				let data = {}
 				uni.showLoading()
 				_this.$store.dispatch('user/wxlogin', data).then(res => {
 					// 登录成功
+					uni.hideLoading()
 					uni.navigateBack();
 					uni.showToast({
 						title: _this.i18n.tip.loginsuccess,
 						icon: 'none'
 					});
 				}).catch(err => {
+					uni.hideLoading()
 					uni.showToast({
 						title: err.msg,
 						icon: 'none'
 					});
-				}).finally(() => {
-					uni.hideLoading()
 				})
 				
 			},
+			
+			
 		}
 	}
 </script>
