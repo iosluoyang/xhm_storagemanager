@@ -74,7 +74,7 @@
 		},
 		"achieveFlag": {
 			"bsonType": "int",
-			"description": "心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭",
+			"description": "心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭",
 			"defaultValue": 0
 		},
 		"remindFlag": {

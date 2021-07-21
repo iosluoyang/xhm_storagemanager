@@ -73,8 +73,8 @@
 			<view class="cu-form-group">
 				
 				<view class="title">
-					<text class="cuIcon cuIcon-weixin text-green margin-right-sm"></text>
 					微信/WeChat
+					<text class="cuIcon cuIcon-weixin text-green text-lg margin-right-sm"></text>
 				</view>
 				
 				<u-switch v-model="ifBindWx" @change="bindwx"></u-switch>
@@ -179,21 +179,10 @@
 				this.pickerIndex = pickerIndex
 			}
 			
-			// 设置是否绑定了微信
+			// 返显微信绑定
 			if(this.user && this.user.wx_openid && this.user.wx_openid['mp-weixin']) {
 				this.ifBindWx = true
 			}
-			
-		},
-		
-		computed: {
-			
-			// ifBindWx() {
-				
-			// 	let ifBindWx = Boolean(this.user && this.user.wx_openid && this.user.wx_openid['mp-weixin'])
-			// 	return ifBindWx
-				
-			// }
 			
 		},
 		
@@ -259,6 +248,7 @@
 							if(res.result.code == 0) {
 								// 解绑成功
 								_this.ifBindWx = false
+								uni.hideLoading()
 								uni.showToast({
 									title: _this.i18n.tip.fixsuccess,
 									icon: 'none'
@@ -277,14 +267,12 @@
 							}
 							else {
 								_this.ifBindWx = true
+								uni.hideLoading()
 								uni.showToast({
 									title: `${res.result.message}`,
 									icon: 'none'
 								});
 							}
-						},
-						complete() {
-							uni.hideLoading()
 						}
 					})
 					
@@ -293,13 +281,13 @@
 				else {
 					
 					// #ifdef MP-WEIXIN
+					uni.showLoading({mask: true});
 					// 开始绑定微信
 					uni.login({
 						provider: 'weixin',
 						success(res) {
 							let code = res.code
 							// 开始绑定
-							uni.showLoading({mask: true})
 							uniCloud.callFunction({
 								name: 'user',
 								data: {
@@ -311,12 +299,12 @@
 								success(res) {
 									if(res.result.code == 0) {
 										// 绑定成功
+										_this.ifBindWx = true
+										uni.hideLoading()
 										uni.showToast({
 											title: _this.i18n.tip.fixsuccess,
 											icon: 'none'
 										});
-										
-										_this.ifBindWx = true
 										
 										// 重新获取用户信息
 										_this.$store.dispatch('user/getuserdetail').then(() => {
@@ -333,16 +321,20 @@
 									// 绑定失败
 									else {
 										_this.ifBindWx = false
+										uni.hideLoading()
 										uni.showToast({
 											title: `${res.result.message}`,
 											icon: 'none'
 										});
 									}
 								},
-								complete() {
+								fail() {
 									uni.hideLoading()
 								}
 							})
+						},
+						fail() {
+							uni.hideLoading()
 						}
 					})
 					// #endif
