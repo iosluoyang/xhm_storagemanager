@@ -23,7 +23,10 @@
 			<view class="flex text-center">
 				<view class="cu-item flex-sub" :class=" index==current ? 'text-pink' : '' " v-for="(tabitem,index) in tabArr" :key="index" @tap="changetap" :data-index="index">
 					<text>{{ tabitem.name }}</text>
-					<view v-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
+					<template>
+						<text v-if="tabitem.status == -2" class="cuIcon cuIcon-likefill text-purple pos-static"></text>
+						<view v-else-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
+					</template>
 				</view>
 			</view>
 		</scroll-view>
@@ -125,7 +128,7 @@
 			
 			// 初始化选项卡数据
 			initTabArr() {
-				
+				// 心愿单标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
 				let tabArr = [
 					{
 						name: this.i18n.base.all,
@@ -156,19 +159,38 @@
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.finish,
+						name: this.i18n.wishlist.achieveFlag.waitreceive,
 						status: 3,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.closed,
+						name: this.i18n.wishlist.achieveFlag.finish,
 						status: 4,
+						loaded: false,
+						count: 0,
+						dataArr: []
+					},
+					{
+						name: this.i18n.wishlist.achieveFlag.closed,
+						status: 99,
 						loaded: false,
 						count: 0
 					}
 				]
+				
+				// 如果是代理员则前面添加心愿池选项
+				if(this.user.role == 'PRODUCT_AGENT') {
+					let unbindwishitem = {
+						name: this.i18n.wishlist.achieveFlag.unbindwish,
+						status: -2,
+						loaded: false,
+						count: 0,
+						dataArr: []
+					}
+					tabArr.unshift(unbindwishitem)
+				}
 				
 				// 设置选中索引
 				let selectIndex = tabArr.findIndex(item => ( _this.currentStatus == item.status ))
@@ -196,8 +218,6 @@
 					.groupField('count(*) as count')
 					.get()
 					.then(res => {
-						console.log(`获取到的自己角标为:`);
-						console.log(res);
 						// 将各个状态的数量进行遍历设置
 						let countdata = res.result.data
 						countdata.forEach(item => {
@@ -281,20 +301,47 @@
 				let wherestr = ''
 				// 代理员
 				if(this.user.role == 'PRODUCT_AGENT') {
-					// 如果是查询全部则查询所有还没有关联代理员的心愿单
-					// 否则查询该代理员下的不同状态下的心愿单
-					wherestr = achieveFlag == -1 ? ` (agentFlag == 0 || agentUser._id == $cloudEnv_uid) ` : ` achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
+					
+					// 如果status=-2则代表查所有未关联代理员的心愿
+					if(achieveFlag == -2) {
+						wherestr = `agentFlag == 0`
+					}
+					// 如果statsu =-1则代表查自己关联过的所有心愿单
+					else if(achieveFlag == -1) {
+						wherestr = `agentUser._id == $cloudEnv_uid`
+					}
+					
+					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
+					else {
+						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
+					}
+					
+					// 增加搜索关键字查询条件
 					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
+					
 				}
 				// 普通供应商
 				else if(this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
-					wherestr = achieveFlag == -1 ? ` creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle)` : ` achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid && ${new RegExp(searchText, 'i')}.test(productTitle) `
+					
+					// 如果statsu =-1则代表查自己发布过的所有心愿单
+					if(achieveFlag == -1) {
+						wherestr = `creatUser._id == $cloudEnv_uid`
+					}
+					
+					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
+					else {
+						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
+					}
+					
+					// 增加搜索关键字查询条件
+					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
+					
 				}
 				
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
 					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
-					.orderBy(` remindFlag desc, creatTime desc`)
+					.orderBy(`remindFlag desc, creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
 					.get()
@@ -308,8 +355,8 @@
 							item.creatUser = item.creatUser[0]
 							item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
 						})
-						console.log(`本次共获取${list.length}个数据,具体数据为:`);
-						console.log(list);
+						// console.log(`本次共获取${list.length}个数据,具体数据为:`);
+						// console.log(list);
 						if(pageNum == 1) {
 							dataArr = [] //清空数据源
 							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部

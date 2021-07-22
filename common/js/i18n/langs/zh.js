@@ -142,6 +142,7 @@ const zh = {
 		qrcodewithoutgoods: "该二维码未关联商品",
 		adderror: "添加失败",
 		fixerror: "修改失败",
+		optionerror: "操作失败",
 		deleteerror: "删除失败",
 		reseterror: "重试失败",
 		account: "请输入正确的账号",
@@ -441,6 +442,7 @@ const zh = {
 		internationalShippingName: "国际物流名称",
 		internationalShippingCode: "国际物流编码",
 		achieveFlag: {
+			unbindwish: "心愿池",
 			ing: "进行中",
 			waittoconfirm: "待确认",
 			makeorder: "待下单",

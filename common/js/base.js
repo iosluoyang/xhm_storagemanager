@@ -474,7 +474,7 @@ export function getwishtagbgcolorclassname(achieveFlag) {
 			break;
 		// 待收货
 		case 3:
-			return 'bg-green'
+			return 'bg-cyan'
 			break;
 		// 已完成
 		case 4:

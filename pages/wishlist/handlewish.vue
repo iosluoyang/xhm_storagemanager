@@ -774,9 +774,10 @@
 				// 增加订阅模板消息的功能
 				let agentbindwishId = this.$store.getters.configData.wxminiNoticeTemplateDic.agentbindwish
 				let confirmquotationId = this.$store.getters.configData.wxminiNoticeTemplateDic.confirmquotation
+				let deliveryorderId = this.$store.getters.configData.wxminiNoticeTemplateDic.deliveryorder
 				
 				uni.requestSubscribeMessage({
-					tmplIds: [agentbindwishId,confirmquotationId],
+					tmplIds: [agentbindwishId,confirmquotationId,deliveryorderId],
 					success(res){
 						let errMsg = res.errMsg
 						console.log(errMsg);

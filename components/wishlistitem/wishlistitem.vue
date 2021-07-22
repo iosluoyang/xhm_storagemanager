@@ -4,8 +4,7 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<!-- @longpress.stop="changewishliststatus" -->
-		<view class="cu-item shadow" @tap.stop="gotowishdetail">
+		<view class="cu-item shadow" @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
@@ -77,8 +76,8 @@
 								<!-- 再次购买或者代理心愿按钮 -->
 								<template>
 									
-									<!-- 再次购买按钮 商家角色-->
-									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+									<!-- 再次购买按钮 商家角色且心愿为待收货或者已完成-->
+									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
 									
 									<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
 									<button v-if="user && user.role == 'PRODUCT_AGENT' && ownwishitem.agentFlag == 0" 
@@ -305,9 +304,14 @@
 				
 				// 长按更改心愿单状态
 				changewishliststatus() {
+					
 					const _this = this
 					
-					console.log(`触发长按事件`);
+					// 只有超级管理员有变更心愿状态的功能
+					if(_this.user.role !== 'ADMIN') {
+						return
+					}
+					
 					/*
 					this.i18n.wishlist.achieveFlag.ing,
 					this.i18n.wishlist.achieveFlag.waittoconfirm,
@@ -315,7 +319,7 @@
 					this.i18n.wishlist.achieveFlag.finish,
 					this.i18n.wishlist.achieveFlag.closed
 					*/
-				   // 心愿单完成标识 0进行中 1待确认 2待下单 3已完成 4已关闭
+				   // 心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
 				   let optionList = [
 						{
 							name: this.i18n.wishlist.achieveFlag.ing,
@@ -333,14 +337,19 @@
 							achieveFlag: 2
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.finish,
+							name: this.i18n.wishlist.achieveFlag.waitreceive,
 							type: 'changetag',
 							achieveFlag: 3
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.closed,
+							name: this.i18n.wishlist.achieveFlag.finish,
 							type: 'changetag',
 							achieveFlag: 4
+						},
+						{
+							name: this.i18n.wishlist.achieveFlag.closed,
+							type: 'changetag',
+							achieveFlag: 99
 						}
 					]
 					
@@ -365,7 +374,8 @@
 							// 设置该心愿单的状态为切换状态
 							
 							const db = uniCloud.database();
-							db.collection('wishlist').doc(_this.ownwishitem._id)
+							db.collection('wishlist')
+							.doc(_this.ownwishitem._id)
 							.update({achieveFlag})
 							.then(res => {
 								console.log(`更新状态成功`);

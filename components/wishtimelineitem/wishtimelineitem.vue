@@ -11,8 +11,8 @@
 		<!-- 参见下方v-else内容 -->
 		
 		<!-- 心愿单编辑类型  type=2 -->
-		<view v-else-if="timelineitem.type == 2" class="content bg-gray shadow-blur">
-			<text class="cuIcon cuIcon-edit text-blue margin-right"></text>
+		<view v-else-if="timelineitem.type == 2" class="content bg-gradual-red shadow-blur">
+			<text class="cuIcon cuIcon-edit text-white margin-right"></text>
 			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
 			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
 		</view>
@@ -37,7 +37,7 @@
 		</view>
 		
 		<!-- 心愿单待确认类型 type=3 -->
-		<view v-else-if="timelineitem.type == 3 " class="content bg-gradual-orange shadow-blur shadow-blur">
+		<view v-else-if="timelineitem.type == 3 " class="content bg-orange shadow-blur shadow-blur">
 			
 			<!-- 发布人 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
@@ -52,15 +52,14 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap text-white">
-				{{ `已经为您提供最新报价,请查看报价单,点击确认后代理将开始为您订货` }}
+				{{ `已经为您提供最新报价,请滑动到上方查看详细报价单,点击确认后代理员将开始为您订货` }}
 			</view>
 			
-			<!-- 总价 -->
+			
+			<!-- 价格 -->
 			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
-				
 				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
-				<text class="text-white text-xl margin-left-sm"> RMB {{ timelineitem.price }}</text>
-				
+				<text class="text-white text-bold text-xl margin-left-sm"> RMB {{ timelineitem.price }}</text>
 			</view>
 			
 			<!-- 按钮操作区域   -->
@@ -126,7 +125,7 @@
 			
 			<!-- 操作按钮区域  仅代理有 -->
 			<view v-if=" wishInfo.agentUser._id == user._id " class="btnview margin-top-sm flex align-center">
-				<button class="cu-btn round" :style="{background: '#ffffff'}">{{ `下单进货` }}</button>
+				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ `下单进货` }}</button>
 			</view>
 			
 		</view>
@@ -178,8 +177,9 @@
 			
 		</view>
 		
-		<!-- 心愿单代理人进货操作类型  type=91 -->
-		<view v-else-if="timelineitem.type == 91" class="content bg-gradual-orange shadow-blur">
+		<!-- 心愿单代理人进货类型 type=91 -->
+		<view v-else-if="timelineitem.type == 91" class="content bg-cyan shadow-blur">
+			
 			<!-- 时间轴发布人信息 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
 				<view class="leftview flex align-center">
@@ -193,8 +193,9 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{`代理已经进货,请留意货物到达状态`}}
+				{{`代理员已下单,请留意货物到达状态`}}
 			</view>
+			
 		</view>
 		
 		<!-- 心愿单完成类型 type=6 -->
@@ -499,7 +500,7 @@
 			
 			// 代理员进货
 			agentpurchasepro() {
-				let wishId = this.wishInfo._id
+				let wishId = _this.wishInfo._id
 				uni.showModal({
 					title: '确认操作进货?',
 					content: '当您确认进货后,用户将会收到通知,请确认用户是否支付款项',
@@ -514,21 +515,20 @@
 							db.collection('wishlist')
 							.doc(wishId)
 							.update({
-								achieveFlag: 3 , // 待收货
+								achieveFlag: 3 , // 代理已进货客户待收货
 							})
 							.then(response => {
 								// 操作成功
 								if(response.result.code == 0) {
 									
 									// 发送推送消息  给用户发送下单通知
-									this.pushnoticemsg('agentpurchasepro')
+									_this.pushnoticemsg('deliveryorder')
 									
 									// 增加一条代理已经进货的时间轴
 									db.collection('wishlisttimeline')
-									.add({type: 91})
+									.add({type: 91, wishId: wishId})
 									.then(response => {
 										// 增加时间轴成功
-										
 										
 										// 更新列表 详情和时间轴
 										// 更新数据
@@ -537,17 +537,18 @@
 										uni.$emit('updatewishlist')
 										uni.$emit('updatewishdetail')
 										
+									}).catch(error => {
+										console.log(error.message);
 									})
 									
 								}
 								// 操作失败
 								else {
 									uni.showToast({
-										title: _this.i18n.error.fixerror,
+										title: _this.i18n.error.optionerror,
 										icon: 'none'
 									});
 								}
-								
 							})
 							.catch(error => {
 								uni.showToast({
