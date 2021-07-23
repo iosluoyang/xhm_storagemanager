@@ -25,7 +25,7 @@
 					<text>{{ tabitem.name }}</text>
 					<template>
 						<text v-if="tabitem.status == -2" class="cuIcon cuIcon-likefill text-purple pos-static"></text>
-						<view v-else-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
+						<view v-else-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2 || tabitem.status == 3)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
 					</template>
 				</view>
 			</view>

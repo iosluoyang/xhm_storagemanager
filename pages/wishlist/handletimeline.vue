@@ -66,9 +66,8 @@
 					<view class="cu-form-group solid-bottom pos-relative">
 						
 						<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
+						<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;z-index: 9999;font-size: 24px;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
 						
-						<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
-					
 					</view>
 					
 					<!-- 图片上传 -->
@@ -888,5 +887,4 @@
 </script>
 
 <style lang="scss" scoped>
-
 </style>

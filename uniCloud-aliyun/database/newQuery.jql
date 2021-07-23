@@ -17,4 +17,4 @@ const dbCmd = db.command;
 
 // db.collection('wishlist').where(`agentUser != null`).update({agentFlag: 1})
 
-db.collection('wishlisttimeline').where(` wishId == '60f937f875311d00013aa2f9' && type == 91 `).remove()
+db.collection('wishlisttimeline').where(` wishId == '60fa2ad49c77390001e2621c' && type == 91 `).remove()

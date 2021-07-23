@@ -812,6 +812,8 @@
 									// 刷新数据
 									_this.loaddetaildata()
 									_this.loadtimelinedata()
+									// 更新列表数据
+									uni.$emit('updatewishlist')
 								})
 								.catch(error => {
 									uni.showToast({
