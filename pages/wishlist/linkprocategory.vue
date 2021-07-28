@@ -2,8 +2,8 @@
 	<view class="u-wrap">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-pink" isBack>
-			<block slot="content">{{i18n.nav.linkprocategory}}</block>
+		<cu-custom bgColor="bg-gradual-blue" isBack>
+			<block slot="content">{{i18n.nav.procategory}}</block>
 		</cu-custom>
 		
 		<!-- 分类容器区域 -->

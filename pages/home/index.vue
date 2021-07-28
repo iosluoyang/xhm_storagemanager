@@ -1,33 +1,6 @@
 <template>
 	<view class="home">
 		
-		<!-- 菜单列表 -->
-		<scroll-view scroll-y class="page">
-			
-			<!-- 头部背景图片 -->
-			<image src="/static/bgimgs/bg-sky.png" mode="widthFix" class="response"></image>
-			
-			<!-- 操作区域 -->
-			<view class="nav-list">
-				
-				<block v-for="(item,index) in elements" :key="index">
-					
-					<view class="jumpitem nav-li" 
-						:class="'bg-'+item.color"
-						:style="[{animation: 'show ' + ((index+1)*0.2+1) + 's 1'}]"
-						@tap.stop="clickitem(item)"
-					>
-						<view class="nav-title">{{item.title}}</view>
-						<view class="nav-name">{{item.name}}</view>
-						<text :class="'cuIcon-' + item.cuIcon"></text>
-					</view>
-					
-				</block>
-				
-			</view>
-			
-		</scroll-view>
-		
 		<!-- 当前用户头像区域 -->
 		<view class="userview">
 			
@@ -61,6 +34,33 @@
 		
 		<!-- 切换语言按钮 -->
 		<button class="languagebtn xl cu-btn radius bg-white text-black" @tap.stop="ifshowmodal=true">{{ `语言/Lang` }}</button>
+		
+		<!-- 菜单列表 -->
+		<scroll-view scroll-y class="page">
+			
+			<!-- 头部背景图片 -->
+			<image src="/static/bgimgs/bg-sky.png" mode="widthFix" class="response"></image>
+			
+			<!-- 操作区域 -->
+			<view class="nav-list">
+				
+				<block v-for="(item,index) in elements" :key="index">
+					
+					<!-- :style="[{animation: 'show ' + ((index+1)*0.2+1) + 's 1'}]" -->
+					<view class="jumpitem nav-li" 
+						:class="'bg-'+item.color"
+						@tap.stop="clickitem(item)"
+					>
+						<view class="nav-title">{{item.title}}</view>
+						<view class="nav-name">{{item.name}}</view>
+						<text :class="'cuIcon-' + item.cuIcon"></text>
+					</view>
+					
+				</block>
+				
+			</view>
+			
+		</scroll-view>
 		
 		<!-- 切换语言单选框弹出框 -->
 		<view class="cu-modal" :class="ifshowmodal?'show':''" @tap.stop="ifshowmodal=false">
@@ -102,6 +102,7 @@
 	var _this
 	
 	export default {
+		
 		data() {
 			return {
 				
@@ -440,6 +441,7 @@
 			
 			
 		}
+	
 	}
 </script>
 
@@ -565,12 +567,14 @@
 			position: fixed;
 			top: 180rpx;
 			left: 20rpx;
+			z-index: 200;
 		}
 		
 		.languagebtn{
 			position: fixed;
 			top: 200rpx;
 			right: 20rpx;
+			z-index: 200;
 		}
 		
 		

@@ -3,7 +3,7 @@
 		
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink" isBack>
-			<block slot="content">{{i18n.nav.goodsdetail}}</block>
+			<block slot="content">{{i18n.nav.prodetail}}</block>
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
@@ -12,11 +12,10 @@
 			<!-- 轮播图 -->
 			<!-- card-swiper screen-swiper square-dot round-dot -->
 			<swiper class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
-			 :autoplay="true" interval="3000" duration="300" @change="swiperChange">
+				indicator-color="#8799a3" indicator-active-color="#6739b6" 
+				:autoplay="true" interval="3000" duration="300" @change="swiperChange">
 				<swiper-item v-for="(item,index) in linkProduct.imgs.split(',')" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
-								indicator-color="#8799a3"
-								indicator-active-color="#0081ff"
 								@tap.stop="previewImgs(linkProduct.imgs, index)"
 				>
 				
@@ -30,7 +29,7 @@
 			<!-- 标题售价等区域 -->
 			<view class="titleheaderview margin-top padding-left-sm padding-right-sm">
 				<view class="title text-black text-bold text-xl" @longpress="$basejs.copytoclipboard(linkProduct.title)">{{ linkProduct.title }}</view>
-				<view class="text-price text-lg text-red margin-top-sm">{{ linkProduct.priceRange }}</view>
+				<view class="text-price text-red margin-top-sm u-font-40">{{ linkProduct.priceRange }}</view>
 			</view>
 			
 			<!-- tab视图 -->
@@ -56,22 +55,15 @@
 				<view v-show="TabCur == 1" class="1688attributeListView">
 					
 					<u-cell-item :arrow="false" hover-class="none">
-						<button slot="title" class="cu-btn round bg-grey" @click="translateattribute">
-							<text class=" margin-right-sm cuIcon cuIcon-communityfill text-white"></text>
-							{{ i18n.base.translatethis }}
+						<button slot="title" class="cu-btn round bg-blue" @click="translateattribute">
+							<text class="margin-right-sm cuIcon cuIcon-global text-white"></text>
+							{{ i18n.base.translate }}
 						</button>
 					</u-cell-item>
 					
 					<u-cell-item v-for="(item, index) in attributeList" :key="index"
 								:title="item.attributeName" :value="item.attributeVal"
-								:arrow="false" hover-class="none"
-					>
-					
-						<!-- #ifdef MP-WEIXIN -->
-						<!-- <text slot="icon" class=" margin-right cuIcon cuIcon-communityfill lg" @click="translatecelltitle(item)"></text>
-						<text slot="right-icon" class=" margin-left cuIcon cuIcon-communityfill lg" @click="translatecellvalue(item)"></text> -->
-						<!-- #endif -->
-					
+								:arrow="false" hover-class="none">
 					</u-cell-item>
 					
 					
@@ -164,7 +156,7 @@
 				TabCur: 0, // tab索引
 				tabArr: [], // tab数据
 				
-				tradeprotocolcontent: '', // 交易需知富文本内容 
+				tradeprotocolcontent: '', // 交易须知富文本内容 
 				
 				showSelector: false, // 是否显示多规格选择器
 				
@@ -212,10 +204,12 @@
 				this.type = option.type
 			}
 			
-			let searchText = uni.getStorageSync('linkprosearchtext')
-			if(searchText) { 
+			if(option.searchText) {
+				// let searchText = uni.getStorageSync('linkprosearchtext')
+				
+				let searchText = decodeURIComponent(option.searchText)
 				this.searchText = searchText
-				uni.removeStorageSync('linkprosearchtext')
+				// uni.removeStorageSync('linkprosearchtext')
 			}
 			
 			let thirdPid = option.thirdPid
@@ -454,15 +448,15 @@
 			setTabData() {
 				let tabs = [
 					{
-						title: "详情",
+						title: _this.i18n.wishlist.prodetail.detail,
 						key: "detail"
 					},
 					{
-						title: "属性参数",
+						title: _this.i18n.wishlist.prodetail.attribute,
 						key: "attribute"
 					},
 					{
-						title: "订购须知",
+						title: _this.i18n.wishlist.prodetail.tradeprotocol,
 						key: "tradeprotocol"
 					}
 				]

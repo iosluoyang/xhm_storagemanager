@@ -3,6 +3,17 @@ const zh = {
 	// 基础语言包
 	base: {
 		
+		paste: "粘贴",//newversion
+		search: "搜索",//newversion
+		searchhistory: "搜索记录",//newversion
+		cancel: "取消",//newversion
+		confirm: "确定",//newversion
+		translate: "翻译",//newversion
+		customerservice: "客服",//newversion
+		favor: "收藏",//newversion
+		buynow: "立即购买",//newversion
+		
+		
 		hello: "你好",
 		tip: "提示",
 		admin: "超级管理员",
@@ -18,11 +29,8 @@ const zh = {
 		refuse: "拒绝",
 		agree: "同意",
 		copy: "复制",
-		paste: "粘贴",
 		preview: "预览",
 		select: "请选择",
-		cancel: "取消",
-		confirm: "确定",
 		translatethis: "翻译此处",
 		print: "打印",
 		download: "下载",
@@ -30,10 +38,7 @@ const zh = {
 		here: "此处",
 		toaddmore: "去添加更多",
 		other: "其他",
-		search: "搜索",
-		customerservice: "客服",
 		favor: "收藏",
-		buynow: "立即购买",
 		scrollto: "滚动至",
 		success: "成功",
 		fail: "失败",
@@ -63,6 +68,12 @@ const zh = {
 	
 	// 导航栏主分类
 	nav: {
+		
+		wishlist: "心愿单",//newversion
+		mywishlist: "心愿清单",//newversion
+		procategory: "商品分类",//newversion
+		prodetail: "商品详情",//newversion
+		
 		homepage: "主页",
 		scan: "扫一扫",
 		goodstype: "分类管理",
@@ -82,13 +93,13 @@ const zh = {
 		persondetail: "个人资料",
 		logistic: "物流管理",
 		checklogistic: "物流查询",
-		wishlist: "心愿单",
-		linkprocategory: "商品分类",
 		linkprolist: "商品列表",
 	},
 	
 	// 提示
 	tip: {
+		
+		deleteconfirm: "是否要删除?",//newversion
 		
 		useinapp: "请在APP中使用该功能",
 		loadingstr: "加载中",
@@ -111,7 +122,6 @@ const zh = {
 		defaultusername: "默认用户",
 		exitconfirm: "确定退出吗?",
 		freezeconfirm: "确定冻结/解冻该用户吗？",
-		deleteconfirm: "确定删除吗?",
 		resetconfirm: "确定重置吗?",
 		optionconfirm: "确定进行该操作吗?",
 		searchpeople: "输入成员名称进行搜索",
@@ -370,8 +380,28 @@ const zh = {
 		
 	},
 	
-	// 心愿单相关
+	// 心愿单相关  newversion
 	wishlist: {
+		
+		// 心愿单首页页面index
+		index: {
+			searchplaceholder: "请粘贴1688链接进行搜索",//newversion
+		},
+		
+		// 我的心愿列表页面list
+		list: {
+			
+		},
+		
+		// 商品详情页面prodetail
+		prodetail: {
+			detail: "详情",//newversion
+			attribute: "属性",//newversion
+			tradeprotocol: "订购须知",//newversion
+		},
+		
+		
+		
 		
 		Ifound: "我发现",
 		Iwant: "我想要",

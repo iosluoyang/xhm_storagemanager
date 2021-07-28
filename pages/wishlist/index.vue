@@ -12,7 +12,7 @@
 			<!-- 搜索框 -->
 			<u-field class="round"
 					style="background-color: #F5F5F5;"
-					v-model="searchText" placeholder="请复制1688网址"
+					v-model="searchText" :placeholder="i18n.wishlist.index.searchplaceholder"
 					:border-bottom="false" label-width="0"
 					clear-size="45"
 			>
@@ -23,52 +23,50 @@
 			
 			<!-- 搜索按钮 -->
 			<view class="cu-bar btn-group margin-top">
-				<button class="cu-btn bg-gradual-pink shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
+				<button class="cu-btn bg-gradual-orange shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
 			</view>
 			
-			<!-- 搜索历史区域 -->
-			<view v-if="searchrecord1688" class="searchrecord bg-white">
+			<!-- 搜索记录区域 -->
+			<view v-if="searchrecord1688 && searchrecord1688.length > 0" class="searchrecord bg-white">
 				
-				<text class="cu-bar text-sm">搜索历史</text>
+				<text class="cu-bar text-sm">
+					{{ i18n.base.searchhistory }}
+					<text class="cuIcon cuIcon-deletefill margin-left-sm" @tap.stop="deleteAllRecord"></text>
+				</text>
+				
 				<view v-for="(item, index) in searchrecord1688" :key="index"
-						:style="[{animationDelay: (index + 1)*0.1 + 's'}]"
-						class="text-sm bg-gray round text-cut margin-bottom-sm padding-sm" 
-						:class="[toggleDelay?'animation-slide-bottom':'']"
-						@tap.stop=" searchText=item; startSearch() ">{{ item }}</view>
+						class="flex justify-between text-sm bg-gray round margin-bottom-sm padding-sm" 
+						@tap.stop=" searchText=item; startSearch() ">
+					
+					<text class="text-cut">{{ item }}</text>
+					
+					<text class="margin-left-sm cuIcon cuIcon-roundclose" @tap.stop="deleteRecord(index)"></text>
+					
+				</view>
 				
 			</view>
 			
 		</view>
 		
 		<!-- 功能区域 -->
-		<view class="grid col-2 padding-sm margin-top-sm">
+		<view class="grid col-2 padding-left padding-right margin-top-sm">
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-pink" @tap.stop="addwish">
-					<view class="text-lg cuIcon-magic text-white"></view>
-					<view class="margin-top-sm text-Abc">I want</view>
+				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-pink" @tap.stop="checkwishlist">
+					<view class="cuIcon-likefill text-white u-font-18"></view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlist }}</view>
 				</view>
 			</view>
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-green" @tap.stop="checkwishlist">
-					<view class="text-lg cuIcon-emojifill text-white"></view>
-					<view class="margin-top-sm text-Abc">Check Wishlist</view>
-				</view>
-			</view>
-			
-			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-blue" @tap.stop="gotoproductcategory">
-					<view class="text-lg cuIcon-emojifill text-white"></view>
-					<view class="margin-top-sm text-Abc">Product Category</view>
+				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-blue" @tap.stop="gotoproductcategory">
+					<view class="cuIcon-cascades text-white u-font-18"></view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.procategory }}</view>
 				</view>
 			</view>
 			
 		</view>
-		
-		<!-- 加载条 -->
-		<loading :loadModal="ifloading"></loading>
-		
+				
 	</view>
 </template>
 
@@ -76,13 +74,12 @@
 	
 	var _this
 	export default {
+		
 		data() {
 			return {
 				searchText: '', // 搜索文本
 				searchrecord1688: null, // 搜索历史
 				searchrecordmaxnum: 5, // 搜索历史最大数量
-				toggleDelay: false, // 搜索历史动画是否开启
-				ifloading: false, // 是否正在加载中
 			};
 		},
 		
@@ -95,9 +92,6 @@
 			// 加载搜索历史
 			let searchrecord1688 = uni.getStorageSync('searchrecord1688')
 			this.searchrecord1688 = searchrecord1688
-			setTimeout(function() {
-				_this.toggleDelay = true
-			}, 300);
 		},
 			
 		methods: {
@@ -125,20 +119,20 @@
 					return
 				}
 				else {
-					console.log(`当前搜索文本为:${this.searchText}`);
 					
 					// 存储搜索历史
 					this.addSearchRecord(this.searchText)
 					
 					// 将搜索文本存储在本地
-					uni.setStorageSync('linkprosearchtext',this.searchText)
+					// uni.setStorageSync('linkprosearchtext',this.searchText)
+					let searchText = encodeURIComponent(this.searchText)
+					
+					uni.navigateTo({
+						url: `/pages/wishlist/linkprodetail?type=searchText&searchText=${searchText}`
+					});
 					
 					// 清空搜索文本
 					this.searchText = ''
-					
-					uni.navigateTo({
-						url: `/pages/wishlist/linkprodetail?type=searchText`
-					});
 					
 				}
 				
@@ -152,18 +146,41 @@
 				if(searchrecord1688Arr.length >= this.searchrecordmaxnum) {
 					searchrecord1688Arr = searchrecord1688Arr.slice(0, this.searchrecordmaxnum - 1)
 				}
-				// 添加头部
-				searchrecord1688Arr.unshift(searchText)
-				// 存储搜索历史
+				// 如果不存在则添加至头部
+				if(!searchrecord1688Arr.find(item => (item == searchText))) {
+					searchrecord1688Arr.unshift(searchText)
+					// 存储搜索历史
+					uni.setStorageSync('searchrecord1688', searchrecord1688Arr)
+				}
+				
+			},
+			
+			// 删除搜索记录
+			deleteRecord(index) {
+				
+				this.searchrecord1688.splice(index, 1)
+				let searchrecord1688Arr = uni.getStorageSync('searchrecord1688') || []
+				searchrecord1688Arr.splice(index, 1)
 				uni.setStorageSync('searchrecord1688', searchrecord1688Arr)
 				
 			},
 			
-			// 新增心愿单
-			addwish() {
-				uni.navigateTo({
-					url: '/pages/wishlist/handlewish?type=add'
+			// 删除所有搜索记录
+			deleteAllRecord() {
+				
+				uni.showModal({
+					content: `${this.i18n.tip.deleteconfirm}`,
+					showCancel: true,
+					cancelText: this.i18n.base.cancel,
+					confirmText: this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							this.searchrecord1688 = null
+							uni.removeStorageSync('searchrecord1688')
+						}
+					}
 				});
+				
 			},
 			
 			// 查看心愿列表
@@ -184,6 +201,7 @@
 			
 		},
 	}
+
 </script>
 
 <style lang="scss" scoped>
