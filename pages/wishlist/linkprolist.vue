@@ -20,7 +20,7 @@
 		<!-- 筛选框 -->
 		<view class="filterview bg-gray fixed">
 			<u-dropdown active-color="#e03997">
-				<u-dropdown-item v-model="sortFlag" @change="changefilter" title="排序方式" :options="sortOption"></u-dropdown-item>
+				<u-dropdown-item v-model="sortFlag" @change="changefilter" :title="i18n.base.sorttype" :options="sortOption"></u-dropdown-item>
 			</u-dropdown>
 		</view>
 		
@@ -42,13 +42,13 @@
 						
 						<!-- 价格 -->
 						<view class="priceinfo margin-top-sm">
-							<text class="text-grey margin-right">{{`${i18n.goods.pricestr}`}}</text>
+							<text class="text-grey margin-right">{{`${i18n.wishlist.common.price}`}}</text>
 							<text class="text-red text-price text-lg">{{item.price}}</text>
 						</view>
 						
 						<!-- 销量信息 -->
 						<view class="sellnuminfo">
-							<text class="text-grey margin-right">{{`${i18n.goods.sellnum}`}}</text>
+							<text class="text-grey margin-right">{{`${i18n.wishlist.common.sellnum}`}}</text>
 							<text class="text-black text-df">{{item.sales || 0 }}</text>
 						</view>
 						

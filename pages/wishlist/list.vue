@@ -6,7 +6,7 @@
 			
 			<view slot="content" class="search-form round">
 				<text class="cuIcon-search"></text>
-				<input :adjust-position="false" type="text" :placeholder="i18n.tip.searchwish" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
+				<input :adjust-position="false" type="text" :placeholder="i18n.placeholder.wishlistlist.search" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
 			</view>
 			
 			<!-- 小程序中没有右侧搜索按钮 -->
@@ -128,62 +128,62 @@
 			
 			// 初始化选项卡数据
 			initTabArr() {
-				// 心愿单标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
+				// 心愿单标识 -1全部 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
 				let tabArr = [
 					{
-						name: this.i18n.base.all,
+						name: this.i18n.wishlist.common.achieveflagdata.all,
 						status: -1,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.ing,
+						name: this.i18n.wishlist.common.achieveflagdata.ing,
 						status: 0,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.waittoconfirm,
+						name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
 						status: 1,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.makeorder,
+						name: this.i18n.wishlist.common.achieveflagdata.makeorder,
 						status: 2,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.waitreceive,
+						name: this.i18n.wishlist.common.achieveflagdata.waitreceive,
 						status: 3,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.finish,
+						name: this.i18n.wishlist.common.achieveflagdata.finish,
 						status: 4,
 						loaded: false,
 						count: 0,
 						dataArr: []
 					},
 					{
-						name: this.i18n.wishlist.achieveFlag.closed,
+						name: this.i18n.wishlist.common.achieveflagdata.closed,
 						status: 99,
 						loaded: false,
 						count: 0
 					}
 				]
 				
-				// 如果是代理员则前面添加心愿池选项
+				// 如果是代理员则前面添加心愿池选项 -2未关联心愿
 				if(this.user.role == 'PRODUCT_AGENT') {
 					let unbindwishitem = {
-						name: this.i18n.wishlist.achieveFlag.unbindwish,
+						name: this.i18n.wishlist.common.achieveflagdata.unbindwish,
 						status: -2,
 						loaded: false,
 						count: 0,
@@ -317,7 +317,7 @@
 					}
 					
 					// 增加搜索关键字查询条件
-					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName))`
 					
 				}
 				// 普通供应商
@@ -334,13 +334,13 @@
 					}
 					
 					// 增加搜索关键字查询条件
-					wherestr += ` && ${new RegExp(searchText, 'i')}.test(productTitle)`
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName))`
 					
 				}
 				
 				db.collection('wishlist,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
+					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
 					.orderBy(`remindFlag desc, creatTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)

@@ -80,7 +80,7 @@
 		</view>
 		
 		<!-- 底部操作条 -->
-		<view v-if="linkProduct" class="bottomoptionview cu-bar bg-white tabbar border shop">
+		<view v-if="linkProduct" class="bottomoptionview cu-bar bg-white tabbar border shop" :style="{zIndex: 3}">
 			
 			<!-- 联系客服按钮 -->
 			<!-- #ifdef MP-WEIXIN -->
@@ -351,8 +351,9 @@
 							
 						}
 						else {
+							
 							uni.showModal({
-								content: `系统暂未找到该商品,是否手动添加心愿单`,
+								content: _this.i18n.tip.havenolinkprodata,
 								showCancel: true,
 								cancelText: _this.i18n.base.cancel,
 								confirmText: _this.i18n.base.confirm,
@@ -364,16 +365,12 @@
 									} 
 								}
 							});
-							// uni.showToast({
-							// 	title: res.result.message,
-							// 	icon: 'none'
-							// });
+							
 						}
 						
 					},
 					fail(error) {
 						_this.ifloading = false
-						console.log(`获取失败${JSON.stringify(error)}`);
 						console.log(error.message);
 						uni.showToast({
 							title: error.message,
@@ -546,7 +543,7 @@
 					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
 					console.log(newLinkProduct);
 					uni.setStorageSync('productInfo1688', newLinkProduct)
-					uni.navigateTo({
+					uni.redirectTo({
 						url: '/pages/wishlist/handlewish?type=add'
 					});
 				}

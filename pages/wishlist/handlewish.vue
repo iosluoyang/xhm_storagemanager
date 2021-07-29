@@ -12,15 +12,15 @@
 			<view class="cu-bar bg-white margin-top">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-green"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.Ifound }}</text>
+					<text class="text-xl text-bold">{{ i18n.wishlist.handlewish.ifound }}</text>
 				</view>
 			</view>
 			
 			<!-- 源网站链接 -->
 			<view class="cu-form-group">
 				<view class="title">
-					<text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text>
-					{{i18n.wishlist.sourcelink}}:
+					<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
+					{{i18n.wishlist.common.link}}:
 				</view>
 				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
 				<!-- #ifndef H5 -->
@@ -37,8 +37,8 @@
 			
 			<!-- 商品标题 -->
 			<view class="cu-form-group">
-				<view class="title">{{i18n.wishlist.producttitle}} :</view>
-				<textarea v-model="productTitle" :placeholder="i18n.error.lackgoodstitle"
+				<view class="title">{{i18n.wishlist.common.title}} :</view>
+				<textarea v-model="productTitle" :placeholder="i18n.placeholder.handlewish.title"
 				auto-height
 				:show-confirm-bar="false" 
 				disable-default-padding
@@ -48,14 +48,14 @@
 				<!-- #endif -->
 			</view>
 			
-			<!-- 源网站价格 -->
+			<!-- 商品价格 -->
 			<view class="cu-form-group">
 				
-				<view class="title">{{i18n.wishlist.sourceprice}} :</view>
+				<view class="title">{{i18n.wishlist.common.price}} :</view>
 				
 				<view class="content flex-sub flex align-center">
 					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="text" class="borderCDCDCD radius" v-model="sourcePrice" @input="typesourcePrice" />
+					<input type="text" :style="{color: 'red'}" v-model="sourcePrice" @input="typesourcePrice" />
 				</view>
 				
 				<!-- 源网站货币种类选择 -->
@@ -70,69 +70,70 @@
 			<view class="cu-bar bg-white margin-top">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-pink"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.Iwant }}</text>
+					<text class="text-xl text-bold">{{ i18n.wishlist.handlewish.iwant }}</text>
 				</view>
 			</view>
 			
-			<!-- 目标价格 暂时屏蔽 -->
-			<view v-if="false" class="cu-form-group">
+			<!-- 商品别名 -->
+			<view class="cu-form-group">
 				
-				<view class="title">{{i18n.wishlist.targetprice}} :</view>
+				<view class="title">{{i18n.wishlist.common.aliasname}} :</view>
 				
 				<view class="content flex-sub flex align-center">
-					<text :class="[ targetMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ targetMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="text" class="borderCDCDCD radius" v-model="targetPrice" />
+					<input class="text-right" type="text" v-model="aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" />
 				</view>
 				
-				<!-- 目标货币种类选择 -->
-				<view class="flex align-center margin-left">
-					<button class="cu-btn sm round margin-right" :class="targetMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="targetMoneyType='RMB'">¥</button>
-					<button class="cu-btn sm round " :class="targetMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="targetMoneyType='THB'">฿</button>
-				</view>
-				
+				<!-- 源网站货币种类选择 -->
+				<!-- <view class="flex align-center margin-left">
+					<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
+					<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
+				</view> -->
+			
 			</view>
 			
-			<!-- 目标数量 -->
+			<!-- 订购数量 -->
 			<template>
 				
 				<!-- 选择规格 -->
 				<view v-if="specPropInfo" class="cu-list menu">
 					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
-						<view class="title">{{i18n.tip.pleaseselectgoodspec}}</view>
+						
+						<view class="title">{{i18n.placeholder.handlewish.selectamount}}</view>
 						
 						<view class="action">
-							<text class="text-grey text-sm">{{ `共${selectShowTotalAmount.toString()}个` }}</text>
+							<text class="text-black text-bold text-df">{{ `${selectShowTotalAmount.toString()}` }}</text>
 						</view>
+						
 					</view>
 				</view>
 				
 				<!-- 输入规格数量 -->
 				<view v-else class="cu-form-group solid-bottom">
-					<view class="title">{{i18n.wishlist.targetamount}} :</view>
-					<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="targetAmount" />
+					<view class="title">{{i18n.wishlist.common.amount}} :</view>
+					<input class="text-right" maxlength="-1" disable-default-padding :cursor-spacing="100" v-model="targetAmount" :placeholder="i18n.placeholder.handlewish.amount" />
 				</view>
 				
 			</template>
 			
 			<!-- 紧急程度  暂时屏蔽 -->
 			<view v-if="false" class="cu-form-group solid-bottom">
-				<view class="title">{{i18n.wishlist.hurrylevel}}</view>
+				<view class="title">{{i18n.wishlist.common.hurrylevel}}</view>
 				<picker :range="hurrylevelDataArr" range-key="name" :value="hurryLevel - 1" @change="hurrylevelchange">
 					<view class="picker">
 						<text v-for="item in hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-						<text class="margin-left-sm">{{ hurrylevelDataArr[hurryLevel - 1].name }}</text>
+						<text class="margin-left-sm">{{ hurryLevel == 0 ? i18n.placeholder.handlewish.selecthurrylevel : hurrylevelDataArr[hurryLevel - 1].name }}</text>
 					</view>
 				</picker>
 			</view>
 			
 			<!-- 备注 -->
 			<view class="cu-form-group">
-				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.content" />
+				<textarea maxlength="-1" :auto-focus=" type == 'add' " :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.placeholder.handlewish.remark" />
 			</view>
 			
 			<!-- 图片上传 -->
 			<view class="cu-bar bg-white margin-top">
-				<view class="action">{{i18n.wishlist.uploadimg}}</view>
+				<view class="action">{{i18n.base.uploadimg}}</view>
 				<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
 			</view>
 			
@@ -159,8 +160,8 @@
 			<!-- 图片展示 -->
 			<view v-if="modalType == 'img'" class="contentview t_center">
 				
-				<image :src="modalImg" :style="{width: '100%'}" mode="aspectFit"></image>
-				<button class="cu-btn margin-top padding width50 round bg-gradual-pink" @click="showModal = false">{{ i18n.base.confirm }}</button>
+				<image :src="modalImg" :style="{width: '100%'}" mode="widthFix"></image>
+				<text class="cuIcon cuIcon-roundclosefill text-white margin-top" :style="{fontSize: '40px',display: 'inline-block'}" @click="showModal = false"></text>
 				
 			</view>
 			
@@ -213,6 +214,7 @@
 				type: 'add', // 页面状态 add新增 edit编辑 copy 拷贝
 				id: null, // 当前心愿详情id
 				productTitle: '', // 商品标题
+				aliasName: '', // 别名
 				sourceLink: '', // 源网站链接
 								
 				productSecretCode: '', // 商品编码口令
@@ -229,7 +231,7 @@
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
 				targetAmount: '', // 目标数量
 				specPropInfo: null, // 心愿规格数组
-				hurryLevel: 2, // 紧急程度 默认为2级 int 类型
+				hurryLevel: 0, // 紧急程度 默认为2级 int 类型
 				hurrylevelDataArr: [], // 紧急程度数据源数组
 				mainpiclimitnum: 9, // 图片上传的数量限制
 				imgArr: [], // 图片数组
@@ -272,7 +274,7 @@
 			}
 			
 			// 设置紧急程度数组
-			// this.setHurryLevelArr()
+			this.setHurryLevelArr()
 			
 		},
 		
@@ -284,13 +286,16 @@
 				let totalAmount = 0
 				if(this.specPropInfo) {
 					
-					this.specPropInfo.propValList.forEach(firstitem => {
-						firstitem.specStockList.forEach(seconditem => {
-							totalAmount += Number(seconditem.amount)
-						})
-					})
+					totalAmount = this.specPropInfo.propValList.reduce((firstamount,firstitem) => (
+						
+						firstitem.specStockList.reduce((secondamount, seconditem) => (
+							secondamount += Number(seconditem.amount)
+						), 0)
+					
+					), 0)
 					
 				}
+				
 				this.targetAmount = totalAmount
 				return totalAmount
 				
@@ -310,7 +315,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 				.get({
 					getOne:true
 				})
@@ -318,10 +323,9 @@
 					if(res.result.code == 0) {
 						// 获取数据成功
 						let info = res.result.data
-						console.log(`详情数据为`);
-						console.log(info);
 						
 						this.productTitle = info.productTitle // 商品标题
+						this.aliasName = info.aliasName // 商品别名
 						this.sourceLink = info.sourceLink // 源网站链接
 						// 解析商品链接
 						this.analysisUrl()
@@ -351,7 +355,6 @@
 					}
 				})
 				.catch(err => {
-					console.log(`获取数据失败-${err.message}`);
 					uni.showToast({
 						title: this.i18n.error.loaderror,
 						icon: 'none'
@@ -387,8 +390,6 @@
 			
 			// 选择完规格
 			specFinishSelect(selectSpecPropInfo) {
-				console.log(`当前选择完规格的数据为`);
-				console.log(selectSpecPropInfo);
 				this.specPropInfo = selectSpecPropInfo
 			},
 			
@@ -398,23 +399,23 @@
 				let hurrylevelDataArr = [
 					{
 						level: 1,
-						name: this.i18n.wishlist.hurryleveldata.level1
+						name: this.i18n.wishlist.common.hurryleveldata.level1
 					},
 					{
 						level: 2,
-						name: this.i18n.wishlist.hurryleveldata.level2
+						name: this.i18n.wishlist.common.hurryleveldata.level2
 					},
 					{
 						level: 3,
-						name: this.i18n.wishlist.hurryleveldata.level3
+						name: this.i18n.wishlist.common.hurryleveldata.level3
 					},
 					{
 						level: 4,
-						name: this.i18n.wishlist.hurryleveldata.level4
+						name: this.i18n.wishlist.common.hurryleveldata.level4
 					},
 					{
 						level: 5,
-						name: this.i18n.wishlist.hurryleveldata.level5
+						name: this.i18n.wishlist.common.hurryleveldata.level5
 					}
 				]
 				
@@ -493,7 +494,7 @@
 				
 			},
 			
-			// 输入源网站价格
+			// 输入价格
 			typesourcePrice(e) {
 				let sourcePrice = e.detail.value
 				this.sourcePrice = sourcePrice
@@ -507,21 +508,17 @@
 			
 			// 选择图片成功
 			fileselect(e) {
-				console.log(`图片选择成功`);
-				console.log(e);
 				this.imgArr.push.apply(this.imgArr, e.tempFiles)
 				// this.imgArr =  this.imgArr.concat(e.tempFiles)
-				console.log(this.imgArr);
+				console.log(`选择图片成功`);
 			},
 			
 			// 图片删除
 			filedelete(e) {
-				console.log(`图片删除成功`);
 				let deleteIndex = this.imgArr.findIndex(item => {
 					return e.tempFilePath == item.path
 				})
 				if(deleteIndex > -1) {
-					console.log(`删除了第${deleteIndex}张图片`);
 					this.imgArr.splice(deleteIndex,1)
 				}
 			},
@@ -577,7 +574,7 @@
 				// 检查是否有商品标题
 				if(!this.productTitle) {
 					uni.showToast({
-						title: this.i18n.error.lackgoodstitle,
+						title: this.i18n.placeholder.handlewish.title,
 						icon: 'none'
 					});
 					return false
@@ -585,7 +582,7 @@
 				// 检查是否有源价格
 				else if(!this.sourcePrice) {
 					uni.showToast({
-						title: this.i18n.wishlist.timeline.inputpriceerror,
+						title: this.i18n.placeholder.handlewish.price,
 						icon: 'none'
 					});
 					return false
@@ -593,7 +590,7 @@
 				// 检查是否有目标数量
 				else if(!this.targetAmount) {
 					uni.showToast({
-						title: this.i18n.wishlist.targetamount,
+						title: this.i18n.placeholder.handlewish.amount,
 						icon: 'none'
 					});
 					return false
@@ -601,7 +598,7 @@
 				// 检查是否有图片
 				else if(this.imgArr.length == 0) {
 					uni.showToast({
-						title: this.i18n.error.lackgoodsmainpic,
+						title: this.i18n.placeholder.handlewish.image,
 						icon: 'none'
 					});
 					return false
@@ -630,6 +627,7 @@
 				// 上传图片成功 开始上传所有数据
 				let info = {
 					productTitle: _this.productTitle, // 商品标题
+					aliasName: _this.aliasName, // 商品别名
 					sourceLink: _this.sourceLink, // 源网站链接
 					sourcePrice: _this.sourcePrice, // 源网站价格
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢

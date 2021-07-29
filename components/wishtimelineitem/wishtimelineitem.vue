@@ -14,7 +14,7 @@
 		<view v-else-if="timelineitem.type == 2" class="content bg-gradual-red shadow-blur">
 			<text class="cuIcon cuIcon-edit text-white margin-right"></text>
 			<uni-dateformat :date="timelineitem.creatTime" format="yyyy/MM/dd hh:mm:ss" />
-			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.wishdetail}` }}</text>
+			<text class="block margin-top-sm">{{ `"  ${timelineitem.creatUser ? timelineitem.creatUser.nickname : ''}  " ${i18n.base.edit}${i18n.wishlist.timeline.wishtitle}` }}</text>
 		</view>
 		
 		<!-- 心愿单关联代理人类型  type=90 -->
@@ -367,7 +367,7 @@
 								// 删除失败
 								console.log(error.message);
 								uni.showToast({
-									title: _this.i18n.error.deleteerror,
+									title: _this.i18n.error.optionerror,
 									icon: 'none'
 								});
 								
@@ -502,8 +502,8 @@
 			agentpurchasepro() {
 				let wishId = _this.wishInfo._id
 				uni.showModal({
-					title: '确认操作进货?',
-					content: '当您确认进货后,用户将会收到通知,请确认用户是否支付款项',
+					title: _this.i18n.tip.optionconfirm,
+					content: _this.i18n.tip.purchasetip,
 					showCancel: true,
 					cancelText: _this.i18n.base.cancel,
 					confirmText: _this.i18n.base.confirm,

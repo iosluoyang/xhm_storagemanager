@@ -494,22 +494,22 @@ export function getwishtagbgcolorclassname(achieveFlag) {
 export function getwishtagname(achieveFlag) {
 	switch (achieveFlag){
 		case 0:
-			return i18n.wishlist.achieveFlag.ing
+			return i18n.wishlist.common.achieveflagdata.ing
 			break;
 		case 1:
-			return i18n.wishlist.achieveFlag.waittoconfirm
+			return i18n.wishlist.common.achieveflagdata.waittoconfirm
 			break;
 		case 2:
-			return i18n.wishlist.achieveFlag.makeorder
+			return i18n.wishlist.common.achieveflagdata.makeorder
 			break;
 		case 3:
-			return i18n.wishlist.achieveFlag.waitreceive
+			return i18n.wishlist.common.achieveflagdata.waitreceive
 			break;
 		case 4:
-			return i18n.wishlist.achieveFlag.finish
+			return i18n.wishlist.common.achieveflagdata.finish
 			break;
 		case 99:
-			return i18n.wishlist.achieveFlag.closed
+			return i18n.wishlist.common.achieveflagdata.closed
 			break;
 		default:
 			return ''

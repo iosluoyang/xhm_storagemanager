@@ -2,7 +2,7 @@
 	<view class="handletimelineview content">
 		
 		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
-			<block slot="content">{{ i18n.wishlist.wishdetail }}</block>
+			<block slot="content">{{ i18n.nav.wishdetail }}</block>
 		</cu-custom>
 		
 		<!-- 心愿详情信息 -->
@@ -30,8 +30,6 @@
 							<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
 						</view>
 						
-						<!-- 复网站链接按钮 -->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round sm bg-gradual-green cuIcon-link margin-right-sm" @tap.stop="showpopup = true"></button>
 					</view>
 				</view>
 				
@@ -60,19 +58,19 @@
 			<form>
 				
 				<!-- 普通时间轴区域 -->
-				<template v-if=" type == 'addcomment' ">
+				<view v-show=" type == 'addcomment' ">
 					
 					<!-- 备注 -->
 					<view class="cu-form-group solid-bottom pos-relative">
 						
-						<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.wishlist.content" :focus="textareaHighScreen" />
+						<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.placeholder.handletimeline.typecontent" :focus="textareaHighScreen" />
 						<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;z-index: 9999;font-size: 24px;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
 						
 					</view>
 					
 					<!-- 图片上传 -->
 					<view class="cu-bar bg-white margin-top">
-						<view class="action">{{i18n.wishlist.uploadimg}}</view>
+						<view class="action">{{i18n.base.uploadimg}}</view>
 						<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
 					</view>
 					
@@ -83,21 +81,21 @@
 						</uni-file-picker>
 					</view>
 					
-				</template>
+				</view>
 				
 				<!-- 拓展信息区域 -->
-				<template v-if=" type == 'addext' ">
+				<view v-show=" type == 'addext' ">
 					
 					<!-- 装箱数量 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.boxContainerNum }}</view>
+						<view class="title">{{ i18n.wishlist.common.boxcontainernum }}</view>
 						<input class="borderbottom text-center" style="max-width: 50%;" type="number" cursor-spacing="60" v-model="productExt.boxContainerNum" />
 						<text>pcs/box</text>
 					</view>
 					
-					<!-- 箱体尺寸 -->
+					<!-- 单件尺寸 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.boxSize }}</view>
+						<view class="title">{{ i18n.wishlist.common.boxsize }}</view>
 						<view class="flex align-center justify-around" style="max-width: 60%;">
 							<input class="borderbottom text-center" cursor-spacing="60" type="digit" v-model="productExt.boxLength" @blur="finishtypesize" />cm * 
 							<input class="borderbottom text-center" cursor-spacing="60" type="digit" v-model="productExt.boxWidth" @blur="finishtypesize" />cm *
@@ -105,9 +103,9 @@
 						</view>
 					</view>
 					
-					<!-- 箱体体积 -->
+					<!-- 单件体积 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.boxVolume }}</view>
+						<view class="title">{{ i18n.wishlist.common.boxvolume }}</view>
 						<view class=""></view>
 						<input class="text-right" type="digit" v-model="productExt.boxVolume" />
 						<text>m³</text>
@@ -115,33 +113,33 @@
 					
 					<!-- 国内运费 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.domesticShippingFee }}</view>
-						<input class="text-right" type="number" v-model="productExt.domesticShippingFee" />
+						<view class="title">{{ i18n.wishlist.common.domesticshippingfee }}</view>
+						<input class="text-right" type="digit" v-model="productExt.domesticShippingFee" />
 						<text>RMB</text>
 					</view>
 					
 					<!-- 国际物流名称 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.internationalShippingName }}</view>
+						<view class="title">{{ i18n.wishlist.common.internationalshippingname }}</view>
 						<input class="text-right" type="text" v-model="productExt.internationalShippingName" />
 					</view>
 					
 					<!-- 国际物流编码 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.internationalShippingCode }}</view>
+						<view class="title">{{ i18n.wishlist.common.internationalshippingcode }}</view>
 						<input class="text-right" type="text" v-model="productExt.internationalShippingCode" />
 					</view>
 					
-				</template>
+				</view>
 				
 				<!-- 确认报价区域 -->
-				<template v-if=" type == 'confirmquotation' ">
+				<view v-show=" type == 'confirmquotation' ">
 					
 					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
 					
-					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.editquotation }}</button>
+					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.timeline.editquotation }}</button>
 					
-				</template>
+				</view>
 				
 			</form>
 			
@@ -154,61 +152,6 @@
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
-		
-		<!-- 底部弹出框 -->
-		<u-popup mode="bottom" v-model="showpopup" border-radius="16">
-			
-			<view v-if="productExt" class="cu-list menu text-left">
-				
-				<!-- 口令 -->
-				<view class="cu-item">
-					<view class="content padding-tb-sm" style="max-width: 70%;">
-						<view>
-							<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
-							{{ productExt.secretCode }}
-						</view>
-						<view class="text-gray text-sm">
-							<text class="cuIcon-infofill margin-right-xs"></text>
-							{{ i18n.wishlist.secretcodetip }}
-						</view>
-					</view>
-					
-					<!-- #ifndef H5 -->
-					<view class="action">
-						<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
-							<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
-						</button>
-					</view>
-					<!-- #endif -->
-					
-				</view>
-				
-				<!-- 纯链接 -->
-				<view class="cu-item">
-					<view class="content padding-tb-sm" style="max-width: 70%;">
-						<view>
-							<text class="cuIcon-link text-yellow margin-right-xs"></text>
-							{{ productExt.pureUrl }}
-						</view>
-						<view class="text-gray text-sm">
-							<text class="cuIcon-infofill margin-right-xs"></text>
-							{{ i18n.wishlist.pureurltip }}
-						</view>
-					</view>
-					
-					<!-- #ifndef H5 -->
-					<view class="action">
-						<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
-							<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
-						</button>
-					</view>
-					<!-- #endif -->
-					
-				</view>
-				
-			</view>
-			
-		</u-popup>
 		
 		<!-- 多规格弹框 -->
 		<wishSpecSelector	v-if="tmpWishInfo"
@@ -268,7 +211,6 @@
 				targetLink: '', // 目标网站链接
 				imgArr: [], // 图片数组
 				ifloading: false, // 是否正在加载中 
-				showpopup: false, // 是否显示弹框
 				showSelector: false, // 是否显示规格选择器
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
@@ -506,7 +448,7 @@
 				.catch(err => {
 					console.log(err.message);
 					uni.showToast({
-						title: _this.i18n.error.fixerror,
+						title: _this.i18n.error.optionerror,
 						icon: 'none'
 					});
 				})
@@ -535,7 +477,7 @@
 					// 检查是否有评论内容
 					if(!this.content) {
 						uni.showToast({
-							title: this.i18n.wishlist.timeline.timelinecontenterror,
+							title: this.i18n.placeholder.handletimeline.typecontent,
 							icon: 'none'
 						});
 						return false
@@ -551,7 +493,7 @@
 						&& !productExt.internationalShippingCode) 
 					{
 						uni.showToast({
-							title: this.i18n.error.lackcontent,
+							title: this.i18n.placeholder.handletimeline.typecontent,
 							icon: 'none'
 						});
 						return
@@ -567,7 +509,7 @@
 					// 上传规格数据前校验国内运费
 					if(!_this.productExt.domesticShippingFee) {
 						uni.showToast({
-							title: _this.i18n.tip.needdomesticshippingfee,
+							title: _this.i18n.placeholder.handletimeline.typedomesticshippingfee,
 							icon: 'none'
 						});
 						setTimeout(function() {
@@ -579,7 +521,7 @@
 					
 					// 进行二次确认提醒代理员
 					uni.showModal({
-						content: `当前报价单一经确认,即将推送给用户,是否确认提交?`,
+						content: _this.i18n.tip.confirmquotationtip,
 						showCancel: true,
 						cancelText: _this.i18n.base.cancel,
 						confirmText: _this.i18n.base.confirm,

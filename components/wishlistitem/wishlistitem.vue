@@ -16,6 +16,8 @@
 					<!-- 商品标题 -->
 					<view class="text-bold text-xl margin-top-sm text-cut width100">{{ownwishitem.productTitle}}</view>
 					
+					<view v-if="ownwishitem.aliasName" class="text-bold text-xl margin-top-sm text-cut width100">({{ownwishitem.aliasName}})</view>
+					
 					<!-- 商品价格和数量 -->
 					<view class="flex align-center justify-between width100">
 						
@@ -68,16 +70,12 @@
 									<text v-for="item in ownwishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
 								</text> -->
 								
-								<!-- 点赞浏览 -->
-								<!-- <text class="cuIcon-attentionfill margin-lr-xs"></text>{{ownwishitem.previewCount || 0}}
-								<text class="cuIcon-messagefill margin-lr-xs"></text> {{ownwishitem.commentCount || 0}} -->
-								<!-- <button class="cu-btn margin-lr-xs round bg-gradual-green" @tap.stop='buyagain'>{{ i18n.wishlist.buyagain }}</button> -->
 								
 								<!-- 再次购买或者代理心愿按钮 -->
 								<template>
 									
 									<!-- 再次购买按钮 商家角色且心愿为待收货或者已完成-->
-									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.buyagain }}</button>
+									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.common.buyagain }}</button>
 									
 									<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
 									<button v-if="user && user.role == 'PRODUCT_AGENT' && ownwishitem.agentFlag == 0" 
@@ -85,7 +83,7 @@
 											:class="[bindAnimation ? 'animation-scale-down' : '']"
 											@tap.stop="agentBindWish">
 										<text class="cuIcon cuIcon-servicefill margin-right-sm"></text>
-										{{ i18n.wishlist.agentbindwish }}
+										{{ i18n.wishlist.common.agentbindwish }}
 									</button>
 								
 								</template>
@@ -312,42 +310,35 @@
 						return
 					}
 					
-					/*
-					this.i18n.wishlist.achieveFlag.ing,
-					this.i18n.wishlist.achieveFlag.waittoconfirm,
-					this.i18n.wishlist.achieveFlag.makeorder,
-					this.i18n.wishlist.achieveFlag.finish,
-					this.i18n.wishlist.achieveFlag.closed
-					*/
 				   // 心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
 				   let optionList = [
 						{
-							name: this.i18n.wishlist.achieveFlag.ing,
+							name: this.i18n.wishlist.common.achieveflagdata.ing,
 							type: 'changetag',
 							achieveFlag: 0
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.waittoconfirm,
+							name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
 							type: 'changetag',
 							achieveFlag: 1
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.makeorder,
+							name: this.i18n.wishlist.common.achieveflagdata.makeorder,
 							type: 'changetag',
 							achieveFlag: 2
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.waitreceive,
+							name: this.i18n.wishlist.common.achieveflagdata.waitreceive,
 							type: 'changetag',
 							achieveFlag: 3
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.finish,
+							name: this.i18n.wishlist.common.achieveflagdata.finish,
 							type: 'changetag',
 							achieveFlag: 4
 						},
 						{
-							name: this.i18n.wishlist.achieveFlag.closed,
+							name: this.i18n.wishlist.common.achieveflagdata.closed,
 							type: 'changetag',
 							achieveFlag: 99
 						}

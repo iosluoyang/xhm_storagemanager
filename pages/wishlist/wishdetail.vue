@@ -2,8 +2,8 @@
 	<view class="pagecontent wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-gradual-pink' " isBack :title="i18n.nav.wishlist" isOwnBackPage @ownbackpage="ownBackPage">
-			<block slot="content">{{i18n.nav.wishlist}}</block>
+		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-white' " isBack isOwnBackPage @ownbackpage="ownBackPage">
+			<block slot="content">{{i18n.nav.wishdetail}}</block>
 		</cu-custom>
 		
 		<!-- 商品信息区域 -->
@@ -20,11 +20,6 @@
 						
 						<!-- 状态标签 -->
 						<view class="cu-tag pos-absolute radius" style="right: 0;top: 0;z-index: 10;" :class="wishbgcolor">{{ wishtagtext }}</view>
-						
-						<!-- 数量标签 -->
-						<!-- <view class="cu-tag pos-absolute radius bg-cyan" style="right: 0;bottom: 0;z-index: 10;">
-							{{ wishinfo.targetAmount }}
-						</view> -->
 						
 						<!-- 轮播图 -->
 						<swiper class="screen-swiper round-dot radius" indicator-dots circular
@@ -81,7 +76,7 @@
 							</text> -->
 							
 							<!-- 商品标题 -->
-							<text class="protitle">{{wishinfo.productTitle}}</text>
+							<text class="protitle">{{ `${wishinfo.productTitle}-(${wishinfo.aliasName})` }}</text>
 			
 						</view>
 						
@@ -121,6 +116,9 @@
 						<!-- 删除按钮 仅自己可删除 -->
 						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 						
+						<!-- 计算国际运费按钮 -->
+						<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
+						
 						<!-- 查看1688详情按钮 -->
 						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
 						
@@ -138,7 +136,7 @@
 					<view class="cu-bar bg-white solid-bottom">
 						<view class="action">
 							<text class="cuIcon-title text-orange"></text>
-							{{i18n.wishlist.wishproductspecdetail}}
+							{{i18n.wishlist.common.spec}}
 						</view>
 					</view>
 					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" sourcefrom="wishdetail" ></wishTableSpec>
@@ -197,46 +195,8 @@
 			
 		</view>
 		
-		<!-- 悬浮按钮 -->
-		<!-- <uni-fab v-if="wishinfo && user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id)"
-					:pattern="{ color: '#3c3e49', selectedColor: '#6739b6', buttonColor: '#6739b6' }"
-					horizontal='left' vertical="bottom" direction="horizontal" 
-					:popMenu=" user.role == 'PRODUCT_AGENT' && user._id == wishinfo.agentUser._id "
-					:content="fabContentArr"
-					@fabClick="">
-		</uni-fab> -->
-		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
-		
-		<!-- 输入弹出框 -->
-		<view class="cu-modal" :class="ifshowmodal?'show':''">
-			<view class="cu-dialog">
-				
-				<view class="cu-bar bg-white">
-					<template>
-						<view v-if="modalType=='refuse'" class="content">{{ i18n.wishlist.timeline.refusereason }}</view>
-						<view v-if="modalType=='share'" class="content">{{ i18n.wishlist.timeline.share }}</view>
-					</template>
-					
-				</view>
-				<view class="padding-sm text-left">
-					<template>
-						<textarea v-if="modalType == 'refuse'" style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.inputrefusereason" v-model="refuseReason"></textarea>
-						<textarea v-if="modalType == 'share'" style="height: 100rpx;" :focus="ifshowmodal" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
-					</template>
-					
-				</view>
-				<view class="cu-bar bg-white flex justify-around">
-					<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
-					<template>
-						<button v-if="modalType=='refuse'" class="cu-btn round bg-gradual-orange" @tap.stop="confirmrefuse">{{i18n.base.confirm}}</button>
-						<button v-if="modalType=='share'" open-type="share" class="cu-btn cuIcon-share round bg-gradual-orange">{{i18n.base.confirm}}</button>
-					</template>
-				</view>
-			
-			</view>
-		</view>
 		
 		<!-- 弹出视图 -->
 		<u-popup v-model="showpopup" :mode="popmode" width="80%" border-radius="16" :mask-close-able=" popuptype !== 'share' ">
@@ -254,7 +214,7 @@
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.secretcodetip }}
+								{{ i18n.wishlist.common.secretcodetip }}
 							</view>
 						</view>
 						
@@ -277,7 +237,7 @@
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.pureurltip }}
+								{{ i18n.wishlist.common.pureurltip }}
 							</view>
 						</view>
 						
@@ -301,13 +261,13 @@
 					
 					<!-- 装箱数量 -->
 					<view v-if="productExt.boxContainerNum" class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.boxContainerNum }}</view>
+						<view class="title">{{ i18n.wishlist.common.boxContainerNum }}</view>
 						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
 					</view>
 					
-					<!-- 装箱尺寸 -->
+					<!-- 单件尺寸 -->
 					<view v-if="productExt.boxLength" class="cu-form-group">
-						<view class="title">{{ `${i18n.wishlist.boxSize}(cm)` }}</view>
+						<view class="title">{{ `${i18n.wishlist.common.boxsize}(cm)` }}</view>
 						<view class="flex align-center justify-around" style="max-width: 60%;">
 							<input type="number" disabled v-model="productExt.boxLength">
 							<text class="padding-sm">x</text>
@@ -317,16 +277,22 @@
 						</view>
 					</view>
 					
-					<!-- 装箱体积 -->
+					<!-- 单件体积 -->
 					<view v-if="productExt.boxVolume" class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.boxVolume }}</view>
+						<view class="title">{{ `${i18n.wishlist.common.boxvolume}(m³)` }}</view>
 						<input class="text-right" type="number" disabled v-model="productExt.boxVolume">
+					</view>
+					
+					<!-- 箱子数量 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.boxamount }}</view>
+						<u-number-box :min="1" v-model="boxAmount"></u-number-box>
 					</view>
 					
 					<!-- 国际运费单价 -->
 					<view class="cu-form-group">
-						<view class="title">{{ '国际运费单价' }}</view>
-						<input class="text-right" type="number" placeholder="请输入国际运费单价" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
+						<view class="title">{{ i18n.wishlist.common.internationalshippingunitfee }}</view>
+						<input class="text-right" type="number" :placeholder="i18n.placeholder.wishdetail.typeinternationshippingfee" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
 					</view>
 					
 					<!-- 预估国际运费总价 -->
@@ -347,10 +313,10 @@
 				<view class="cu-dialog">
 					
 					<view class="cu-bar bg-white">
-						<view class="content">{{ i18n.wishlist.timeline.share }}</view>
+						<view class="content">{{ i18n.base.share }}</view>
 					</view>
 					<view class="padding-sm text-left">
-						<textarea auto-height disable-default-padding :focus="showpopup" :show-confirm-bar="false" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.wishlist.timeline.setshareparam" v-model="sharecontent"></textarea>
+						<textarea auto-height disable-default-padding :focus="showpopup" :show-confirm-bar="false" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.base.setshareparam" v-model="sharecontent"></textarea>
 					</view>
 					<view class="cu-bar bg-white flex justify-around">
 						<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
@@ -393,10 +359,10 @@
 				extArr: [], // 拓展信息展示数组
 				
 				interShippingSingleFeeStr: '', // 国际运费单价
+				boxAmount: 1, // 计算运费的箱子数量
 				
 				temptimelineitem: null, // 临时时间轴变量
 				refuseReason: '', // 拒绝原因
-				modalType: 'share', // 弹出框类型  refuse为拒绝类型  share为分享类型 默认为分享类型
 				sharecontent: '', // 分享内容文本
 				
 				fabContentArr: [], // 悬浮按钮展开菜单
@@ -452,8 +418,8 @@
 				
 				// 如果是体积和单价存在的情况下则正常返回 否则返回计算中
 				if(this.productExt && this.productExt.boxVolume && this.interShippingSingleFeeStr) {
-					let interShippingTotalFee = parseFloat(parseFloat(this.productExt.boxVolume) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
-					let interShippingTotalFeeStr = `${this.productExt.boxVolume}m³ * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
+					let interShippingTotalFee = parseFloat(parseFloat(this.productExt.boxVolume) * parseFloat(this.boxAmount) * parseFloat(this.interShippingSingleFeeStr)).toFixed(2)
+					let interShippingTotalFeeStr = `${this.productExt.boxVolume}m³ * ${this.boxAmount} * ${this.interShippingSingleFeeStr} /m³ ≈ ${interShippingTotalFee}`
 					return interShippingTotalFeeStr
 				}
 				else {
@@ -567,7 +533,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,aliasName,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 					.get({
 						getOne:true
 					})
@@ -876,7 +842,7 @@
 								.catch(err => {
 									// 删除失败
 									uni.showToast({
-										title: _this.i18n.error.deleteerror,
+										title: _this.i18n.error.optionerror,
 										icon: 'none'
 									});
 								})

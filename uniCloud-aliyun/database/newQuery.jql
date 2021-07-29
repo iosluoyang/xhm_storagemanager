@@ -10,11 +10,13 @@
 
 const db = uniCloud.database();
 const dbCmd = db.command;
-// 删除全部时间轴数据
+
 // db.collection('wishlisttimeline').remove()
 
 // db.collection('wishlist').remove()
 
 // db.collection('wishlist').where(`agentUser != null`).update({agentFlag: 1})
 
-db.collection('wishlisttimeline').where(` wishId == '60fa2ad49c77390001e2621c' && type == 91 `).remove()
+// db.collection('wishlisttimeline').where(` wishId == '60fa2ad49c77390001e2621c' && type == 91 `).remove()
+
+// db.collection('wishlist').where(`aliasName != ''`).get()

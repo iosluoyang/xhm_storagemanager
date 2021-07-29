@@ -41,6 +41,10 @@
 			"bsonType": "string",
 			"description": "商品标题"
 		},
+		"aliasName": {
+			"bsonType": "string",
+			"description": "商品别名"
+		},
 		"sourceLink": {
 			"description": "原网址链接"
 		},

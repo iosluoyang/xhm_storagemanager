@@ -126,10 +126,10 @@
 				
 				<!-- 总结区域表头 -->
 				<u-tr class="u-tr">
-					<u-th class="u-th">商品总价</u-th>
-					<u-th class="u-th">国内运费</u-th>
-					<u-th class="u-th">平台服务费</u-th>
-					<u-th class="u-th">应付总价</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.proprice }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.commissionfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.accrudeexpense }}</u-th>
 				</u-tr>
 				
 				<!-- 总结区域内容 -->
@@ -151,17 +151,17 @@
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
 					<u-td class="u-td">
-						<text class="text-bold text-white bg-gradual-blue">{{ i18n.wishlist.wishproductextdetail }}</text>
+						<text class="text-bold text-white bg-gradual-blue">{{ i18n.wishlist.common.params }}</text>
 					</u-td>
 				</u-tr>
 				
 				<!-- 总结区域表头 -->
 				<u-tr class="u-tr">
-					<u-th class="u-th">{{ i18n.wishlist.boxContainerNum }}(pcs/box)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.boxSize }}(cm)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.boxVolume }}(m³)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.internationalShippingName }}</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.internationalShippingCode }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxcontainernum }}(pcs/box)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxsize }}(cm)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxvolume }}(m³)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingcode }}</u-th>
 				</u-tr>
 				
 				<!-- 总结区域内容 -->
@@ -348,28 +348,28 @@
 				// 设置二级表头
 				let tableHeader2Arr = [
 					{
-						title: '索引',
+						title: _this.i18n.wishlist.common.tabledata.index,
 						key: 'index',
 						type: 'text',
 						width: '5%',
 						ifShow: false
 					},
 					{
-						title: '属性1',
+						title: _this.i18n.wishlist.common.tabledata.attribute1,
 						key: 'attributeName',
 						type: 'text',
 						width: '15%',
 						ifShow: true
 					},
 					{
-						title: '图片',
+						title: _this.i18n.wishlist.common.tabledata.image,
 						key: 'img',
 						type: 'img',
 						width: '20%',
 						ifShow: true
 					},
 					{
-						title: '规格',
+						title: _this.i18n.wishlist.common.tabledata.spec,
 						key: 'childList',
 						type: 'arr',
 						childList: tableHeader3Arr,
@@ -377,7 +377,7 @@
 						ifShow: true
 					},
 					{
-						title: '小计',
+						title: _this.i18n.wishlist.common.tabledata.summary,
 						key: 'totalAmount',
 						type: 'text',
 						width:'10%',
@@ -391,28 +391,28 @@
 				// 设置表头
 				let tableHeaderArr = [
 					{
-						title: '索引',
+						title: _this.i18n.wishlist.common.tabledata.index,
 						key: 'index',
 						type: 'text',
 						width: '10%',
 						ifShow: false
 					},
 					{
-						title: '图片',
+						title: _this.i18n.wishlist.common.tabledata.image,
 						key: 'mainImg',
 						type: 'img',
 						width: '10%',
 						ifShow: false
 					},
 					{
-						title: '名称',
+						title: _this.i18n.wishlist.common.tabledata.title,
 						key: 'productTitle',
 						type: 'text',
 						width: '15%',
 						ifShow: false
 					},
 					{
-						title: '规格',
+						title: _this.i18n.wishlist.common.tabledata.spec,
 						key: 'specList',
 						type: 'arr',
 						childList: tableHeader2Arr, // 规格对应的子列表
@@ -420,7 +420,7 @@
 						ifShow: true
 					},
 					{
-						title: '合计',
+						title: _this.i18n.wishlist.common.tabledata.totalsummary,
 						key: 'totalAmount',
 						type: 'text',
 						width: '10%',
