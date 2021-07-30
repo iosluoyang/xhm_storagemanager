@@ -23,9 +23,8 @@
 					
 					<view class="topview flex align-center">
 						
-						<!-- 昵称 -->
 						<view class="username text-white text-bold text-xl margin-right-sm">
-							{{ iflogin ? user && user.nickname ? user.nickname : i18n.tip.defaultusername : i18n.tip.pleaselogin }}
+							{{ iflogin ? user && user.nickname ? user.nickname : i18n.base.defaultusername : i18n.tip.pleaselogin }}
 						</view>
 						
 						<!-- 标签 -->
@@ -87,7 +86,11 @@
 </template>
 
 <script>
+	
+	 var _this
+	
 	export default {
+		
 		data() {
 			return {
 				panelList: [], // 个人中心任务面板内容
@@ -96,139 +99,109 @@
 		
 		onLoad() {
 			
-			// 设置个人中心任务面板内容
-			
-			// 店铺管理  仅商家管理员有
-			let storemanageitem = {
-				id: 'storemanage',
-				cuIcon: 'shopfill',
-				color: 'purple',
-				badge: 0,
-				name: this.i18n.me.panel.storemanage,
-				url: '/pages/me/storemanage'
-			}
-			
-			// 商品二维码
-			let qrcodeitem = {
-				id: 'qrcode',
-				cuIcon: 'qr_code',
-				color: 'blue',
-				badge: 0,
-				name: this.i18n.me.panel.proqrcode,
-				url: '/pages/me/buildqrcode'
-			}
-			
-			// 人员管理
-			let memberitem = {
-				id: 'member',
-				cuIcon: 'lightfill',
-				color: 'red',
-				badge: 0,
-				name: this.i18n.me.panel.managepeople,
-				url: '/pages/managepeople/index'
-			}
-			
-			// 工作时间
-			let workingtimeitem = {
-				id: 'workingtime',
-				cuIcon: 'timefill',
-				color: 'yellow',
-				badge: 0,
-				name: this.i18n.me.panel.workingtime,
-				url: '/pages/me/workingtime'
-			}
-			
-			// 公告管理
-			let noticeitem = {
-				id: 'notice',
-				cuIcon: 'notificationfill',
-				color: 'cyan',
-				badge: 0,
-				name: this.i18n.me.panel.notice,
-				url: '/pages/notice/index'
-			}
-			
-			// 重置密码
-			let resetpwditem = {
-				id: 'resetpwd',
-				cuIcon: 'settingsfill',
-				color: 'brown',
-				badge: 0,
-				name: this.i18n.nav.resetpwd,
-				url: '/pages/me/resetpwd'
-			}
-			
-			// 反馈
-			let feedbackitem = {
-				id: 'feedback',
-				cuIcon: 'markfill',
-				color: 'grey',
-				badge: 0,
-				name: this.i18n.me.panel.feedback
-			}
-			
-			// 订阅消息
-			let subscribeitem = {
-				id: 'subscribe',
-				cuIcon: 'timefill',
-				color: 'orange',
-				badge: 0,
-				name: '订阅消息'
-			}
-			
-			// 更多
-			let moreitem = {
-				id: 'more',
-				cuIcon: 'favorfill',
-				color: 'grey',
-				badge: 0,
-				name: this.i18n.me.panel.more
-			}
-			
-			
-			let panelList = []
-
-			// 登录状态下 根据身份获取不同的操作区域
-			if(this.iflogin) {
-				
-				// 如果有超级管理员角色
-				if(this.user.role == 'ADMIN') {
-					// 添加公告选项
-					panelList.push(noticeitem)
-				}
-				
-				// 如果有商家角色
-				if(this.user.role == 'MERCHANT_ADMIN') {
-					// 添加店铺管理选项
-					panelList.push(storemanageitem)
-				}
-				
-			}
-			
-			// 最后添加一个更多选项
-			panelList.push(moreitem)
-			
-			this.panelList = panelList
+			_this = this
 			
 			// 登录状态下 加载个人信息
 			if(this.iflogin) {
 				this.loadpersondetail()
 			}
 			
+			// 设置个人中心任务面板内容
+			this.setpaneldata()
+			
 		},
 		
 		methods: {
 			
+			// 设置面板信息
+			setpaneldata() {
+				
+				// 店铺管理  仅商家管理员有
+				let storemanageitem = {
+					id: 'storemanage',
+					cuIcon: 'shopfill',
+					color: 'purple',
+					badge: 0,
+					name: this.i18n.nav.storemanage,
+					url: '/pages/me/storemanage'
+				}
+				
+				// 公告管理
+				let noticeitem = {
+					id: 'notice',
+					cuIcon: 'notificationfill',
+					color: 'cyan',
+					badge: 0,
+					name: this.i18n.nav.notice,
+					url: '/pages/notice/index'
+				}
+				
+				// 重置密码
+				let resetpwditem = {
+					id: 'resetpwd',
+					cuIcon: 'settingsfill',
+					color: 'brown',
+					badge: 0,
+					name: this.i18n.nav.resetpwd,
+					url: '/pages/me/resetpwd'
+				}
+				
+				// 反馈
+				let feedbackitem = {
+					id: 'feedback',
+					cuIcon: 'markfill',
+					color: 'grey',
+					badge: 0,
+					name: this.i18n.me.panel.feedback
+				}
+				
+				// 更多
+				let moreitem = {
+					id: 'more',
+					cuIcon: 'favorfill',
+					color: 'grey',
+					badge: 0,
+					name: this.i18n.me.panel.more
+				}
+				
+				
+				let panelList = []
+				
+				// 登录状态下 根据身份获取不同的操作区域
+				if(this.iflogin) {
+					
+					// 如果有超级管理员角色
+					if(this.user.role == 'ADMIN') {
+						// 添加公告选项
+						panelList.push(noticeitem)
+					}
+					
+					// 如果有商家角色
+					if(this.user.role == 'MERCHANT_ADMIN') {
+						// 添加店铺管理选项
+						panelList.push(storemanageitem)
+					}
+					
+				}
+				
+				panelList = panelList.concat([noticeitem,resetpwditem,feedbackitem,])
+				
+				// 最后添加一个更多选项
+				panelList.push(moreitem)
+				
+				this.panelList = panelList
+				
+			},
+			
 			// 加载个人信息
 			loadpersondetail() {
-				const _this = this
 				
 				_this.$store.dispatch('user/getuserdetail').then(() => {
 					// 获取成功
 				}).catch(error => {
 					// 获取失败
 					uni.showToast({
-						title: _this.i18n.error.networkerror,
+						title: _this.i18n.error.loaderror,
 						icon: 'none'
 					});
 				})
@@ -255,32 +228,7 @@
 					});
 				}
 				else{
-					if(panelitem.id === 'subscribe') {
-						// 订阅消息
-						// 增加订阅模板消息的功能
-						let orderchangetmpId = 'dMO7jl3o1lgYqd3PrcgALPn_1s87YUdwZXcsorRpx5U'
-						uni.requestSubscribeMessage({
-							tmplIds: [orderchangetmpId],
-							success(res){
-								let errMsg = res.errMsg
-								console.log(errMsg);
-								if(errMsg == 'requestSubscribeMessage:ok') {
-									console.log(res[orderchangetmpId]);
-									// 用户同意订阅
-									if(res[orderchangetmpId] == 'accept') {
-										console.log(`用户订阅消息成功`);
-									} else if(res[orderchangetmpId] == 'reject') {
-										console.log(`用户拒绝订阅消息`);
-									}
-								}
-								else {
-									console.log(`订阅消息失败`);
-								}
-								
-							}
-						})
-						return
-					}
+					
 					uni.showToast({
 						title: this.i18n.base.needtowait,
 						icon: 'none'
@@ -292,7 +240,7 @@
 			exit() {
 				const _this = this
 				uni.showModal({
-					content: _this.i18n.tip.exitconfirm,
+					content: _this.i18n.tip.optionconfirm,
 					showCancel: true,
 					cancelText: _this.i18n.base.cancel,
 					confirmText: _this.i18n.base.confirm,
@@ -326,11 +274,13 @@
 				});
 				
 			},
+			
+			//
 		},
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page{
 		background: #ededed;
 	}
