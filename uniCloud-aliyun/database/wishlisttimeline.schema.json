@@ -74,7 +74,7 @@
 			"bsonType": "string",
 			"description": "货币种类 RMB 人民币 THB 泰铢",
 			"enum": ["RMB", "THB"],
-			"defaultValue":"RMB"
+			"defaultValue": "RMB"
 		}
 
 	}

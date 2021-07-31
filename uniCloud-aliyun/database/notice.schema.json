@@ -13,34 +13,34 @@
 			"description": "ID，系统自动生成"
 		},
 		"creatDate": {
-			"bsonType":"timestamp",
-			"forceDefaultValue":{
+			"bsonType": "timestamp",
+			"forceDefaultValue": {
 				"$env": "now"
 			}
 		},
 		"title": {
-			"bsonType":"string",
-			"description":"公告标题",
-			"defaultValue":""
+			"bsonType": "string",
+			"description": "公告标题",
+			"defaultValue": ""
 		},
 		"content": {
-			"bsonType":"string",
-			"description":"公告文字内容",
-			"defaultValue":""
+			"bsonType": "string",
+			"description": "公告文字内容",
+			"defaultValue": ""
 		},
 		"image": {
-			"bsonType":"string",
-			"description":"公告图片",
-			"defaultValue":""
+			"bsonType": "string",
+			"description": "公告图片",
+			"defaultValue": ""
 		},
 		"linktype": {
-			"bsonType":"int",
-			"description":"公告跳转的类型 0 暂无跳转 1普通url 2心愿详情 ...",
-			"defaultValue":0
+			"bsonType": "int",
+			"description": "公告跳转的类型 0 暂无跳转 1普通url 2心愿详情 ...",
+			"defaultValue": 0
 		},
 		"linkId": {
-			"bsonType":"string",
-			"description":"链接跳转的id"
+			"bsonType": "string",
+			"description": "链接跳转的id"
 		}
 	}
 }
