@@ -9,6 +9,7 @@ const zh = {
 		searchhistory: "搜索记录",
 		cancel: "取消",
 		confirm: "确定",
+		save: "保存",
 		translate: "文/A",
 		customerservice: "客服",
 		favor: "收藏",
@@ -21,6 +22,14 @@ const zh = {
 		sorttype: "排序方式",
 		defaultusername: "默认用户",
 		needtowait: "敬请期待",
+		login: "登录",
+		register: "注册",
+		havequestion: "遇到问题",
+		tip: "提示",
+		unknown: "未知",
+		male: "男",
+		female: "女",
+		add: "添加",
 
 	},
 	
@@ -36,12 +45,18 @@ const zh = {
 		storemanage: "店铺管理",
 		notice: "公告",
 		resetpwd: "重置密码",
-		
 
 	},
 	
-	// 默认文本 newversion
+	// 占位文本
 	placeholder: {
+		
+		login: {
+			account: "请输入账号",
+			password: "请输入密码",
+			passwordagain: "请再次输入密码",
+			selectrole: "选择角色",
+		},
 		
 		handlewish: {
 			link: "请拷贝1688链接",
@@ -55,7 +70,7 @@ const zh = {
 		},
 		
 		wishlistlist: {
-			search: "请搜索商品别名或标题"
+			search: "请搜索商品别名或标题",
 		},
 		
 		wishdetail: {
@@ -65,6 +80,13 @@ const zh = {
 		handletimeline: {
 			typecontent: "请输入内容",
 			typedomesticshippingfee: "请完善国内运费",
+		},
+		
+		me: {
+			notice: {
+				title: "请输入公告标题",
+				content: "请输入公告内容,发布后所有成员均可见",
+			}
 		}
 		
 		
@@ -73,21 +95,19 @@ const zh = {
 	// 正常提示
 	tip: {
 		
+		loadingstr: "加载中…",
 		deleteconfirm: "是否要删除?",
 		exitconfirm: "是否退出?",
+		optionconfirm: "是否进行操作?",
 		addsuccess: "添加成功",
 		copysuccess: "复制成功",
 		fixsuccess: "修改成功",
 		deletesuccess: "删除成功",
-		optionsuccess: "操作成功",//newversioin
+		optionsuccess: "操作成功",
 		subsribewxmsg: "点击订阅消息,选择总是保持以上选择,即可在状态发生变更时及时通知到您",
-		havenolinkprodata: "暂时没有找到该商品,是否手动添加?",
-		optionconfirm: "是否进行操作?",
-		secretcodetip: "复制口令可在应用内自动识别(一定时间内会失效)",
-		pureurltip: "如口令无法识别,请复制该链接用自带浏览器打开",
-		purchasetip: "当您确认进货后,用户将会收到通知,请确认用户是否支付款项",
-		confirmquotationtip: "当前报价单一经确认,即将推送给用户,是否确认提交?",
 		pleaselogin: "请先登录",
+		loginsuccess: "登录成功",
+		logoutsuccess: "登出成功",
 		
 	},
 	
@@ -100,102 +120,23 @@ const zh = {
 		optionerror: "操作失败",
 		uploaderror: "上传失败",
 		
-		// networkerror: "网络错误",
-		// configerror: "获取配置文件失败",
-		// picuploaderror: "上传图片失败",
-		// chooseimgovererror: "图片数量超出限制",
-		// scanerror: "扫描失败,暂未获取有效内容",
-		// qrcodewithoutgoods: "该二维码未关联商品",
-		// adderror: "添加失败",
-		// deleteerror: "删除失败",
-		// reseterror: "重试失败",
-		// account: "请输入正确的账号",
-		// password: "请输入正确的密码",
-		// oldpwd: "请输入正确的原始密码",
-		// newpwd: "请输入正确的新密码",
-		// newpwdagain: "两次密码输入不一致",
-		// loginerror: "登录失败",
-		// logouterror: "登出失败",
-		// getmemberlisterror: "获取成员列表失败",
-		// deleteusererror: "删除人员失败",
-		// getgoodstypeerror: "获取分类失败",
-		// lacktypenameerror: "缺少分类名称",
-		// lacktyperemarkerror: "缺少分类描述",
-		// lackspec: "缺少商品规格参数",
-		// getspecserror: "获取商品规格失败",
-		// lackgoodsmainpic: "请上传商品图片",
-		// lackgoodstitle: "请输入商品标题",
-		// lackgoodstype: "请选择商品分类",
-		// lackgoodsdes: "请输入商品描述",
-		// lackemail: "您还未补充邮箱,是否前往补充邮箱地址?",
-		// overtimeerror: "开始时间不能晚于结束时间",
-		// lackcontent: "缺少内容",
-		
 	},
 	
 	// 业务相关
 	
-	// 登录页面
 	login: {
-		// account: "账号",
-		// password: "密码",
-		// passwordconfirm: "确认密码",
-		// invitecode: "邀请码",
-		// loginstr: "登录",
-		// registerstr: "注册",
-		// havequestion: "遇到问题",
-		// forgetpwd: "忘记密码",
-		// selectrole: "选择身份",
-	},
-	
-	// 首页
-	homepage: {
-		title: "主页",
-	},
-	
-	
-	// 我的
-	me: {
 		
-		appversion: "版本号",
-		exit: "退出登录",
-		
-		panel: {
-			feedback: "反馈",
-			more: "更多",
-		},
-		
-		// 修改密码
-		resetpwd: {
-			oldpwd: "旧密码",
-			newpwd: "请输入新密码",
-			newpwdagain: "确认新密码"
-		},
-		
-		persondetail: {
-			avatar: "头像",
-			nickname: "昵称",
-			realname: "真实姓名",
-			account: "账号",
-			phone: "手机号",
-			email: "邮箱",
-			gender: "性别",
-			usertype: "用户身份",
-			signature: "个人简介",
-		},
-		
-		notice: {
-			publishnotice: "发布公告",
-			editnotice: "编辑公告",
-			title: "标题",
-			content: "内容",
-			titleplaceholder: "请输入公告标题",
-			contentplaceholder: "请输入公告内容,发布后所有成员均可见"
-		}
+		typeoldpwd: "请输入原密码",
+		typenewpwd: "请输入新密码",
+		typenewagainpwd: "两次密码不一致",
+		registerandlogin: "注册成功,正在为您自动登录",
+		accountunbindwx:"当前登录账号未绑定微信,是否进行绑定?\n绑定后可直接使用微信登录",
+		bindwxalready: "当前账号已经绑定过微信,继续操作将解绑原微信,绑定当前微信账号",
+		wxunbindaccount: "该微信暂时还未绑定任何账号,请先使用账号登录后绑定该微信即可",
 		
 	},
 	
-	// 心愿单相关  newversion
+	// 心愿单相关
 	wishlist: {
 		
 		common: {
@@ -223,6 +164,9 @@ const zh = {
 			internationalshippingfee: "国际物流费用",
 			internationalshippingname: "国际物流名称",
 			internationalshippingcode: "国际物流编码",
+			secretcodetip: "复制口令可在应用内自动识别(一定时间内会失效)",
+			pureurltip: "如口令无法识别,请复制该链接用自带浏览器打开",
+			lackspectip: "缺少规格",
 			timeline: "时间轴",
 			hurryleveldata: {
 				level1: "一级(无限制)",
@@ -271,6 +215,7 @@ const zh = {
 			detail: "详情",
 			attribute: "属性",
 			tradeprotocol: "订购须知",
+			havenolinkprodata: "暂时没有找到该商品,是否手动添加?",
 		},
 		
 		// 处理心愿单页面handlewish
@@ -300,6 +245,60 @@ const zh = {
 			addext: "补充信息",
 			confirmquotation: "确认报价",
 			editquotation: "编辑报价单",
+			
+			purchasetip: "当您确认进货后,用户将会收到通知,请确认用户是否支付款项",
+			confirmquotationtip: "当前报价单一经确认,即将推送给用户,是否确认提交?",
+			wishagentbindtip: "您好,我是您的商品代理人,从现在开始为您提供服务",
+			wishupdatequotationtip: "已经为您提供最新报价,请滑动到上方查看详细报价单,点击确认后代理员将开始为您订货",
+			wishconfirmquotationagenttip: "客户已经确认报价单,请尽快下单进货",
+			wishconfirmquotationcustomertip: "您已确认报价单, 代理员将尽快为您下单进货,请耐心等待",
+			agreequotation: "已同意该报价单",
+			refusequotation: "拒绝了该报价单",
+			importpro: "下单进货",
+			wishrefusequotationagenttip: "客户拒绝了该报价,请重新发起报价单",
+			wishrefusequotationcustomertip: "您已拒绝报价单, 代理员将尽快重新为您报价,请耐心等待",
+			wishfinishpurchase: "代理员已下单,请留意货物到达状态",
+			
+			
+		}
+		
+	},
+	
+	// 我的
+	me: {
+		
+		appversion: "版本号",
+		exit: "退出登录",
+		
+		panel: {
+			feedback: "反馈",
+			more: "更多",
+		},
+		
+		resetpwd: {
+			oldpwd: "旧密码",
+			newpwd: "新密码",
+			newpwdagain: "确认新密码"
+		},
+		
+		persondetail: {
+			avatar: "头像",
+			nickname: "昵称",
+			realname: "真实姓名",
+			account: "账号",
+			phone: "手机号",
+			email: "邮箱",
+			gender: "性别",
+			usertype: "用户身份",
+			wechat: "微信",
+			signature: "个人简介",
+		},
+		
+		notice: {
+			publishnotice: "发布公告",
+			editnotice: "编辑公告",
+			title: "标题",
+			content: "内容",
 		}
 		
 	},

@@ -41,6 +41,7 @@
 
 <script>
 	import md5 from 'js-md5'
+	var _this
 	
 	export default {
 		data() {
@@ -58,11 +59,14 @@
 			};
 		},
 		
+		onLoad() {
+			_this = this
+		},
+		
 		methods: {
 			
 			// 开始按钮动画
 			startbtnanimation() {
-				const _this = this
 				this.btnanimationname = 'shake'
 				setTimeout(function() {
 					_this.btnanimationname = null
@@ -74,25 +78,25 @@
 				
 				// 校验数据
 				
-				if(this.oldpwd === '') {
+				if(this.oldpwd == '') {
 					uni.showToast({
-						title: this.i18n.error.oldpwd,
+						title: this.i18n.login.typeoldpwd,
 						icon: 'none'
 					});
 					this.startbtnanimation() // 开始按钮动画
 					return
 				}
-				else if(this.newpwd === '') {
+				else if(this.newpwd == '') {
 					uni.showToast({
-						title: this.i18n.error.newpwd,
+						title: this.i18n.login.typenewpwd,
 						icon: 'none'
 					});
 					this.startbtnanimation() // 开始按钮动画
 					return
 				}
-				else if(this.newpwdagain === '' || this.newpwd !== this.newpwdagain) {
+				else if(this.newpwdagain == '' || this.newpwd !== this.newpwdagain) {
 					uni.showToast({
-						title: this.i18n.error.newpwdagain,
+						title: this.i18n.login.typenewagainpwd,
 						icon: 'none'
 					});
 					this.startbtnanimation() // 开始按钮动画
@@ -100,11 +104,67 @@
 				}
 				
 				// 校验完毕 开始重置
+			
+				uniCloud.callFunction({
+					name: 'user',
+					data: {
+						type: 'changepwd',
+						info: {
+							oldPassword: _this.oldpwd,
+							newPassword: _this.newpwd
+						}
+					}
+				})
+				.then(response => {
+					
+					console.log(response);
+					// 更改成功
+					if(response.result.code == 0) {
+						
+						// 重置成功
+						uni.showToast({
+							title: _this.i18n.tip.fixsuccess,
+							icon: 'none',
+							duration: 1500
+						});
+						
+						setTimeout(function() {
+							// 退出之后跳重置到登录页
+							_this.$store.dispatch('user/resettoken').then(() => {
+								// 退出成功
+								uni.reLaunch({
+									url: '/pages/home/index'
+								})
+							})
+						}, 1500);
+						
+					}
+					else {
+						// 重置失败
+						uni.showToast({
+							title: this.i18n.error.optionerror,
+							icon: 'none'
+						});
+						_this.startbtnanimation() // 开始按钮动画
+					}
+					
+				}).catch(error => {
+					console.log(error.message);
+					// 重置失败
+					uni.showToast({
+						title: this.i18n.error.optionerror,
+						icon: 'none'
+					});
+					_this.startbtnanimation() // 开始按钮动画
+				})
+				
+				return
+				
 				let data = {
-					oldPwd: md5(this.oldpwd),
-					newPwd: md5(this.newpwd)
+					oldPassword: this.oldpwd,
+					newPassword: this.newpwd
 				}
-				const _this = this
+				
 				this.$api.userapi.modifypwd(data).then(response => {
 					// 重置成功
 					uni.showToast({
@@ -126,7 +186,7 @@
 				}).catch(error => {
 					// 重置失败
 					uni.showToast({
-						title: this.i18n.error.fixerror,
+						title: this.i18n.error.optionerror,
 						icon: 'none'
 					});
 					this.startbtnanimation() // 开始按钮动画

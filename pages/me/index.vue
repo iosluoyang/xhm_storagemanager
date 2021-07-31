@@ -48,13 +48,20 @@
 		
 		<!-- 任务面板 -->
 		<view class="cu-list grid col-3 no-border">
-			<view class="cu-item" :class="['text-' + item.color]" v-for="(item,index) in panelList" :key="index" @tap.stop="clickpanel(item)">
+			<view class="cu-item pos-relative" :class="['text-' + item.color]" v-for="(item,index) in panelList" :key="index" @tap="clickpanel(item)">
+				
 				<view :class="['cuIcon-' + item.cuIcon,'text-' + item.color]">
 					<view class="cu-tag badge" v-if="item.badge!=0">
 						<block v-if="item.badge!=1">{{item.badge>99?'99+':item.badge}}</block>
 					</view>
 				</view>
 				<text>{{item.name}}</text>
+				
+				<!-- #ifdef MP-WEIXIN -->
+				<!-- 反馈按钮 -->
+				<button v-if="item.id == 'feedback'" class="opentypebtn pos-absolute" :style="{top: 0, bottom: 0, right: 0, left: 0, background: 'transparent'}" open-type="feedback"></button>
+				<!-- #endif -->
+				
 			</view>
 		</view>
 		
@@ -87,7 +94,7 @@
 
 <script>
 	
-	 var _this
+	var _this
 	
 	export default {
 		
@@ -123,7 +130,7 @@
 					color: 'purple',
 					badge: 0,
 					name: this.i18n.nav.storemanage,
-					url: '/pages/me/storemanage'
+					// url: '/pages/me/storemanage'
 				}
 				
 				// 公告管理
@@ -184,10 +191,12 @@
 					
 				}
 				
-				panelList = panelList.concat([noticeitem,resetpwditem,feedbackitem,])
+				panelList.push(resetpwditem) // 重置密码
 				
-				// 最后添加一个更多选项
-				panelList.push(moreitem)
+				// #ifdef MP-WEIXIN
+				panelList.push(feedbackitem) // 反馈
+				// #endif
+				panelList.push(moreitem) // 更多
 				
 				this.panelList = panelList
 				
@@ -227,7 +236,7 @@
 						url: panelitem.url
 					});
 				}
-				else{
+				else if(panelitem.id !== 'feedback'){
 					
 					uni.showToast({
 						title: this.i18n.base.needtowait,
@@ -247,7 +256,7 @@
 					success: res => {
 						if(res.confirm) {
 							// 确定退出
-							this.$store.dispatch('user/logout').then(() => {
+							_this.$store.dispatch('user/logout').then(() => {
 								
 								// 重置到首页
 								uni.reLaunch({
@@ -257,17 +266,40 @@
 								setTimeout(function() {
 									// 登出成功
 									uni.showToast({
-										title: `登出成功`,
+										title:  _this.i18n.tip.logoutsuccess,
 										icon: 'none',
 									});
 								}, 300);
 								
 							}).catch(error => {
 								// 登出失败
-								uni.showToast({
-									title: _this.i18n.error.logouterror,
-									icon: 'none'
-								});
+								
+								// token不合法
+								if(error.code == 30202) {
+									_this.$store.dispatch('user/resettoken').then(() => {
+										
+										// 重置到首页
+										uni.reLaunch({
+											url: '/pages/home/index'
+										})
+										
+										setTimeout(function() {
+											// 登出成功
+											uni.showToast({
+												title:  _this.i18n.tip.logoutsuccess,
+												icon: 'none',
+											});
+										}, 300);
+										
+									})
+								}
+								else {
+									uni.showToast({
+										title: _this.i18n.error.loaderror,
+										icon: 'none'
+									});
+								}
+								
 							})
 						}
 					}
@@ -281,7 +313,17 @@
 </script>
 
 <style lang="scss" scoped>
-	page{
+	.me{
 		background: #ededed;
+		height: 100vh;
+		
+		.cu-list{
+			.opentypebtn{
+				&::after{
+					border: none !important;
+				}
+			}
+		}
+		
 	}
 </style>

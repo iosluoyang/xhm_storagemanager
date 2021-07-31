@@ -113,7 +113,7 @@
 				
 				if(!this.searchText) {
 					uni.showToast({
-						title: this.i18n.tip.needtoinputcontent,
+						title: this.i18n.wishlist.index.searchplaceholder,
 						icon: 'none'
 					});
 					return

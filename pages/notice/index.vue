@@ -9,20 +9,30 @@
 		<!-- 公告栏内容区域 -->
 		<mescroll-body ref="mescrollRef" @init="mescrollInit" @down="downCallback" @up="getnoticelist">
 			
-			<view class="noticelistview">
+			<view class="noticelistview padding-sm">
 				
-				<view class="eachnoticeview margin radius" v-for="(noticeinfo, index) in datalist" :key="index" :class="[ bgcolorlist[index%(bgcolorlist.length)] ]">
-					
-					<view class="title flex align-center justify-between padding margin-left margin-right" style="border-bottom: #FFFFFF solid 1rpx;">
-						<uni-dateformat :date="noticeinfo.createDate" />
-						<view class="btnview flex align-center text-xl">
-							<text class="cuIcon cuIcon-deletefill text-white margin-right" @tap.stop="deletenotice(index)"></text>
-							<text class="cuIcon cuIcon-edit text-white" @tap.stop="editnotice(noticeinfo)"></text>
+				<view class="cu-card article margin-bottom-sm radius" v-for="(noticeinfo, index) in datalist" :key="index" :class="[ bgcolorlist[index%(bgcolorlist.length)] ]">
+					<view class="cu-item shadow">
+						
+						<view class="title flex justify-between align-center">
+							<view class="text-cut flex-sub">{{ noticeinfo.title }}</view>
+							<view class="timeview flex-sub text-black text-sm text-right">
+								<uni-dateformat :date="noticeinfo.creatDate" />
+							</view>
 						</view>
 						
-					</view>
-					<view class="noticecontent padding-xl">
-						{{ noticeinfo.content }}
+						<view class="content">
+							<image v-if="noticeinfo.image" :src="noticeinfo.image.split(',')[0]" mode="aspectFill" @tap.stop="previewimage(noticeinfo.image)"></image>
+							<view class="desc">
+								<view class="text-content margin-bottom-sm">{{ noticeinfo.content }}</view>
+							</view>
+						</view>
+						
+						<view class="flex align-center justify-between padding-left padding-right margin-top-sm">
+							<button class="cu-btn cuIcon cuIcon-edit bg-grey round" @tap.stop="editnotice(index)"></button>
+							<button class="cu-btn cuIcon cuIcon-deletefill bg-gradual-red round" @tap.stop="deletenotice(index)"></button>
+						</view>
+						
 					</view>
 				</view>
 				
@@ -84,6 +94,7 @@
 				
 				const db = uniCloud.database();
 				db.collection('notice')
+					.orderBy('creatDate desc')
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
 					.get()
@@ -116,6 +127,16 @@
 				
 			},
 			
+			// 查看大图
+			previewimage(images) {
+				
+				uni.previewImage({
+					urls: images.split(','),
+					current: 0
+				})
+				
+			},
+			
 			// 添加公告
 			addnotice() {
 				uni.navigateTo({
@@ -134,24 +155,23 @@
 						if(res.confirm) {
 							// 开始删除
 							let noticeinfo = _this.datalist[index]
-							
-							// 替换为云函数
-							uniCloud.callFunction({
-								name: 'notification',
-								data: {
-									type: 'delete',
-									info: {
-										_id: noticeinfo._id
-									}
+							const db = uniCloud.database();
+							db.collection('notice').doc(noticeinfo._id).remove()
+							.then(response => {
+								if(response.result.code == 0) {
+									// 删除成功
+									_this.datalist.splice(index,1) // 更新数据源
 								}
-							}).then(response => {
-								// 删除成功
-								_this.datalist.splice(index,1) // 更新数据源
-								
-							}).catch(error => {
-								// 删除失败
+								else {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								}
+							})
+							.catch(error => {
 								uni.showToast({
-									title: _this.i18n.error.deleteerror,
+									title: _this.i18n.error.optionerror,
 									icon: 'none'
 								});
 							})
@@ -162,7 +182,8 @@
 			},
 			
 			// 编辑公告
-			editnotice(noticeinfo) {
+			editnotice(index) {
+				let noticeinfo = _this.datalist[index]
 				uni.navigateTo({
 					url: `/pages/notice/handlenotice?type=edit&id=${noticeinfo._id}`
 				});

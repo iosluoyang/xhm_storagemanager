@@ -353,7 +353,7 @@
 						else {
 							
 							uni.showModal({
-								content: _this.i18n.tip.havenolinkprodata,
+								content: _this.i18n.wishlist.prodetail.havenolinkprodata,
 								showCancel: true,
 								cancelText: _this.i18n.base.cancel,
 								confirmText: _this.i18n.base.confirm,

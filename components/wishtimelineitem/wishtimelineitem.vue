@@ -32,7 +32,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{`您好,我是您的商品代理人,从现在开始为您提供服务`}}
+				{{ i18n.wishlist.timeline.wishagentbindtip }}
 			</view>
 		</view>
 		
@@ -52,7 +52,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap text-white">
-				{{ `已经为您提供最新报价,请滑动到上方查看详细报价单,点击确认后代理员将开始为您订货` }}
+				{{ i18n.wishlist.timeline.wishupdatequotationtip }}
 			</view>
 			
 			
@@ -94,7 +94,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{ user.role == 'PRODUCT_AGENT' ? '客户已经确认报价单,请尽快下单进货' : '您已确认报价单, 代理员将尽快为您下单进货,请耐心等待' }}
+				{{ user.role == 'PRODUCT_AGENT' ? i18n.wishlist.timeline.wishconfirmquotationagenttip : i18n.wishlist.timeline.wishconfirmquotationcustomertip }}
 			</view>
 			
 			<!-- 总价 -->
@@ -119,13 +119,13 @@
 					</view>
 				</view>
 				
-				<view class="text-black text-bold margin-top-sm">{{ `已同意该报价单` }}</view>
+				<view class="text-black text-bold margin-top-sm">{{ i18n.wishlist.timeline.agreequotation }}</view>
 			
 			</view>
 			
 			<!-- 操作按钮区域  仅代理有 -->
 			<view v-if=" wishInfo.agentUser._id == user._id " class="btnview margin-top-sm flex align-center">
-				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ `下单进货` }}</button>
+				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ i18n.wishlist.timeline.importpro }}</button>
 			</view>
 			
 		</view>
@@ -146,7 +146,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{ user.role == 'PRODUCT_AGENT' ? '客户拒绝了该报价,请重新发起报价单' : '您已拒绝报价单, 代理员将尽快重新为您报价,请耐心等待' }}
+				{{ user.role == 'PRODUCT_AGENT' ? i18n.wishlist.timeline.wishrefusequotationagenttip : i18n.wishlist.timeline.wishrefusequotationcustomertip }}
 			</view>
 			
 			<!-- 总价 -->
@@ -171,7 +171,7 @@
 					</view>
 				</view>
 				
-				<view class="text-black text-bold margin-top-sm">{{ `拒绝了该报价单` }}</view>
+				<view class="text-black text-bold margin-top-sm">{{ i18n.wishlist.timeline.refusequotation }}</view>
 			
 			</view>
 			
@@ -193,7 +193,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{`代理员已下单,请留意货物到达状态`}}
+				{{ i18n.wishlist.timeline.wishfinishpurchase }}
 			</view>
 			
 		</view>
@@ -503,7 +503,7 @@
 				let wishId = _this.wishInfo._id
 				uni.showModal({
 					title: _this.i18n.tip.optionconfirm,
-					content: _this.i18n.tip.purchasetip,
+					content: _this.i18n.wishlist.timeline.purchasetip,
 					showCancel: true,
 					cancelText: _this.i18n.base.cancel,
 					confirmText: _this.i18n.base.confirm,

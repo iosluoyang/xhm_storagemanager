@@ -172,5 +172,17 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	// 修改密码
+	else if(type == 'changepwd') {
+		
+		const res = await uniIDIns.updatePwd({
+			uid: uid,
+			oldPassword:info.oldPassword,
+			newPassword: info.newPassword
+		})
+		
+		return res
+		
+	}
 };
 

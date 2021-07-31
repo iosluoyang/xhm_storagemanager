@@ -587,7 +587,7 @@
 					if(this.type == 'normal') {
 						if(this.totalAmount == 0) {
 							uni.showToast({
-								title: this.i18n.error.lackspec,
+								title: this.i18n.wishlist.common.lackspectip,
 								icon: 'none'
 							});
 							return
@@ -628,7 +628,7 @@
 					// 					// 更新失败
 					// 					console.log(`更新失败,${JSON.stringify(error.message)}`);
 					// 					uni.showToast({
-					// 						title: this.i18n.error.fixerror,
+					// 						title: this.i18n.error.optionerror,
 					// 						icon: 'none'
 					// 					});
 					// 				})
@@ -646,7 +646,7 @@
 						
 					// 	if(this.totalAmount == 0) {
 					// 		uni.showToast({
-					// 			title: this.i18n.error.lackspec,
+					// 			title: this.i18n.wishlist.common.lackspectip,
 					// 			icon: 'none'
 					// 		});
 					// 		return

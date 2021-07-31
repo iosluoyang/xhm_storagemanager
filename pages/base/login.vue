@@ -17,17 +17,17 @@
 			<view class="eachareaview inputview margin-top">
 				
 				<!-- 账号 -->
-				<uni-easyinput v-model="account" :placeholder="i18n.login.account" trim prefixIcon="person-filled" />
+				<uni-easyinput v-model="account" :placeholder="i18n.placeholder.login.account" trim prefixIcon="person-filled" />
 				
 				<!-- 密码 -->
-				<uni-easyinput type="password" v-model="password" :placeholder="i18n.login.password" trim prefixIcon="locked-filled" />
+				<uni-easyinput type="password" v-model="password" :placeholder="i18n.placeholder.login.password" trim prefixIcon="locked-filled" />
 				
 				<!-- 确认密码 -->
-				<uni-easyinput v-if="type == 'register'" type="password" v-model="confirmpassword" :placeholder="i18n.login.passwordconfirm" trim prefixIcon="locked-filled"></uni-easyinput>
+				<uni-easyinput v-if="type == 'register'" type="password" v-model="confirmpassword" :placeholder="i18n.placeholder.login.passwordagain" trim prefixIcon="locked-filled"></uni-easyinput>
 				
 				<!-- 选择注册角色 -->
 				<uni-collapse class="margin-top" v-if="type == 'register'">
-					<uni-collapse-item :title="i18n.login.selectrole" open showAnimation>
+					<uni-collapse-item :title="i18n.placeholder.login.selectrole" open showAnimation>
 						
 						<view class="cu-list grid no-border col-3">
 							<view class="cu-item" :class="[role == item.value ? 'bg-yellow light animation-scale-up' : '']" v-for="(item,index) in roleList" :key="index" @click="role=item.value">
@@ -47,15 +47,15 @@
 			<!-- 其他操作区域 -->
 			<view class="eachareaview otherview flex align-center justify-between margin-top">
 				
-				<text class="text-lg text-pink" @tap.stop=" type = type == 'login' ? 'register' : 'login' ">{{ type == 'login' ? i18n.login.registerstr : i18n.login.loginstr }}</text>
+				<text class="text-lg text-pink" @tap.stop=" type = type == 'login' ? 'register' : 'login' ">{{ type == 'login' ? i18n.base.register : i18n.base.login }}</text>
 				
-				<text class="text-lg text-black cuIcon cuIcon-questionfill" @tap.stop="havequestion">{{ i18n.login.havequestion }}</text>
+				<text class="text-lg text-black cuIcon cuIcon-questionfill" @tap.stop="havequestion">{{ i18n.base.havequestion }}</text>
 				
 			</view>
 			
 			<!-- 登录按钮 -->
 			<button class="loginbtn cu-btn round lg margin-top-xl" :class="type=='login' ? 'bg-gradual-pink' : 'bg-gradual-orange'" :disabled="isLoading" :loading="isLoading" @click.native=" confirm ">
-				{{ type == 'login' ? i18n.login.loginstr : i18n.login.registerstr }}
+				{{ type == 'login' ? i18n.base.login : i18n.base.register }}
 			</button>
 			
 			<!-- 其他登录 -->
@@ -166,14 +166,14 @@
 				// 校验规则
 				if (_this.account == "") {
 				     uni.showToast({
-				        title: _this.i18n.error.account,
+				        title: _this.i18n.placeholder.login.account,
 						icon: 'none'
 				    });
 				    return;
 				}
 				else if (_this.password == '') {
 				    uni.showToast({
-				        title: _this.i18n.error.password,
+				        title: _this.i18n.placeholder.login.password,
 						icon: 'none',
 				    });
 				    return;
@@ -184,7 +184,7 @@
 					
 					if(this.password != this.confirmpassword) {
 						uni.showToast({
-							title: _this.i18n.error.password,
+							title: _this.i18n.login.typenewagainpwd,
 							icon: 'none'
 						});
 						return
@@ -259,7 +259,7 @@
 												// 当前登录微信的openid不同 说明该账号之前绑定过其他的微信 此时提示用户是否换绑微信
 												else {
 													uni.showModal({
-														content: '当前账号已经绑定过微信,继续操作将解绑原微信,绑定当前微信账号',
+														content: _this.i18n.login.bindwxalready,
 														showCancel: true,
 														cancelText: _this.i18n.base.cancel,
 														confirmText: _this.i18n.base.confirm,
@@ -292,7 +292,7 @@
 															else {
 																uni.navigateBack();
 																uni.showToast({
-																	title: '暂不绑定当前微信,当前账号已经登录成功',
+																	title: _this.i18n.tip.loginsuccess,
 																	icon: 'none'
 																});
 															}
@@ -303,7 +303,7 @@
 											// 当前账号不存在openid 说明未绑定过微信
 											else {
 												uni.showModal({
-													content: '当前登录账号未绑定微信,是否进行绑定?\n绑定后可直接使用微信登录',
+													content: _this.i18n.login.accountunbindwx,
 													showCancel: true,
 													cancelText: _this.i18n.base.cancel,
 													confirmText: _this.i18n.base.confirm,
@@ -388,7 +388,7 @@
 					_this.$store.dispatch('user/register', data).then(res => {
 						// 注册成功
 						uni.showToast({
-							title: '注册成功,正在为您自动登录',
+							title: _this.i18n.login.registerandlogin,
 							icon: 'success'
 						});
 						
@@ -527,7 +527,7 @@
 											// 未找到该openid对应的用户 此时提示用户首先进行注册
 											else {
 												uni.showModal({
-													content: `该微信暂时还未绑定任何账号,请先使用账号登录后绑定该微信即可`,
+													content: _this.i18n.login.wxunbindaccount,
 													showCancel: false,
 													confirmText: _this.i18n.base.confirm,
 													success: res => {

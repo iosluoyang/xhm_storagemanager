@@ -346,32 +346,47 @@
 					.limit(pageSize)
 					.get()
 					.then(response => {
-						// 加载成功
-						let list = response.result.data || []
-						console.log(list);
 						
-						// 手动将creatUser的数据从数组转换为对象
-						list.forEach(item => {
-							item.creatUser = item.creatUser[0]
-							item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
-						})
-						// console.log(`本次共获取${list.length}个数据,具体数据为:`);
-						// console.log(list);
-						if(pageNum == 1) {
-							dataArr = [] //清空数据源
-							mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
-						} 
-						//将请求的数据添加至现有数据源中
-						dataArr = dataArr.concat(list)
-						//无法检测数组对象长度的变更 故使用$set方法进行变更
-						_this.$set(currenttabitem,'dataArr',dataArr)
-						_this.$set(currenttabitem,'loaded',true)
+						if(response.result.code == 0) {
+							
+							// 加载成功
+							let list = response.result.data || []
+							console.log(list);
+							
+							// 手动将creatUser的数据从数组转换为对象
+							list.forEach(item => {
+								item.creatUser = item.creatUser[0]
+								item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
+							})
+							// console.log(`本次共获取${list.length}个数据,具体数据为:`);
+							// console.log(list);
+							if(pageNum == 1) {
+								dataArr = [] //清空数据源
+								mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
+							} 
+							//将请求的数据添加至现有数据源中
+							dataArr = dataArr.concat(list)
+							//无法检测数组对象长度的变更 故使用$set方法进行变更
+							_this.$set(currenttabitem,'dataArr',dataArr)
+							_this.$set(currenttabitem,'loaded',true)
+							
+							// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
+							_this.$nextTick(()=>{
+								let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
+								mescroll.endSuccess(list.length,hasNext)
+							})
+							
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+							// 失败隐藏下拉加载状态
+							mescroll.endErr()
+							console.log(response.message);
+						}
 						
-						// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
-						_this.$nextTick(()=>{
-							let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
-							mescroll.endSuccess(list.length,hasNext)
-						})
 					})
 					.catch(err => {
 						uni.showToast({
@@ -389,7 +404,7 @@
 </script>
 
 <style lang="scss" scoped>
-	page{
+	page,.wishlistview{
 		
 		height: 100%;
 		

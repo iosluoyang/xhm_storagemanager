@@ -3,7 +3,7 @@
 		
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-orange" isBack>
-			<block slot="content">{{i18n.nav.persondetail}}</block>
+			<block slot="content">{{i18n.nav.me}}</block>
 		</cu-custom>
 		
 		<!-- 个人详细信息区域 -->
@@ -73,12 +73,11 @@
 			<view class="cu-form-group">
 				
 				<view class="title">
-					微信/WeChat
+					{{ i18n.me.persondetail.wechat }}
 					<text class="cuIcon cuIcon-weixin text-green text-lg margin-right-sm"></text>
 				</view>
 				
 				<u-switch v-model="ifBindWx" @change="bindwx"></u-switch>
-				<!-- <switch :checked="ifBindWx" @change="bindwx" /> -->
 				
 			</view>
 			<!-- #endif -->
