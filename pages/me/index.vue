@@ -178,7 +178,7 @@
 				if(this.iflogin) {
 					
 					// 如果有超级管理员角色
-					if(this.user.role == 'ADMIN') {
+					if(this.user.role == 'admin') {
 						// 添加公告选项
 						panelList.push(noticeitem)
 					}
