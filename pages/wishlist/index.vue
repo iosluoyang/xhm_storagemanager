@@ -65,6 +65,13 @@
 				</view>
 			</view>
 			
+			<view class="padding-sm">
+				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-orange" @tap.stop="checkwishlistfavor">
+					<view class="cuIcon-favorfill text-white u-font-18"></view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlistfavor }}</view>
+				</view>
+			</view>
+			
 		</view>
 				
 	</view>
@@ -197,7 +204,12 @@
 				});
 			},
 			
-			//
+			// 跳转心愿收藏页面
+			checkwishlistfavor() {
+				uni.navigateTo({
+					url: '/pages/wishlist/wishlistfavor'
+				});
+			},
 			
 		},
 	}

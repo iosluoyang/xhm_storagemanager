@@ -42,6 +42,7 @@ const zh = {
 		
 		wishlist: "心愿单",
 		mywishlist: "心愿清单",
+		mywishlistfavor: "收藏心愿",
 		procategory: "商品分类",
 		prodetail: "商品详情",
 		wishdetail: "心愿详情",

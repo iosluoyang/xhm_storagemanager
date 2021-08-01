@@ -79,6 +79,12 @@
 					}
 				},
 				{
+					"path":"wishlistfavor",
+					"style": {
+						"navigationBarTitleText":"收藏列表"
+					}
+				},
+				{
 					"path":"linkprodetail",
 					"style": {
 						"navigationBarTitleText":"商品详情"

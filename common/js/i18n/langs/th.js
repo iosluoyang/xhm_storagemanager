@@ -42,6 +42,7 @@ const th = {
 		
 		wishlist: "WishList",
 		mywishlist: "My WishList",
+		mywishlistfavor: "Favor List",
 		procategory: "Category",
 		prodetail: "Product Detail",
 		wishdetail: "Wish Detail",
