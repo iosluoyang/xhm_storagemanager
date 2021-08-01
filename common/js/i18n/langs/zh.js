@@ -30,6 +30,10 @@ const zh = {
 		male: "男",
 		female: "女",
 		add: "添加",
+		default: "默认",
+		pricedesc: "价格降序",
+		priceasc: "价格升序",
+		sellnumdesc: "销量降序",
 
 	},
 	

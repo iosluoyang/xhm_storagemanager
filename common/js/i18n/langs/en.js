@@ -30,6 +30,10 @@ const en = {
 		male: "Male",
 		female: "Female",
 		add: "Add",
+		default: "Default",
+		pricedesc: "Price Desc",
+		priceasc: "Price Asc",
+		sellnumdesc: "SellNum Desc",
 
 	},
 	

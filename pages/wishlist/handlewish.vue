@@ -22,7 +22,8 @@
 					<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
 					{{i18n.wishlist.common.link}}:
 				</view>
-				<input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" />
+				<!-- <input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" /> -->
+				<textarea v-model="sourceLink" @blur="analysisUrl" />
 				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
 				<!-- #endif -->
@@ -80,7 +81,7 @@
 				<view class="title">{{i18n.wishlist.common.aliasname}} :</view>
 				
 				<view class="content flex-sub flex align-center">
-					<input class="text-right" type="text" v-model="aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" />
+					<input class="text-right" type="text" placeholder-class=" text-sm text-grey " v-model="aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" />
 				</view>
 				
 				<!-- 源网站货币种类选择 -->

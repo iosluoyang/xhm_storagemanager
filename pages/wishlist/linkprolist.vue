@@ -134,19 +134,19 @@
 				// 设置排序方式筛选源 1价格从小到大 2从大到小为	3 销量从大到小
 				let sortOption = [
 					{
-						label: '默认',
+						label: this.i18n.base.default,
 						value: ''
 					},
 					{
-						label: '价格从低到高',
+						label: this.i18n.base.priceasc,
 						value: 1
 					},
 					{
-						label: '价格从高到低',
+						label: this.i18n.base.pricedesc,
 						value: 2
 					},
 					{
-						label: '销量从大到小',
+						label: this.i18n.base.sellnumdesc,
 						value: 3
 					}
 				]
@@ -156,7 +156,6 @@
 			
 			// 更改筛选项
 			changefilter(value) {
-				console.log(value);
 				this.mescroll.resetUpScroll(true)
 			},
 			

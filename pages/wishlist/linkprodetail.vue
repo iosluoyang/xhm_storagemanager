@@ -230,6 +230,7 @@
 				}
 				
 				// 开始加载规格信息
+				uni.showLoading();
 				uniCloud.callFunction({
 					name: 'wishlist',
 					data: {
@@ -237,7 +238,7 @@
 						info: data
 					},
 					success(res) {
-						// console.log(`获取成功${JSON.stringify(res)}`);
+						uni.hideLoading()
 						if(res.result.code == 0) {
 							
 							let attributeList = res.result.data.list
@@ -256,6 +257,7 @@
 						
 					},
 					fail(error) {
+						uni.hideLoading()
 						console.log(`获取失败${JSON.stringify(error)}`);
 						console.log(error.message);
 						uni.showToast({
@@ -263,49 +265,6 @@
 							icon: 'none'
 						});
 					}
-				})
-				
-				// _this.$api.productapi.get1688proattirbutetranslate(data).then(response => {
-				// 	// 获取成功
-					
-				// 	let attributeList = response.data.list
-					
-				// 	console.log(`当前的数据信息为`);
-				// 	console.log(attributeList);
-				// 	_this.attributeList = attributeList // 属性数组
-					
-					
-				// }).catch(error => {
-				// 	uni.showToast({
-				// 		title: error.msg || error,
-				// 		icon: 'none'
-				// 	});
-				// })
-				
-			},
-			
-			// 翻译属性名
-			translatecelltitle(item) {
-				
-				this.$basejs.translatecontent(item.attributeName).then(transcontent => {
-					// 翻译成功
-					console.log(transcontent);
-					item.attributeName = transcontent
-				}).catch(error => {
-					// 翻译失败 不做转换
-				})
-				
-			},
-			
-			// 翻译属性值
-			translatecellvalue(item) {
-				
-				this.$basejs.translatecontent(item.attributeVal).then(transcontent => {
-					// 翻译成功
-					console.log(transcontent);
-					item.attributeVal = transcontent
-				}).catch(error => {
-					// 翻译失败 不做转换
 				})
 				
 			},
@@ -462,11 +421,6 @@
 				
 				// 设置交易须知内容
 				let tradeprotocolcontent = this.$store.getters.configData.tradeprotolrichtext || ''
-				// let tradeprotocolcontent = `
-				// 	<h3 style="color: red;text-align: center;">国际物流相关</h3>
-				// 	<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/42d388a7-6651-4d05-bdd9-b17e0894a3d3.jpg" />
-				// 	<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/8c0308fe-6a46-4f75-8e42-ac8072fad83a.jpg" />
-				// `
 				this.tradeprotocolcontent = tradeprotocolcontent
 			},
 			

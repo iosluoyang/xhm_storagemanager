@@ -11,9 +11,15 @@
 const db = uniCloud.database();
 const dbCmd = db.command;
 
-// db.collection('wishlisttimeline').remove()
+db.collection('wishlisttimeline').remove()
 
-// db.collection('wishlist').remove()
+db.collection('wishlist').remove()
+
+db.collection('favorpro').remove()
+
+db.collection('linkproduct1688').remove()
+
+db.collection('notice').remove()
 
 // db.collection('wishlist').where(`agentUser != null`).update({agentFlag: 1})
 
