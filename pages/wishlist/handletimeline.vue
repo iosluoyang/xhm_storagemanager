@@ -521,7 +521,7 @@
 					
 					// 进行二次确认提醒代理员
 					uni.showModal({
-						content: _this.i18n.tip.confirmquotationtip,
+						content: _this.i18n.wishlist.timeline.confirmquotationtip,
 						showCancel: true,
 						cancelText: _this.i18n.base.cancel,
 						confirmText: _this.i18n.base.confirm,

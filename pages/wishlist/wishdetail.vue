@@ -97,7 +97,7 @@
 					</view>
 					
 					<!-- 操作区域 -->
-					<view class="btnsview flex align-center padding-sm">
+					<view class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
 						
 						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
 						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
@@ -538,6 +538,9 @@
 						getOne:true
 					})
 					.then(res => {
+						
+						_this.ifloading = false // 结束缓冲动画
+						
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
 							detaildata.creatUser = detaildata.creatUser[0]
@@ -553,20 +556,12 @@
 							
 						}
 						else {
-							uni.showToast({
-								title: _this.i18n.error.loaderror,
-								icon: 'none'
-							});
+							_this.handlenetworkerror(res.result)
 						}
 					})
-					.catch(err => {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
-					})
-					.finally(() => {
+					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
+						_this.handlenetworkerror(error)
 					})
 				
 			},
@@ -634,6 +629,7 @@
 				.orderBy('creatTime desc')
 				.get()
 				.then(res => {
+					_this.ifloading = false
 					// 获取成功
 					if(res.result.code == 0) {
 						console.log(`时间轴数据获取成功`);
@@ -677,23 +673,12 @@
 					}
 					// 获取失败
 					else {
-						console.log(res.result.message);
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
+						_this.handlenetworkerror(res.result)
 					}
 				})
-				.catch(err => {
-					// 获取失败
-					console.log(err.message);
-					uni.showToast({
-						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
-				})
-				.finally(() => {
+				.catch(error => {
 					_this.ifloading = false
+					_this.handlenetworkerror(error)
 				})
 				
 			},
@@ -782,10 +767,7 @@
 									uni.$emit('updatewishlist')
 								})
 								.catch(error => {
-									uni.showToast({
-										title: error.message,
-										icon: 'none'
-									});
+									_this.handlenetworkerror(error)
 								})
 								
 								// 发送代理员关联消息通知
@@ -794,10 +776,7 @@
 							})
 							.catch(error => {
 								// 关联失败
-								uni.showToast({
-									title: error.message,
-									icon: 'none'
-								});
+								_this.handlenetworkerror(error)
 							})
 							
 						}
@@ -846,7 +825,6 @@
 										icon: 'none'
 									});
 								})
-								.finally(() => {})
 							
 						}
 					},

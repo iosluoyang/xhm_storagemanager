@@ -194,6 +194,8 @@ const zh = {
 				image: "图片",
 				spec: "规格",
 				attribute2: "属性2",
+				price: "价格",
+				amount: "数量",
 				summary: "小计",
 				totalsummary: "合计",
 				proprice: "商品总价",

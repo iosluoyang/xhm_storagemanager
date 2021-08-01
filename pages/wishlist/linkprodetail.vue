@@ -461,11 +461,12 @@
 				this.tabArr = tabs
 				
 				// 设置交易须知内容
-				let tradeprotocolcontent = `
-					<h3 style="color: red;text-align: center;">国际物流相关</h3>
-					<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/42d388a7-6651-4d05-bdd9-b17e0894a3d3.jpg" />
-					<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/8c0308fe-6a46-4f75-8e42-ac8072fad83a.jpg" />
-				`
+				let tradeprotocolcontent = this.$store.getters.configData.tradeprotolrichtext || ''
+				// let tradeprotocolcontent = `
+				// 	<h3 style="color: red;text-align: center;">国际物流相关</h3>
+				// 	<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/42d388a7-6651-4d05-bdd9-b17e0894a3d3.jpg" />
+				// 	<img src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/8c0308fe-6a46-4f75-8e42-ac8072fad83a.jpg" />
+				// `
 				this.tradeprotocolcontent = tradeprotocolcontent
 			},
 			
@@ -487,7 +488,7 @@
 						
 						if(res.result.code == 0) {
 							uni.showToast({
-								title: this.i18n.tip.unfavorsuccess,
+								title: this.i18n.tip.optionsuccess,
 								icon: 'none'
 							});
 							_this.isFavor = false
@@ -512,7 +513,7 @@
 					db.collection('favorpro').add(data).then(res => {
 						if(res.result.code == 0) {
 							uni.showToast({
-								title: this.i18n.tip.favorsuccess,
+								title: this.i18n.tip.optionsuccess,
 								icon: 'none'
 							});
 							_this.isFavor = true

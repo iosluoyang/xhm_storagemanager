@@ -56,6 +56,8 @@ exports.main = async (event, context) => {
 		let productTitle = wishInfo.productTitle
 		productTitle = productTitle.substr(0,10) + '...'
 		
+		console.log(wishInfo);
+		
 		let creatUserId = wishInfo.creatUser
 		let agentUserId = wishInfo.agentUser
 		
@@ -74,7 +76,6 @@ exports.main = async (event, context) => {
 			agentUserWxOpenId = agentUserInfo.wx_openid['mp-weixin']
 		}
 		
-
 		// 代理员接单提醒
 		if(msgtype == 'agentbindwish') {
 						

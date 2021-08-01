@@ -21,14 +21,14 @@
 				<!-- 个人资料 包含昵称和标签以及个人简介 -->
 				<view class="contentview">
 					
-					<view class="topview flex align-center">
+					<view class="topview flex flex-direction">
 						
-						<view class="username text-white text-bold text-xl margin-right-sm">
+						<view class="username text-white text-cut text-bold text-xl margin-right-sm" :style="{maxWidth: '400rpx'}">
 							{{ iflogin ? user && user.nickname ? user.nickname : i18n.base.defaultusername : i18n.tip.pleaselogin }}
 						</view>
 						
 						<!-- 标签 -->
-						<view v-if="iflogin" class="usertag cu-tag radius" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
+						<view v-if="iflogin" class="usertag cu-tag radius margin-top-sm" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
 							{{ $basejs.getrolenameandcolor(user.role).title }}
 						</view>
 						
@@ -208,11 +208,7 @@
 				_this.$store.dispatch('user/getuserdetail').then(() => {
 					// 获取成功
 				}).catch(error => {
-					// 获取失败
-					uni.showToast({
-						title: _this.i18n.error.loaderror,
-						icon: 'none'
-					});
+					_this.handlenetworkerror(error)
 				})
 				
 			},
@@ -249,7 +245,7 @@
 			exit() {
 				const _this = this
 				uni.showModal({
-					content: _this.i18n.tip.optionconfirm,
+					content: _this.i18n.tip.exitconfirm,
 					showCancel: true,
 					cancelText: _this.i18n.base.cancel,
 					confirmText: _this.i18n.base.confirm,
@@ -294,10 +290,7 @@
 									})
 								}
 								else {
-									uni.showToast({
-										title: _this.i18n.error.loaderror,
-										icon: 'none'
-									});
+									_this.handlenetworkerror(error)
 								}
 								
 							})

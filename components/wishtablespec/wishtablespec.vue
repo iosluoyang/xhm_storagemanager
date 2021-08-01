@@ -321,21 +321,21 @@
 				let tableHeader3Arr = [
 					
 					{
-						title: '属性2',
+						title: _this.i18n.wishlist.common.tabledata.attribute2,
 						key: 'attributeName',
 						type: 'text',
 						// width: '15%',
 						ifShow: true
 					},
 					{
-						title: '价格',
+						title: _this.i18n.wishlist.common.tabledata.price,
 						key: 'price',
 						type: 'text',
 						// width:'10%',
 						ifShow: true
 					},
 					{
-						title: '数量',
+						title: _this.i18n.wishlist.common.tabledata.amount,
 						key: 'amount',
 						type: 'text',
 						// width:'10%',

@@ -388,11 +388,8 @@
 						}
 						
 					})
-					.catch(err => {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
+					.catch(error => {
+						this.handlenetworkerror(error)
 						// 失败隐藏下拉加载状态
 						mescroll.endErr()
 					})

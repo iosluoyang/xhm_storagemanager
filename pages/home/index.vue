@@ -11,7 +11,7 @@
 				
 				<view class="flex flex-direction margin-left-sm">
 					
-					<view class="text-lg text-white text-bold">
+					<view class="text-lg text-white text-bold text-cut" :style="{maxWidth: '400rpx'}">
 						{{ user.nickname }}
 					</view>
 					

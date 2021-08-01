@@ -1,406 +1,338 @@
 const en = {
 	
-	// 基础语言包
+	// 公共参数
 	base: {
 		
-		hello: "Hello",
-		tip: "Tips",
-		admin: "Admin",
-		normaladmin: "Normal Admin",
-		female: "female",
-		male: "male",
-		edit: "Edit",
-		del: "Delete",
-		save: "Save",
-		add: "Add",
-		waittoconfirm: "To be Confirm",
-		refuse: "Refuse",
-		agree: "Agree",
-		copy: "Copy",
 		paste: "Paste",
-		preview: "Preview",
-		select: "Please Select",
+		edit: "Edit",
+		search: "Search",
+		searchhistory: "Search Record",
 		cancel: "Cancel",
 		confirm: "Confirm",
-		print: "Print",
-		download: "DownLoad",
-		click: "Click",
-		here: "Here",
-		toaddmore: "to add more",
-		all: "All",
-		other: "Other",
-		search: "Search",
-		scrollto: "Scrollto",
-		success: "success",
-		fail: "fail",
-		needtowait: "Coming soon……",
-		choosable: "Optional",
-		all: "All",
-		other: "Other",
-		onekeyclone: "Clone",
-		fix: "Fix",
-		choose: "Choose",
-		week: {
-			Monday: "Monday",
-			Tuesday: "Tuesday",
-			Wednesday: "Wednesday",
-			Thursday: "Thursday",
-			Friday: "Friday",
-			Saturday: "Saturday",
-			Sunday: "Sunday"
-		},
-		time: {
-			everyday: "Every Day",
-			workingday: "Working Day",
-		},
-		
-		
-		
-	
+		save: "Save",
+		translate: "文/A",
+		customerservice: "Service",
+		favor: "Favor",
+		buynow: "Buy Now",
+		uploadimg: "Upload Images",
+		share: "Share",
+		setshareparam: "Set Share Content",
+		refuse: "Refuse",
+		agree: "Agree",
+		sorttype: "SortType",
+		defaultusername: "Default Username",
+		needtowait: "Coming Soon",
+		login: "Login",
+		register: "Register",
+		havequestion: "Need Help",
+		tip: "Tips",
+		unknown: "Unknown",
+		male: "Male",
+		female: "Female",
+		add: "Add",
+
 	},
 	
 	// 导航栏主分类
 	nav: {
-		homepage: "Homepage",
-		scan: "Scan",
-		goodstype: "Classification",
-		goodslist: "Product List",
-		goodsdetail: "Product Detail",
-		handlerpriceandstock: "Edit Price",
-		addgoods: "Upload Product",
-		editgoods: "Edit Product",
-		stock: "Stock",
-		customer: "Customer",
-		addcustomer: "Add Customer",
-		editcustomer: "Edit Customer",
-		operationlog: "Operation Log",
+		
+		wishlist: "WishList",
+		mywishlist: "My WishList",
+		procategory: "Category",
+		prodetail: "Product Detail",
+		wishdetail: "Wish Detail",
 		me: "Me",
-		resetpwd: "Reset",
-		persondetail: "Personal Detail",
-		logistic: "Logistic",
-		checklogistic: "Check Logistic",
-		wishlist: "Wish List",
+		storemanage: "Store Manage",
+		notice: "Notice",
+		resetpwd: "Reset Password",
+
 	},
 	
-	// 提示
+	// 占位文本
+	placeholder: {
+		
+		login: {
+			account: "Input Account",
+			password: "Input Password",
+			passwordagain: "Input Password Again",
+			selectrole: "Select Role",
+		},
+		
+		handlewish: {
+			link: "Please paste 1688 link",
+			title: "Input Product Title",
+			aliasname: "Input Aliasname eg: #LAL0716",
+			amount: "Input Amount",
+			selectamount: "Select Amount",
+			hurrylevel: "Select HurryLevel",
+			remark: "Input Remark",
+			image: "Upload Images",
+		},
+		
+		wishlistlist: {
+			search: "search by title/aliasname",
+		},
+		
+		wishdetail: {
+			typeinternationshippingfee: "Input Unit Shipping fee(TH)",
+		},
+		
+		handletimeline: {
+			typecontent: "Input Content",
+			typedomesticshippingfee: "Input Shipping fee(CN)",
+		},
+		
+		me: {
+			notice: {
+				title: "Input Notice Title",
+				content: "Input Content, all the people will see it after publish",
+			}
+		}
+		
+		
+	},
+	
+	// 正常提示
 	tip: {
 		
-		useinapp: "Please use in App",
-		loadingstr: "Loading",
-		loginsuccess: "login success",
-		logoutsuccess: "logout success",
-		addsuccess: "add success",
-		fixsuccess: "edit success",
-		savesuccess: "save success",
-		deletesuccess: "delete success",
-		resetsuccess: "reset success",
-		pleaselogin: "please login",
-		defaultusername: "Default Name",
-		exitconfirm: "Are you sure to exit?",
-		freezeconfirm: "Are you sure to freeze/unfreeze this user ?",
-		deleteconfirm: "Are you sure to delete?",
-		resetconfirm: "Are you sure to reset?",
-		optionconfirm: "Are you sure?",
-		searchpeople: "Search by the User Name",
-		searchtype: "Search by the Classification",
-		searchproduct: "Search by the Product Name",
-		searchwish: "Search Wish",
-		deletetypecontent: "the products which belong to this classification will be moved to the other classification, you can set their classification later",
-		pleaseselectgoodstype: "Please select the product type",
-		lackstocktip: "Please click preview button and fill up the stock and price infos",
-		pleaseselectgoodspec: "Please select the specification",
-		pleasescangoodsbarcode: "Please scan the QR Code",
-		ifsuretofixstock: "Are you sure to do the stock IN/OUT ?",
-		findnewversion: "New Version coming , Download now ?",
-		notinworkingtime: "You are not in the working time",
-		loginotherplace: "You've logined in other platform, please login again",
-		pleaseselectpricetype: "Select price type  (Select when stock out)",
-		subsribewxmsg: "Please subscribe the notification so that once the stats changed we can inforn you immediately"
+		loadingstr: "Loading…",
+		deleteconfirm: "Are you sure to Delete?",
+		exitconfirm: "Are you sure to Exit?",
+		optionconfirm: "Are you sure to Operate?",
+		addsuccess: "Add Success",
+		copysuccess: "Copy Success",
+		fixsuccess: "Edit Success",
+		deletesuccess: "Delete Success",
+		optionsuccess: "Operate Success",
+		subsribewxmsg: "click Confirm and the option 'Always select above options ' to subscribe the notification, we will notifiy you once the status was changed",
+		pleaselogin: "Please Login",
+		loginsuccess: "Login Success",
+		logoutsuccess: "Logout Success",
+		
 	},
 	
 	// 错误提示
 	error: {
-		networkerror: "network error",
-		loaderror: "load error",
-		configerror: "get the config file error",
-		picuploaderror: "upload pictures error",
-		chooseimgovererror: "exceed the maxinum of the picture",
-		scanerror: "nothing valid",
-		qrcodewithoutgoods: "Cannot find the product by this QR code",
-		adderror: "add error",
-		fixerror: "edit error",
-		deleteerror: "delete error",
-		reseterror: "reset error",
-		account: "please enter the account",
-		password: "please enter the password",
-		oldpwd: "please enter the original password",
-		newpwd: "please enter the new password",
-		newpwdagain: "the password is not same",
-		loginerror: "login error",
-		logouterror: "logout error",
-		getmemberlisterror: "get the memberlist error",
-		deleteusererror: "delete user error",
-		getgoodstypeerror: "get the classification error",
-		lacktypenameerror: "lack the classification name",
-		lacktyperemarkerror: "lack the classification description",
-		lackspec: "lack the specification params",
-		getspecserror: "get specification error",
-		lackgoodsmainpic: "please upload the picture",
-		lackgoodstitle: "please enter the title",
-		lackgoodstype: "Please select the classification",
-		lackgoodsdes: "Please enter the description",
-		uploaderror: "upload error",
-		lackemail: "We have not know your Email, would you like to fill up the Email first ?",
-		overtimeerror: "Start time cannot later then End time",
 		
+		loaderror: "Load Error",
+		adderror: "Add Error",
+		fixerror: "Edit Error",
+		optionerror: "Operation Error",
+		uploaderror: "Upload Error",
 		
 	},
 	
 	// 业务相关
 	
-	// 登录页面
 	login: {
-		account: "Account",
-		password: "Password",
-		invitecode: "InviteCode",
-		loginstr: "Login",
-		registerstr: "Register",
-		forgetpwd: "Forget Password",
-	},
-	
-	// 首页
-	homepage: {
-		title: "Homepage",
-	},
-	
-	// 成员管理
-	managepeople: {
 		
-		handlemember: {
-			addmember: "Add Member",
-			editmember: "Edit Member",
-			name: "Member name",
-			account: "Account",
-			remark: "Member Remark",
-			remarkplaceholder: "Please descripe this member",
-			freezemember: "Freeze this member",
-			freeze: "freeze",
-			unfreeze: "unfreeze",
-			userfreeze: "Frozen, this member can do nothing",
-			userunfreeze: "Unfrozen",
-			resetmemberpwd: "Reset Member Password",
-			resetmemberpwdtip: "the password will be 123456 after you reset it , they can modify the password after you reset it",
-			deleteuser: "deleter this member",
+		typeoldpwd: "Input Original Password",
+		typenewpwd: "Input New Password",
+		typenewagainpwd: "Password and Confirm Password are not same",
+		registerandlogin: "Register Success, Auto-Login Now",
+		accountunbindwx:"Current account doesnt bind wechat yet, do you want to bind now ? \n You can Login by wechat once you bind .",
+		bindwxalready: "Current account already bind wechat , will unbind the previous wechat and bind current wechat if you want to continue.",
+		wxunbindaccount: "This wechat doesnt bind any account , please login by account first then bind the wechat",
+		
+	},
+	
+	// 心愿单相关
+	wishlist: {
+		
+		common: {
+			
+			link: "Link",
+			title: "Title",
+			aliasname: "Alias Name",
+			price: "Price",
+			amount: "Amount",
+			sellnum: "Sell Number",
+			spec: "Specification",
+			params: "Parameter",
+			remark: "Remark",
+			hurrylevel: "Hurry Level",
+			boxcontainernum: "Packing Quantity ",
+			boxsize: "Unit Size ",
+			boxlength: "Length",
+			boxwidth: "Width",
+			boxheight: "Height",
+			boxvolume: "Unit Volume ",
+			boxamount: "Number of box",
+			boxweight: "Unit Weight",
+			domesticshippingfee: "Shippingfee(CN)",
+			internationalshippingunitfee: "Unit Shippingfee(TH)",
+			internationalshippingfee: "Shipping Fee(TH)",
+			internationalshippingname: "Shipping Name(TH)",
+			internationalshippingcode: "Shipping Code(TH)",
+			secretcodetip: "copy the code and recognize in 1688 (will expired soon in 7 days) ",
+			pureurltip: "Copy the Link and open by system brower if 1688 cannot recognize the code",
+			lackspectip: "Missing Specification",
+			timeline: "TimeLine",
+			hurryleveldata: {
+				level1: "Level 1(UnLimited)",
+				level2: "Level 2(1 Month)",
+				level3: "Level 3(2 weeks)",
+				level4: "Level 4(11 week)",
+				level5: "Level 5(3 days)"
+			},
+			achieveflagdata: {
+				all: "All",
+				unbindwish: "WishList",
+				ing: "Ing",
+				waittoconfirm: "To be Confirmed",
+				makeorder: "To be Purchase",
+				waitreceive: "To be Received",
+				finish: "Finished",
+				closed: "Closed",
+			},
+			buyagain: "Buy Again",
+			agentbindwish: "Bind Wish",
+			tabledata: {
+				index: "Index",
+				title: "Name",
+				attribute1: "Attr 1",
+				image: "Image",
+				spec: "Specification",
+				attribute2: "Attr 2",
+				price: "Price",
+				amount: "Amount",
+				summary: "Summary",
+				totalsummary: "Total Summary",
+				proprice: "Product Price",
+				domesticshippingfee: "Shipping Fee(CN)",
+				commissionfee: "Commission Fee",
+				accrudeexpense: "Total Payment",
+				
+			}
+			
 		},
+		
+		// 心愿单首页页面index
+		index: {
+			searchplaceholder: "Paste 1688 link to search",
+		},
+		
+		// 商品详情页面prodetail
+		prodetail: {
+			detail: "Detail",
+			attribute: "Attribute",
+			tradeprotocol: "Instruction",
+			havenolinkprodata: "Cant find this product , Do you want to add it manually ?",
+		},
+		
+		// 处理心愿单页面handlewish
+		handlewish: {
+			ifound: "I Found",
+			iwant: "I Want",
+		},
+		
+		// 我的心愿列表页面list
+		list: {
+			
+		},
+		
+		// 心愿详情页面wishdetail
+		wishdetail: {
+			
+		},
+		
+		// 时间轴相关
+		timeline: {
+			
+			title: "TimeLine",
+			startsign: "Wish Start",
+			finishsign: "Wish Finished",
+			wishtitle: "WishList",
+			addcomment: "Say Something",
+			addext: "Fill Information",
+			confirmquotation: "Confirm Quotation",
+			editquotation: "Edit Quotation",
+			
+			purchasetip: "Once you Confirm to import , customer will receive the notification , please make sure customer already paid",
+			confirmquotationtip: "Once you Confirm the quotation , customer will receive the notification , Are you sure to continue ?",
+			wishagentbindtip: "Hi, I am your Wish Agent , will do my best to offer the service",
+			wishupdatequotationtip: "Already updated the newest quotation , please check the details above, agent will start to purchase once you click agree",
+			wishconfirmquotationagenttip: "Customer already confirmed the quotation , please make the order ASAP",
+			wishconfirmquotationcustomertip: "You already confirmed the quotation , the agent will make the order ASAP, please wait patiently",
+			agreequotation: "Already Agree the Quotation",
+			refusequotation: "Already Refused the Quotation",
+			importpro: "Purchase Product",
+			wishrefusequotationagenttip: "Customer refused the quotation , please make the new quotation",
+			wishrefusequotationcustomertip: "You already refused the quotation , the agent will make the new quotation for you soon, please wait patiently",
+			wishfinishpurchase: "Agent already Made the order , please notice the order status",
+			
+		}
 		
 	},
 	
 	// 我的
 	me: {
 		
-		appversion: "Version",
-		exit: "Exit",
+		appversion: "App Version",
+		exit: "Logout",
 		
 		panel: {
-			proqrcode: "QR Code",
-			mytask: "My Task",
-			managepeople: "Member",
 			feedback: "Feedback",
-			workingtime: "Working Time",
-			notice: "Notification",
 			more: "More",
 		},
 		
-		// 修改密码
 		resetpwd: {
 			oldpwd: "Original Password",
-			newpwd: "New password",
-			newpwdagain: "Confirm New password"
+			newpwd: "New Password",
+			newpwdagain: "Confirm New Password"
 		},
 		
 		persondetail: {
 			avatar: "Avatar",
-			nickname: "Nickname",
-			realname: "RealName",
+			nickname: "Nick Name",
+			realname: "Real Name",
 			account: "Account",
 			phone: "Phone",
 			email: "Email",
 			gender: "Gender",
-			usertype: "User Type",
+			usertype: "User Role",
+			wechat: "Wechat",
 			signature: "Signature",
 		},
 		
-		buildqrcode: {
-			qrcodenum: "QR code amount",
-			tips: "Please enter the amounts of the qrcode which you want to build , we will soon send to your Email",
-		},
-		
-		workingtime: {
-			starttime: "Start Time",
-			endtime: "End Time",
-		},
-		
-		customer: {
-			customerId: "Customer ID",
-			customerimg: "Avatar",
-			customername: "Name",
-			customerremark: "Remark",
-			customerremarkplaceholder: "You can enter some remark for this customer",
-			companyname: "Company Name",
-			customerphone: "Phone",
-			deletecustomer: "Delete Customer",
-			
-		},
-		
 		notice: {
-			publishnotice: "Add Notification",
-			editnotice: "Edit Notification",
-			noticeplaceholder: "Please enter the notification content"
+			publishnotice: "Publist Notice",
+			editnotice: "Edit Notice",
+			title: "Title",
+			content: "Content",
 		}
 		
 	},
 	
-	// 商品分类相关
-	goodstype: {
-		currenttype: "Current Classification",
-		addtype: "Add Classification",
-		edittype: "Edit Classification",
-		addtypenametitle: "Name",
-		addtypenameplaceholder: "Enter the name of Classification",
-		addtypedesplaceholder: "Enter the description of Classification",
-	},
-	
-	// 商品相关
-	goods: {
+	// 角色相关
+	role: {
 		
-		pricestr: "Price",
-		costprice: "Cost Price",
-		price: "Sale Price",
-		agentprice: "Agent Price",
-		creditprice: "Credit Price",
-		
-		stock: "Stock",
-		sellnum: "Selling",
-		specindex: "Index",
-		filter: {
-			goodstype: "Product Classification",
-			sortway: "Sort Order",
-			defaultsort: "Default Sort",
-			stockascend: "Stock Number Ascending",
-			stockdecrease: "Stock Number Decreasing",
-			sellnumascend: "Selling Number Ascending",
-			sellnumdecrease: "Selling Number Decreasing",
-			hurrylevelascend: "HurryLevel Ascending",
-			hurryleveldecrease: "HurryLevel Decreasing"
+		admin: {
+			title: 'Admin',
+			des: 'All permission included'
+		},
+		MERCHANT_ADMIN: {
+			title: 'Merchant Admin',
+			des: 'Own store , can manage store and buy product'
+		},
+		MERCHANT_EMPLOYEE: {
+			title: 'Merchant Employee',
+			des: 'Can buy product'
+		},
+		PRODUCT_AGENT: {
+			title: 'Product Agent',
+			des: 'Everyone can make the money'
+		},
+		SHIPPING_ADMIN: {
+			title: 'Shipping Admin',
+			des: 'Manage the shipping stuff'
+		},
+		SHIPPING_EMPLOYEE: {
+			title: 'Shipping Employee',
+			des: 'Manage the shipping stuff'
 		},
 		
-		handlegoods: {
-			goodspic: "Picture",
-			goodstitle: "Title",
-			goodsdes: "Description",
-			goodsdesplaceholder: "Please enter the description of the product",
-			goodsbarcode: "BarCode",
-			goodstype: "Classification",
-			goodsspec: "Specification",
-			goodsspeclist: "Specification List",
-			addspecname: "Add Spec",
-			addspecnameholder: "eg: Color",
-			addspecvalueholder: "eg: Red",
-			tabletip: "Scroll to Left can check all the data",
-			clonetip: "Click clone and copy the first data to others",
-			deletegoods: "Delete this product",
-			
-		},
-		
-		goodsdetail: {
-			selected: "Selected",
-			fixcostprice: "Edit CostPrice",
-			fixprice: "Edit Price",
-			stockrecord: "Stock Record",
-			
-		},
-		
-	},
-	
-	// 库存相关
-	stock: {
-		todaystocksituation: "Stock Data Today",
-		recentlystocksituation: "Stock Data Recently",
-		until: "Until",
-		protitle: "Title",
-		amount: "Amount",
-		customer: "Customer",
-		pricetype: "Price Type",
-		operatime: "Time",
-		operapeople: "Employee",
-		
-		typestocknumplacholder: "Please enter the Amount",
-		stockin: "Stock In",
-		stockout: "Stock Out",
-	},
-	
-	// 数据汇总相关
-	report: {
-		
-		// 库存相关数据汇总
-		stockreport: {
-			outstockcount: "Stock Out",
-			instockcount: "Stock In",
-			paytotalnum: "Money Out",
-			earntotalnum: "Money In"
-		},
-		
-		
-	},	
-	
-	// 心愿单相关
-	wishlist: {
-		
-		producttitle: "Title",
-		sourcelink: "Source Link",
-		targetlink: "Link",
-		sourceprice: "Source Price",
-		targetprice: "Target Price",
-		targetamount: "Target Amount",
-		hurrylevel: "Hurry Level",
-		hurryleveldata: {
-			level1: "Level 1 (No limited)",
-			level2: "Level 2 (One month)",
-			level3: "Level 3 (Two weeks)",
-			level4: "Level 4 (One week)",
-			level5: "Level 5 (Three days)"
-		},
-		uploadimg: "Upload picture",
-		remark: "Remark",
-		found: "I found",
-		wishdetail: "Wish Detail",
-		achieveFlag: {
-			ing: "Ing",
-			waittoconfirm: "WaittoConfirm",
-			makeorder: "MakeOrder",
-			finish: "Finished",
-			closed: "Closed",
-		},
-		timeline: {
-			title: "Time Line",
-			updatetimeline: "Update timeline",
-			targetpriceerror: "please enter the target price",
-			timelinecontenterror: "Please enter the updated content",
-			startsign: "Wish Start",
-			finishsign: "Wish Achieve",
-			refusereason: "Refuse Reason",
-			inputrefusereason: "Please enter the refuse reason",
-			share: "Share",
-			setshareparam: "Enter sharing content",
-		},
-		importproduct: {
-			importpro: "Buy Product",
-			iwant: "I want",
-		},
-		buyagain: 'Buy Again',
-		
-		
-	},
+	}
 	
 }
 

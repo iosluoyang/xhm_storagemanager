@@ -123,8 +123,8 @@
 			
 			</view>
 			
-			<!-- 操作按钮区域  仅代理有 -->
-			<view v-if=" wishInfo.agentUser._id == user._id " class="btnview margin-top-sm flex align-center">
+			<!-- 操作按钮区域  仅为代理且为待下单状态时有 -->
+			<view v-if=" wishInfo.agentUser._id == user._id && wishInfo.achieveFlag == 2 " class="btnview margin-top-sm flex align-center">
 				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ i18n.wishlist.timeline.importpro }}</button>
 			</view>
 			
@@ -402,22 +402,27 @@
 					success: res => {
 						if(res.confirm) {
 							
+							uni.showLoading()
+							
 							const db = uniCloud.database();
 							db.collection('wishlist').doc(timelineitem.wishId).update({achieveFlag: 0})
 							.then(response => {
 								// 拒绝成功  回退当前心愿为进行中
-								
+								uni.hideLoading()
 								// 发送推送消息
 								this.pushnoticemsg('refusequotation')
 								
+								uni.showLoading()
 								//将当前时间轴数据变更状态
 								db.collection('wishlisttimeline')
 								.doc(timelineitem._id)
 								.update({type: 5,  optionTime: db.env.now, optionUser: db.env.uid})
 								.then(response => {
 									// 操作成功
+									uni.hideLoading()
 								})
 								.catch(error => {
+									uni.hideLoading()
 									uni.showToast({
 										title: error.message,
 										icon: 'none'
@@ -432,6 +437,7 @@
 
 							})
 							.catch(error => {
+								uni.hideLoading()
 								uni.showToast({
 									title: error.message,
 									icon: 'none'
@@ -455,23 +461,28 @@
 					success: res => {
 						if(res.confirm) {
 							
+							uni.showLoading()
 							const db = uniCloud.database();
 							db.collection('wishlist')
 							.doc(timelineitem.wishId)
 							.update({achieveFlag: 2})
 							.then(response => {
 								// 同意成功 
+								uni.hideLoading()
 								// 发送推送消息
 								this.pushnoticemsg('agreequotation')
 								
 								//将当前时间轴数据变更状态
+								uni.showLoading()
 								db.collection('wishlisttimeline')
 								.doc(timelineitem._id)
 								.update({type: 4, optionTime: db.env.now, optionUser: db.env.uid})
 								.then(response => {
 									// 操作成功
+									uni.hideLoading()
 								})
 								.catch(error => {
+									uni.hideLoading()
 									uni.showToast({
 										title: error.message,
 										icon: 'none'
@@ -486,6 +497,7 @@
 								
 							})
 							.catch(error => {
+								uni.hideLoading()
 								uni.showToast({
 									title: error.message,
 									icon: 'none'
