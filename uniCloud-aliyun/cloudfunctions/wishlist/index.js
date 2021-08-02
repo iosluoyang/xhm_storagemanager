@@ -74,6 +74,9 @@ exports.main = async (event, context) => {
 	// getlinkprolist 获取链接商品列表
 	else if(type == 'getlinkprolist') {
 		
+		// 如果翻译语种为zh的话则替换为cn
+		if(info.lang == 'zh') {info.lang = 'cn'}
+		
 		console.log(`获取分类的参数为`);
 		console.log(info);
 		let productListApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productsearch1688.ac`
