@@ -205,11 +205,7 @@
 			// 加载个人信息
 			loadpersondetail() {
 				
-				_this.$store.dispatch('user/getuserdetail').then(() => {
-					// 获取成功
-				}).catch(error => {
-					_this.handlenetworkerror(error)
-				})
+				_this.$store.dispatch('user/getuserdetail')
 				
 			},
 			

@@ -7,7 +7,7 @@
 		</cu-custom>
 		
 		<!-- mescroll区域  通过fixed来进行定位处理-->
-		<mescroll-uni class="mescroll" :fixed="false" height="100%" @init="mescrollInit" @down="downCallback" @up="upCallBack">
+		<mescroll-body class="mescroll" @init="mescrollInit" @down="downCallback" @up="upCallBack">
 			
 			<view class="goodslistview">
 				
@@ -23,10 +23,10 @@
 						<!-- 商品名称 -->
 						<text class="text-black text-df t_twoline">{{item.productInfo.title}}</text>
 						
-						<!-- 价格 -->
-						<view class="priceinfo margin-top-sm">
-							<text class="text-grey margin-right">{{`${i18n.wishlist.common.price}`}}</text>
+						<!-- 价格 和 取消收藏按钮-->
+						<view class="priceinfo margin-top-sm flex align-center justify-between">
 							<text class="text-red text-price text-lg">{{item.productInfo.priceRange}}</text>
+							<text class="cuIcon cuIcon-favorfill text-orange u-font-40" @tap.stop="unfavoritem(index)"></text>
 						</view>
 						
 					</view>
@@ -35,7 +35,7 @@
 				
 			</view>
 			
-		</mescroll-uni>
+		</mescroll-body>
 		
 	</view>
 </template>
@@ -63,7 +63,6 @@
 		data() {
 			return {
 				dataArr: [], // 数据源数组
-				
 			};
 		},
 		
@@ -115,22 +114,53 @@
 						
 					}
 					else {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
 						// 失败隐藏下拉加载状态
 						mescroll.endErr()
-						console.log(response.message);
 					}
 					
 				})
 				.catch(error => {
-					_this.handlenetworkerror(error)
 					// 失败隐藏下拉加载状态
 					mescroll.endErr()
 				})
 
+			},
+			
+			// 取消收藏
+			unfavoritem(index) {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							let item = _this.dataArr[index]
+							const db = uniCloud.database();
+							db.collection('favorpro').doc(item._id).remove()
+							.then(response => {
+								// 取消收藏成功
+								uni.showToast({
+									title: _this.i18n.tip.optionsuccess,
+									icon: 'none'
+								});
+								
+								_this.dataArr.splice(index,1)
+								
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+				
 			},
 			
 			// 点击详情

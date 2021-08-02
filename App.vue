@@ -116,6 +116,8 @@
 			// 设置colorUI中的颜色
 			setcolorUIcolor()
 			
+			this.setGlobalInterceptor()
+			
 			// 初始化完成时  加载配置信息
 			this.$store.dispatch('app/setConfigData').then(response => {
 				// 此时配置信息已经加载成功并且保存到本地
@@ -133,7 +135,101 @@
 		},
 		onHide: function() {
 			console.log('App Hide')
-		}
+		},
+		methods: {
+			
+			// 设置全局拦截器
+			setGlobalInterceptor() {
+				
+				const _this = this
+				
+				let interceptor = {
+					
+				  invoke(param) {
+					  console.log(`拦截器获取到的API参数为:`);
+					  console.log(param);
+				    // param为拦截Api的参数 例 {name: 'functionName', data: {'functionParam1': 1, 'functionParam2': 2}}
+				    // 此处返回错误可终止api执行
+				  },
+				  success(res) {
+					  // res为callFunction的返回值，此处可以对返回值进行修改
+					  let code = res.result.code
+					  console.log(`接口调用错误码为:${code}`);
+					  
+					  
+					  // 返回成功
+					  if(code == 0) {
+					  	return res
+					  }
+					  // token过期则提示用户重新登录
+					  else if(code == 30203) {
+					  	this.havetologin()
+					  }
+					  // token 不合法
+					  else if(code == 30202) {
+					  	this.havetologin()
+					  }
+					  // 查询用户信息不存在
+					  else if(code == 80301) {
+					  	this.havetologin()
+					  }
+					  // 非法token
+					  else if(code == 30204) {
+					  	this.havetologin()
+					  }
+					  
+					  // 其他情况一律报加载失败
+					  else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					  }
+				  },
+				  fail(err) {
+					  // err为callFunction抛出的错误
+					  console.log(`接口调用失败`);
+					  console.log(err.message);
+					  return err
+				  },
+				  complete(res){
+					  // complete内res为上面的res或err
+					  console.log(`接口调用完成`)
+				  }
+				
+				}
+				
+				// 增加全局拦截器
+				uniCloud.addInterceptor('callFunction', interceptor)
+				uniCloud.addInterceptor('database', interceptor)
+				
+				
+			},
+			
+			// 强制登录
+			havetologin() {
+				
+				const _this = this
+				
+				_this.$store.dispatch('user/resettoken').then(() => {
+					
+					uni.navigateTo({
+						url: '/pages/base/login'
+					});
+					setTimeout(function() {
+						
+						uni.showToast({
+							title: _this.i18n.tip.pleaselogin,
+							icon: 'none'
+						});
+						
+					}, 1000);
+					
+				})
+				
+			},
+			
+		},
 	}
 </script>
 

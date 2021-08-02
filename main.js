@@ -114,55 +114,6 @@ Vue.mixin({
 			uni.navigateBack()
 		},
 		
-		// 统一网络请求错误处理
-		handlenetworkerror(error) {
-			
-			const _this = this
-			console.log(`当前捕获的网络错误为:\n`);
-			console.log(error);
-			
-			// token过期则提示用户重新登录
-			if(error.code == 30203) {
-				_this.havetologin()
-			}
-			// token 不合法
-			else if(error.code == 30202) {
-				_this.havetologin()
-			}
-			
-			// 其他情况一律报加载失败
-			else {
-				uni.showToast({
-					title: _this.i18n.error.loaderror,
-					icon: 'none'
-				});
-			}
-			
-		},
-		
-		// 重新登陆方法
-		havetologin() {
-			
-			const _this = this
-			
-			_this.$store.dispatch('user/resettoken').then(() => {
-				
-				uni.navigateTo({
-					url: '/pages/base/login'
-				});
-				setTimeout(function() {
-					
-					uni.showToast({
-						title: _this.i18n.tip.pleaselogin,
-						icon: 'none'
-					});
-					
-				}, 1000);
-				
-			})
-			
-		},
-		
 	},
 });
 

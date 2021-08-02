@@ -36,7 +36,7 @@
 			
 			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
 				
-				<mescroll-uni class="mescroll bg-gray" :ref=" 'mescrollRef' + index.toString() " @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
+				<mescroll-uni class="mescroll" :fixed="false" :ref=" 'mescrollRef' + index.toString() "  @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
 					
 					<view class="wishlistview">
 						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
@@ -389,7 +389,6 @@
 						
 					})
 					.catch(error => {
-						this.handlenetworkerror(error)
 						// 失败隐藏下拉加载状态
 						mescroll.endErr()
 					})

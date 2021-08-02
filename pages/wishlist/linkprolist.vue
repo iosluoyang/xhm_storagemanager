@@ -2,12 +2,12 @@
 	<view class="linkprolistview pagecontent">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-pink" isBack>
+		<cu-custom bgColor="bg-gradual-blue" isBack>
 			
 			<!-- 搜索框 -->
 			<view slot="content" class="search-form round">
 				<text class="cuIcon-search"></text>
-				<input v-model="searchText" @confirm="startToSearch" :adjust-position="false" type="text" confirm-type="search"></input>
+				<input :placeholder="i18n.base.search + i18n.wishlist.common.title" v-model="searchText" @confirm="startToSearch" :adjust-position="false" type="text" confirm-type="search"></input>
 			</view>
 			
 			<!-- 确定按钮 -->
@@ -19,7 +19,7 @@
 		
 		<!-- 筛选框 -->
 		<view class="filterview bg-gray fixed">
-			<u-dropdown active-color="#e03997">
+			<u-dropdown active-color="#0081ff">
 				<u-dropdown-item v-model="sortFlag" @change="changefilter" :title="i18n.base.sorttype" :options="sortOption"></u-dropdown-item>
 			</u-dropdown>
 		</view>
@@ -27,9 +27,9 @@
 		<!-- mescroll区域  通过fixed来进行定位处理-->
 		<mescroll-uni class="mescroll" :fixed="true" :top=" Number(CustomBar + 40) + 'px' " :topbar="true" @init="mescrollInit" :up="upOption" :down="downOption" @down="downCallback" @up="upCallBack">
 			
-			<view class="goodslistview111">
+			<view class="goodslistview">
 				
-				<view class="eachgood flex align-center margin padding solid-bottom bg-white" v-for="(item, index) in dataArr" :key="index" @tap.stop="gotoprodetail(item)">
+				<view class="eachgood flex align-center padding solid-bottom bg-white" v-for="(item, index) in dataArr" :key="index" @tap.stop="gotoprodetail(item)">
 					
 					<!-- 商品首图 -->
 					
@@ -42,13 +42,12 @@
 						
 						<!-- 价格 -->
 						<view class="priceinfo margin-top-sm">
-							<text class="text-grey margin-right">{{`${i18n.wishlist.common.price}`}}</text>
 							<text class="text-red text-price text-lg">{{item.price}}</text>
 						</view>
 						
 						<!-- 销量信息 -->
-						<view class="sellnuminfo">
-							<text class="text-grey margin-right">{{`${i18n.wishlist.common.sellnum}`}}</text>
+						<view class="sellnuminfo margin-top-sm">
+							<text class="text-grey margin-right">{{`${i18n.wishlist.common.sellnum}`}}:</text>
 							<text class="text-black text-df">{{item.sales || 0 }}</text>
 						</view>
 						

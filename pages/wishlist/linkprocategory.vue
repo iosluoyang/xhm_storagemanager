@@ -24,7 +24,7 @@
 						<view class="item-container">
 							<view class="thumb-box" v-for="(item1, index1) in item.childList" :key="index1" @tap.stop="clickSecondItem(item1)">
 								<image class="item-menu-image round" :src=" item1.img ? item1.img : '/static/publicicon/logo.png' " mode="aspectFill"></image>
-								<view class="item-menu-name">{{item1.typeName}}</view>
+								<view class="item-menu-name text-center margin-top-sm">{{item1.typeName}}</view>
 							</view>
 						</view>
 					</view>
@@ -76,7 +76,10 @@
 				uniCloud.callFunction({
 					name: 'wishlist',
 					data: {
-						type: 'getlinkprocategory'
+						type: 'getlinkprocategory',
+						info: {
+							lang: _this.currentLang,
+						}
 					},
 					success(res) {
 						if(res.result.code == 0) {
@@ -113,6 +116,7 @@
 				})
 				
 			},
+			
 			// 点击左边的栏目切换
 			async swichMenu(index) {
 				if(this.arr.length == 0) {
@@ -351,5 +355,13 @@
 	.item-menu-image {
 		width: 120rpx;
 		height: 120rpx;
+	}
+	
+	.translatebtn{
+		position: fixed;
+		left: 10px;
+		bottom: 20px;
+		width: 60px;
+		height: 30px;
 	}
 </style>

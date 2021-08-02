@@ -5,7 +5,7 @@ const GlobalOption = {
 		use: true, // 是否启用下拉刷新; 默认true
 		auto: true, // 是否在初始化完毕之后自动执行下拉刷新的回调; 默认true
 		autoShowLoading: true,
-		isLock: true, // 锁定
+		isLock: false, // 锁定
 		
 		// 其他down的配置参数也可以写,这里只展示了常用的配置:
 		textInOffset: 'Pull Down', // 下拉的距离在offset范围内的提示文本

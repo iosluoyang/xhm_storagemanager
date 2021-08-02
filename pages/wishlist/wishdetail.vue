@@ -555,13 +555,9 @@
 							// _this.setFabContentArr()
 							
 						}
-						else {
-							_this.handlenetworkerror(res.result)
-						}
 					})
 					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
-						_this.handlenetworkerror(error)
 					})
 				
 			},
@@ -671,14 +667,9 @@
 						console.log(_this.timelinearrdic);
 						
 					}
-					// 获取失败
-					else {
-						_this.handlenetworkerror(res.result)
-					}
 				})
 				.catch(error => {
 					_this.ifloading = false
-					_this.handlenetworkerror(error)
 				})
 				
 			},
@@ -767,7 +758,7 @@
 									uni.$emit('updatewishlist')
 								})
 								.catch(error => {
-									_this.handlenetworkerror(error)
+									
 								})
 								
 								// 发送代理员关联消息通知
@@ -776,7 +767,7 @@
 							})
 							.catch(error => {
 								// 关联失败
-								_this.handlenetworkerror(error)
+								
 							})
 							
 						}
