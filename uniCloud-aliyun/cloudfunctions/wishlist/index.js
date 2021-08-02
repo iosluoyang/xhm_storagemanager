@@ -41,6 +41,9 @@ exports.main = async (event, context) => {
 	
 	if(type == 'getlinkprocategory') {
 		
+		// 如果翻译语种为zh的话则替换为cn
+		if(info.lang == 'zh') {info.lang = 'cn'}
+		
 		let productCategoryApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/types.ac`
 		const res = await uniCloud.httpclient.request(productCategoryApi, {
 		    method: 'POST',
@@ -73,9 +76,6 @@ exports.main = async (event, context) => {
 	
 	// getlinkprolist 获取链接商品列表
 	else if(type == 'getlinkprolist') {
-		
-		// 如果翻译语种为zh的话则替换为cn
-		if(info.lang == 'zh') {info.lang = 'cn'}
 		
 		console.log(`获取分类的参数为`);
 		console.log(info);
