@@ -156,26 +156,25 @@
 					  let code = res.result.code
 					  console.log(`接口调用错误码为:${code}`);
 					  
-					  
 					  // 返回成功
 					  if(code == 0) {
 					  	return res
 					  }
 					  // token过期则提示用户重新登录
 					  else if(code == 30203) {
-					  	this.havetologin()
+					  	_this.havetologin()
 					  }
 					  // token 不合法
 					  else if(code == 30202) {
-					  	this.havetologin()
+					  	_this.havetologin()
 					  }
 					  // 查询用户信息不存在
 					  else if(code == 80301) {
-					  	this.havetologin()
+					  	_this.havetologin()
 					  }
 					  // 非法token
 					  else if(code == 30204) {
-					  	this.havetologin()
+					  	_this.havetologin()
 					  }
 					  
 					  // 其他情况一律报加载失败
@@ -210,7 +209,6 @@
 			havetologin() {
 				
 				const _this = this
-				
 				_this.$store.dispatch('user/resettoken').then(() => {
 					
 					uni.navigateTo({
