@@ -40,10 +40,7 @@ exports.main = async (event, context) => {
 	let info = event.info
 	
 	if(type == 'getlinkprocategory') {
-		
-		// 如果翻译语种为zh的话则替换为cn
-		if(info.lang == 'zh') {info.lang = 'cn'}
-		
+				
 		let productCategoryApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/types.ac`
 		const res = await uniCloud.httpclient.request(productCategoryApi, {
 		    method: 'POST',
@@ -188,10 +185,6 @@ exports.main = async (event, context) => {
 	// gettranslateattribute 获取链接商品属性翻译版本
 	else if(type == 'gettranslateattribute') {
 		
-		console.log(`获取翻译的属性数组为`);
-		// 如果翻译语种为zh的话则替换为cn
-		if(info.lang == 'zh') {info.lang = 'cn'}
-		
 		let productAttributeTranslateApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productAttributeTranslate.ac`
 		const res = await uniCloud.httpclient.request(productAttributeTranslateApi, {
 		    method: 'POST',
@@ -224,9 +217,6 @@ exports.main = async (event, context) => {
 	
 	// gettranslatecategory 获取商品分类翻译版本
 	else if(type == 'gettranslatecategory') {
-		
-		// 如果翻译语种为zh的话则替换为cn
-		if(info.lang == 'zh') {info.lang = 'cn'}
 		
 		let productCategoryTranslateApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productCategoryTranslate.ac`
 		const res = await uniCloud.httpclient.request(productCategoryTranslateApi, {

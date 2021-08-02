@@ -75,6 +75,9 @@ Vue.mixin({
 		
 		// 当前语言类型
 		currentLang() {
+			if(this.$i18n.locale == 'zh') {
+				return 'cn'
+			}
 			return this.$i18n.locale
 		},
 		
