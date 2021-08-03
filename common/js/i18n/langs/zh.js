@@ -113,6 +113,8 @@ const zh = {
 		pleaselogin: "请先登录",
 		loginsuccess: "登录成功",
 		logoutsuccess: "登出成功",
+		needtoregister: "该账号不存在,是否进行注册?",
+		pleasechecknetwork: "请检查网络情况",
 		
 	},
 	

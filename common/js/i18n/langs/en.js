@@ -113,6 +113,8 @@ const en = {
 		pleaselogin: "Please Login",
 		loginsuccess: "Login Success",
 		logoutsuccess: "Logout Success",
+		needtoregister: "This account doesnt exist , do you want to register ?",
+		pleasechecknetwork: "Please check your network",
 		
 	},
 	

@@ -347,6 +347,7 @@
 						// #endif
 						
 					}).catch(err => {
+						console.log(`登录失败`);
 						uni.hideLoading()
 						// 用户不存在
 						if(err.code == 10002) {
@@ -369,7 +370,6 @@
 								showCancel: false
 							});
 						}
-						console.log(err);
 					})
 					
 				}

@@ -287,22 +287,6 @@ const actions = {
 					resolve()
 				}
 				else {
-					// 如果是token过期则提示用户重新登录
-					if(res.result.code == 30203) {
-						dispatch('resettoken').then(() => {
-							
-							uni.navigateTo({
-								url: '/pages/base/login'
-							});
-							setTimeout(function() {
-								uni.showToast({
-									title: '您已经长时间未登录,请重新登录',
-									icon: 'none'
-								});
-							}, 1500);
-							
-						})
-					}
 					reject(res.result)
 				}
 			}).catch(err => {
@@ -310,12 +294,6 @@ const actions = {
 				reject(err)
 			})
 			
-			// userapi.getuserdetail().then(response => {
-			// 	// 获取用户基本资料成功
-			// 	let user = response.data.user
-			// 	commit('SET_USER',user)
-			// 	resolve()
-			// }).catch(error => {reject(error)})
 		})
 	},
 	

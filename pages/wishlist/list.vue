@@ -226,6 +226,7 @@
 							let selectitem = _this.tabArr.find(item => ( item.status == achieveFlag ))
 							selectitem.count = count
 						})
+						
 					})
 					.catch(err => {
 						console.log(err.message);

@@ -177,13 +177,23 @@
 					  	_this.havetologin()
 					  }
 					  
+					  // 系统错误
+					  else if(code == 'SYSTEM_ERROR' || code == 'FUNCTION_EXCUTE_ERROR') {
+						  uni.showToast({
+						  	title: _this.i18n.tip.pleasechecknetwork,
+						  	icon: 'none'
+						  });
+					  }
+					  
 					  // 其他情况一律报加载失败
 					  else {
-						uni.showToast({
-							title: _this.i18n.error.loaderror,
-							icon: 'none'
-						});
+						// uni.showToast({
+						// 	title: _this.i18n.error.loaderror,
+						// 	icon: 'none'
+						// });
 					  }
+					  
+					  return res
 				  },
 				  fail(err) {
 					  // err为callFunction抛出的错误

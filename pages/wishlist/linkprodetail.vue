@@ -11,16 +11,16 @@
 			
 			<!-- 轮播图 -->
 			<!-- card-swiper screen-swiper square-dot round-dot -->
-			<swiper class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
+			<swiper v-if="swiperImgsArr" class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
 				indicator-color="#8799a3" indicator-active-color="#6739b6" 
 				:autoplay="true" interval="3000" duration="300" @change="swiperChange">
-				<swiper-item v-for="(item,index) in linkProduct.imgs.split(',')" :key="index"
+				<swiper-item v-for="(item,index) in swiperImgsArr" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
-								@tap.stop="previewImgs(linkProduct.imgs, index)"
+								@tap.stop="previewImgs(swiperImgsArr, index)"
 				>
 				
 					<view class="swiper-item">
-						<image :src="item" mode="aspectFill"></image>
+						<image :src="item" mode="aspectFill" :lazy-load="false"></image>
 					</view>
 					
 				</swiper-item>
@@ -45,10 +45,15 @@
 			<view class="tabcontentview padding-left-sm padding-right-sm">
 				
 				<!-- 如果是详情 -->
-				<view v-show="TabCur == 0" class="detailimgsview">
-					<u-image v-for="(img,index) in linkProduct.detailImgs.split(',')" :key="index" :src="img" mode="widthFix" @click="previewImgs(linkProduct.detailImgs, index)">
-						<u-loading slot="loading"></u-loading>
+				<view v-if="detailImgsArr" v-show="TabCur == 0" class="detailimgsview">
+					<u-image v-for="(img,index) in detailImgsArr" :key="index" 
+						loading-icon="/static/publicicon/logo.png"
+						:src="img" mode="widthFix" @click="previewImgs(detailImgsArr, index)">
 					</u-image>
+					
+					<view class="flex align-center justify-center">
+						<button v-if="linkProduct.detailImgs && detailImgsArr.length < linkProduct.detailImgs.split(',').length" class="cu-btn bg-gray margin-top cuIcon cuIcon-unfold u-font-40" @tap.stop="loadmoredetailimg"></button>
+					</view>
 				</view>
 				
 				<!-- 如果是属性 -->
@@ -139,9 +144,9 @@
 			return {
 				
 				ifloading: false, // 是否正在加载
-				lang: 'zh', // 语言
 				
 				type: 'searchText', // searchText代表通过搜索文本进行搜索  thirdPid代表通过第三方pid进行搜索
+				searchrecordmaxnum: 5, // 搜索历史最大数量
 				
 				searchText: '', // 搜索文本
 				thirdPid: '', // 第三方pid
@@ -149,6 +154,9 @@
 				linkProduct: null, // 外链商品详情
 				attributeList: [], // 属性数组
 				specPropInfo: null, // 规格对象
+				swiperImgsArr: [], // 轮播图片
+				detailImgsArr: [], // 详情图片
+				eachMaxDetailImgNum: 5, // 每次显示的详情图片个数
 				
 				swiperIndex: 0, // 索引
 				isFavor: false, // 是否收藏
@@ -292,6 +300,13 @@
 							
 							let linkProduct = res.result.data.product
 							
+							let swiperImgsArr =  linkProduct.imgs ? linkProduct.imgs.split(',') : []
+							_this.swiperImgsArr = swiperImgsArr.length > _this.eachMaxDetailImgNum ? swiperImgsArr.slice(0,_this.eachMaxDetailImgNum) : swiperImgsArr
+							
+							
+							let detailImgsArr = linkProduct.detailImgs ? linkProduct.detailImgs.split(',') : []
+							_this.detailImgsArr = detailImgsArr.length > _this.eachMaxDetailImgNum ? detailImgsArr.slice(0,_this.eachMaxDetailImgNum) : detailImgsArr
+							
 							// console.log(`当前的数据信息为`);
 							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
@@ -300,13 +315,11 @@
 							
 							_this.linkProduct = linkProduct
 							
-							// 获取翻译版本的属性列表
-							// _this.$nextTick(function(){
-							// 	_this.translateattribute()
-							// })
-							
 							// 设置tab切换
 							_this.setTabData()
+							
+							// 设置搜索历史记录
+							_this.setSearchRecordData()
 							
 						}
 						else {
@@ -332,52 +345,51 @@
 						_this.ifloading = false
 						console.log(error.message);
 						uni.showToast({
-							title: error.message,
+							title: _this.i18n.error.loaderror,
 							icon: 'none'
 						});
 					}
 				})
 				
-				// _this.$api.productapi.get1688prodetail(data).then(response => {
+			},
+			
+			// 设置搜索历史
+			setSearchRecordData() {
+				
+				let searchRecord = {
+					pid: _this.linkProduct.pid,
+					thirdPid: _this.linkProduct.thirdPid,
+					title: _this.linkProduct.title,
+					img: _this.linkProduct.imgs ? _this.linkProduct.imgs.split(',')[0] : '',
+					price: _this.linkProduct.priceRange
+				}
+				
+				let searchRecordArr = uni.getStorageSync('searchrecordarr1688') || []
+				
+				let ifExist = searchRecordArr.findIndex((record) => (record.thirdPid == searchRecord.thirdPid)) > -1
+				
+				// 不存在则进行记录
+				if(!ifExist) {
 					
-				// 	_this.ifloading = false
-					
-				// 	let linkProduct = response.data.product
-					
-				// 	console.log(`当前的数据信息为`);
-				// 	console.log(linkProduct);
-				// 	_this.attributeList = linkProduct.attributeList // 属性数组
-				// 	_this.specPropInfo = linkProduct.specPropInfo // 规格对象
-					
-				// 	_this.linkProduct = linkProduct
-					
-				// 	// 设置tab切换
-				// 	_this.setTabData()
-					
-				// }).catch(error => {
-				// 	_this.ifloading = false
-				// 	console.log(`获取失败${JSON.stringify(error)}`);
-				// 	console.log(error.msg || error);
-				// 	// uni.showToast({
-				// 	// 	title: error.msg,
-				// 	// 	icon: 'none'
-				// 	// });
-					
-				// 	uni.showModal({
-				// 		content: `系统暂未找到该商品,是否手动添加心愿单`,
-				// 		showCancel: true,
-				// 		cancelText: _this.i18n.base.cancel,
-				// 		confirmText: _this.i18n.base.confirm,
-				// 		success: res => {
-				// 			if(res.confirm) {
-				// 				uni.redirectTo({
-				// 					url: '/pages/wishlist/handlewish?type=add'
-				// 				});
-				// 			} 
-				// 		}
-				// 	});
-					
-				// })
+					// 超出限制移除最后一条搜索记录
+					if(searchRecordArr.length > _this.searchrecordmaxnum) {
+						searchRecordArr.pop()
+					}
+					// 将最新搜索记录放首位
+					searchRecordArr.unshift(searchRecord)
+					uni.setStorageSync('searchrecordarr1688', searchRecordArr)
+				}
+				
+				console.log(`当前搜索记录为:`);
+				let localsearchrecord = uni.getStorageSync('searchrecordarr1688')
+				console.log(localsearchrecord);
+				
+			},
+			
+			// 加载全部详情图
+			loadmoredetailimg() {
+				
+				_this.detailImgsArr = _this.linkProduct.detailImgs.split(',')
 				
 			},
 			
@@ -393,10 +405,10 @@
 				this.swiperIndex = e.detail.current;
 			},
 			
-			previewImgs(imgsStr,index) {
+			previewImgs(imgArr,index) {
 				uni.previewImage({
 					current:index,
-					urls: imgsStr.split(',')
+					urls: imgArr
 				})
 			},
 			

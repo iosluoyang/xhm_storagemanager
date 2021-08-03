@@ -261,7 +261,7 @@
 					
 					<!-- 装箱数量 -->
 					<view v-if="productExt.boxContainerNum" class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.boxContainerNum }}</view>
+						<view class="title">{{ i18n.wishlist.common.boxcontainernum }}</view>
 						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
 					</view>
 					

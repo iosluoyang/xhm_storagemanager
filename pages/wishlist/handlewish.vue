@@ -17,7 +17,7 @@
 			</view>
 			
 			<!-- 源网站链接 -->
-			<view class="cu-form-group">
+			<view v-if="sourceLink" class="cu-form-group">
 				<view class="title">
 					<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
 					{{i18n.wishlist.common.link}}:

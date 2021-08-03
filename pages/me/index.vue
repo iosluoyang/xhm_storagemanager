@@ -264,31 +264,11 @@
 								}, 300);
 								
 							}).catch(error => {
-								// 登出失败
-								
-								// token不合法
-								if(error.code == 30202) {
-									_this.$store.dispatch('user/resettoken').then(() => {
-										
-										// 重置到首页
-										uni.reLaunch({
-											url: '/pages/home/index'
-										})
-										
-										setTimeout(function() {
-											// 登出成功
-											uni.showToast({
-												title:  _this.i18n.tip.logoutsuccess,
-												icon: 'none',
-											});
-										}, 300);
-										
-									})
-								}
-								else {
-									_this.handlenetworkerror(error)
-								}
-								
+								// 登出失败(提示为登出成功)
+								uni.showToast({
+									title:  _this.i18n.tip.logoutsuccess,
+									icon: 'none',
+								});
 							})
 						}
 					}

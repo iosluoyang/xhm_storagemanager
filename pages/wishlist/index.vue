@@ -29,20 +29,22 @@
 			<!-- 搜索记录区域 -->
 			<view v-if="searchrecord1688 && searchrecord1688.length > 0" class="searchrecord bg-white">
 				
-				<text class="cu-bar text-sm">
+				<view class="titleview flex margin align-center text-sm">
 					{{ i18n.base.searchhistory }}
-					<text class="cuIcon cuIcon-deletefill margin-left-sm" @tap.stop="deleteAllRecord"></text>
-				</text>
-				
-				<view v-for="(item, index) in searchrecord1688" :key="index"
-						class="flex justify-between text-sm bg-gray round margin-bottom-sm padding-sm" 
-						@tap.stop=" searchText=item; startSearch() ">
-					
-					<text class="text-cut">{{ item }}</text>
-					
-					<text class="margin-left-sm cuIcon cuIcon-roundclose" @tap.stop="deleteRecord(index)"></text>
-					
+					<text class="cuIcon cuIcon-deletefill margin-left-sm text-red" @tap.stop="deleteAllRecord"></text>
 				</view>
+				
+				<scroll-view scroll-x class="recordlistview padding-sm bg-gray" :style="{whiteSpace: 'nowrap'}">
+					
+					<view class="eachsearchrecord margin-left-sm shadow-blur shadow-warp bg-white radius padding-bottom-sm" :style="{display: 'inline-block'}" v-for="(item, index) in searchrecord1688" :key="index" @tap.stop="searchRecord(item)" @longpress="deleteRecord(index)">
+												
+						<!-- 图片 -->
+						<u-image :src="item.img" mode="aspectFill" width="150rpx" height="150rpx"></u-image>
+						<!-- 标题 -->
+						<view class="title margin-top-sm text-sm text-cut" :style="{width: '150rpx', height: '30rpx', boxSizing: 'border-box'}">{{ item.title }}</view>
+					</view>
+					
+				</scroll-view>
 				
 			</view>
 			
@@ -58,12 +60,13 @@
 				</view>
 			</view>
 			
-			<view class="padding-sm">
+			<!-- 暂时注释 -->
+			<!-- <view class="padding-sm">
 				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-blue" @tap.stop="gotoproductcategory">
 					<view class="cuIcon-cascades text-white u-font-18"></view>
 					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.procategory }}</view>
 				</view>
-			</view>
+			</view> -->
 			
 			<view class="padding-sm">
 				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-orange" @tap.stop="checkwishlistfavor">
@@ -86,7 +89,6 @@
 			return {
 				searchText: '', // 搜索文本
 				searchrecord1688: null, // 搜索历史
-				searchrecordmaxnum: 5, // 搜索历史最大数量
 			};
 		},
 		
@@ -97,7 +99,7 @@
 		
 		onShow() {
 			// 加载搜索历史
-			let searchrecord1688 = uni.getStorageSync('searchrecord1688')
+			let searchrecord1688 = uni.getStorageSync('searchrecordarr1688')
 			this.searchrecord1688 = searchrecord1688
 		},
 			
@@ -127,9 +129,6 @@
 				}
 				else {
 					
-					// 存储搜索历史
-					this.addSearchRecord(this.searchText)
-					
 					// 将搜索文本存储在本地
 					// uni.setStorageSync('linkprosearchtext',this.searchText)
 					let searchText = encodeURIComponent(this.searchText)
@@ -145,30 +144,26 @@
 				
 			},
 			
-			// 添加到搜索记录
-			addSearchRecord(searchText) {
-				
-				// 将搜索文本存储在本地
-				let searchrecord1688Arr = uni.getStorageSync('searchrecord1688') || []
-				if(searchrecord1688Arr.length >= this.searchrecordmaxnum) {
-					searchrecord1688Arr = searchrecord1688Arr.slice(0, this.searchrecordmaxnum - 1)
-				}
-				// 如果不存在则添加至头部
-				if(!searchrecord1688Arr.find(item => (item == searchText))) {
-					searchrecord1688Arr.unshift(searchText)
-					// 存储搜索历史
-					uni.setStorageSync('searchrecord1688', searchrecord1688Arr)
-				}
-				
-			},
-			
 			// 删除搜索记录
 			deleteRecord(index) {
 				
-				this.searchrecord1688.splice(index, 1)
-				let searchrecord1688Arr = uni.getStorageSync('searchrecord1688') || []
-				searchrecord1688Arr.splice(index, 1)
-				uni.setStorageSync('searchrecord1688', searchrecord1688Arr)
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.cancel,
+					confirmText: _this.i18n.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							_this.searchrecord1688.splice(index, 1)
+							let searchrecord1688Arr = uni.getStorageSync('searchrecordarr1688') || []
+							searchrecord1688Arr.splice(index, 1)
+							uni.setStorageSync('searchrecordarr1688', searchrecord1688Arr)
+							
+						}
+					}
+				});
+				
 				
 			},
 			
@@ -183,11 +178,19 @@
 					success: res => {
 						if(res.confirm) {
 							this.searchrecord1688 = null
-							uni.removeStorageSync('searchrecord1688')
+							uni.removeStorageSync('searchrecordarr1688')
 						}
 					}
 				});
 				
+			},
+			
+			// 点击记录进行搜索
+			searchRecord(item) {
+				let thirdPid = item.thirdPid
+				uni.navigateTo({
+					url: '/pages/wishlist/linkprodetail?thirdPid=' + thirdPid
+				});
 			},
 			
 			// 查看心愿列表

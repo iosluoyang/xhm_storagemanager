@@ -140,7 +140,7 @@
 			</view>
 			
 			<!-- 确定按钮 -->
-			<button class="cu-btn bg-gradual-pink block width100 lg margin-top" @tap.stop="confirm">确定</button>
+			<button class="cu-btn bg-gradual-pink block width100 lg margin-top" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
 			
 		</view>
 	</u-popup>
