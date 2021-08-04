@@ -50,6 +50,7 @@ const en = {
 		storemanage: "Store Manage",
 		notice: "Notice",
 		resetpwd: "Reset Password",
+		confirmreceipt: "Confirm receipt",
 
 	},
 	
@@ -156,14 +157,15 @@ const en = {
 			sellnum: "Sell Number",
 			spec: "Specification",
 			params: "Parameter",
+			pricesummary: "Price Summary",
 			remark: "Remark",
 			hurrylevel: "Hurry Level",
-			boxcontainernum: "Packing Quantity ",
-			boxsize: "Unit Size ",
+			boxcontainernum: "Packing Quantity",
+			boxsize: "Unit Size",
 			boxlength: "Length",
 			boxwidth: "Width",
 			boxheight: "Height",
-			boxvolume: "Unit Volume ",
+			boxvolume: "Unit Volume",
 			boxamount: "Number of box",
 			boxweight: "Unit Weight",
 			domesticshippingfee: "Shippingfee(CN)",
@@ -185,7 +187,7 @@ const en = {
 			achieveflagdata: {
 				all: "All",
 				unbindwish: "WishList",
-				ing: "Ing",
+				ing: "On process",
 				waittoconfirm: "To be Confirmed",
 				makeorder: "To be Purchase",
 				waitreceive: "To be Received",
@@ -240,7 +242,9 @@ const en = {
 		
 		// 心愿详情页面wishdetail
 		wishdetail: {
-			
+			internationalshippingcalculator: "Shipping Calculator",
+			approximatefee: "Approximate Fee",
+			calculatorresulttip: "Please input your unit shipping fee and box amount, system will calculate the approximate fee"
 		},
 		
 		// 时间轴相关
@@ -264,11 +268,21 @@ const en = {
 			agreequotation: "Already Agree the Quotation",
 			refusequotation: "Already Refused the Quotation",
 			importpro: "Purchase Product",
+			confirmproductreceive: "Confirm Product Receive",
 			wishrefusequotationagenttip: "Customer refused the quotation , please make the new quotation",
 			wishrefusequotationcustomertip: "You already refused the quotation , the agent will make the new quotation for you soon, please wait patiently",
 			wishfinishpurchase: "Agent already Made the order , please notice the order status",
 			
-		}
+		},
+		
+		// 收货相关
+		receiveproduct: {
+			
+			receiveall: "Receive All",
+			receiveallconfirm: "Please make sure that you got all products",
+			receiveparts: "Receive Parts",
+			
+		},
 		
 	},
 	

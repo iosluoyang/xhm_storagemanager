@@ -240,7 +240,9 @@ const th = {
 		
 		// 心愿详情页面wishdetail
 		wishdetail: {
-			
+			internationalshippingcalculator: "Shipping Calculator",
+			approximatefee: "Approximate Fee",
+			calculatorresulttip: "Please input your unit shipping fee and box amount, system will calculate the approximate fee"
 		},
 		
 		// 时间轴相关

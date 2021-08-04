@@ -99,9 +99,6 @@
 					<!-- 操作区域 -->
 					<view class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
 						
-						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
-						
 						<!-- 分享按钮 小程序平台有 -->
 						<!-- #ifdef MP -->
 						<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
@@ -110,17 +107,20 @@
 						<!-- 再次购买按钮 -->
 						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
 						
-						<!-- 编辑按钮 仅自己可编辑 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+						<!-- 编辑按钮 仅自己可编辑 且在该心愿单为进行中时显示 -->
+						<button v-if="wishinfo.achieveFlag == 0 && wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 						
-						<!-- 删除按钮 仅自己可删除 -->
-						<button v-if="wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+						<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
+						<button v-if="(wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1) && wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
 						
 						<!-- 计算国际运费按钮 -->
 						<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
 						
 						<!-- 查看1688详情按钮 -->
 						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
+						
+						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
 						
 					</view>
 					
@@ -169,7 +169,7 @@
 		<!-- 悬浮按钮区域 -->
 		<view v-if="wishinfo && user" class="floatview">
 			
-			<!-- 如果是代理员 -->
+			<!-- 如果是代理员 且该心愿为进行中 待确认时显示 -->
 			<template v-if=" user.role == 'PRODUCT_AGENT' ">
 				
 				<!-- 没有被关联时显示关联按钮 -->
@@ -178,14 +178,14 @@
 				</button>
 				
 				<!-- 被关联时根据是否是自己关联的心愿来显示添加按钮 -->
-				<button v-else-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+				<button v-else-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id && (wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1)" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 					<text class="cuIcon-add"></text>
 				</button>
 				
 			</template>
 			
-			<!-- 如果是供应商 -->
-			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id ">
+			<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
+			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id && wishinfo.achieveFlag == 0">
 				
 				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 					<text class="cuIcon-add"></text>
@@ -257,22 +257,28 @@
 			<!-- 运费计算工具 -->
 			<template v-if="popuptype === 'shippingtool' && productExt">
 				
-				<view class="shippingcontentview">
+				<view class="shippingcontentview padding-top padding-bottom">
 					
-					<!-- 装箱数量 -->
-					<view v-if="productExt.boxContainerNum" class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.boxcontainernum }}</view>
-						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
+					<view class="titleview text-bold text-xl text-center margin-bottom">
+						{{ i18n.wishlist.wishdetail.internationalshippingcalculator }}
 					</view>
 					
+					<!-- 预估国际运费总价 -->
+					<view class="cu-form-group padding-top padding-bottom">
+						<view class="title" :style="{'flex-shrink': '0'}">{{ i18n.wishlist.wishdetail.approximatefee }}</view>
+						<view class="rightcontent">
+							<text class="text-sm text-red text-wrap">{{ interShippingTotalFeeStr }}</text>
+						</view>
+					</view>
+
 					<!-- 单件尺寸 -->
 					<view v-if="productExt.boxLength" class="cu-form-group">
 						<view class="title">{{ `${i18n.wishlist.common.boxsize}(cm)` }}</view>
-						<view class="flex align-center justify-around" style="max-width: 60%;">
+						<view class="flex text-center align-center justify-center" style="max-width: 60%;">
 							<input type="number" disabled v-model="productExt.boxLength">
-							<text class="padding-sm">x</text>
+							<text class="padding-sm">*</text>
 							<input type="number" disabled v-model="productExt.boxWidth">
-							<text class="padding-sm">x</text>
+							<text class="padding-sm">*</text>
 							<input type="number" disabled v-model="productExt.boxHeight">
 						</view>
 					</view>
@@ -295,14 +301,12 @@
 						<input class="text-right" type="number" :placeholder="i18n.placeholder.wishdetail.typeinternationshippingfee" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
 					</view>
 					
-					<!-- 预估国际运费总价 -->
-					<view class="cu-form-group padding-top padding-bottom">
-						<view class="title" :style="{'flex-shrink': '0'}">{{ '预估运费' }}</view>
-						<view class="rightcontent">
-							<text class="text-sm text-red">{{ interShippingTotalFeeStr }}</text>
-						</view>
+					<!-- 装箱数量 -->
+					<view v-if="productExt.boxContainerNum" class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.boxcontainernum }}</view>
+						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
 					</view>
-				
+					
 				</view>
 				
 			</template>
@@ -423,7 +427,7 @@
 					return interShippingTotalFeeStr
 				}
 				else {
-					return ''
+					return this.i18n.wishlist.wishdetail.calculatorresulttip
 				}
 			},
 			

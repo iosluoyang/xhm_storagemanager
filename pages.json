@@ -119,7 +119,13 @@
                     "style" : {
 						"navigationBarTitleText":"时间轴"
 					}
-                }
+                },
+				{
+				    "path" : "confirmreceipt",
+				    "style" : {
+						"navigationBarTitleText":"确认收货"
+					}
+				}
             ]
 		}
 		

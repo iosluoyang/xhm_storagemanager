@@ -196,6 +196,11 @@
 				{{ i18n.wishlist.timeline.wishfinishpurchase }}
 			</view>
 			
+			<!-- 商家身份进行收货操作 -->
+			<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="confirmproductreceive">{{ i18n.wishlist.timeline.confirmproductreceive }}</button>
+			</view>
+			
 		</view>
 		
 		<!-- 心愿单完成类型 type=6 -->
@@ -258,8 +263,8 @@
 				<text class="margin-left">{{ `"${timelineitem.editUser ? timelineitem.editUser.nickname : ''}"${i18n.base.edit}` }}</text>
 			</view>
 			
-			<!-- 按钮操作区域 -->
-			<view v-if="user._id == timelineitem.creatUser._id" class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+			<!-- 按钮操作区域 该心愿为进行中或者待确认时显示 -->
+			<view v-if="user._id == timelineitem.creatUser._id && (wishInfo.achieveFlag == 0 || wishInfo.achieveFlag == 1)" class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
 				
 				<button class="cu-btn cuIcon-delete text-red round bg-white" @tap.stop="deletetimeline"></button>
 				<button class="cu-btn cuIcon-edit round bg-white margin-left-sm" @tap.stop="edittimeline"></button>
@@ -571,6 +576,47 @@
 						}
 					}
 				});
+			},
+			
+			// 商家收货
+			confirmproductreceive() {
+				
+				let optionSheet = [
+					_this.i18n.wishlist.receiveproduct.receiveall,
+					_this.i18n.wishlist.receiveproduct.receiveparts
+				]
+				
+				uni.showActionSheet({
+					itemList: optionSheet,
+					success: res => {
+						let tapIndex = res.tapIndex
+						
+						// 全部收货
+						if(tapIndex == 0) {
+							uni.showModal({
+								title: _this.i18n.base.tip,
+								content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
+								showCancel: true,
+								cancelText: _this.i18n.base.cancel,
+								confirmText: _this.i18n.base.confirm,
+								success: res => {
+									if(res.confirm) {
+										console.log(`确认收到所有货物`);
+									}
+								}
+							});
+						}
+						// 部分收货
+						else if(tapIndex == 1){
+							// 跳转部分收货页面
+							uni.navigateTo({
+								url: `/pages/wishlist/confirmreceipt?wishId=${_this.wishInfo._id}`
+							});
+						}
+						
+					}
+				});
+				
 			},
 			
 			// 推送消息

@@ -50,6 +50,7 @@ const zh = {
 		storemanage: "店铺管理",
 		notice: "公告",
 		resetpwd: "重置密码",
+		confirmreceipt: "确认收货",
 
 	},
 	
@@ -156,6 +157,7 @@ const zh = {
 			sellnum: "销量",
 			spec: "规格",
 			params: "参数信息",
+			pricesummary: "金额合计",
 			remark: "备注",
 			hurrylevel: "紧急程度",
 			boxcontainernum: "装箱数量",
@@ -240,7 +242,9 @@ const zh = {
 		
 		// 心愿详情页面wishdetail
 		wishdetail: {
-			
+			internationalshippingcalculator: "运费计算器",
+			approximatefee: "预估运费",
+			calculatorresulttip: "请输入国际物流单价和箱数，系统会预估您的国际物流费用"
 		},
 		
 		// 时间轴相关
@@ -264,12 +268,22 @@ const zh = {
 			agreequotation: "已同意该报价单",
 			refusequotation: "拒绝了该报价单",
 			importpro: "下单进货",
+			confirmproductreceive: "确认收货",
 			wishrefusequotationagenttip: "客户拒绝了该报价,请重新发起报价单",
 			wishrefusequotationcustomertip: "您已拒绝报价单, 代理员将尽快重新为您报价,请耐心等待",
 			wishfinishpurchase: "代理员已下单,请留意货物到达状态",
 			
 			
-		}
+		},
+		
+		// 收货相关
+		receiveproduct: {
+			
+			receiveall: "已收到全部货物",
+			receiveallconfirm: "请确认是否收到全部货物",
+			receiveparts: "收到部分货物",
+			
+		},
 		
 	},
 	

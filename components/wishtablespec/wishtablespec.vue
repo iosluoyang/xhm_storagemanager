@@ -120,7 +120,7 @@
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
 					<u-td class="u-td">
-						<text class="text-bold text-white bg-gradual-red">{{ `金额合计` }}</text>
+						<text class="text-bold text-white bg-gradual-red">{{ i18n.wishlist.common.pricesummary }}</text>
 					</u-td>
 				</u-tr>
 				
@@ -157,9 +157,9 @@
 				
 				<!-- 总结区域表头 -->
 				<u-tr class="u-tr">
-					<u-th class="u-th">{{ i18n.wishlist.common.boxcontainernum }}(pcs/box)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.boxsize }}(cm)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.boxvolume }}(m³)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxcontainernum }} (pcs/box)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxsize }} (cm)</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.boxvolume }} (m³)</u-th>
 					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingfee }}</u-th>
 					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingcode }}</u-th>
 				</u-tr>
