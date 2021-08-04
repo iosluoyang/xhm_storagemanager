@@ -168,7 +168,7 @@ const zh = {
 			boxvolume: "单件体积",
 			boxamount: "箱子数量",
 			boxweight: "单件重量",
-			thirdplatformname: "第三方平台名称",
+			thirdplatformtype: "第三方平台类型",
 			thirdplatformordernum: "第三方订单号",
 			domesticshippingfee: "国内物流费用",
 			domesticshippingname: "国内物流名称",

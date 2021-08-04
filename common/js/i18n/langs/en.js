@@ -168,7 +168,7 @@ const en = {
 			boxvolume: "Unit Volume",
 			boxamount: "Number of box",
 			boxweight: "Unit Weight",
-			thirdplatformname: "Platform Name",
+			thirdplatformtype: "Platform Type",
 			thirdplatformordernum: "Platform OrderNumber",
 			domesticshippingfee: "Shippingfee(CN)",
 			domesticshippingname: "Shipping Name(CN)",
@@ -286,6 +286,8 @@ const en = {
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
 			receiveparts: "Receive Parts",
+			purchaseinfo: "Purchase Info",
+			confirminfo: "Confirm Info",
 			
 		},
 		

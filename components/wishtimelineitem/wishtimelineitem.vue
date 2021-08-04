@@ -485,6 +485,9 @@
 								.then(response => {
 									// 操作成功
 									uni.hideLoading()
+									
+									// 用户订阅消息
+									_this.subscribenoticemsg()
 								})
 								.catch(error => {
 									uni.hideLoading()
@@ -588,42 +591,51 @@
 			
 			// 商家收货
 			confirmproductreceive() {
-				
-				let optionSheet = [
-					_this.i18n.wishlist.receiveproduct.receiveall,
-					_this.i18n.wishlist.receiveproduct.receiveparts
-				]
-				
-				uni.showActionSheet({
-					itemList: optionSheet,
-					success: res => {
-						let tapIndex = res.tapIndex
-						
-						// 全部收货
-						if(tapIndex == 0) {
-							uni.showModal({
-								title: _this.i18n.base.tip,
-								content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
-								showCancel: true,
-								cancelText: _this.i18n.base.cancel,
-								confirmText: _this.i18n.base.confirm,
-								success: res => {
-									if(res.confirm) {
-										console.log(`确认收到所有货物`);
-									}
-								}
-							});
-						}
-						// 部分收货
-						else if(tapIndex == 1){
-							// 跳转部分收货页面
-							uni.navigateTo({
-								url: `/pages/wishlist/confirmreceipt?wishId=${_this.wishInfo._id}`
-							});
-						}
-						
-					}
+				// 跳转收货页面
+				uni.navigateTo({
+					url: `/pages/wishlist/confirmreceipt?wishId=${_this.wishInfo._id}`
 				});
+			},
+			
+			// 订阅消息
+			subscribenoticemsg() {
+				
+				// 开始获取订阅
+				// #ifdef MP-WEIXIN
+				
+				// 增加订阅模板消息的功能
+				let purchaseorderId = this.$store.getters.configData.wxminiNoticeTemplateDic.purchaseorder
+				let deliveryorderId = this.$store.getters.configData.wxminiNoticeTemplateDic.deliveryorder
+				
+				uni.requestSubscribeMessage({
+					tmplIds: [purchaseorderId,deliveryorderId],
+					success(res){
+						let errMsg = res.errMsg
+						console.log(errMsg);
+						if(errMsg == 'requestSubscribeMessage:ok') {
+							console.log(res[agentbindwishId]);
+							// 用户同意订阅
+							if(res[agentbindwishId] == 'accept') {
+								console.log(`用户订阅消息成功`);
+							} else if(res[agentbindwishId] == 'reject') {
+								console.log(`用户拒绝订阅消息`);
+							}
+						}
+						else {
+							console.log(`订阅消息失败`);
+						}
+					},
+					fail(err) {
+						console.log(`订阅消息失败`);
+						console.log(err.errMsg);
+					},
+					complete() {
+						console.log(`订阅消息接口完成`);
+						uni.navigateBack();
+					}
+				})
+				
+				// #endif
 				
 			},
 			

@@ -76,7 +76,7 @@ exports.main = async (event, context) => {
 			agentUserWxOpenId = agentUserInfo.wx_openid['mp-weixin']
 		}
 		
-		// 代理员接单提醒
+		// 代理员接单提醒(发送给客户)
 		if(msgtype == 'agentbindwish') {
 						
 			template_id = 'aTdSoJyxsBld6VOHFZ6WnVU7h9pdZyq9mzRyiTkgJd8'
@@ -94,7 +94,7 @@ exports.main = async (event, context) => {
 			
 		}
 		
-		// 确认报价单消息
+		// 确认报价单消息(发送给客户)
 		else if(msgtype == 'confirmquotation') {
 			
 			template_id = 'dMO7jl3o1lgYqd3PrcgALEu30xt6AYXc-xKFC8QFJqY'
@@ -148,18 +148,18 @@ exports.main = async (event, context) => {
 			
 		}
 		
-		// 代理员确认下单(发送给客户)
+		// 代理员下单(发送给客户)
 		else if(msgtype == 'purchaseorder') {
 			
-			template_id = '7dzi8oH8BaVuvGEK-zl3n5bdQHthpU_0LuDnTmLIox8'
+			template_id = 'SiEZ87XeyqXepGhjYI94fTlDneG7iAtMYcQDuRlGncM'
 			touseropenid = creatUserWxOpenId // 发送客户微信openId
 			let tips = `代理员已经下单,请耐心等待商家发货`
 			
 			data = {
-				time11: {value: currenttimestr}, // 下单时间
-				thing2: {value: productTitle}, // 心愿标题
-				thing10: {value: 'LAL Express'}, // 快递公司
-				character_string12: {value: wishId.substr(-10,10)}, // 快递单号
+				character_string1: {value: wishId.substr(-10,10)}, // 订单编号
+				time2: {value: currenttimestr}, // 下单时间
+				thing8: {value: productTitle}, // 心愿标题
+				thing17: {value: agentUserInfo.nickname}, // 下单人
 				thing5: {value: tips} // 备注
 			}
 			

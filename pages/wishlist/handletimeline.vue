@@ -155,8 +155,8 @@
 				<view v-show=" type == 'addpurchaseinfo' ">
 					
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.thirdplatformname }}</view>
-						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformName" />
+						<view class="title">{{ i18n.wishlist.common.thirdplatformtype }}</view>
+						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformType" />
 					</view>
 					
 					<view class="cu-form-group">
@@ -241,7 +241,7 @@
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
 				
-				thirdPlatformName: '1688', // 第三方平台名称 暂固定为1688
+				thirdPlatformType: 'pro-1688', // 第三方平台名称 pro-1688  pro-taobao  pro-shopee  固定为pro-1688
 				thirdOrderNum: '', // 第三方订单号
 				
 			};
@@ -498,7 +498,7 @@
 				let wishId = _this.wishId
 				
 				_this.ifloading = true
-				let newProductExt = {...this.productExt, ...{thirdOrderNum: this.thirdOrderNum}}
+				let newProductExt = {...this.productExt, ...{thirdPlatformType: this.thirdPlatformType}, ...{thirdOrderNum: this.thirdOrderNum}}
 				const db = uniCloud.database();
 				db.collection('wishlist')
 				.doc(this.wishId)
@@ -510,7 +510,7 @@
 						db.collection('wishlist')
 						.doc(wishId)
 						.update({
-							achieveFlag: 3 , // 代理已进货客户待收货
+							achieveFlag: 3 , // 代理已下单客户待收货
 						})
 						.then(response => {
 							// 操作成功

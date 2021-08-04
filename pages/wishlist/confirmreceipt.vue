@@ -64,7 +64,35 @@
 			<!-- 操作区域 -->
 			<view class="optionview padding-left padding-right">
 				
-				<view class="cu-form-group">
+				
+				<!-- 收货状态 -->
+				<radio-group class="block" @change="(e) => {receiveAllFlag = e.detail.value}">
+					
+					<view class="cu-form-group">
+						<view class="title" style="flex-shrink: 1;">{{ `收货状态` }}</view>
+						<view class="flex flex-direction align-center">
+							<view class="flex align-center">
+								
+								<radio class='cyan radio' :class="receiveAllFlag=='1'?'checked':''" :checked="receiveAllFlag=='1'?true:false" value="1"></radio>
+								<text class="margin-left-sm">{{ `收到全部货物` }}</text>
+								
+							</view>
+							
+							<view class="flex align-center margin-top-sm">
+								
+								<radio class='red radio' :class="receiveAllFlag=='0'?'checked':''" :checked="receiveAllFlag=='0'?true:false" value="0"></radio>
+								<text class="margin-left-sm">{{ `收到部分货物` }}</text>
+								
+							</view>
+							
+						</view>
+					</view>
+					<!-- #endif -->
+				</radio-group>
+				
+				<!--  -->
+				
+				<!-- <view class="cu-form-group">
 					<view class="title">{{ `第三方订单号` }}</view>
 					<input class="text-right" type="text" v-model="thirdOrderNum" />
 					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('thirdOrderNum')">{{ i18n.base.paste }}</button>
@@ -80,7 +108,7 @@
 					<view class="title">{{ `国内物流单号` }}</view>
 					<input class="text-right" type="text" v-model="domesticShippingNum" />
 					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('domesticShippingNum')">{{ i18n.base.paste }}</button>
-				</view>
+				</view> -->
 
 			</view>
 			
@@ -113,6 +141,8 @@
 				
 				wishId: null, // 心愿id
 				wishinfo: null, // 心愿详情数据
+				
+				receiveAllFlag: '1', // 收货状态 0 未全部收到货  1全部收到货  默认为1 字符串类型
 				
 				thirdOrderNum: '', // 第三方订单号
 				domesticShippingName: '', // 国内物流名称

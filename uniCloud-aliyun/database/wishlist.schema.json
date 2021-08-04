@@ -129,6 +129,21 @@
 					"bsonType": "string",
 					"description": "箱子重量,单位kg",
 					"defaultValue": ""
+				},
+				"thirdPlatformType": {
+					"bsonType":"string",
+					"description":"第三方平台类型",
+					"enum": [
+						"pro-1688",
+						"pro-taobao",
+						"pro-shopee"
+					],
+					"defaultValue":"pro-1688"
+					
+				},
+				"thirdOrderNum": {
+					"bsonType":"string",
+					"description":"第三方订单号"
 				}
 			}
 		},

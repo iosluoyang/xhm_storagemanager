@@ -219,13 +219,16 @@
 					.groupField('count(*) as count')
 					.get()
 					.then(res => {
-						// 将各个状态的数量进行遍历设置
+						
 						let countdata = res.result.data
-						countdata.forEach(item => {
-							let achieveFlag = item.achieveFlag
-							let count = item.count
-							let selectitem = _this.tabArr.find(item => ( item.status == achieveFlag ))
-							selectitem.count = count
+						// 设置achieveFlag = 0,1,2,3时的角标数量  没有的设置为0(防止更新为0时数据不更新的问题)
+						_this.tabArr.map((item) => {
+							if(item.status == 0 || item.status == 1 || item.status == 2 || item.status == 3 ) {
+								let selectitem = countdata.find(dataitem => (dataitem.achieveFlag == item.status))
+								if(selectitem) {
+									item.count = selectitem.count
+								}
+							}
 						})
 						
 					})
