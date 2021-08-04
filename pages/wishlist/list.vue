@@ -106,6 +106,7 @@
 				if(data && data.type && data.type == 'copywish') {
 					_this.currentStatus = 0
 				}
+				_this.getbadgenum()
 				_this.starttorefresh()
 			})
 			uni.$on('updatebadgenum', function() {

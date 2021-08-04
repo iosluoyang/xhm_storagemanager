@@ -148,6 +148,25 @@ exports.main = async (event, context) => {
 			
 		}
 		
+		// 代理员确认下单(发送给客户)
+		else if(msgtype == 'purchaseorder') {
+			
+			template_id = '7dzi8oH8BaVuvGEK-zl3n5bdQHthpU_0LuDnTmLIox8'
+			touseropenid = creatUserWxOpenId // 发送客户微信openId
+			let tips = `代理员已经下单,请耐心等待商家发货`
+			
+			data = {
+				time11: {value: currenttimestr}, // 下单时间
+				thing2: {value: productTitle}, // 心愿标题
+				thing10: {value: 'LAL Express'}, // 快递公司
+				character_string12: {value: wishId.substr(-10,10)}, // 快递单号
+				thing5: {value: tips} // 备注
+			}
+			
+			page = `/pages/wishlist/wishdetail?id=${info.wishId}&ifShare=true`
+			
+		}
+		
 		// 代理员确认发货(发送给客户)
 		else if(msgtype == 'deliveryorder') {
 			

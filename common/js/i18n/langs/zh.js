@@ -168,7 +168,11 @@ const zh = {
 			boxvolume: "单件体积",
 			boxamount: "箱子数量",
 			boxweight: "单件重量",
+			thirdplatformname: "第三方平台名称",
+			thirdplatformordernum: "第三方订单号",
 			domesticshippingfee: "国内物流费用",
+			domesticshippingname: "国内物流名称",
+			domesticshippingnum: "国内物流运单号",
 			internationalshippingunitfee: "国际物流单价",
 			internationalshippingfee: "国际物流费用",
 			internationalshippingname: "国际物流名称",
@@ -257,6 +261,7 @@ const zh = {
 			addcomment: "说点什么",
 			addext: "补充信息",
 			confirmquotation: "确认报价",
+			addpurchaseinfo: "补充订购信息",
 			editquotation: "编辑报价单",
 			
 			purchasetip: "当您确认进货后,用户将会收到通知,请确认用户是否支付款项",
@@ -282,6 +287,8 @@ const zh = {
 			receiveall: "已收到全部货物",
 			receiveallconfirm: "请确认是否收到全部货物",
 			receiveparts: "收到部分货物",
+			purchaseinfo: "订购信息",
+			confirminfo: "确认信息",
 			
 		},
 		

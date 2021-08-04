@@ -153,6 +153,7 @@
 				  },
 				  success(res) {
 					  // res为callFunction的返回值，此处可以对返回值进行修改
+					  console.log(`接口调用的返回值为:${JSON.stringify(res)}`);
 					  let code = res.result.code
 					  console.log(`接口调用错误码为:${code}`);
 					  

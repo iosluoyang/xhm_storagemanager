@@ -196,8 +196,8 @@
 				{{ i18n.wishlist.timeline.wishfinishpurchase }}
 			</view>
 			
-			<!-- 商家身份进行收货操作 -->
-			<view class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+			<!-- 商家身份进行收货操作 仅当为商家身份且心愿单状态为待收货 -->
+			<view v-if=" (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && wishInfo.achieveFlag == 3 " class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
 				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="confirmproductreceive">{{ i18n.wishlist.timeline.confirmproductreceive }}</button>
 			</view>
 			
@@ -517,7 +517,15 @@
 			
 			// 代理员进货
 			agentpurchasepro() {
+				
 				let wishId = _this.wishInfo._id
+				
+				uni.navigateTo({
+					url: `/pages/wishlist/handletimeline?wishId=${wishId}`
+				});
+				
+				return
+				
 				uni.showModal({
 					title: _this.i18n.tip.optionconfirm,
 					content: _this.i18n.wishlist.timeline.purchasetip,
