@@ -29,37 +29,41 @@
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
 		"wishId": {
-			"bsonType":"string",
-			"description":"心愿id",
-			"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+			"bsonType": "string",
+			"description": "心愿id",
+			"foreignKey": "wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
 		},
 		"title": {
-			"bsonType":"string",
-			"description":"订单标题"
+			"bsonType": "string",
+			"description": "订单标题"
 		},
-		"price": {
-			"bsonType":"string",
-			"description":"订单金额,不包含服务费"
+		"totalProPrice": {
+			"bsonType": "string",
+			"description": "商品总金额"
 		},
-		"commissionFee": {
+		"totalCommissionFee": {
+			"bsonType": "string",
+			"description": "服务费总金额"
+		},
+		"totalDomesticShippingFee": {
 			"bsonType":"string",
-			"description":"服务费金额"
+			"description":"国内运费总金额"
 		},
 		"thirdPlatformType": {
-			"bsonType":"string",
-			"description":"第三方平台类型",
+			"bsonType": "string",
+			"description": "第三方平台类型",
 			"enum": [
 				"pro-1688",
 				"pro-taobao",
 				"pro-shopee"
 			],
-			"defaultValue":"pro-1688"
-			
+			"defaultValue": "pro-1688"
+
 		},
 		"thirdOrderNum": {
-			"bsonType":"string",
-			"description":"第三方订单号"
+			"bsonType": "string",
+			"description": "第三方订单号"
 		}
-		
+
 	}
 }

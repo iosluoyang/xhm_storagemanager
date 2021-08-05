@@ -121,7 +121,7 @@
 					}
                 },
 				{
-				    "path" : "confirmreceipt",
+				    "path" : "wishorder",
 				    "style" : {
 						"navigationBarTitleText":"确认收货"
 					}

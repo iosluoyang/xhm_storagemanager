@@ -129,26 +129,6 @@
 					"bsonType": "string",
 					"description": "箱子重量,单位kg",
 					"defaultValue": ""
-				},
-				"totalProPrice": {
-					"bsonType": "string",
-					"description":"商品总价",
-					"defaultValue": ""
-				},
-				"domesticShippingFee": {
-					"bsonType":"string",
-					"description":"国内运费",
-					"defaultValue":""
-				},
-				"totalCommissionFee": {
-					"bsonType":"string",
-					"description":"总服务费",
-					"defaultValue":""
-				},
-				"orderNum": {
-					"bsonType":"string",
-					"description":"对应的订单id",
-					"foreignKey":"order._id" // 对应订单表的某个id
 				}
 			}
 		},

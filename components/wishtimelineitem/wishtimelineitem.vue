@@ -468,35 +468,12 @@
 							
 							uni.showLoading()
 							
-							// 用户同意报价单  则固定商品总价和总运费和总服务费
-							
-							// 计算费用
-							let totalProPrice = 0
-							let totalCommissionFee = 0
-							let unitCommissionFee = _this.user.unitCommissionFee
-							let firstList = _this.wishinfo.specPropInfo.propValList
-							
-							firstList.forEach(firstitem => {
-							
-								//遍历二级属性 计算总商品金额和总数量
-								firstitem.specStockList.forEach(seconditem => {
-									if(seconditem.amount) {
-										totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
-									}
-								})
-								
-								// 服务费为大种类类型*
-								totalCommissionFee += unitCommissionFee
-								
-							})
-							
-							let productExt = _this.wishInfo.productExt
-							let newProductExt = {...productExt, ...{totalProPrice: totalProPrice}, ...{totalCommissionFee: totalCommissionFee}}
-							
+							// 用户同意报价单 改变心愿单状态和增加相应的时间轴
+
 							const db = uniCloud.database();
 							db.collection('wishlist')
 							.doc(timelineitem.wishId)
-							.update({achieveFlag: 2, productExt: newProductExt})
+							.update({achieveFlag: 2})
 							.then(response => {
 								// 同意成功 
 								uni.hideLoading()
@@ -548,6 +525,12 @@
 			agentpurchasepro() {
 				
 				let wishId = _this.wishInfo._id
+				
+				uni.navigateTo({
+					url: `/pages/wishlist/wishorder?type=agentpurchasepro&wishId=${wishId}`
+				});
+				
+				return
 				
 				uni.navigateTo({
 					url: `/pages/wishlist/handletimeline?wishId=${wishId}`
@@ -619,7 +602,7 @@
 			confirmproductreceive() {
 				// 跳转收货页面
 				uni.navigateTo({
-					url: `/pages/wishlist/confirmreceipt?wishId=${_this.wishInfo._id}`
+					url: `/pages/wishlist/wishorder?type=clientconfirmreceive&wishId=${_this.wishInfo._id}`
 				});
 			},
 			
@@ -639,11 +622,11 @@
 						let errMsg = res.errMsg
 						console.log(errMsg);
 						if(errMsg == 'requestSubscribeMessage:ok') {
-							console.log(res[agentbindwishId]);
+							console.log(res[purchaseorderId]);
 							// 用户同意订阅
-							if(res[agentbindwishId] == 'accept') {
+							if(res[purchaseorderId] == 'accept') {
 								console.log(`用户订阅消息成功`);
-							} else if(res[agentbindwishId] == 'reject') {
+							} else if(res[purchaseorderId] == 'reject') {
 								console.log(`用户拒绝订阅消息`);
 							}
 						}

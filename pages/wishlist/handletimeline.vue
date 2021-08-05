@@ -43,24 +43,16 @@
 			<!-- 选择更新时间轴的类型 -->
 			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo.agentUser == user._id" class="cu-bar btn-group">
 				
-				<!-- 补充订单信息 -->
-				<template v-if="type == 'addpurchaseinfo'">
-					<text class="text-xl text-bold">{{ i18n.wishlist.timeline.addpurchaseinfo }}</text>
-				</template>
+					
+				<!-- 普通时间轴 -->
+				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
 				
-				<!-- 非补充订单信息类型 三个按钮全展示 -->
-				<template v-else>
+				<!-- 补充心愿拓展信息 -->
+				<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
+				
+				<!-- 确定报价单信息 -->
+				<button class="cu-btn shadow-blur round" :class="[type === 'confirmquotation' ? 'bg-gradual-purple' : 'line-purple sm' ]" @tap.stop="type='confirmquotation'">{{ i18n.wishlist.timeline.confirmquotation }}</button>
 					
-					<!-- 普通时间轴 -->
-					<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
-					
-					<!-- 补充心愿拓展信息 -->
-					<button class="cu-btn shadow-blur round" :class="[type === 'addext' ? 'bg-orange' : 'line-orange sm' ]" @tap.stop="type='addext'">{{ i18n.wishlist.timeline.addext }}</button>
-					
-					<!-- 确定报价单信息 -->
-					<button class="cu-btn shadow-blur round" :class="[type === 'confirmquotation' ? 'bg-gradual-purple' : 'line-purple sm' ]" @tap.stop="type='confirmquotation'">{{ i18n.wishlist.timeline.confirmquotation }}</button>
-					
-				</template>
 
 			</view>
 			
@@ -151,22 +143,6 @@
 					
 				</view>
 				
-				<!-- 补充订购信息 -->
-				<view v-show=" type == 'addpurchaseinfo' ">
-					
-					<view class="cu-form-group text-grey">
-						<view class="title">{{ i18n.wishlist.common.thirdplatformtype }}</view>
-						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformType" />
-					</view>
-					
-					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.thirdplatformordernum }}</view>
-						<input class="text-right" type="text" v-model="thirdOrderNum" />
-						<button class='cu-btn bg-green shadow' @tap.stop="pastefromclipboard('thirdOrderNum')">{{ i18n.base.paste }}</button>
-					</view>
-					
-				</view>
-				
 			</form>
 			
 		</view>
@@ -210,7 +186,7 @@
 		
 		data() {
 			return {
-				type: "addcomment", // 页面类型  addcomment 添加普通评论	addext为补充商品资料信息	confirmquotation为确认报价单	addpurchaseinfo 补充订单信息
+				type: "addcomment", // 页面类型  addcomment 添加普通评论	addext为补充商品资料信息	confirmquotation为确认报价单
 				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add 为普通时间轴时使用
 				wishId: null, // 当前时间轴的心愿id
 				wishinfo: null, // 当前心愿详情
@@ -241,8 +217,7 @@
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
 				
-				thirdPlatformType: 'pro-1688', // 第三方平台名称 pro-1688  pro-taobao  pro-shopee  固定为pro-1688
-				thirdOrderNum: '', // 第三方订单号
+				
 				
 			};
 		},
@@ -290,11 +265,6 @@
 							
 							if(_this.wishinfo.productExt) {
 								_this.productExt = _this.wishinfo.productExt
-							}
-							
-							// 如果心愿单为待下单且身份为代理员则type为补充订购信息
-							if(_this.user.role == 'PRODUCT_AGENT' && _this.wishinfo.achieveFlag == 2) {
-								_this.type = 'addpurchaseinfo'
 							}
 					
 						}
@@ -367,18 +337,6 @@
 					_this.ifloading = false
 				})
 				
-			},
-			
-			// 从粘贴板粘贴内容
-			pastefromclipboard(datatype) {
-				uni.getClipboardData({
-					success(res) {
-						let content = res.data
-						if(content) {
-							_this[datatype] = content
-						}
-					}
-				})
 			},
 			
 			// 输入完箱体长宽高之后
@@ -490,192 +448,6 @@
 					_this.ifloading = false
 				})
 				
-			},
-			
-			// 更新订购信息
-			updatepurchaseinfo() {
-				
-				let wishId = _this.wishId
-				
-				
-				/*
-				
-				"creatTime": {
-					"description": "创建时间",
-					"forceDefaultValue": {
-						"$env": "now"
-					}
-				},
-				"creatUser": {
-					"bsonType": "string",
-					"description": "发布者的uid",
-					"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
-				},
-				"agentUser": {
-					"bsonType": "string",
-					"description": "代理员的uid",
-					"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
-				},
-				"wishId": {
-					"bsonType":"string",
-					"description":"心愿id",
-					"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
-				},
-				"title": {
-					"bsonType":"string",
-					"description":"订单标题"
-				},
-				"price": {
-					"bsonType":"string",
-					"description":"订单金额,不包含服务费"
-				},
-				"commissionFee": {
-					"bsonType":"string",
-					"description":"服务费金额"
-				},
-				"thirdPlatformType": {
-					"bsonType":"string",
-					"description":"第三方平台类型",
-					"enum": [
-						"pro-1688",
-						"pro-taobao",
-						"pro-shopee"
-					],
-					"defaultValue":"pro-1688"
-					
-				},
-				"thirdOrderNum": {
-					"bsonType":"string",
-					"description":"第三方订单号"
-				}
-				
-				*/
-				let wishInfo = _this.wishinfo
-			   
-				// 计算该心愿单的商品总价和服务费总价
-			   
-				let totalProPrice = 0
-				let totalDomesticShippingFee = _this.wishinfo.productExt.domesticShippingFee
-				let totalCommissionFee = _this.wishinfo.productExt.totalCommissionFee
-				let totalAmount = 0
-				let totalSpecAmount = 0
-				let firstList = _this.wishinfo.specPropInfo.propValList
-				
-				firstList.forEach(firstitem => {
-				
-					//遍历二级属性 计算总商品金额和总数量
-					firstitem.specStockList.forEach(seconditem => {
-						if(seconditem.amount) {
-							totalAmount += Number(seconditem.amount)
-							totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
-						}
-					})
-					totalSpecAmount += 1
-					
-				})
-				
-				let price = totalProPrice + totalDomesticShippingFee + 
-				
-				console.log(`该心愿的总商品金额为${totalProPrice}--总运费为:${totalDomesticShippingFee}---总订购数量为:${totalAmount}---总类型数量为:${totalSpecAmount}`);
-				return
-				// 创建订单
-				let data = {
-					creatUser: wishInfo.creatUser,
-					agentUser: wishInfo.agentUser,
-					wishId: wishInfo._id,
-					title: wishInfo.productTitle,
-					price: price
-				}
-				const db = uniCloud.database();
-				db.collection('order')
-				.add(data)
-				.then(response => {
-					
-				})
-				.catch(error => {
-					
-				})
-				
-				_this.ifloading = true
-				let newProductExt = {...this.productExt, ...{thirdPlatformType: this.thirdPlatformType}, ...{thirdOrderNum: this.thirdOrderNum}}
-				db.collection('wishlist')
-				.doc(this.wishId)
-				.update({productExt: newProductExt})
-				.then(res => {
-					if(res.result.code == 0) {
-						
-						const db = uniCloud.database();
-						db.collection('wishlist')
-						.doc(wishId)
-						.update({
-							achieveFlag: 3 , // 代理已下单客户待收货
-						})
-						.then(response => {
-							// 操作成功
-							if(response.result.code == 0) {
-								
-								// 发送推送消息  给用户发送下单通知
-								_this.pushnoticemsg('purchaseorder')
-								
-								// 增加一条代理已经进货的时间轴
-								db.collection('wishlisttimeline')
-								.add({type: 91, wishId: wishId})
-								.then(response => {
-									// 增加时间轴成功
-									
-									// 更新列表 详情和时间轴
-									// 更新数据
-									uni.$emit('updatetimeline')
-									// 更新心愿单列表和详情
-									uni.$emit('updatewishlist')
-									uni.$emit('updatewishdetail')
-									
-									uni.showToast({
-										title: _this.i18n.tip.optionsuccess,
-										icon: 'none'
-									});
-									setTimeout(function() {
-										uni.navigateBack();
-									}, 1000);
-									
-								}).catch(error => {
-									console.log(error.message);
-								})
-								
-							}
-							// 操作失败
-							else {
-								uni.showToast({
-									title: _this.i18n.error.optionerror,
-									icon: 'none'
-								});
-							}
-						})
-						.catch(error => {
-							uni.showToast({
-								title: error.message,
-								icon: 'none'
-							});
-						})
-						
-					}
-					else {
-						uni.showToast({
-							title: _this.i18n.error.optionerror,
-							icon: 'none'
-						});
-					}
-				})
-				.catch(err => {
-					console.log(err.message);
-					uni.showToast({
-						title: _this.i18n.error.optionerror,
-						icon: 'none'
-					});
-				})
-				.finally( () => {
-					_this.ifloading = false
-				})
 			},
 			
 			// 选择完规格
@@ -823,22 +595,6 @@
 					});
 					
 					return
-				}
-				// 补充订购信息
-				else if(this.type === 'addpurchaseinfo') {
-					
-					// 校验数据
-					if(!this.thirdOrderNum) {
-						uni.showToast({
-							title: this.i18n.placeholder.handletimeline.typecontent,
-							icon: 'none'
-						});
-						return
-					}
-					
-					//完善订购信息
-					_this.updatepurchaseinfo()
-					
 				}
 				
 				// 开始上传普通时间轴数据

@@ -50,7 +50,7 @@ const zh = {
 		storemanage: "店铺管理",
 		notice: "公告",
 		resetpwd: "重置密码",
-		confirmreceipt: "确认收货",
+		wishorder: "心愿订单",
 
 	},
 	
@@ -281,14 +281,15 @@ const zh = {
 			
 		},
 		
-		// 收货相关
-		receiveproduct: {
+		// 心愿订单相关
+		wishorder: {
 			
 			receiveall: "已收到全部货物",
 			receiveallconfirm: "请确认是否收到全部货物",
 			receiveparts: "收到部分货物",
 			purchaseinfo: "订购信息",
 			confirminfo: "确认信息",
+			pleaseinputthirdordernum: "请输入第三方订单号",
 			
 		},
 		

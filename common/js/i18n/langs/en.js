@@ -50,7 +50,7 @@ const en = {
 		storemanage: "Store Manage",
 		notice: "Notice",
 		resetpwd: "Reset Password",
-		confirmreceipt: "Confirm receipt",
+		wishorder: "Wish Order",
 
 	},
 	
@@ -280,14 +280,15 @@ const en = {
 			
 		},
 		
-		// 收货相关
-		receiveproduct: {
+		// 心愿订单相关
+		wishorder: {
 			
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
 			receiveparts: "Receive Parts",
 			purchaseinfo: "Purchase Info",
 			confirminfo: "Confirm Info",
+			pleaseinputthirdordernum: "Please input the order Number",
 			
 		},
 		
