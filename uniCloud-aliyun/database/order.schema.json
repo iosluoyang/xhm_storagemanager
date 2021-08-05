@@ -1,0 +1,65 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"creatUser": {
+			"bsonType": "string",
+			"description": "发布者的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"agentUser": {
+			"bsonType": "string",
+			"description": "代理员的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"wishId": {
+			"bsonType":"string",
+			"description":"心愿id",
+			"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+		},
+		"title": {
+			"bsonType":"string",
+			"description":"订单标题"
+		},
+		"price": {
+			"bsonType":"string",
+			"description":"订单金额,不包含服务费"
+		},
+		"commissionFee": {
+			"bsonType":"string",
+			"description":"服务费金额"
+		},
+		"thirdPlatformType": {
+			"bsonType":"string",
+			"description":"第三方平台类型",
+			"enum": [
+				"pro-1688",
+				"pro-taobao",
+				"pro-shopee"
+			],
+			"defaultValue":"pro-1688"
+			
+		},
+		"thirdOrderNum": {
+			"bsonType":"string",
+			"description":"第三方订单号"
+		}
+		
+	}
+}

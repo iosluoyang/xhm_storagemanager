@@ -6,10 +6,10 @@
 		</cu-custom>
 		
 		<!-- 心愿详情信息 -->
-		<view class="wishdetailview bg-white padding-sm solid-bottom">
+		<view v-if="wishinfo" class="wishdetailview bg-white padding-sm solid-bottom">
 			
 			<!-- 心愿商品基本信息 -->
-			<view v-if="wishinfo" class="prodetailview padding-sm flex align-center">
+			<view class="prodetailview padding-sm flex align-center">
 				
 				<!-- 商品轮播图 -->
 				<swiper class="screen-swiper square-dot" indicator-dots circular
@@ -38,10 +38,10 @@
 		</view>
 		
 		<!-- 时间轴更新内容 -->
-		<view class="timelinecontentview bg-white padding-sm">
+		<view v-if="wishinfo" class="timelinecontentview bg-white padding-sm">
 			
 			<!-- 选择更新时间轴的类型 -->
-			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo && wishinfo.agentUser == user._id" class="cu-bar btn-group">
+			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo.agentUser == user._id" class="cu-bar btn-group">
 				
 				<!-- 补充订单信息 -->
 				<template v-if="type == 'addpurchaseinfo'">
@@ -154,7 +154,7 @@
 				<!-- 补充订购信息 -->
 				<view v-show=" type == 'addpurchaseinfo' ">
 					
-					<view class="cu-form-group">
+					<view class="cu-form-group text-grey">
 						<view class="title">{{ i18n.wishlist.common.thirdplatformtype }}</view>
 						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformType" />
 					</view>
@@ -172,7 +172,7 @@
 		</view>
 		
 		<!-- 确定按钮 -->
-		<view class="cu-bar btn-group margin">
+		<view v-if="wishinfo" class="cu-bar btn-group margin">
 			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
 		</view>
 		
@@ -497,9 +497,107 @@
 				
 				let wishId = _this.wishId
 				
+				
+				/*
+				
+				"creatTime": {
+					"description": "创建时间",
+					"forceDefaultValue": {
+						"$env": "now"
+					}
+				},
+				"creatUser": {
+					"bsonType": "string",
+					"description": "发布者的uid",
+					"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+				},
+				"agentUser": {
+					"bsonType": "string",
+					"description": "代理员的uid",
+					"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+				},
+				"wishId": {
+					"bsonType":"string",
+					"description":"心愿id",
+					"foreignKey":"wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+				},
+				"title": {
+					"bsonType":"string",
+					"description":"订单标题"
+				},
+				"price": {
+					"bsonType":"string",
+					"description":"订单金额,不包含服务费"
+				},
+				"commissionFee": {
+					"bsonType":"string",
+					"description":"服务费金额"
+				},
+				"thirdPlatformType": {
+					"bsonType":"string",
+					"description":"第三方平台类型",
+					"enum": [
+						"pro-1688",
+						"pro-taobao",
+						"pro-shopee"
+					],
+					"defaultValue":"pro-1688"
+					
+				},
+				"thirdOrderNum": {
+					"bsonType":"string",
+					"description":"第三方订单号"
+				}
+				
+				*/
+				let wishInfo = _this.wishinfo
+			   
+				// 计算该心愿单的商品总价和服务费总价
+			   
+				let totalProPrice = 0
+				let totalDomesticShippingFee = _this.wishinfo.productExt.domesticShippingFee
+				let totalCommissionFee = _this.wishinfo.productExt.totalCommissionFee
+				let totalAmount = 0
+				let totalSpecAmount = 0
+				let firstList = _this.wishinfo.specPropInfo.propValList
+				
+				firstList.forEach(firstitem => {
+				
+					//遍历二级属性 计算总商品金额和总数量
+					firstitem.specStockList.forEach(seconditem => {
+						if(seconditem.amount) {
+							totalAmount += Number(seconditem.amount)
+							totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
+						}
+					})
+					totalSpecAmount += 1
+					
+				})
+				
+				let price = totalProPrice + totalDomesticShippingFee + 
+				
+				console.log(`该心愿的总商品金额为${totalProPrice}--总运费为:${totalDomesticShippingFee}---总订购数量为:${totalAmount}---总类型数量为:${totalSpecAmount}`);
+				return
+				// 创建订单
+				let data = {
+					creatUser: wishInfo.creatUser,
+					agentUser: wishInfo.agentUser,
+					wishId: wishInfo._id,
+					title: wishInfo.productTitle,
+					price: price
+				}
+				const db = uniCloud.database();
+				db.collection('order')
+				.add(data)
+				.then(response => {
+					
+				})
+				.catch(error => {
+					
+				})
+				
 				_this.ifloading = true
 				let newProductExt = {...this.productExt, ...{thirdPlatformType: this.thirdPlatformType}, ...{thirdOrderNum: this.thirdOrderNum}}
-				const db = uniCloud.database();
 				db.collection('wishlist')
 				.doc(this.wishId)
 				.update({productExt: newProductExt})

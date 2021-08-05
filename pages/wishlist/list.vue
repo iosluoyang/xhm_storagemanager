@@ -228,6 +228,9 @@
 								if(selectitem) {
 									item.count = selectitem.count
 								}
+								else {
+									item.count = 0
+								}
 							}
 						})
 						

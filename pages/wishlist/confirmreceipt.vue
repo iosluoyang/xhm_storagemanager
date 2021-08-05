@@ -41,7 +41,7 @@
 			</view>
 			
 			<!-- 订购信息字样 -->
-			<view class="cu-bar bg-white margin-top">
+			<view class="cu-bar bg-white">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-cyan"></text>
 					<text class="text-xl text-bold">{{ i18n.wishlist.receiveproduct.purchaseinfo }}</text>
@@ -54,7 +54,7 @@
 			</view>
 			
 			<!-- 操作区域字样 -->
-			<view class="cu-bar bg-white margin-top">
+			<view class="cu-bar bg-white">
 				<view class="action">
 					<text class="cuIcon cuIcon-titles text-blue"></text>
 					<text class="text-xl text-bold">{{ i18n.wishlist.receiveproduct.confirminfo }}</text>
@@ -64,33 +64,44 @@
 			<!-- 操作区域 -->
 			<view class="optionview padding-left padding-right">
 				
-				
 				<!-- 收货状态 -->
-				<radio-group class="block" @change="(e) => {receiveAllFlag = e.detail.value}">
+				<radio-group class="block" @change="(e) => {receiveAllFlag = Number(e.detail.value)}">
 					
-					<view class="cu-form-group">
-						<view class="title" style="flex-shrink: 1;">{{ `收货状态` }}</view>
-						<view class="flex flex-direction align-center">
-							<view class="flex align-center">
-								
-								<radio class='cyan radio' :class="receiveAllFlag=='1'?'checked':''" :checked="receiveAllFlag=='1'?true:false" value="1"></radio>
-								<text class="margin-left-sm">{{ `收到全部货物` }}</text>
-								
-							</view>
-							
-							<view class="flex align-center margin-top-sm">
-								
-								<radio class='red radio' :class="receiveAllFlag=='0'?'checked':''" :checked="receiveAllFlag=='0'?true:false" value="0"></radio>
-								<text class="margin-left-sm">{{ `收到部分货物` }}</text>
-								
-							</view>
-							
-						</view>
+					<view class="flex justify-around">
+						<label class="radio">
+							<radio class='cyan margin-right-sm' :class="receiveAllFlag==1?'checked':''" :checked="receiveAllFlag==1?true:false" value="1"></radio>
+							{{ i18n.wishlist.receiveproduct.receiveall }}
+						</label>
+						<label class="radio">
+							<radio class='red radio margin-right-sm' :class="receiveAllFlag==0?'checked':''" :checked="receiveAllFlag==0?true:false" value="0"></radio>
+							{{ i18n.wishlist.receiveproduct.receiveparts }}
+						</label>
 					</view>
-					<!-- #endif -->
+					
 				</radio-group>
 				
-				<!--  -->
+				<!-- 如果是部分收货的话则记录收货信息 -->
+				<view v-if="receiveAllFlag == 0" class="padding">
+					
+					<view class="partreceiveview">
+						
+						<view class="title text-bold">{{ `部分收货信息` }}</view>
+						<view class="cu-form-group solid margin-top-sm">
+							<textarea maxlength="-1" v-model="receiveproductcontent" placeholder="输入收货信息"></textarea>
+						</view>
+						
+					</view>
+					
+					<view class="remarkview margin-top-sm">
+						
+						<view class="title text-bold">{{ `备注` }}</view>
+						<view class="cu-form-group solid margin-top-sm">
+							<textarea maxlength="-1" v-model="remark" placeholder="请输入备注"></textarea>
+						</view>
+						
+					</view>
+					
+				</view>
 				
 				<!-- <view class="cu-form-group">
 					<view class="title">{{ `第三方订单号` }}</view>
@@ -112,6 +123,11 @@
 
 			</view>
 			
+			
+			<!-- 确定按钮 -->
+			<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
+				<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
+			</view>
 			
 		</view>
 		
@@ -143,6 +159,9 @@
 				wishinfo: null, // 心愿详情数据
 				
 				receiveAllFlag: '1', // 收货状态 0 未全部收到货  1全部收到货  默认为1 字符串类型
+				
+				receiveproductcontent: "", // 部分收货信息内容
+				remark: '', // 备注内容
 				
 				thirdOrderNum: '', // 第三方订单号
 				domesticShippingName: '', // 国内物流名称
@@ -223,6 +242,85 @@
 					current:index,
 					urls: imgsStr.split(',')
 				})
+			},
+			
+			// 确认收货
+			confirm() {
+				
+				// 如果是全部收货
+				if(this.receiveAllFlag == 1) {
+					uni.showModal({
+						title: _this.i18n.base.tip,
+						content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								
+								const db = uniCloud.database();
+								db.collection('wishlist')
+								.doc(_this.wishId)
+								.update({achieveFlag: 4})
+								.then(response => {
+									if(response.result.code == 0) {
+										
+										// 更改状态成功
+										// 增加时间轴信息
+										// 增加一条代理已经进货的时间轴
+										db.collection('wishlisttimeline')
+										.add({type: 6, wishId: _this.wishId})
+										.then(response => {
+											// 增加时间轴成功
+											
+											// 更新列表 详情和时间轴
+											// 更新数据
+											uni.$emit('updatetimeline')
+											// 更新心愿单列表和详情
+											uni.$emit('updatewishlist')
+											uni.$emit('updatewishdetail')
+											
+											uni.showToast({
+												title: _this.i18n.tip.optionsuccess,
+												icon: 'none'
+											});
+											
+											setTimeout(function() {
+												uni.navigateBack();
+											}, 1000);
+											
+										}).catch(error => {
+											console.log(error.message);
+											uni.showToast({
+												title: _this.i18n.error.optionerror,
+												icon: 'none'
+											});
+										})
+										
+									}
+									else {
+										uni.showToast({
+											title: _this.i18n.error.optionerror,
+											icon: 'none'
+										});
+									}
+								})
+								.catch(error => {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								})
+							}
+						}
+					});
+				}
+				
+				// 部分收货
+				else if(this.receiveAllFlag == 0) {
+					console.log(`部分收货`);
+				}
+				
 			},
 			
 			//

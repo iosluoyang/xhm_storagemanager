@@ -161,7 +161,7 @@
 					<u-th class="u-th">{{ i18n.wishlist.common.boxcontainernum }} (pcs/box)</u-th>
 					<u-th class="u-th">{{ i18n.wishlist.common.boxsize }} (cm)</u-th>
 					<u-th class="u-th">{{ i18n.wishlist.common.boxvolume }} (m³)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingname }}</u-th>
 					<u-th class="u-th">{{ i18n.wishlist.common.internationalshippingcode }}</u-th>
 				</u-tr>
 				
@@ -175,6 +175,8 @@
 				</u-tr>
 				
 			</template>
+			
+			<!-- 物流信息区域 -->
 			
 		</u-table>
 		

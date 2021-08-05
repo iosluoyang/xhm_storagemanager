@@ -26,3 +26,7 @@ db.collection('notice').remove()
 // db.collection('wishlisttimeline').where(` wishId == '60fa2ad49c77390001e2621c' && type == 91 `).remove()
 
 // db.collection('wishlist').where(`aliasName != ''`).get()
+
+db.collection('wishlist').where(`achieveFlag == 0`).get()
+
+db.collection('uni-id-users').get()

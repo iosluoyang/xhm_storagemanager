@@ -467,10 +467,36 @@
 						if(res.confirm) {
 							
 							uni.showLoading()
+							
+							// 用户同意报价单  则固定商品总价和总运费和总服务费
+							
+							// 计算费用
+							let totalProPrice = 0
+							let totalCommissionFee = 0
+							let unitCommissionFee = _this.user.unitCommissionFee
+							let firstList = _this.wishinfo.specPropInfo.propValList
+							
+							firstList.forEach(firstitem => {
+							
+								//遍历二级属性 计算总商品金额和总数量
+								firstitem.specStockList.forEach(seconditem => {
+									if(seconditem.amount) {
+										totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
+									}
+								})
+								
+								// 服务费为大种类类型*
+								totalCommissionFee += unitCommissionFee
+								
+							})
+							
+							let productExt = _this.wishInfo.productExt
+							let newProductExt = {...productExt, ...{totalProPrice: totalProPrice}, ...{totalCommissionFee: totalCommissionFee}}
+							
 							const db = uniCloud.database();
 							db.collection('wishlist')
 							.doc(timelineitem.wishId)
-							.update({achieveFlag: 2})
+							.update({achieveFlag: 2, productExt: newProductExt})
 							.then(response => {
 								// 同意成功 
 								uni.hideLoading()
@@ -518,7 +544,7 @@
 				
 			},
 			
-			// 代理员进货
+			// 代理员下单
 			agentpurchasepro() {
 				
 				let wishId = _this.wishInfo._id

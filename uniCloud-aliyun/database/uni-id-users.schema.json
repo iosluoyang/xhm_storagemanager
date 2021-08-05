@@ -260,6 +260,11 @@
 		"my_invite_code": {
 			"bsonType": "string",
 			"description": "用户自身邀请码"
-		}
+		},
+		"unitCommissionFee": {
+			"bsonType":"int",
+			"description":"该用户的单个服务费,默认20",
+			"defaultValue": 20
+		},
 	}
 }
