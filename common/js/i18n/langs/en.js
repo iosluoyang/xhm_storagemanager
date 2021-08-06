@@ -283,6 +283,7 @@ const en = {
 		// 心愿订单相关
 		wishorder: {
 			
+			checkwishorder: "Check wish order",
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
 			receiveparts: "Receive Parts",

@@ -7,65 +7,34 @@
 		</cu-custom>
 		
 		<!-- 其他的内容视图 -->
-		<view v-if="wishinfo" class="contentview">
+		<view class="contentview">
 			
-			<!-- 心愿详情信息 -->
-			<view v-if="false" class="wishdetailview bg-white padding-sm solid-bottom">
+			<!-- 代理下单页面 -->
+			<view v-if="type == 'agentpurchasepro' && wishinfo" class="agentpurchaseproview">
 				
-				<!-- 心愿商品基本信息 -->
-				<view class="prodetailview padding-sm flex align-center">
-					
-					<!-- 商品轮播图 -->
-					<swiper class="screen-swiper square-dot" indicator-dots circular
-					 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
-						<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
-							<image :src="img" mode="aspectFill" @tap.stop="previewImgs(wishinfo.imgs,index)"></image>
-						</swiper-item>
-					</swiper>
-					
-					<!-- 商品标题和备注 链接 -->
-					<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
-						<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-						<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
-						<view class="bottomview margin-top-sm flex justify-between align-center">
-							<view class="priceview flex align-center">
-								<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-								<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
-							</view>
-							
-						</view>
+				<!-- 订购信息字样 -->
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<text class="cuIcon cuIcon-titles text-cyan"></text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
 					</view>
-					
 				</view>
 				
-			</view>
-			
-			<!-- 订购信息字样 -->
-			<view class="cu-bar bg-white">
-				<view class="action">
-					<text class="cuIcon cuIcon-titles text-cyan"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
+				<!-- 订购数量详情表格 -->
+				<view class="purchasetableview padding-sm">
+					<wishTableSpec ref="wishtablespec1" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
 				</view>
-			</view>
-			
-			<!-- 订购数量详情表格 -->
-			<view class="purchasetableview padding-sm">
-				<wishTableSpec ref="wishtablespec" :wishinfo="wishinfo" sourcefrom="productreceive" ></wishTableSpec>
-			</view>
-			
-			<!-- 操作区域字样 -->
-			<view class="cu-bar bg-white">
-				<view class="action">
-					<text class="cuIcon cuIcon-titles text-blue"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.confirminfo }}</text>
-				</view>
-			</view>
-			
-			<!-- 操作区域 -->
-			<view class="optionview padding-left padding-right">
 				
-				<!-- 如果是代理下单类型 -->
-				<view v-if="type == 'agentpurchasepro'">
+				<!-- 操作区域字样 -->
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<text class="cuIcon cuIcon-titles text-blue"></text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.confirminfo }}</text>
+					</view>
+				</view>
+				
+				<!-- 操作区域 -->
+				<view class="optionview padding-left padding-right">
 					
 					<!-- 价格相关 -->
 					<template v-if="orderPriceInfo">
@@ -92,11 +61,13 @@
 						
 					</template>
 					
+					<!-- 第三方平台类型 -->
 					<view class="cu-form-group text-grey">
 						<view class="title">{{ i18n.wishlist.common.thirdplatformtype }}</view>
 						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformType" />
 					</view>
 					
+					<!-- 第三方平台订单号 -->
 					<view class="cu-form-group">
 						<view class="title">{{ i18n.wishlist.common.thirdplatformordernum }}</view>
 						<input class="text-right" type="text" v-model="thirdOrderNum" />
@@ -105,8 +76,67 @@
 					
 				</view>
 				
-				<!-- 如果是客户收货类型 -->
-				<view v-else-if="type == 'clientconfirmreceive'">
+				<!-- 确定按钮 -->
+				<view v-if="wishinfo || orderinfo" class="btnview padding-left padding-right flex align-center justify-center margin-top">
+					<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
+				</view>
+				
+			</view>
+			
+			<!-- 普通心愿订单页面 -->
+			<view v-else-if="type == 'normal' && orderinfo && wishinfo" class="normalorderview">
+				
+				<!-- 心愿详情信息 -->
+				<view v-if="wishinfo" class="wishdetailview bg-white padding-sm solid-bottom">
+					
+					<!-- 心愿商品基本信息 -->
+					<view class="prodetailview padding-sm flex align-center">
+						
+						<!-- 商品轮播图 -->
+						<swiper class="screen-swiper square-dot" indicator-dots circular
+						 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
+							<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
+								<image :src="img" mode="aspectFill" @tap.stop="previewImgs(wishinfo.imgs,index)"></image>
+							</swiper-item>
+						</swiper>
+						
+						<!-- 商品标题和备注 链接 -->
+						<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
+							<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
+							<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
+							<view class="bottomview margin-top-sm flex justify-between align-center">
+								<view class="priceview flex align-center">
+									<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
+									<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
+								</view>
+								
+							</view>
+						</view>
+						
+					</view>
+					
+				</view>
+				
+				<!-- 订单基本信息 -->
+				<view class="orderinfoview">
+					
+					<!-- 订购信息字样 -->
+					<view class="cu-bar bg-white padding-left-sm padding-right-sm">
+						<view class="action">
+							<text class="cuIcon cuIcon-titles text-cyan"></text>
+							<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
+						</view>
+					</view>
+					
+					<!-- 订购数量详情表格 -->
+					<view class="purchasetableview padding-sm">
+						<wishTableSpec ref="wishtablespec2" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
+					</view>
+					
+				</view>
+				
+				<!-- 如果是已发货待收货则客户显示确认收货视图 -->
+				<view v-if="orderinfo.status == 0 && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') ">
 					
 					<!-- 收货状态 -->
 					<radio-group class="block" @change="(e) => {receiveAllFlag = Number(e.detail.value)}">
@@ -165,14 +195,14 @@
 						<button class='cu-btn bg-green shadow' @tap.stop="pasteData('domesticShippingNum')">{{ i18n.base.paste }}</button>
 					</view> -->
 					
+					
+					<!-- 确定按钮 -->
+					<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
+						<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
+					</view>
+					
 				</view>
 				
-			</view>
-			
-			
-			<!-- 确定按钮 -->
-			<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
-				<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
 			</view>
 			
 		</view>
@@ -199,10 +229,12 @@
 			return {
 				ifloading: false, // 是否正在加载
 				
-				type: 'agentpurchasepro', // 该页面类型  agentpurchasepro 为代理下单页面  clientconfirmreceive 为客户确认收货页面
+				type: 'normal', // 该页面类型 normal 为正常订单页面类型  agentpurchasepro 为代理下单页面
 				
 				wishId: null, // 心愿id
+				wishOrderId: null, // 心愿订单id
 				wishinfo: null, // 心愿详情数据
+				orderinfo: null, // 心愿订单数据
 				
 				receiveAllFlag: '1', // 收货状态 0 未全部收到货  1全部收到货  默认为1 字符串类型
 				
@@ -239,11 +271,62 @@
 			_this = this
 			
 			let wishId = option.wishId
-			if(wishId) {
+			let wishOrderId = option.wishOrderId
+			
+			// 如果心愿订单id存在的情况下则通过wishOrderId获取心愿详情信息
+			if(wishOrderId) {
+				_this.ifloading = true
+				const db = uniCloud.database();
+				db.collection('order,wishlist')
+				.doc(wishOrderId)
+				.get({getOne: true})
+				.then(response => {
+					// 获取成功
+					if(response.result.code == 0) {
+						let orderinfo = response.result.data
+						console.log(orderinfo);
+						
+						if(orderinfo) {
+							_this.orderinfo = orderinfo
+							let wishinfo = orderinfo.wishId[0]
+							_this.wishinfo = wishinfo
+							console.log(_this.wishinfo);
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						}
+						
+					}
+					// 获取失败
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				.finally(() => {
+					_this.ifloading = false
+				})
+			}
+			
+			// 如果不存在orderid但是存在wishId则进行加载详情信息(仅代理确认下单时使用)
+			else if(wishId) {
 				_this.wishId = wishId
 				// 获取心愿详情信息
 				_this.loadwishdetail()
 			}
+			
+			// 均不存在 报错
 			else {
 				uni.showToast({
 					title: _this.i18n.error.loaderror,
@@ -281,48 +364,7 @@
 							// 如果当前用户身份为代理员且为待下单状态则设置页面类型为代理员下单类型
 							if(_this.user.role == 'PRODUCT_AGENT' && _this.wishinfo.achieveFlag == 2) {
 								_this.type = 'agentpurchasepro'
-								
-								// 开始计算即将生成订单的部分信息
-								// 计算当前心愿的相关价格 生成订单
-								let wishInfo = _this.wishinfo
-								let clientUnitCommissionFee = wishInfo.creatUser.unitCommissionFee
-								_this.unitCommissionFee = clientUnitCommissionFee
-								// 计算费用
-								let totalProPrice = 0
-								let totalAmount = 0
-								let totalDomesticShippingFee = wishInfo.productExt.domesticShippingFee
-								let unitCommissionFee = Number(_this.unitCommissionFee)
-								let totalCommissionFee = 0
-								
-								let firstList = wishInfo.specPropInfo.propValList
-								
-								firstList.forEach(firstitem => {
-								
-									//遍历二级属性 计算总商品金额和总数量
-									firstitem.specStockList.forEach(seconditem => {
-										if(seconditem.amount) {
-											totalAmount += seconditem.amount
-											totalProPrice = parseFloat(totalProPrice) + parseFloat( Number(seconditem.amount) * parseFloat(seconditem.price) )
-										}
-									})
-									
-									totalProPrice = totalProPrice.toFixed(2)
-									
-									// 服务费为大种类类型*
-									totalCommissionFee += unitCommissionFee
-									
-								})
-																
-								let orderPriceInfo = {
-									totalProPrice,
-									totalAmount,
-									totalDomesticShippingFee,
-									unitCommissionFee,
-									totalCommissionFee
-								}
-								
-								_this.orderPriceInfo = orderPriceInfo
-								
+								_this.initPurchaseOrderData()
 							}
 							
 						}
@@ -330,6 +372,52 @@
 					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
 					})
+				
+			},
+			
+			// 初始化心愿订单的数据
+			initPurchaseOrderData() {
+				
+				// 开始计算即将生成订单的部分信息
+				// 计算当前心愿的相关价格 生成订单
+				let wishInfo = _this.wishinfo
+				let clientUnitCommissionFee = wishInfo.creatUser.unitCommissionFee
+				_this.unitCommissionFee = clientUnitCommissionFee
+				// 计算费用
+				let totalProPrice = 0
+				let totalAmount = 0
+				let totalDomesticShippingFee = wishInfo.productExt.domesticShippingFee
+				let unitCommissionFee = Number(_this.unitCommissionFee)
+				let totalCommissionFee = 0
+				
+				let firstList = wishInfo.specPropInfo.propValList
+				
+				firstList.forEach(firstitem => {
+				
+					//遍历二级属性 计算总商品金额和总数量
+					firstitem.specStockList.forEach(seconditem => {
+						if(seconditem.amount) {
+							totalAmount += seconditem.amount
+							totalProPrice = parseFloat(totalProPrice) + parseFloat( Number(seconditem.amount) * parseFloat(seconditem.price) )
+						}
+					})
+					
+					totalProPrice = totalProPrice.toFixed(2)
+					
+					// 服务费为大种类类型*
+					totalCommissionFee += unitCommissionFee
+					
+				})
+												
+				let orderPriceInfo = {
+					totalProPrice,
+					totalAmount,
+					totalDomesticShippingFee,
+					unitCommissionFee,
+					totalCommissionFee
+				}
+				
+				_this.orderPriceInfo = orderPriceInfo
 				
 			},
 			
@@ -364,107 +452,134 @@
 					return
 				}
 				
-				let wishInfo = _this.wishinfo
-				
-				// 创建订单数据
-				let data = {
-					creatUser: wishInfo.creatUser._id,
-					agentUser: wishInfo.agentUser._id,
-					wishId: wishInfo._id,
-					title: wishInfo.productTitle,
-					totalProPrice: _this.orderPriceInfo.totalProPrice.toString(),
-					totalCommissionFee: _this.orderPriceInfo.totalCommissionFee.toString(),
-					totalDomesticShippingFee: _this.orderPriceInfo.totalDomesticShippingFee.toString(),
-					thirdPlatformType: _this.thirdPlatformType,
-					thirdOrderNum: _this.thirdOrderNum
-				}
-				
-				_this.ifloading = true
-				const db = uniCloud.database();
-				db.collection('order')
-				.add(data)
-				.then(response => {
-					
-					// 生成订单成功
-					if(response.result.code == 0) {
-						
-						// 改变心愿状态为已下单待收货
-						
-						db.collection('wishlist')
-						.doc(wishInfo._id)
-						.update({
-							achieveFlag: 3 , // 代理已下单客户待收货
-						})
-						.then(response => {
-							// 操作成功
-							if(response.result.code == 0) {
+				uni.showModal({
+					title: _this.i18n.tip.optionconfirm,
+					content: _this.i18n.wishlist.timeline.purchasetip,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 确认进货
+							
+							let wishInfo = _this.wishinfo
+							
+							// 创建订单数据
+							let data = {
+								creatUser: wishInfo.creatUser._id,
+								agentUser: wishInfo.agentUser._id,
+								wishId: wishInfo._id,
+								title: wishInfo.productTitle,
+								totalProPrice: _this.orderPriceInfo.totalProPrice.toString(),
+								totalCommissionFee: _this.orderPriceInfo.totalCommissionFee.toString(),
+								totalDomesticShippingFee: _this.orderPriceInfo.totalDomesticShippingFee.toString(),
+								thirdPlatformType: _this.thirdPlatformType,
+								thirdOrderNum: _this.thirdOrderNum
+							}
+							
+							_this.ifloading = true
+							const db = uniCloud.database();
+							db.collection('order')
+							.add(data)
+							.then(response => {
 								
-								// 发送推送消息  给用户发送下单通知
-								_this.pushnoticemsg('purchaseorder')
-								
-								// 增加一条代理已经下单的时间轴
-								db.collection('wishlisttimeline')
-								.add({type: 91, wishId: wishInfo._id})
-								.then(response => {
-									// 增加时间轴成功
+								console.log(response.result);
+								// 生成订单成功
+								if(response.result.code == 0) {
+									
+									// 改变心愿状态为已下单待收货
+									let newwishorderid = response.result.id
+									
+									db.collection('wishlist')
+									.doc(wishInfo._id)
+									.update({
+										achieveFlag: 3 , // 代理已下单客户待收货
+										wishOrderId: newwishorderid, // 更新心愿绑定的心愿订单号
+									})
+									.then(response => {
+										// 操作成功
+										if(response.result.code == 0) {
+											
+											// 发送推送消息  给用户发送下单通知
+											_this.pushnoticemsg('purchaseorder')
+											
+											// 增加一条代理已经下单的时间轴
+											db.collection('wishlisttimeline')
+											.add({type: 91, wishId: wishInfo._id})
+											.then(response => {
+												// 增加时间轴成功
+												_this.ifloading = false
+												
+												// 更新列表 详情和时间轴
+												// 更新数据
+												uni.$emit('updatetimeline')
+												// 更新心愿单列表和详情
+												uni.$emit('updatewishlist')
+												uni.$emit('updatewishdetail')
+												
+												uni.showToast({
+													title: _this.i18n.tip.optionsuccess,
+													icon: 'none'
+												});
+												setTimeout(function() {
+													uni.navigateBack();
+												}, 1000);
+												
+											}).catch(error => {
+												_this.ifloading = false
+												console.log(error.message);
+											})
+											
+										}
+										// 操作失败
+										else {
+											_this.ifloading = false
+											uni.showToast({
+												title: _this.i18n.error.optionerror,
+												icon: 'none'
+											});
+											_this.delwishorderbyid(newwishorderid) // 操作失败,删除新增心愿订单
+										}
+									})
+									.catch(error => {
+										_this.ifloading = false
+										uni.showToast({
+											title: error.message,
+											icon: 'none'
+										});
+										
+										_this.delwishorderbyid(newwishorderid) // 操作失败,删除新增心愿订单
+										
+									})
+									
+								}
+								else{
 									_this.ifloading = false
-									
-									// 更新列表 详情和时间轴
-									// 更新数据
-									uni.$emit('updatetimeline')
-									// 更新心愿单列表和详情
-									uni.$emit('updatewishlist')
-									uni.$emit('updatewishdetail')
-									
 									uni.showToast({
-										title: _this.i18n.tip.optionsuccess,
+										title: _this.i18n.error.optionerror,
 										icon: 'none'
 									});
-									setTimeout(function() {
-										uni.navigateBack();
-									}, 1000);
-									
-								}).catch(error => {
-									_this.ifloading = false
-									console.log(error.message);
-								})
+								}
 								
-							}
-							// 操作失败
-							else {
+							})
+							.catch(error => {
 								_this.ifloading = false
 								uni.showToast({
 									title: _this.i18n.error.optionerror,
 									icon: 'none'
 								});
-							}
-						})
-						.catch(error => {
-							_this.ifloading = false
-							uni.showToast({
-								title: error.message,
-								icon: 'none'
-							});
-						})
-						
+							})
+							
+						}
 					}
-					else{
-						_this.ifloading = false
-						uni.showToast({
-							title: _this.i18n.error.optionerror,
-							icon: 'none'
-						});
-					}
-					
-				})
-				.catch(error => {
-					_this.ifloading = false
-					uni.showToast({
-						title: _this.i18n.error.optionerror,
-						icon: 'none'
-					});
-				})
+				});
 				
+			},
+			
+			// 公共处理删除新增心愿订单的方法
+			delwishorderbyid(orderid) {
+				const db = uniCloud.database();
+				db.collection('order').doc(orderid).remove()
 			},
 			
 			// 推送消息
@@ -505,83 +620,90 @@
 				// 客户确认收货
 				else if(this.type == 'clientconfirmreceive') {
 					
-					// 如果是全部收货
-					if(this.receiveAllFlag == 1) {
-						uni.showModal({
-							title: _this.i18n.base.tip,
-							content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
-							showCancel: true,
-							cancelText: _this.i18n.base.cancel,
-							confirmText: _this.i18n.base.confirm,
-							success: res => {
-								if(res.confirm) {
-									
-									const db = uniCloud.database();
-									db.collection('wishlist')
-									.doc(_this.wishId)
-									.update({achieveFlag: 4})
-									.then(response => {
-										if(response.result.code == 0) {
-											
-											// 更改状态成功
-											// 增加时间轴信息
-											// 增加一条代理已经进货的时间轴
-											db.collection('wishlisttimeline')
-											.add({type: 6, wishId: _this.wishId})
-											.then(response => {
-												// 增加时间轴成功
-												
-												// 更新列表 详情和时间轴
-												// 更新数据
-												uni.$emit('updatetimeline')
-												// 更新心愿单列表和详情
-												uni.$emit('updatewishlist')
-												uni.$emit('updatewishdetail')
-												
-												uni.showToast({
-													title: _this.i18n.tip.optionsuccess,
-													icon: 'none'
-												});
-												
-												setTimeout(function() {
-													uni.navigateBack();
-												}, 1000);
-												
-											}).catch(error => {
-												console.log(error.message);
-												uni.showToast({
-													title: _this.i18n.error.optionerror,
-													icon: 'none'
-												});
-											})
-											
-										}
-										else {
-											uni.showToast({
-												title: _this.i18n.error.optionerror,
-												icon: 'none'
-											});
-										}
-									})
-									.catch(error => {
-										uni.showToast({
-											title: _this.i18n.error.optionerror,
-											icon: 'none'
-										});
-									})
-								}
-							}
-						});
-					}
 					
-					// 部分收货
-					else if(this.receiveAllFlag == 0) {
-						console.log(`部分收货`);
-					}
 					
 				}
 				
 			},
+			
+			// 客户确认收货
+			clientconfirmreceive() {
+				
+				// 如果是全部收货
+				if(this.receiveAllFlag == 1) {
+					uni.showModal({
+						title: _this.i18n.base.tip,
+						content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								
+								const db = uniCloud.database();
+								db.collection('wishlist')
+								.doc(_this.wishId)
+								.update({achieveFlag: 4})
+								.then(response => {
+									if(response.result.code == 0) {
+										
+										// 更改状态成功
+										// 增加时间轴信息
+										// 增加一条代理已经进货的时间轴
+										db.collection('wishlisttimeline')
+										.add({type: 6, wishId: _this.wishId})
+										.then(response => {
+											// 增加时间轴成功
+											
+											// 更新列表 详情和时间轴
+											// 更新数据
+											uni.$emit('updatetimeline')
+											// 更新心愿单列表和详情
+											uni.$emit('updatewishlist')
+											uni.$emit('updatewishdetail')
+											
+											uni.showToast({
+												title: _this.i18n.tip.optionsuccess,
+												icon: 'none'
+											});
+											
+											setTimeout(function() {
+												uni.navigateBack();
+											}, 1000);
+											
+										}).catch(error => {
+											console.log(error.message);
+											uni.showToast({
+												title: _this.i18n.error.optionerror,
+												icon: 'none'
+											});
+										})
+										
+									}
+									else {
+										uni.showToast({
+											title: _this.i18n.error.optionerror,
+											icon: 'none'
+										});
+									}
+								})
+								.catch(error => {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								})
+							}
+						}
+					});
+				}
+				
+				// 部分收货
+				else if(this.receiveAllFlag == 0) {
+					console.log(`部分收货`);
+				}
+				
+			}
 			
 			//
 			

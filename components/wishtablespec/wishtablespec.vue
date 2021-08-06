@@ -115,8 +115,7 @@
 			
 			<!-- 金额汇总区域 -->
 			<!-- 心愿详情中如果心愿为进行中则不显示  其他情况下均显示 -->
-			<!-- 来源于确认收货也不显示 -->
-			<template v-if=" sourcefrom == 'productreceive' || (sourcefrom == 'wishdetail' && wishinfo.achieveFlag == 0) ? false : true ">
+			<template v-if=" (sourcefrom == 'wishdetail' && wishinfo.achieveFlag == 0) ? false : true ">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
@@ -199,7 +198,7 @@
 				default: null
 			},
 			
-			// 表格展示来源  sourcefrom:  wishdetail 心愿详情	handletimeline 时间轴编辑  productreceive 货物确认收货
+			// 表格展示来源  sourcefrom:  wishdetail 心愿详情	handletimeline 时间轴编辑  wishorder 心愿订单
 			sourcefrom: {
 				type: String,
 				default: 'wishdetail'

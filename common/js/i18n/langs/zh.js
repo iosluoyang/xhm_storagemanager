@@ -284,6 +284,7 @@ const zh = {
 		// 心愿订单相关
 		wishorder: {
 			
+			checkwishorder: "查看心愿订单",
 			receiveall: "已收到全部货物",
 			receiveallconfirm: "请确认是否收到全部货物",
 			receiveparts: "收到部分货物",

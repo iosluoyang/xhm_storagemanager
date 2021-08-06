@@ -177,7 +177,7 @@
 			
 		</view>
 		
-		<!-- 心愿单代理人进货类型 type=91 -->
+		<!-- 心愿单代理人已经下单类型 type=91 -->
 		<view v-else-if="timelineitem.type == 91" class="content bg-cyan shadow-blur">
 			
 			<!-- 时间轴发布人信息 -->
@@ -196,10 +196,17 @@
 				{{ i18n.wishlist.timeline.wishfinishpurchase }}
 			</view>
 			
-			<!-- 商家身份进行收货操作 仅当为商家身份且心愿单状态为待收货 -->
-			<view v-if=" (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && wishInfo.achieveFlag == 3 " class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
-				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="confirmproductreceive">{{ i18n.wishlist.timeline.confirmproductreceive }}</button>
+			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
+			<view class="optionbtnview margin-top-sm">
+				
+				<button v-if="wishInfo.wishOrderId" class="cu-btn round bg-white margin-right" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
+				
 			</view>
+			
+			<!-- 商家身份进行收货操作 仅当为商家身份且心愿单状态为待收货 -->
+			<!-- <view v-if=" (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && wishInfo.achieveFlag == 3 " class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
+				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="confirmproductreceive">{{ i18n.wishlist.timeline.confirmproductreceive }}</button>
+			</view> -->
 			
 		</view>
 		
@@ -530,72 +537,16 @@
 					url: `/pages/wishlist/wishorder?type=agentpurchasepro&wishId=${wishId}`
 				});
 				
-				return
+			},
+			
+			// 查看心愿订单
+			checkwishorder() {
 				
+				let wishOrderId = this.wishInfo.wishOrderId
 				uni.navigateTo({
-					url: `/pages/wishlist/handletimeline?wishId=${wishId}`
+					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
 				});
 				
-				return
-				
-				uni.showModal({
-					title: _this.i18n.tip.optionconfirm,
-					content: _this.i18n.wishlist.timeline.purchasetip,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							// 确认进货
-							
-							const db = uniCloud.database();
-							db.collection('wishlist')
-							.doc(wishId)
-							.update({
-								achieveFlag: 3 , // 代理已进货客户待收货
-							})
-							.then(response => {
-								// 操作成功
-								if(response.result.code == 0) {
-									
-									// 发送推送消息  给用户发送下单通知
-									_this.pushnoticemsg('deliveryorder')
-									
-									// 增加一条代理已经进货的时间轴
-									db.collection('wishlisttimeline')
-									.add({type: 91, wishId: wishId})
-									.then(response => {
-										// 增加时间轴成功
-										
-										// 更新列表 详情和时间轴
-										// 更新数据
-										uni.$emit('updatetimeline')
-										// 更新心愿单列表和详情
-										uni.$emit('updatewishlist')
-										uni.$emit('updatewishdetail')
-										
-									}).catch(error => {
-										console.log(error.message);
-									})
-									
-								}
-								// 操作失败
-								else {
-									uni.showToast({
-										title: _this.i18n.error.optionerror,
-										icon: 'none'
-									});
-								}
-							})
-							.catch(error => {
-								uni.showToast({
-									title: error.message,
-									icon: 'none'
-								});
-							})
-						}
-					}
-				});
 			},
 			
 			// 商家收货
