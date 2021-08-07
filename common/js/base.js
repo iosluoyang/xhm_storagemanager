@@ -383,8 +383,6 @@ export function sleep(sleeptime) {
 // 复制内容到剪贴板
 export function copytoclipboard(data) {
 	
-	// 非H5可以进行复制内容到剪贴板
-	// #ifndef H5
 	uni.setClipboardData({
 		data: data,
 		success() {
@@ -394,7 +392,6 @@ export function copytoclipboard(data) {
 			});
 		}
 	})
-	// #endif
 	
 }
 

@@ -114,8 +114,10 @@
 			</u-tr>
 			
 			<!-- 金额汇总区域 -->
-			<!-- 心愿详情中如果心愿为进行中则不显示  其他情况下均显示 -->
-			<template v-if=" (sourcefrom == 'wishdetail' && wishinfo.achieveFlag == 0) ? false : true ">
+			<!-- 心愿详情来源中如果心愿为进行中则不显示  其他情况下均显示 -->
+			<!-- 时间轴编辑来源均显示 -->
+			<!-- 心愿订单不显示 -->
+			<template v-if=" (sourcefrom == 'wishdetail' && wishinfo.achieveFlag != 0) || sourcefrom == 'handletimeline' ">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
@@ -145,8 +147,8 @@
 			</template>
 			
 			<!-- 补充信息区域 -->
-			<!-- 心愿详情一直显示  编辑时间轴不显示 -->
-			<template v-if=" sourcefrom != 'handletimeline' && wishinfo && wishinfo.productExt">
+			<!-- 心愿详情一直显示  编辑时间轴不显示  心愿订单不显示-->
+			<template v-if=" sourcefrom == 'wishdetail' && wishinfo && wishinfo.productExt">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">

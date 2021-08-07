@@ -3,6 +3,7 @@ const en = {
 	// 公共参数
 	base: {
 		
+		copy: "Copy",
 		paste: "Paste",
 		edit: "Edit",
 		search: "Search",
@@ -290,6 +291,13 @@ const en = {
 			purchaseinfo: "Purchase Info",
 			confirminfo: "Confirm Info",
 			pleaseinputthirdordernum: "Please input the order Number",
+			totalproprice: "Product Price",
+			totaldomesticshippingfee: "Shipping Fee(CN)",
+			totalcommissionfee: "Commission Fee",
+			totalorderprice: "Order Price",
+			makeordertime: "Make-order Time",
+			deliverytime: "Delivery Time",
+			receivetime: "Receive Time",
 			
 		},
 		

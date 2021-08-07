@@ -1,3 +1,6 @@
+// 对齐H5端Api使用
+import '@/js_sdk/ican-H5Api/ican-H5Api.js'
+
 import Vue from 'vue'
 import App from './App'
 import i18n from '@/common/js/i18n/i18n.js'

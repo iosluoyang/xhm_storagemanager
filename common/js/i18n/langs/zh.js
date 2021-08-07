@@ -3,6 +3,7 @@ const zh = {
 	// 公共参数
 	base: {
 		
+		copy: "复制",
 		paste: "粘贴",
 		edit: "编辑",
 		search: "搜索",
@@ -291,6 +292,15 @@ const zh = {
 			purchaseinfo: "订购信息",
 			confirminfo: "确认信息",
 			pleaseinputthirdordernum: "请输入第三方订单号",
+			totalproprice: "商品总价",
+			totaldomesticshippingfee: "国内运费总价",
+			totalcommissionfee: "总服务费",
+			totalorderprice: "订单总价",
+			makeordertime: "下单时间",
+			deliverytime: "发货时间",
+			receivetime: "收货时间",
+			delivery: "发货"
+			
 			
 		},
 		

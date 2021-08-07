@@ -45,18 +45,23 @@
 						</view>
 						
 						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.common.tabledata.proprice }}</view>
+							<view class="title">{{ i18n.wishlist.wishorder.totalproprice }}</view>
 							<input class="text-right" type="text" v-model="orderPriceInfo.totalProPrice" />
 						</view>
 						
 						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</view>
+							<view class="title">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</view>
 							<input class="text-right" type="text" v-model="orderPriceInfo.totalDomesticShippingFee" />
 						</view>
 						
 						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.common.tabledata.commissionfee }}</view>
+							<view class="title">{{ i18n.wishlist.wishorder.totalcommissionfee }}</view>
 							<input class="text-right" type="text" v-model="orderPriceInfo.totalCommissionFee" />
+						</view>
+						
+						<view class="cu-form-group">
+							<view class="title">{{ i18n.wishlist.wishorder.totalorderprice }}</view>
+							<input class="text-right" type="text" v-model="orderPriceInfo.totalOrderPrice" />
 						</view>
 						
 					</template>
@@ -128,82 +133,200 @@
 						</view>
 					</view>
 					
-					<!-- 订购数量详情表格 -->
+					<!-- 订购数量详情表格 仅显示订购规格 -->
 					<view class="purchasetableview padding-sm">
 						<wishTableSpec ref="wishtablespec2" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
 					</view>
 					
-				</view>
-				
-				<!-- 如果是已发货待收货则客户显示确认收货视图 -->
-				<view v-if="orderinfo.status == 0 && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') ">
-					
-					<!-- 收货状态 -->
-					<radio-group class="block" @change="(e) => {receiveAllFlag = Number(e.detail.value)}">
+					<!-- 其他信息 -->
+					<view class="basicorderinfoview cu-list menu">
 						
-						<view class="flex justify-around">
-							<label class="radio">
-								<radio class='cyan margin-right-sm' :class="receiveAllFlag==1?'checked':''" :checked="receiveAllFlag==1?true:false" value="1"></radio>
-								{{ i18n.wishlist.receiveproduct.receiveall }}
-							</label>
-							<label class="radio">
-								<radio class='red radio margin-right-sm' :class="receiveAllFlag==0?'checked':''" :checked="receiveAllFlag==0?true:false" value="0"></radio>
-								{{ i18n.wishlist.receiveproduct.receiveparts }}
-							</label>
-						</view>
-						
-					</radio-group>
-					
-					<!-- 如果是部分收货的话则记录收货信息 -->
-					<view v-if="receiveAllFlag == 0" class="padding">
-						
-						<view class="partreceiveview">
-							
-							<view class="title text-bold">{{ `部分收货信息` }}</view>
-							<view class="cu-form-group solid margin-top-sm">
-								<textarea maxlength="-1" v-model="receiveproductcontent" placeholder="输入收货信息"></textarea>
+						<!-- 商品总价 -->
+						<view class="cu-item">
+							<view class="content">
+								<text class="cuIcon-goodsfill text-orange"></text>
+								<text class="text-grey">{{ i18n.wishlist.wishorder.totalproprice }}</text>
 							</view>
-							
-						</view>
-						
-						<view class="remarkview margin-top-sm">
-							
-							<view class="title text-bold">{{ `备注` }}</view>
-							<view class="cu-form-group solid margin-top-sm">
-								<textarea maxlength="-1" v-model="remark" placeholder="请输入备注"></textarea>
+							<view class="action">
+								<text class="text-price text-black text-xl">{{ orderinfo.totalProPrice }}</text>
 							</view>
-							
 						</view>
 						
-					</view>
-					
-					<!-- <view class="cu-form-group">
-						<view class="title">{{ `第三方订单号` }}</view>
-						<input class="text-right" type="text" v-model="thirdOrderNum" />
-						<button class='cu-btn bg-green shadow' @tap.stop="pasteData('thirdOrderNum')">{{ i18n.base.paste }}</button>
-					</view>
-					
-					
-					<view class="cu-form-group">
-						<view class="title">{{ `国内物流名称` }}</view>
-						<input class="text-right" type="text" v-model="domesticShippingName" />
-					</view>
-					
-					<view class="cu-form-group">
-						<view class="title">{{ `国内物流单号` }}</view>
-						<input class="text-right" type="text" v-model="domesticShippingNum" />
-						<button class='cu-btn bg-green shadow' @tap.stop="pasteData('domesticShippingNum')">{{ i18n.base.paste }}</button>
-					</view> -->
-					
-					
-					<!-- 确定按钮 -->
-					<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
-						<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
+						<!-- 国内总运费 -->
+						<view class="cu-item">
+							<view class="content">
+								<text class="cuIcon-deliver_fill text-green"></text>
+								<text class="text-grey">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</text>
+							</view>
+							<view class="action">
+								<text class="text-price text-black text-xl">{{ orderinfo.totalDomesticShippingFee }}</text>
+							</view>
+						</view>
+						
+						<!-- 总服务费 -->
+						<view class="cu-item">
+							<view class="content">
+								<text class="cuIcon-servicefill text-blue"></text>
+								<text class="text-grey">{{ i18n.wishlist.wishorder.totalcommissionfee }}</text>
+							</view>
+							<view class="action">
+								<text class="text-price text-black text-xl">{{ orderinfo.totalCommissionFee }}</text>
+							</view>
+						</view>
+						
+						<!-- 订单总价 -->
+						<view class="cu-item">
+							<view class="content">
+								<text class="cuIcon-moneybagfill text-red"></text>
+								<text class="text-grey">{{ i18n.wishlist.wishorder.totalorderprice }}</text>
+							</view>
+							<view class="action">
+								<text class="text-price text-red text-xxl">{{ orderinfo.totalOrderPrice }}</text>
+							</view>
+						</view>
+						
+						<!-- 第三方平台类型 仅自身代理可见 -->
+						<view v-if="user._id == orderinfo.agentUser" class="cu-item">
+							<view class="content">
+								<text class="text-grey">{{ i18n.wishlist.common.thirdplatformtype }}</text>
+							</view>
+							<view class="action">
+								<text class="text-grey text-sm">{{ orderinfo.thirdPlatformType }}</text>
+							</view>
+						</view>
+						
+						<!-- 第三方平台订单号  仅自身代理可见 -->
+						<view v-if="user._id == orderinfo.agentUser" class="cu-item">
+							<view class="content">
+								<text class="text-grey">{{ i18n.wishlist.common.thirdplatformordernum }}</text>
+							</view>
+							<view class="action">
+								<text class="text-grey text-sm">{{ orderinfo.thirdOrderNum }}</text>
+								<button class="margin-left cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(orderinfo.thirdOrderNum)">{{ i18n.base.copy }}</button>
+							</view>
+						</view>
+						
+						<!-- 下单时间 -->
+						<view class="cu-item">
+							<view class="content">
+								<text class="text-grey">{{ i18n.wishlist.wishorder.makeordertime }}</text>
+							</view>
+							<view class="action">
+								<uni-dateformat class="text-grey text-sm" :date="orderinfo.creatTime" format="yyyy-MM-dd hh:mm:ss" />
+							</view>
+						</view>
+						
+						<!-- 发货时间 -->
+						<view v-if="orderinfo.deliveryTime" class="cu-item">
+							<view class="content">
+								<text class="text-grey">{{ i18n.wishlist.wishorder.deliverytime }}</text>
+							</view>
+							<view class="action">
+								<uni-dateformat class="text-grey text-sm" :date="orderinfo.deliveryTime" format="yyyy-MM-dd hh:mm:ss" />
+							</view>
+						</view>
+						
+						<!-- 收货时间 -->
+						<view v-if="orderinfo.receiveTime" class="cu-item">
+							<view class="content">
+								<text class="text-grey">{{ i18n.wishlist.wishorder.receivetime }}</text>
+							</view>
+							<view class="action">
+								<uni-dateformat class="text-grey text-sm" :date="orderinfo.receiveTime" format="yyyy-MM-dd hh:mm:ss" />
+							</view>
+						</view>
+						
 					</view>
 					
 				</view>
 				
 			</view>
+			
+		</view>
+		
+		<!-- 其他操作输入区域 -->
+		<view v-if="orderinfo" class="optionview">
+			
+			<!-- 如果是已发货待收货则客户显示确认收货视图 -->
+			<view v-if="orderinfo.status == 2 && user._id == orderinfo.creatUser ">
+				
+				<!-- 收货状态 -->
+				<radio-group class="block" @change="(e) => {receiveAllFlag = Number(e.detail.value)}">
+					
+					<view class="flex justify-around">
+						<label class="radio">
+							<radio class='cyan margin-right-sm' :class="receiveAllFlag==1?'checked':''" :checked="receiveAllFlag==1?true:false" value="1"></radio>
+							{{ i18n.wishlist.receiveproduct.receiveall }}
+						</label>
+						<label class="radio">
+							<radio class='red radio margin-right-sm' :class="receiveAllFlag==0?'checked':''" :checked="receiveAllFlag==0?true:false" value="0"></radio>
+							{{ i18n.wishlist.receiveproduct.receiveparts }}
+						</label>
+					</view>
+					
+				</radio-group>
+				
+				<!-- 如果是部分收货的话则记录收货信息 -->
+				<view v-if="receiveAllFlag == 0" class="padding">
+					
+					<view class="partreceiveview">
+						
+						<view class="title text-bold">{{ `部分收货信息` }}</view>
+						<view class="cu-form-group solid margin-top-sm">
+							<textarea maxlength="-1" v-model="receiveproductcontent" placeholder="输入收货信息"></textarea>
+						</view>
+						
+					</view>
+					
+					<view class="remarkview margin-top-sm">
+						
+						<view class="title text-bold">{{ `备注` }}</view>
+						<view class="cu-form-group solid margin-top-sm">
+							<textarea maxlength="-1" v-model="remark" placeholder="请输入备注"></textarea>
+						</view>
+						
+					</view>
+					
+				</view>
+				
+				<!-- <view class="cu-form-group">
+					<view class="title">{{ `第三方订单号` }}</view>
+					<input class="text-right" type="text" v-model="thirdOrderNum" />
+					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('thirdOrderNum')">{{ i18n.base.paste }}</button>
+				</view>
+				
+				
+				<view class="cu-form-group">
+					<view class="title">{{ `国内物流名称` }}</view>
+					<input class="text-right" type="text" v-model="domesticShippingName" />
+				</view>
+				
+				<view class="cu-form-group">
+					<view class="title">{{ `国内物流单号` }}</view>
+					<input class="text-right" type="text" v-model="domesticShippingNum" />
+					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('domesticShippingNum')">{{ i18n.base.paste }}</button>
+				</view> -->
+				
+				
+				<!-- 确定按钮 -->
+				<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
+					<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
+				</view>
+				
+			</view>
+			
+		</view>
+		
+		<!-- 按钮区域 -->
+		<view v-if="orderinfo" class="btnsview bg-white solid-top flex align-center justify-end padding">
+			
+			<!-- 如果是待发货则代理显示发货按钮 -->
+			<!-- orderinfo.status == 1 &&  -->
+			<template v-if="user._id == orderinfo.agentUser">
+				
+				<button class="cu-btn round bg-cyan" @tap.stop="deliveryproduct">{{ i18n.wishlist.wishorder.delivery }}</button>
+				
+			</template>
 			
 		</view>
 		
@@ -408,13 +531,17 @@
 					totalCommissionFee += unitCommissionFee
 					
 				})
-												
+				
+				let totalOrderPrice = parseFloat(totalProPrice) + parseFloat(totalDomesticShippingFee) + parseFloat(totalCommissionFee)
+				totalOrderPrice = totalOrderPrice.toFixed(2)
+				
 				let orderPriceInfo = {
 					totalProPrice,
 					totalAmount,
 					totalDomesticShippingFee,
 					unitCommissionFee,
-					totalCommissionFee
+					totalCommissionFee,
+					totalOrderPrice
 				}
 				
 				_this.orderPriceInfo = orderPriceInfo
@@ -468,11 +595,13 @@
 							let data = {
 								creatUser: wishInfo.creatUser._id,
 								agentUser: wishInfo.agentUser._id,
+								status: 1, // 设置订单为已付款状态
 								wishId: wishInfo._id,
 								title: wishInfo.productTitle,
 								totalProPrice: _this.orderPriceInfo.totalProPrice.toString(),
 								totalCommissionFee: _this.orderPriceInfo.totalCommissionFee.toString(),
 								totalDomesticShippingFee: _this.orderPriceInfo.totalDomesticShippingFee.toString(),
+								totalOrderPrice: _this.orderPriceInfo.totalOrderPrice.toString(),
 								thirdPlatformType: _this.thirdPlatformType,
 								thirdOrderNum: _this.thirdOrderNum
 							}
@@ -574,6 +703,15 @@
 					}
 				});
 				
+			},
+			
+			// 代理发货
+			deliveryproduct() {
+				// 区分无物流发货和物流发货
+				uni.showToast({
+					title: '代理开始发货',
+					icon: 'none'
+				});
 			},
 			
 			// 公共处理删除新增心愿订单的方法
@@ -713,8 +851,15 @@
 
 <style lang="scss" scoped>
 	
-	.content {
-		
+	.pagecontent {
+		padding-bottom: 120rpx;
+		.btnsview{
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 100rpx;
+		}
 	}
 	
 </style>
