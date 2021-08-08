@@ -510,6 +510,7 @@
 											'mp-weixin': openid
 										}
 									})
+									.field('wx_openid') // 注意password权限问题
 									// .where(`wx_openid && wx_openid['mp-weixin'] == '${openid}'`)
 									.get({getOne: true})
 									.then(res => {
