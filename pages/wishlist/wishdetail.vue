@@ -651,8 +651,8 @@
 								newtimelinearrdic[creatDate] = [timelineitem]
 							}
 						})
-						_this.timelinearrdic = Object.assign({}, newtimelinearrdic)
-						// _this.$set(_this.timelinearrdic, newtimelinearrdic)
+						// _this.timelinearrdic = Object.assign({}, newtimelinearrdic)
+						_this.$set(_this.timelinearrdic, newtimelinearrdic)
 						// _this.timelinearrdic = newtimelinearrdic
 						console.log(_this.timelinearrdic);
 						

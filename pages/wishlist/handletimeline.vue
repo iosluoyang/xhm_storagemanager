@@ -516,7 +516,7 @@
 				else if(this.type === 'confirmquotation') {
 					
 					// 上传规格数据前校验国内运费
-					if(_this.productExt.domesticShippingFee == '') {
+					if(!_this.productExt.domesticShippingFee || _this.productExt.domesticShippingFee == '') {
 						uni.showToast({
 							title: _this.i18n.placeholder.handletimeline.typedomesticshippingfee,
 							icon: 'none'
