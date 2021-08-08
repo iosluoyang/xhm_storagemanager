@@ -86,7 +86,8 @@ const zh = {
 		
 		handletimeline: {
 			typecontent: "请输入内容",
-			typedomesticshippingfee: "请完善国内运费",
+			typedomesticshippingfee: "请填写国内运费",
+			typecommissionfee: "请填写服务费用",
 		},
 		
 		me: {

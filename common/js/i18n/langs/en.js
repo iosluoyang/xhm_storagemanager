@@ -87,6 +87,7 @@ const en = {
 		handletimeline: {
 			typecontent: "Input Content",
 			typedomesticshippingfee: "Input Shipping fee(CN)",
+			typecommissionfee: "Input Commission Fee",
 		},
 		
 		me: {

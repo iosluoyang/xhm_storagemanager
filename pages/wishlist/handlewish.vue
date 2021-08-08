@@ -56,7 +56,7 @@
 				
 				<view class="content flex-sub flex align-center">
 					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="text" :style="{color: 'red'}" v-model="sourcePrice" @input="typesourcePrice" />
+					<input type="text" :style="{color: 'red'}" disabled v-model="sourcePrice" @input="typesourcePrice" />
 				</view>
 				
 				<!-- 源网站货币种类选择 -->
@@ -230,6 +230,7 @@
 				
 				targetPrice: '', // 目标价格
 				targetMoneyType: 'RMB', // 期望价格币种 默认为RMB  RMB人民币 THB泰铢
+				unitCommissionFee: '20', // 服务费单价
 				targetAmount: '', // 目标数量
 				specPropInfo: null, // 心愿规格数组
 				hurryLevel: 0, // 紧急程度 默认为2级 int 类型
@@ -287,13 +288,11 @@
 				let totalAmount = 0
 				if(this.specPropInfo) {
 					
-					totalAmount = this.specPropInfo.propValList.reduce((firstamount,firstitem) => (
-						
-						firstitem.specStockList.reduce((secondamount, seconditem) => (
-							secondamount += Number(seconditem.amount)
-						), 0)
-					
-					), 0)
+					this.specPropInfo.propValList.forEach((firstitem) => {
+						firstitem.specStockList.forEach((seconditem) => {
+							totalAmount += Number(seconditem.amount)
+						})
+					})
 					
 				}
 				
@@ -316,7 +315,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+				.field('creatUser{nickname,avatar,unitCommissionFee},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
 				.get({
 					getOne:true
 				})
@@ -335,6 +334,7 @@
 						this.targetPrice = info.targetPrice // 目标价格
 						this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
 						this.targetAmount = info.targetAmount // 目标数量
+						this.unitCommissionFee = info.creatUser[0].unitCommissionFee
 						this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
 						this.remark = info.remark // 备注信息
 						let imgsArr = info.imgs.split(',') // 商品图片
@@ -567,6 +567,38 @@
 				
 			},
 			
+			// 获取当前选中规格的大类型数量
+			getBigTypeAmount() {
+				
+				let bigTypeAmount = 0
+				
+				let firstList =  this.specPropInfo.propValList
+				
+				firstList.forEach(firstitem => {
+					let secondTotalAmount = 0
+					
+					// 遍历二级属性
+					firstitem.specStockList.forEach(seconditem => {
+						
+						if(seconditem.amount) {
+							secondTotalAmount += Number(seconditem.amount)
+						}
+						
+					})
+					
+					// 如果该一级分类下的选中数量大于0则将大类型数量增加1
+					if(secondTotalAmount > 0) {
+						bigTypeAmount += 1
+					}
+					
+				})
+				
+				console.log(`当前获取的选中大类型数量为${bigTypeAmount}`);
+				
+				return bigTypeAmount
+				
+			},
+			
 			// 上传数据
 			uploaddata() {
 				
@@ -618,10 +650,16 @@
 				// 上传图片已经成功 此时开始提交其他数据
 				let imgs = this.imgArr.map(item => (item.url)).join(',')
 				
+				// 计算当前用户的服务费单价(默认为服务费单价 * 大类型数量)
+				let unitCommissionFee = this.unitCommissionFee
+				let bigTypeAmount = this.getBigTypeAmount() || 1
+				let commissionFee = parseFloat(parseFloat(unitCommissionFee) * parseInt(bigTypeAmount)).toFixed(2)
+				
 				// 商品拓展字段
 				let productExt = {
 					secretCode: this.productSecretCode,// 商品口令
-					pureUrl: this.productPureUrl // 商品纯链接
+					pureUrl: this.productPureUrl, // 商品纯链接
+					commissionFee: commissionFee, // 该心愿单的初始化服务费
 				}
 				let uploadProductExt = {...this.producExt, ...productExt}
 				

@@ -113,6 +113,14 @@
 						<text>m³</text>
 					</view>
 					
+					<!-- 单件重量 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.boxweight }}</view>
+						<view class=""></view>
+						<input class="text-right" type="digit" v-model="productExt.boxWeight" />
+						<text>kg</text>
+					</view>
+					
 					<!-- 国内运费 -->
 					<view class="cu-form-group">
 						<view class="title">{{ i18n.wishlist.common.domesticshippingfee }}</view>
@@ -120,17 +128,24 @@
 						<text>RMB</text>
 					</view>
 					
-					<!-- 国际物流名称 -->
+					<!-- 服务费 -->
 					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.internationalshippingname }}</view>
-						<input class="text-right" type="text" v-model="productExt.internationalShippingName" />
+						<view class="title">{{ i18n.wishlist.common.tabledata.commissionfee }}</view>
+						<input class="text-right" type="digit" v-model="productExt.commissionFee" />
+						<text>RMB</text>
 					</view>
 					
+					<!-- 国际物流名称 -->
+					<!-- <view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.internationalshippingname }}</view>
+						<input class="text-right" type="text" v-model="productExt.internationalShippingName" />
+					</view> -->
+					
 					<!-- 国际物流编码 -->
-					<view class="cu-form-group">
+					<!-- <view class="cu-form-group">
 						<view class="title">{{ i18n.wishlist.common.internationalshippingcode }}</view>
 						<input class="text-right" type="text" v-model="productExt.internationalShippingCode" />
-					</view>
+					</view> -->
 					
 				</view>
 				
@@ -198,8 +213,6 @@
 					boxHeight: '',
 					boxVolume: '',
 					domesticShippingFee: '',
-					internationalShippingName: '',
-					internationalShippingCode: '',
 				} ,// 心愿商品的拓展字段
 				specPropInfo: null, // 规格信息
 				timelineId: null, // 当前时间轴id
@@ -260,6 +273,7 @@
 						
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
+							
 							_this.wishinfo = detaildata
 							_this.tmpWishInfo = _this.wishinfo
 							
@@ -418,6 +432,10 @@
 			// 更新拓展信息
 			updateproext() {
 				
+				// 将服务费和运费保留两位小数
+				this.productExt.domesticShippingFee = parseFloat(this.productExt.domesticShippingFee).toFixed(2)
+				this.productExt.commissionFee = parseFloat(this.productExt.commissionFee).toFixed(2)
+				
 				_this.ifloading = true
 				const db = uniCloud.database();
 				db.collection('wishlist')
@@ -452,10 +470,10 @@
 			
 			// 选择完规格
 			specFinishSelect(selectSpecPropInfo) {
-				console.log(`当前选择完规格的数据为`);
-				console.log(selectSpecPropInfo);
+				// console.log(`当前选择完规格的数据为`);
+				// console.log(selectSpecPropInfo);
 				this.$set(this.tmpWishInfo, 'specPropInfo', selectSpecPropInfo) // 变更临时变量的规格数据
-				console.log(this.tmpWishInfo);
+				// console.log(this.tmpWishInfo);
 			},
 			
 			// 上传数据
@@ -481,8 +499,7 @@
 					// productExt不能所有数值均为空
 					let productExt = this.productExt
 					if(!productExt.boxContainerNum && !productExt.boxLength && !productExt.boxWidth && !productExt.boxHeight 
-						&& !productExt.boxVolume && !productExt.domesticShippingFee && !productExt.internationalShippingName
-						&& !productExt.internationalShippingCode) 
+						&& !productExt.boxVolume && !productExt.domesticShippingFee) 
 					{
 						uni.showToast({
 							title: this.i18n.placeholder.handletimeline.typecontent,
@@ -499,7 +516,7 @@
 				else if(this.type === 'confirmquotation') {
 					
 					// 上传规格数据前校验国内运费
-					if(!_this.productExt.domesticShippingFee) {
+					if(_this.productExt.domesticShippingFee == '') {
 						uni.showToast({
 							title: _this.i18n.placeholder.handletimeline.typedomesticshippingfee,
 							icon: 'none'
@@ -509,6 +526,20 @@
 						}, 1000);
 						
 						return
+					}
+					// 上传规格数据前校验服务费
+					else if(_this.productExt.commissionFee == '') {
+						
+						uni.showToast({
+							title: _this.i18n.placeholder.handletimeline.typecommissionfee,
+							icon: 'none'
+						});
+						setTimeout(function() {
+							_this.type = 'addext'
+						}, 1000);
+						
+						return
+						
 					}
 					
 					// 进行二次确认提醒代理员
@@ -520,22 +551,30 @@
 						success: res => {
 							if(res.confirm) {
 								
+								// 获取当前各类价格进行计算
+								let priceInfo = _this.$refs.wishtablespec.getPriceInfo()
+								let priceUpdateInfo = {
+									domesticShippingFee: priceInfo.totalDomesticShippingFee,
+									commissionFee: priceInfo.totalCommissionFee,
+									proPrice: priceInfo.totalProPrice,
+									totalPrice: priceInfo.totalPrice
+								}
+								let newProductExt = {..._this.tmpWishInfo.productExt, ...priceUpdateInfo}
+								
 								// 开始上传确认的规格数据
 								const db = uniCloud.database();
 								db.collection('wishlist')
 								.doc(_this.wishId)
-								.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1})
+								.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1, productExt: newProductExt})
 								.then(response => {
 									
 									// 更新成功
-									console.log(`更新成功`);
-									// 计算当前报价单的最新报价
-									let totalPrice = _this.$refs.wishtablespec.getTotalPrice()
+									
 																		
 									// 新增一条待确认时间轴
 									let timelineinfo = {
 										wishId: _this.wishId, // 当前心愿单的id
-										price: totalPrice, // 当前报价单的总价
+										price: priceInfo.totalPrice, // 当前报价单的总价
 										type: 3, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认 4心愿单确认通过  5心愿单确认拒绝  6心愿单完成  99 代理人关联心愿
 									}
 									db.collection('wishlisttimeline')

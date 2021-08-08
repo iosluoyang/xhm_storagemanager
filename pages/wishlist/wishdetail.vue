@@ -76,19 +76,23 @@
 							</text> -->
 							
 							<!-- 商品标题 -->
-							<text class="protitle">{{ `${wishinfo.productTitle}-(${wishinfo.aliasName})` }}</text>
+							<text class="protitle">{{ `${wishinfo.productTitle}`}}</text>
+							<view v-if="wishinfo.aliasName" class="margin-left cu-tag radius bg-pink">
+								{{ wishinfo.aliasName }}
+							</view>
 			
 						</view>
 						
 						<!-- 商品价格和数量 -->
 						<view class="priceandamountview margin-top-sm flex align-center justify-between">
 							
-							<view class="priceview flex-sub">
+							<view class="priceview">
 								<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
 								<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
 							</view>
-							
-							<view class="cu-tag radius bg-cyan pos-static">
+
+							<view class="cu-tag radius bg-cyan">
+								{{ i18n.wishlist.common.amount }}:
 								{{ wishinfo.targetAmount }}
 							</view>
 							
@@ -133,12 +137,6 @@
 				
 				<!-- 订购规格table -->
 				<view v-if="wishinfo && wishinfo.specPropInfo" class="wishspectable">
-					<view class="cu-bar bg-white solid-bottom">
-						<view class="action">
-							<text class="cuIcon-title text-orange"></text>
-							{{i18n.wishlist.common.spec}}
-						</view>
-					</view>
 					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" sourcefrom="wishdetail" ></wishTableSpec>
 				</view>
 				
@@ -270,17 +268,11 @@
 							<text class="text-sm text-red text-wrap">{{ interShippingTotalFeeStr }}</text>
 						</view>
 					</view>
-
-					<!-- 单件尺寸 -->
-					<view v-if="productExt.boxLength" class="cu-form-group">
-						<view class="title">{{ `${i18n.wishlist.common.boxsize}(cm)` }}</view>
-						<view class="flex text-center align-center justify-center" style="max-width: 60%;">
-							<input type="number" disabled v-model="productExt.boxLength">
-							<text class="padding-sm">*</text>
-							<input type="number" disabled v-model="productExt.boxWidth">
-							<text class="padding-sm">*</text>
-							<input type="number" disabled v-model="productExt.boxHeight">
-						</view>
+					
+					<!-- 国际运费单价 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.internationalshippingunitfee }}</view>
+						<input class="text-right" type="number" :placeholder="i18n.placeholder.wishdetail.typeinternationshippingfee" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
 					</view>
 					
 					<!-- 单件体积 -->
@@ -289,22 +281,16 @@
 						<input class="text-right" type="number" disabled v-model="productExt.boxVolume">
 					</view>
 					
+					<!-- 单件重量 -->
+					<view v-if="productExt.boxWeight" class="cu-form-group">
+						<view class="title">{{ `${i18n.wishlist.common.boxweight}(kg)` }}</view>
+						<input class="text-right" type="number" disabled v-model="productExt.boxWeight">
+					</view>
+					
 					<!-- 箱子数量 -->
 					<view class="cu-form-group">
 						<view class="title">{{ i18n.wishlist.common.boxamount }}</view>
 						<u-number-box :min="1" v-model="boxAmount"></u-number-box>
-					</view>
-					
-					<!-- 国际运费单价 -->
-					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.internationalshippingunitfee }}</view>
-						<input class="text-right" type="number" :placeholder="i18n.placeholder.wishdetail.typeinternationshippingfee" :focus="showpopup && popuptype == 'shippingtool' " :cursor-spacing="100" v-model="interShippingSingleFeeStr">
-					</view>
-					
-					<!-- 装箱数量 -->
-					<view v-if="productExt.boxContainerNum" class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.boxcontainernum }}</view>
-						<input class="text-right" type="number" disabled v-model="productExt.boxContainerNum">
 					</view>
 					
 				</view>
