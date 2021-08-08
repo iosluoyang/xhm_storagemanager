@@ -652,8 +652,8 @@
 							}
 						})
 						// _this.timelinearrdic = Object.assign({}, newtimelinearrdic)
-						_this.$set(_this.timelinearrdic, newtimelinearrdic)
-						// _this.timelinearrdic = newtimelinearrdic
+						_this.timelinearrdic = newtimelinearrdic
+						_this.$forceUpdate()
 						console.log(_this.timelinearrdic);
 						
 					}

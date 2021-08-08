@@ -407,13 +407,19 @@
 					// 获取成功
 					if(response.result.code == 0) {
 						let orderinfo = response.result.data
-						console.log(orderinfo);
-						
 						if(orderinfo) {
 							_this.orderinfo = orderinfo
 							let wishinfo = orderinfo.wishId[0]
 							_this.wishinfo = wishinfo
-							console.log(_this.wishinfo);
+							
+							console.log(wishinfo);
+							
+							// 如果当前用户身份为代理员且为待下单状态则设置页面类型为代理员下单类型
+							if(_this.user.role == 'PRODUCT_AGENT' && _this.wishinfo.achieveFlag == 2) {
+								_this.type = 'agentpurchasepro'
+								_this.initPurchaseOrderData()
+							}
+							
 						}
 						else {
 							uni.showToast({

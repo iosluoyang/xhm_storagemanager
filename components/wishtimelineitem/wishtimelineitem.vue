@@ -473,42 +473,42 @@
 					success: res => {
 						if(res.confirm) {
 							
+							const db = uniCloud.database();
+							
+							// 生成待支付的心愿订单
+							let productExt = _this.wishInfo.productExt
+							
+							let data = {
+								creatUser: _this.user._id, // 操作人
+								agentUser: _this.wishInfo.agentUser._id, // 代理人
+								status: 0, // 待付款
+								wishId: _this.wishInfo._id, // 订单关联的心愿id
+								title: _this.wishInfo.productTitle, // 订单标题
+								totalProPrice: productExt.proPrice, // 订单商品总价
+								totalCommissionFee: productExt.commissionFee, // 订单总服务费
+								totalDomesticShippingFee: productExt.domesticShippingFee, // 订单总运费
+								totalOrderPrice: productExt.totalPrice, // 订单总价
+							}
+							
 							uni.showLoading()
 							
-							// 用户同意报价单 改变心愿单状态和增加相应的时间轴
-
-							const db = uniCloud.database();
-							db.collection('wishlist')
-							.doc(timelineitem.wishId)
-							.update({achieveFlag: 2})
-							.then(response => {
-								// 同意成功 
+							db.collection('order').add(data).then(response => {
 								uni.hideLoading()
-								// 发送推送消息
-								this.pushnoticemsg('agreequotation')
 								
-								// 生成待支付的心愿订单
-								let productExt = _this.wishInfo.productExt
-								
-								let data = {
-									creatUser: _this.user._id, // 操作人
-									agentUser: _this.wishInfo.agentUser._id, // 代理人
-									status: 0, // 待付款
-									wishId: _this.wishInfo._id, // 订单关联的心愿id
-									title: _this.wishInfo.productTitle, // 订单标题
-									totalProPrice: productExt.proPrice, // 订单商品总价
-									totalCommissionFee: productExt.commissionFee, // 订单总服务费
-									totalDomesticShippingFee: productExt.domesticShippingFee, // 订单总运费
-									totalOrderPrice: productExt.totalPrice, // 订单总价
-								}
-								
-								uni.showLoading()
-								
-								db.collection('order').add(data).then(response => {
-									uni.hideLoading()
+								// 生成订单成功
+								if(response.result.code == 0) {
 									
-									// 生成订单成功
-									if(response.result.code == 0) {
+									// 更新心愿单的值
+									uni.showLoading()
+									let wishOrderId = response.result.id
+									db.collection('wishlist')
+									.doc(_this.wishInfo._id)
+									.update({achieveFlag: 2, wishOrderId: wishOrderId})
+									.then(response => {
+										// 同意成功 
+										uni.hideLoading()
+										// 发送推送消息
+										_this.pushnoticemsg('agreequotation')
 										
 										//将当前时间轴数据变更状态
 										uni.showLoading()
@@ -518,6 +518,9 @@
 										.then(response => {
 											// 操作成功
 											uni.hideLoading()
+											
+											// 更新数据
+											uni.$emit('updatetimeline')
 											
 											// 用户订阅消息
 											_this.subscribenoticemsg()
@@ -530,29 +533,27 @@
 											});
 										})
 										
-										// 更新数据
-										uni.$emit('updatetimeline')
 										// 更新心愿单列表和详情
 										uni.$emit('updatewishlist')
 										uni.$emit('updatewishdetail')
 										
-									}
-									else {
+									})
+									.catch(error => {
+										uni.hideLoading()
 										uni.showToast({
-											title: _this.i18n.error.optionerror,
+											title: error.message,
 											icon: 'none'
 										});
-									}
-								}).catch(error => {
-									uni.hideLoading()
+									})
+									
+								}
+								else {
 									uni.showToast({
-										title: error.message,
+										title: _this.i18n.error.optionerror,
 										icon: 'none'
 									});
-								})
-								
-							})
-							.catch(error => {
+								}
+							}).catch(error => {
 								uni.hideLoading()
 								uni.showToast({
 									title: error.message,
@@ -566,13 +567,13 @@
 				
 			},
 			
-			// 代理员下单
+			// 代理员进货(进入已支付心愿订单详情)
 			agentpurchasepro() {
 				
-				let wishId = _this.wishInfo._id
+				let wishOrderId = _this.wishInfo.wishOrderId
 				
 				uni.navigateTo({
-					url: `/pages/wishlist/wishorder?type=agentpurchasepro&wishId=${wishId}`
+					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
 				});
 				
 			},
