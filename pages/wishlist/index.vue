@@ -36,12 +36,13 @@
 				
 				<scroll-view scroll-x class="recordlistview padding-sm bg-gray" :style="{whiteSpace: 'nowrap'}">
 					
-					<view class="eachsearchrecord margin-left-sm shadow-blur shadow-warp bg-white radius padding-bottom-sm" :style="{display: 'inline-block'}" v-for="(item, index) in searchrecord1688" :key="index" @tap.stop="searchRecord(item)">
-												
+					<view class="eachsearchrecord margin-left-sm shadow-blur shadow-warp bg-white radius padding-bottom-sm pos-relative" :style="{display: 'inline-block'}" v-for="(item, index) in searchrecord1688" :key="index" @tap.stop="searchRecord(item)">
+						<!-- 删除按钮 -->
+						<text class="cuIcon cuIcon-roundclosefill text-white pos-absolute" :style="{right: '10rpx', top: '10rpx', zIndex: 100}" @tap.stop="deleteRecord(index)"></text>
 						<!-- 图片 -->
 						<u-image :src="item.img" mode="aspectFill" width="150rpx" height="150rpx"></u-image>
 						<!-- 标题 -->
-						<view class="title margin-top-sm text-sm text-cut" :style="{width: '150rpx', height: '30rpx', boxSizing: 'border-box'}" @longpress="deleteRecord(index)">{{ item.title }}</view>
+						<view class="title margin-top-sm text-sm text-cut padding-left-sm" :style="{width: '150rpx', height: '30rpx', boxSizing: 'border-box'}">{{ item.title }}</view>
 					</view>
 					
 				</scroll-view>
