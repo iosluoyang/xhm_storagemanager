@@ -35,7 +35,7 @@ const en = {
 		pricedesc: "Price Desc",
 		priceasc: "Price Asc",
 		sellnumdesc: "SellNum Desc",
-
+		paynow: "Pay Now",
 	},
 	
 	// 导航栏主分类

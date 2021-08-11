@@ -79,7 +79,7 @@
 		</view>
 		
 		<!-- 心愿单同意类型 type=4 -->
-		<view v-else-if="timelineitem.type == 4 " class="content bg-gradual-blue shadow-blur">
+		<view v-else-if="timelineitem.type == 4 " class="content bg-cyan shadow-blur">
 			
 			<!-- 发布人 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
@@ -123,9 +123,22 @@
 			
 			</view>
 			
-			<!-- 操作按钮区域  仅为代理且为待下单状态时有 -->
-			<view v-if=" wishInfo.agentUser._id == user._id && wishInfo.achieveFlag == 2 " class="btnview margin-top-sm flex align-center">
-				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ i18n.wishlist.timeline.importpro }}</button>
+			<!-- 倒计时区域 -->
+			<view class="timecountview margin-top">
+				
+				<u-count-down :timestamp="timecountstamp(timelineitem.optionTime)" autoplay font-size="50" :show-days="false" @end="timecountend"></u-count-down>
+				
+			</view>
+			
+			<!-- 操作按钮区域 -->
+			<view class="btnview margin-top-sm flex align-center">
+				
+				<!-- 客户付款按钮  achieveFlag = 2 心愿已确认客户待下单 且时间轴为type=4 已经同意时展示付款按钮 -->
+				<button v-if=" wishInfo.creatUser._id == user._id && wishInfo.achieveFlag == 2 " class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
+				
+				<!-- 代理进货按钮 仅为代理且为待下单状态时有 -->
+				<button v-if=" wishInfo.agentUser._id == user._id && wishInfo.achieveFlag == 2 " class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ i18n.wishlist.timeline.importpro }}</button>
+			
 			</view>
 			
 		</view>
@@ -178,7 +191,7 @@
 		</view>
 		
 		<!-- 心愿单代理人已经下单类型 type=91 -->
-		<view v-else-if="timelineitem.type == 91" class="content bg-cyan shadow-blur">
+		<view v-else-if="timelineitem.type == 91" class="content bg-gradual-blue shadow-blur">
 			
 			<!-- 时间轴发布人信息 -->
 			<view v-if="timelineitem.creatUser" class="flex align-center justify-between">
@@ -315,6 +328,7 @@
 			return {
 				timelineitem: this.timelineInfo, // 当前的时间轴数据
 				ifDisappear: false, // 是否消失
+				paytimestamp: 1000 * 60 * 60 * 24 , // 支付倒计时 单位毫秒 默认为一天
 			};
 		},
 		
@@ -575,6 +589,78 @@
 				uni.navigateTo({
 					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
 				});
+				
+			},
+			
+			// 付款 跳转心愿订单进行支付
+			paynow() {
+				let wishOrderId = this.wishInfo.wishOrderId
+				uni.navigateTo({
+					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
+				});
+			},
+			
+			// 获取倒计时时长
+			timecountstamp(timestamp) {
+				
+				let nowtimestamp = new Date().getTime()
+				let optiontimestamp = timestamp
+				
+				let timediff = (optiontimestamp + this.paytimestamp - nowtimestamp)  / 1000
+				
+				return timediff
+			},
+			
+			// 倒计时结束
+			timecountend() {
+				
+				console.log(`倒计时结束`);
+				uni.showModal({
+					title: _this.i18n.base.tip,
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 将对应心愿订单删除 且将该心愿单设置为已关闭
+							const db = uniCloud.database();
+							db.collection('order')
+							.doc(_this.wishInfo.wishOrderId)
+							.remove()
+							.then(response => {
+								// 更改心愿单状态
+								db.collection('wishlist')
+								.doc(_this.wishInfo._id)
+								.update({
+									achieveFlag: 99
+								})
+								.then(response => {
+									// 更新数据
+									uni.$emit('updatetimeline')
+									// 更新心愿单列表和详情
+									uni.$emit('updatewishlist')
+									uni.$emit('updatewishdetail')
+								})
+								.catch(error => {
+									uni.showToast({
+										title: _this.i18n.error.loaderror,
+										icon: 'none'
+									});
+								})
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+				
 				
 			},
 			

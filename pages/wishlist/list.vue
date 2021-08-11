@@ -397,6 +397,24 @@
 						
 					})
 					.catch(error => {
+						if(error && error.message && error.message.indexOf('30203')) {
+							console.log(`重新登录`);
+							_this.$store.dispatch('user/resettoken').then(() => {
+								
+								uni.redirectTo({
+									url: '/pages/base/login'
+								});
+								setTimeout(function() {
+									
+									uni.showToast({
+										title: _this.i18n.tip.pleaselogin,
+										icon: 'none'
+									});
+									
+								}, 1000);
+								
+							})
+						}
 						// 失败隐藏下拉加载状态
 						mescroll.endErr()
 					})
