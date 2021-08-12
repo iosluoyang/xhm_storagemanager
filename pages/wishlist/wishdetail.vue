@@ -6,6 +6,24 @@
 			<block slot="content">{{i18n.nav.wishdetail}}</block>
 		</cu-custom>
 		
+		<!-- 付款倒计时 -->
+		<view v-if="wishinfo && wishOrderInfo && wishOrderInfo.status == 0 && wishinfo.creatUser._id == user._id" 
+			class="cu-bar bg-cyan fixed" :style="{top: CustomBar + 'px'}">
+			<view class="action flex align-center">
+				
+				<view class="leftview flex align-center">
+					<text class="cuIcon-titles text-white"></text>
+					<text class="text-red text-xl margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
+					<u-count-down :timestamp="paymenttimediff" autoplay font-size="50" :show-days="false" @end="timecountend"></u-count-down>
+				</view>
+				
+				<view class="rightview margin-left">
+					<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
+				</view>
+				
+			</view>
+		</view>
+		
 		<!-- 商品信息区域 -->
 		<view v-if="wishinfo" class="wishinfoview">
 			
@@ -337,6 +355,8 @@
 				id: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishinfo: null, // 当前心愿详情
+				wishOrderInfo: null, // 心愿订单数据
+				paymenttimediff: 0, // 待付款订单倒计时
 				productExt: null, // 心愿拓展字段
 				productInfo1688: null, // 附属的1688商品数据
 				timelinearrdic: {}, // 心愿时间轴数据
@@ -541,14 +561,119 @@
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
+							
 							// 设置悬浮按钮的展示内容
 							// _this.setFabContentArr()
+							
+							// 获取关联的心愿订单数据
+							if(_this.wishinfo && _this.wishinfo.wishOrderId) {
+								db.collection('order')
+								.doc(_this.wishinfo.wishOrderId)
+								.get({getOne: true})
+								.then(response => {
+									if(response.result.code == 0) {
+										
+										let wishOrderInfo = response.result.data
+										_this.wishOrderInfo = wishOrderInfo
+										
+										// 如果心愿关联的心愿订单为待付款状态则进行计算倒计时
+										if(wishOrderInfo.status == 0) {
+											_this.gettimecountstamp()
+										}
+										
+									}
+								})
+								.catch(error => {
+									uni.showToast({
+										title: _this.i18n.error.loaderror,
+										icon: 'none'
+									});
+								})
+							}
+							
 							
 						}
 					})
 					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
 					})
+				
+			},
+			
+			// 计算付款倒计时时长
+			gettimecountstamp() {
+				
+				let nowtimestamp = new Date().getTime()
+				let ordercreattimestamp = this.wishOrderInfo.creatTime
+				let wishorderpaymenttimestamp = this.$store.getters.configData.wishorderPaymentTime || 1000 * 60 * 60 * 24
+				console.log(ordercreattimestamp,wishorderpaymenttimestamp,nowtimestamp)
+				let timediff = (ordercreattimestamp + wishorderpaymenttimestamp - nowtimestamp)  / 1000
+				this.paymenttimediff = timediff
+				
+				if(this.paymenttimediff <= 0) {
+					this.timecountend()
+				}
+				
+			},
+			
+			// 倒计时到期
+			timecountend() {
+				
+				console.log(`倒计时结束`);
+				uni.showModal({
+					content: _this.i18n.wishlist.wishorder.timeupclosetip,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 将对应心愿订单删除 且将该心愿单设置为已关闭
+							const db = uniCloud.database();
+							db.collection('order')
+							.doc(_this.wishOrderInfo._id)
+							.remove()
+							.then(response => {
+								// 更改心愿单状态
+								db.collection('wishlist')
+								.doc(_this.wishinfo._id)
+								.update({
+									achieveFlag: 99
+								})
+								.then(response => {
+									// 更新数据
+									uni.$emit('updatetimeline')
+									// 更新心愿单列表和详情
+									uni.$emit('updatewishlist')
+									uni.$emit('updatewishdetail')
+								})
+								.catch(error => {
+									uni.showToast({
+										title: _this.i18n.error.loaderror,
+										icon: 'none'
+									});
+								})
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+			
+			},
+			
+			// 点击去付款
+			paynow() {
+				
+				let orderId = this.wishOrderInfo._id
+				uni.navigateTo({
+					url: `/pages/wishlist/payment?orderType=wishorder&orderId=${orderId}`
+				});
 				
 			},
 			
@@ -619,7 +744,7 @@
 					// 获取成功
 					if(res.result.code == 0) {
 						console.log(`时间轴数据获取成功`);
-						console.log(res.result.data);
+						// console.log(res.result.data);
 						let timelinelist = res.result.data || []
 						
 						// 遍历时间轴数据将creatUser和editUser和refuseUser和agreeUser均转换为对象
@@ -635,14 +760,14 @@
 							}
 						})
 						
-						console.log(timelinelist);
+						// console.log(timelinelist);
 						
 						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
 						let newtimelinearrdic = {}
 						timelinelist.forEach((timelineitem, index) => {
 							let creatTime = timelineitem.creatTime
 							// 获取日期
-							let creatDate = _this.$moment(creatTime).format('YYYY-MM-DD')
+							let creatDate = _this.$u.timeFormat(creatTime, 'yyyy-mm-dd')
 							if(newtimelinearrdic[creatDate]) {
 								let samedatearr = newtimelinearrdic[creatDate]
 								samedatearr.push(timelineitem)
@@ -651,10 +776,8 @@
 								newtimelinearrdic[creatDate] = [timelineitem]
 							}
 						})
-						// _this.timelinearrdic = Object.assign({}, newtimelinearrdic)
 						_this.timelinearrdic = newtimelinearrdic
-						_this.$forceUpdate()
-						console.log(_this.timelinearrdic);
+						// console.log(_this.timelinearrdic);
 						
 					}
 				})

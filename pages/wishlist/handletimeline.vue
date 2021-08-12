@@ -790,19 +790,19 @@
 				// #ifdef MP-WEIXIN
 				
 				// 增加订阅模板消息的功能
-				let agentbindwishId = this.$store.getters.configData.wxminiNoticeTemplateDic.agentbindwish
+				let finishpayId = this.$store.getters.configData.wxminiNoticeTemplateDic.finishpay
 				let confirmquotationId = this.$store.getters.configData.wxminiNoticeTemplateDic.confirmquotation
 				
 				uni.requestSubscribeMessage({
-					tmplIds: [confirmquotationId],
+					tmplIds: [finishpayId,confirmquotationId],
 					success(res){
 						let errMsg = res.errMsg
 						if(errMsg == 'requestSubscribeMessage:ok') {
-							console.log(res[confirmquotationId]);
+							console.log(res[finishpayId]);
 							// 用户同意订阅
 							if(res[confirmquotationId] == 'accept') {
 								console.log(`用户订阅消息成功`);
-							} else if(res[confirmquotationId] == 'reject') {
+							} else if(res[finishpayId] == 'reject') {
 								console.log(`用户拒绝订阅消息`);
 							}
 						}

@@ -146,16 +146,16 @@
 				let interceptor = {
 					
 				  invoke(param) {
-					  console.log(`拦截器获取到的API参数为:`);
-					  console.log(param);
+					  // console.log(`拦截器获取到的API参数为:`);
+					  // console.log(param);
 				    // param为拦截Api的参数 例 {name: 'functionName', data: {'functionParam1': 1, 'functionParam2': 2}}
 				    // 此处返回错误可终止api执行
 				  },
 				  success(res) {
 					  // res为callFunction的返回值，此处可以对返回值进行修改
-					  console.log(`接口调用的返回值为:${JSON.stringify(res)}`);
+					  // console.log(`接口调用的返回值为:${JSON.stringify(res)}`);
 					  let code = res.result.code
-					  console.log(`接口调用错误码为:${code}`);
+					  // console.log(`接口调用错误码为:${code}`);
 					  
 					  // 返回成功
 					  if(code == 0) {
@@ -204,7 +204,8 @@
 				  },
 				  complete(res){
 					  // complete内res为上面的res或err
-					  console.log(`接口调用完成`)
+					  // console.log(`接口调用完成`)
+					  // console.log(res)
 				  }
 				
 				}

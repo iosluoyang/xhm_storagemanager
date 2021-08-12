@@ -53,6 +53,7 @@ const zh = {
 		notice: "公告",
 		resetpwd: "重置密码",
 		wishorder: "心愿订单",
+		payment: "收银台",
 
 	},
 	
@@ -276,9 +277,11 @@ const zh = {
 			agreequotation: "已同意该报价单",
 			refusequotation: "拒绝了该报价单",
 			importpro: "下单进货",
+			paytime: "付款时间",
 			confirmproductreceive: "确认收货",
 			wishrefusequotationagenttip: "客户拒绝了该报价,请重新发起报价单",
 			wishrefusequotationcustomertip: "您已拒绝报价单, 代理员将尽快重新为您报价,请耐心等待",
+			wishfinishpay: "用户已经支付款项,请尽快处理",
 			wishfinishpurchase: "代理员已下单,请留意货物到达状态",
 			
 			
@@ -299,12 +302,25 @@ const zh = {
 			totalcommissionfee: "总服务费",
 			totalorderprice: "订单总价",
 			makeordertime: "下单时间",
+			paytime: "付款时间",
 			deliverytime: "发货时间",
 			receivetime: "收货时间",
-			delivery: "发货"
-			
+			delivery: "发货",
+			timeupclosetip: "已过付款时间, 是否关闭订单?",
 			
 		},
+		
+		// 收银台相关
+		payment: {
+			paymentinfo: "收款信息",
+			account: "收款账号",
+			name: "姓名",
+			bankname: "银行名称",
+			bankbranch: "收款行支行",
+			pleaseuploadpaymentimg: "暂未收到支付凭证,是否直接提交?(您可以在下方上传支付凭证)",
+			
+			
+		}
 		
 	},
 	

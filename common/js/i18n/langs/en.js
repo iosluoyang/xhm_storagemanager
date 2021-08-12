@@ -52,6 +52,7 @@ const en = {
 		notice: "Notice",
 		resetpwd: "Reset Password",
 		wishorder: "Wish Order",
+		payment: "Payment",
 
 	},
 	
@@ -275,9 +276,11 @@ const en = {
 			agreequotation: "Already Agree the Quotation",
 			refusequotation: "Already Refused the Quotation",
 			importpro: "Purchase Product",
+			paytime: "Pay Time",
 			confirmproductreceive: "Confirm Product Receive",
 			wishrefusequotationagenttip: "Customer refused the quotation , please make the new quotation",
 			wishrefusequotationcustomertip: "You already refused the quotation , the agent will make the new quotation for you soon, please wait patiently",
+			wishfinishpay: "Customer already paid, please purchase the order",
 			wishfinishpurchase: "Agent already Made the order , please notice the order status",
 			
 		},
@@ -296,11 +299,24 @@ const en = {
 			totaldomesticshippingfee: "Shipping Fee(CN)",
 			totalcommissionfee: "Commission Fee",
 			totalorderprice: "Order Price",
-			makeordertime: "Make-order Time",
+			makeordertime: "Purchase Time",
+			paytime: "Pay Time",
 			deliverytime: "Delivery Time",
 			receivetime: "Receive Time",
+			timeupclosetip: "Payment time up, Do you want to close this order?",
 			
 		},
+		
+		// 收银台相关
+		payment: {
+			paymentinfo: "Payment Info",
+			account: "Account",
+			name: "Name",
+			bankname: "Bank Name",
+			bankbranch: "Bank Branch Name",
+			pleaseuploadpaymentimg: "Have no payment image, Are you sure to continue ?(you can upload the payment image below)",
+			
+		}
 		
 	},
 	
