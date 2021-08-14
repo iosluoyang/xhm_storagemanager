@@ -8,20 +8,18 @@
 		
 		<!-- 付款倒计时 -->
 		<view v-if="wishinfo && wishOrderInfo && wishOrderInfo.status == 0 && wishinfo.creatUser._id == user._id" 
-			class="cu-bar bg-cyan fixed" :style="{top: CustomBar + 'px'}">
-			<view class="action flex align-center">
-				
-				<view class="leftview flex align-center">
-					<text class="cuIcon-titles text-white"></text>
-					<text class="text-red text-xl margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
-					<u-count-down :timestamp="paymenttimediff" autoplay font-size="50" :show-days="false" @end="timecountend"></u-count-down>
-				</view>
-				
-				<view class="rightview margin-left">
-					<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
-				</view>
-				
+			class="paymentcountdownview flex align-center justify-between bg-cyan padding-sm" :style="{top: CustomBar + 'px'}">
+			
+			<view class="leftview flex align-center">
+				<text class="cuIcon-titles text-white"></text>
+				<text class="text-white text-df margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
+				<u-count-down :timestamp="paymenttimediff" autoplay font-size="30" :show-days="false" @end="timecountend"></u-count-down>
 			</view>
+			
+			<view class="rightview margin-left">
+				<button class="cu-btn round bg-red" :class="{'animation-shake': paybtnanimation}" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
+			</view>
+			
 		</view>
 		
 		<!-- 商品信息区域 -->
@@ -347,6 +345,7 @@
 	
 	
 	var _this
+	var paybtnanimationtimeinterval
 	
 	export default {
 		data() {
@@ -385,6 +384,8 @@
 				ifloading: false, // 是否加载(仅用于加载时间轴)
 				
 				showSelector: false, // 是否显示多规格选择器
+				
+				paybtnanimation: false, // 是否显示支付按钮的动画  默认为否
 				
 			};
 		},
@@ -477,6 +478,7 @@
 		onUnload() {
 			uni.$off('updatewishdetail')
 			uni.$off('updatetimeline')
+			clearInterval(paybtnanimationtimeinterval) // 移除循环器
 		},
 		
 		// 页面显示时开始自动播放轮播图
@@ -493,6 +495,7 @@
 		// 页面隐藏时关闭自动播放轮播图
 		onHide() {
 			this.swiperautoplay = false
+			clearInterval(paybtnanimationtimeinterval) // 移除循环器
 		},
 		
 		onShareAppMessage(res) {
@@ -579,6 +582,11 @@
 										// 如果心愿关联的心愿订单为待付款状态则进行计算倒计时
 										if(wishOrderInfo.status == 0) {
 											_this.gettimecountstamp()
+											_this.$nextTick(function(){
+												_this.paybtnanimation = true
+												paybtnanimationtimeinterval = setInterval(_this.showpaybtnanimation, 3000);
+											})
+											
 										}
 										
 									}
@@ -597,6 +605,13 @@
 					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
 					})
+				
+			},
+			
+			// 显示支付按钮的动画
+			showpaybtnanimation() {
+				_this.paybtnanimation = !_this.paybtnanimation
+				console.log(`开始动画`);
 				
 			},
 			
@@ -1009,6 +1024,13 @@
 			.uni-table{
 				width: 100%;
 			}
+		}
+		
+		.paymentcountdownview{
+			position: fixed;
+			left: 0;
+			right: 0;
+			z-index: 99999;
 		}
 		
 		.floatview{
