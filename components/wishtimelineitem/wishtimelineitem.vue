@@ -662,7 +662,6 @@
 					},
 					complete() {
 						console.log(`订阅消息接口完成`);
-						uni.navigateBack();
 					}
 				})
 				
