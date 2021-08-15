@@ -334,7 +334,7 @@
 										}
 									},
 									fail() {
-										ui.hideLoading()
+										uni.hideLoading()
 									}
 								})
 							},
@@ -556,7 +556,7 @@
 								}
 							},
 							fail(err) {
-								ui.hideLoading()
+								uni.hideLoading()
 								uni.showToast({
 									title: err.message,
 									icon: 'none'

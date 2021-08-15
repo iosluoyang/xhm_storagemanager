@@ -128,7 +128,10 @@
 		
 		<!-- 支付按钮 -->
 		<view class="bottombtnview">
-			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm">{{ `${i18n.base.confirm}` }}</button>
+			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm">
+				{{ `${i18n.base.confirm}` }}
+				{{ totalPrice ? `(&yen${totalPrice})` : '' }}
+			</button>
 		</view>
 		
 		<!-- 加载条 -->
@@ -391,6 +394,7 @@
 				.update({
 					payTime: db.env.now,
 					status: 1,
+					payType: _this.paymentType,
 					payImgs: imgs
 				})
 				.then(response => {
