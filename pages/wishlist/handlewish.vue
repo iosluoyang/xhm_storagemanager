@@ -24,9 +24,7 @@
 				</view>
 				<!-- <input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" /> -->
 				<textarea v-model="sourceLink" @blur="analysisUrl" />
-				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
-				<!-- #endif -->
 				
 			</view>
 			
@@ -44,9 +42,7 @@
 				:show-confirm-bar="false" 
 				disable-default-padding
 				/>
-				<!-- #ifndef H5 -->
 				<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pasteData('productTitle')">{{i18n.base.paste}}</button>
-				<!-- #endif -->
 			</view>
 			
 			<!-- 商品价格 -->

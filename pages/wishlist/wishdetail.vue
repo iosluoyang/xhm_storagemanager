@@ -17,7 +17,7 @@
 			</view>
 			
 			<view class="rightview margin-left">
-				<button class="cu-btn round bg-red" :class="{'animation-shake': paybtnanimation}" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
+				<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
 			</view>
 			
 		</view>
@@ -161,7 +161,7 @@
 		</view>
 		
 		<!-- 时间轴 -->
-		<view v-if="wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " class="timelineview solid-top">
+		<view v-if="wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " id="timelineview" class="timelineview solid-top">
 			
 			<view class="cu-bar bg-white">
 				<view class="action">
@@ -183,26 +183,55 @@
 		<!-- 悬浮按钮区域 -->
 		<view v-if="wishinfo && user" class="floatview">
 			
-			<!-- 如果是代理员 且该心愿为进行中 待确认时显示 -->
+			<!-- 如果是代理员 -->
 			<template v-if=" user.role == 'PRODUCT_AGENT' ">
 				
-				<!-- 没有被关联时显示关联按钮 -->
-				<button v-if="wishinfo.agentFlag == 0" class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
-					<text class="cuIcon-servicefill"></text>
-				</button>
+				<!-- 心愿没有被关联时 -->
+				<template v-if="wishinfo.agentFlag == 0">
+					
+					<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+						<text class="cuIcon-servicefill"></text>
+					</button>
+					
+				</template>
 				
-				<!-- 被关联时根据是否是自己关联的心愿来显示添加按钮 -->
-				<button v-else-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id && (wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1)" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-					<text class="cuIcon-add"></text>
-				</button>
+				<!-- 自身代理的心愿 -->
+				<template v-else=" wishinfo.agentUser && wishinfo.agentUser._id == user._id ">
+					
+					<!-- 进行中显示添加按钮 -->
+					<button v-if="wishinfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+						<text class="cuIcon-add"></text>
+					</button>
+					
+					<!-- 待确认状态下不显示 等待用户进行确认 -->
+					
+					<!-- 已确认待下单状态下  根据对应的心愿单状态选择进货或者更新时间轴 -->
+					
+					<!-- 已支付 -->
+					<button v-if="wishinfo.achieveFlag == 2 && wishOrderInfo && wishOrderInfo.status == 1" class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+						<text class="cuIcon-shop"></text>
+					</button>
+					
+				</template>
 				
 			</template>
 			
 			<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
-			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id && wishinfo.achieveFlag == 0">
+			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id">
 				
-				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+				<!-- 心愿单进行中显示更新时间轴按钮 -->
+				<button v-if="wishinfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 					<text class="cuIcon-add"></text>
+				</button>
+				
+				<!-- 待确认时显示滑动到时间轴按钮 -->
+				<button v-else-if="wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
+					<text class="cuIcon-magic"></text>
+				</button>
+				
+				<!-- 其他情况显示订单按钮 -->
+				<button v-else class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+					<text class="cuIcon-text"></text>
 				</button>
 				
 			</template>
@@ -359,6 +388,7 @@
 				productExt: null, // 心愿拓展字段
 				productInfo1688: null, // 附属的1688商品数据
 				timelinearrdic: {}, // 心愿时间轴数据
+				timelineScrollTop: 0, // 时间轴的顶部坐标
 				
 				swiperCur: 0, // 当前轮播图索引
 				swiperautoplay: false, // 轮播图是否自动播放  默认为否
@@ -564,7 +594,6 @@
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
-							
 							// 设置悬浮按钮的展示内容
 							// _this.setFabContentArr()
 							
@@ -582,11 +611,6 @@
 										// 如果心愿关联的心愿订单为待付款状态则进行计算倒计时
 										if(wishOrderInfo.status == 0) {
 											_this.gettimecountstamp()
-											_this.$nextTick(function(){
-												_this.paybtnanimation = true
-												paybtnanimationtimeinterval = setInterval(_this.showpaybtnanimation, 3000);
-											})
-											
 										}
 										
 									}
@@ -599,19 +623,11 @@
 								})
 							}
 							
-							
 						}
 					})
 					.catch(error => {
 						_this.ifloading = false // 结束缓冲动画
 					})
-				
-			},
-			
-			// 显示支付按钮的动画
-			showpaybtnanimation() {
-				_this.paybtnanimation = !_this.paybtnanimation
-				console.log(`开始动画`);
 				
 			},
 			
@@ -794,6 +810,19 @@
 						_this.timelinearrdic = newtimelinearrdic
 						// console.log(_this.timelinearrdic);
 						
+						_this.$nextTick(function(){
+							
+							// 获取时间轴的节点信息
+							const query = uni.createSelectorQuery();
+							query.select('#timelineview').boundingClientRect(data => {
+								// console.log("时间轴的顶部坐标为" + data.top);
+								if(data && data.top) {
+									_this.timelineScrollTop = data.top
+								}
+							}).exec();
+							
+						})
+						
 					}
 				})
 				.catch(error => {
@@ -835,10 +864,26 @@
 				})
 			},
 			
+			// 点击滑动到确认报价时间轴
+			gotoagreeorrefuse() {
+				uni.pageScrollTo({
+					scrollTop: _this.timelineScrollTop,
+					duration: 300
+				})
+			},
+			
 			// 更新心愿时间轴进度
 			updatewishtimeline() {
 				uni.navigateTo({
 					url: `/pages/wishlist/handletimeline?wishId=${this.id}`
+				});
+			},
+			
+			// 心愿订单详情
+			gotoWishOrder() {
+				let wishOrderId = this.wishOrderInfo._id
+				uni.navigateTo({
+					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
 				});
 			},
 			

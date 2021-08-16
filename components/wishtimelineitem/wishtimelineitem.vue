@@ -55,7 +55,6 @@
 				{{ i18n.wishlist.timeline.wishupdatequotationtip }}
 			</view>
 			
-			
 			<!-- 价格 -->
 			<view v-if="timelineitem.price" class="priceview margin-top-sm flex align-center">
 				<text class="cuIcon cuIcon-moneybagfill text-red"></text>
@@ -63,16 +62,10 @@
 			</view>
 			
 			<!-- 按钮操作区域   -->
-			<view v-if="wishInfo.creatUser._id == user._id " class="btnview margin-top-sm flex align-center justify-between solid-top padding-top-sm">
+			<view v-if="wishInfo.creatUser._id == user._id " class="btnview margin-top-sm flex align-center solid-top padding-top-sm">
 				
-				<view class="leftview flex align-center">
-					<button class="cu-btn round text-white margin-right" :style="{background: '#8799a3'}" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
-					<button class="cu-btn round text-white" :style="{background: '#8dc63f'}" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
-				</view>
-				
-				<view class="rightview flex align-center">
-					
-				</view>
+				<button class="cu-btn round text-white" :style="{background: '#8799a3'}" @tap.stop="refusetimeline(timelineitem)">{{ i18n.base.refuse }}</button>
+				<button class="cu-btn round text-white margin-left" :style="{background: '#8dc63f'}" @tap.stop="agreetimeline(timelineitem)">{{ i18n.base.agree }}</button>
 				
 			</view>
 			
@@ -194,8 +187,7 @@
 			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
 			<view class="optionbtnview margin-top-sm">
 				
-				<!-- 代理进货按钮 仅为代理且为支付完成状态时有 -->
-				<button v-if=" wishInfo.agentUser._id == user._id && wishInfo.achieveFlag == 2 " class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="agentpurchasepro">{{ i18n.wishlist.timeline.importpro }}</button>
+				<button v-if="wishInfo.wishOrderId" class="cu-btn round bg-white margin-right" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
 				
 			</view>
 			
@@ -588,17 +580,6 @@
 						}
 					},
 				})
-				
-			},
-			
-			// 代理员进货(进入已支付心愿订单详情)
-			agentpurchasepro() {
-				
-				let wishOrderId = _this.wishInfo.wishOrderId
-				
-				uni.navigateTo({
-					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
-				});
 				
 			},
 			

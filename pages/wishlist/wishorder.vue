@@ -7,66 +7,106 @@
 		</cu-custom>
 		
 		<!-- 其他的内容视图 -->
-		<view v-if="wishinfo && orderinfo" class="contentview">
+		<view v-if="wishinfo && orderinfo" class="contentview padding-sm">
 			
-			<!-- 心愿详情信息 -->
-			<view class="wishdetailview bg-white padding-sm solid-bottom">
+			<!-- 收货地址 -->
+			<view class="addressview shadow-warp bg-white padding flex">
 				
-				<!-- 心愿商品基本信息 -->
-				<view class="prodetailview padding-sm flex align-center">
+				<view class="iconview margin-right">
+					<text class="cuIcon cuIcon-deliver_fill text-blue u-font-40"></text>
+				</view>
+				
+				<view class="addresscontentview">
+					<view class="contactview text-lg flex align-center">
+						<view class="text-black text-bold">{{ `收货人` }}</view>
+						<view class="text-black margin-left">{{ `18818881888` }}</view>
+					</view>
+					<view class="addressview margin-top-sm text-wrap">
+						{{ `详细地址详细地址详细地址详细地址详细地址详细地址详细地址` }}
+					</view>
+				</view>
+				
+			</view>
+			
+			<!-- 商品清单 -->
+			<view class="proudctview padding solid margin-top-sm">
+				
+				<view class="iconview flex align-center">
+					<text class="cuIcon cuIcon-goodsfill text-orange u-font-40 margin-right"></text>
+					<text class="text-black text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
+				</view>
+				
+				<view class="productlistview margin-top-sm">
 					
-					<!-- 商品轮播图 -->
-					<swiper class="screen-swiper square-dot" indicator-dots circular
-					 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
-						<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
-							<image :src="img" mode="aspectFill" @tap.stop="previewImgs(wishinfo.imgs,index)"></image>
-						</swiper-item>
-					</swiper>
-					
-					<!-- 商品标题和备注 链接 -->
-					<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
-						<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-						<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
-						<view class="bottomview margin-top-sm flex justify-between align-center">
-							<view class="priceview flex align-center">
-								<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-								<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
+					<view class="firstattrview" v-for="(firstitem, index) in wishinfo.specPropInfo.propValList" :key="index">
+						
+						<view class="secondattrview" v-for="(seconditem, secondindex) in firstitem.specStockList" :key="secondindex">
+							
+							<view v-if="seconditem.amount > 0" class="eachproduct flex align-center solid-bottom padding-sm">
+								
+								<image :src="firstitem.img ? (Array.isArray(firstitem.img) ? firstitem.img[0] : firstitem.img) : '/static/publicicon/logo.png'" mode="aspectFill" :style="{width: '100rpx', height: '100rpx'}"></image>
+								
+								<view class="productinfoview" :style="{width: 'calc(100% - 100rpx - 30rpx)', marginLeft: '30rpx'}">
+									<view class="topview flex justify-between">
+										
+										<view class="text-df text-black text-wrap t_twoline" :style="{maxWidth: '300rpx'}">
+											{{ wishinfo.productTitle }}
+										</view>
+										
+										<view class="text-black text-df margin-left">
+											{{ `x ${seconditem.amount}` }}
+										</view>
+										
+									</view>
+									
+									<view class="bottomview margin-top-sm flex align-center justify-between">
+										
+										<view class="specview text-grey text-sm">
+											{{ `${firstitem.propVal}-${seconditem.propVal}` }}
+										</view>
+										
+										<view class="priceview text-red text-price">
+											{{ `${seconditem.price}` }}
+										</view>
+										
+									</view>
+								</view>
+								
 							</view>
 							
 						</view>
+						
 					</view>
+					
+				</view>
+				
+				<view class="productsummaryview margin-top-sm flex justify-end align-center">
+					
+					<text class="text-df text-black">{{ i18n.wishlist.wishorder.totalproprice }}:</text>
+					<text class="margin-left-sm text-bold text-xl text-red text-price">{{ orderinfo.totalProPrice }}</text>
 					
 				</view>
 				
 			</view>
 			
-			<!-- 订单基本信息 -->
-			<view class="orderinfoview">
+			<!-- 订单信息 -->
+			<view class="orderinfoview padding solid margin-top-sm">
 				
-				<!-- 订购信息字样 -->
-				<view class="cu-bar bg-white padding-left-sm padding-right-sm">
-					<view class="action">
-						<text class="cuIcon cuIcon-titles text-cyan"></text>
-						<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
-					</view>
+				<view class="iconview flex align-center">
+					<text class="cuIcon cuIcon-infofill text-cyan u-font-40 margin-right"></text>
+					<text class="text-black text-bold">{{ i18n.wishlist.wishorder.orderinfo }}</text>
 				</view>
 				
-				<!-- 订购数量详情表格 仅显示订购规格 -->
-				<view class="purchasetableview padding-sm">
-					<wishTableSpec ref="wishtablespec" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
-				</view>
-				
-				<!-- 其他信息 -->
-				<view class="basicorderinfoview cu-list menu">
+				<view class="basicorderinfoview cu-list menu margin-top-sm">
 					
 					<!-- 商品总价 -->
 					<view class="cu-item">
 						<view class="content">
 							<text class="cuIcon-goodsfill text-orange"></text>
-							<text class="text-grey">{{ i18n.wishlist.wishorder.totalproprice }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.totalproprice }}</text>
 						</view>
 						<view class="action">
-							<text class="text-price text-black text-xl">{{ orderinfo.totalProPrice }}</text>
+							<text class="text-price text-black text-df">{{ orderinfo.totalProPrice }}</text>
 						</view>
 					</view>
 					
@@ -74,10 +114,10 @@
 					<view class="cu-item">
 						<view class="content">
 							<text class="cuIcon-deliver_fill text-green"></text>
-							<text class="text-grey">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</text>
 						</view>
 						<view class="action">
-							<text class="text-price text-black text-xl">{{ orderinfo.totalDomesticShippingFee }}</text>
+							<text class="text-price text-black text-df">{{ orderinfo.totalDomesticShippingFee }}</text>
 						</view>
 					</view>
 					
@@ -85,10 +125,10 @@
 					<view class="cu-item">
 						<view class="content">
 							<text class="cuIcon-servicefill text-blue"></text>
-							<text class="text-grey">{{ i18n.wishlist.wishorder.totalcommissionfee }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.totalcommissionfee }}</text>
 						</view>
 						<view class="action">
-							<text class="text-price text-black text-xl">{{ orderinfo.totalCommissionFee }}</text>
+							<text class="text-price text-black text-df">{{ orderinfo.totalCommissionFee }}</text>
 						</view>
 					</view>
 					
@@ -96,17 +136,17 @@
 					<view class="cu-item">
 						<view class="content">
 							<text class="cuIcon-moneybagfill text-red"></text>
-							<text class="text-grey">{{ i18n.wishlist.wishorder.totalorderprice }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.totalorderprice }}</text>
 						</view>
 						<view class="action">
-							<text class="text-price text-red text-xxl">{{ orderinfo.totalOrderPrice }}</text>
+							<text class="text-price text-red text-df">{{ orderinfo.totalOrderPrice }}</text>
 						</view>
 					</view>
 					
 					<!-- 第三方平台类型 仅自身代理可见 -->
 					<view v-if="user._id == orderinfo.agentUser" class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.common.thirdplatformtype }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.common.thirdplatformtype }}</text>
 						</view>
 						<view class="action">
 							<text class="text-grey text-sm">{{ orderinfo.thirdPlatformType }}</text>
@@ -116,18 +156,28 @@
 					<!-- 第三方平台订单号  仅自身代理可见 -->
 					<view v-if="user._id == orderinfo.agentUser" class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.common.thirdplatformordernum }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.common.thirdplatformordernum }}</text>
 						</view>
-						<view class="action">
+						<view v-if="orderinfo.thirdOrderNum" class="action">
 							<text class="text-grey text-sm">{{ orderinfo.thirdOrderNum }}</text>
 							<button class="margin-left cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(orderinfo.thirdOrderNum)">{{ i18n.base.copy }}</button>
+						</view>
+					</view>
+					
+					<!-- 支付方式 -->
+					<view class="cu-item">
+						<view class="content">
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.paytype }}</text>
+						</view>
+						<view class="action">
+							<text class="text-grey text-sm">{{ orderinfo.payType }}</text>
 						</view>
 					</view>
 					
 					<!-- 下单时间 -->
 					<view class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.wishorder.makeordertime }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.makeordertime }}</text>
 						</view>
 						<view class="action">
 							<uni-dateformat class="text-grey text-sm" :date="orderinfo.creatTime" format="yyyy-MM-dd hh:mm:ss" />
@@ -137,7 +187,7 @@
 					<!-- 付款时间 -->
 					<view v-if="orderinfo.payTime" class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.wishorder.paytime }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.paytime }}</text>
 						</view>
 						<view class="action">
 							<uni-dateformat class="text-grey text-sm" :date="orderinfo.payTime" format="yyyy-MM-dd hh:mm:ss" />
@@ -147,7 +197,7 @@
 					<!-- 发货时间 -->
 					<view v-if="orderinfo.deliveryTime" class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.wishorder.deliverytime }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.deliverytime }}</text>
 						</view>
 						<view class="action">
 							<uni-dateformat class="text-grey text-sm" :date="orderinfo.deliveryTime" format="yyyy-MM-dd hh:mm:ss" />
@@ -157,250 +207,11 @@
 					<!-- 收货时间 -->
 					<view v-if="orderinfo.receiveTime" class="cu-item">
 						<view class="content">
-							<text class="text-grey">{{ i18n.wishlist.wishorder.receivetime }}</text>
+							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.receivetime }}</text>
 						</view>
 						<view class="action">
 							<uni-dateformat class="text-grey text-sm" :date="orderinfo.receiveTime" format="yyyy-MM-dd hh:mm:ss" />
 						</view>
-					</view>
-					
-				</view>
-				
-			</view>
-			
-			
-			
-			
-			
-			
-			
-			<!-- 代理下单页面 -->
-			<view v-if="false && wishinfo" class="agentpurchaseproview">
-				
-				<!-- 订购信息字样 -->
-				<view class="cu-bar bg-white">
-					<view class="action">
-						<text class="cuIcon cuIcon-titles text-cyan"></text>
-						<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
-					</view>
-				</view>
-				
-				<!-- 订购数量详情表格 -->
-				<view class="purchasetableview padding-sm">
-					<wishTableSpec ref="wishtablespec1" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
-				</view>
-				
-				<!-- 操作区域字样 -->
-				<view class="cu-bar bg-white">
-					<view class="action">
-						<text class="cuIcon cuIcon-titles text-blue"></text>
-						<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.confirminfo }}</text>
-					</view>
-				</view>
-				
-				<!-- 操作区域 -->
-				<view class="optionview padding-left padding-right">
-					
-					<!-- 价格相关 -->
-					<template v-if="orderPriceInfo">
-						
-						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.common.amount }}</view>
-							<input class="text-right" type="text" v-model="orderPriceInfo.totalAmount" />
-						</view>
-						
-						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.wishorder.totalproprice }}</view>
-							<input class="text-right" type="text" v-model="orderPriceInfo.totalProPrice" />
-						</view>
-						
-						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</view>
-							<input class="text-right" type="text" v-model="orderPriceInfo.totalDomesticShippingFee" />
-						</view>
-						
-						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.wishorder.totalcommissionfee }}</view>
-							<input class="text-right" type="text" v-model="orderPriceInfo.totalCommissionFee" />
-						</view>
-						
-						<view class="cu-form-group">
-							<view class="title">{{ i18n.wishlist.wishorder.totalorderprice }}</view>
-							<input class="text-right" type="text" v-model="orderPriceInfo.totalOrderPrice" />
-						</view>
-						
-					</template>
-					
-					<!-- 第三方平台类型 -->
-					<view class="cu-form-group text-grey">
-						<view class="title">{{ i18n.wishlist.common.thirdplatformtype }}</view>
-						<input class="text-right" type="text" :disabled="true" v-model="thirdPlatformType" />
-					</view>
-					
-					<!-- 第三方平台订单号 -->
-					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.thirdplatformordernum }}</view>
-						<input class="text-right" type="text" v-model="thirdOrderNum" />
-						<button class='cu-btn bg-green shadow' @tap.stop="pastefromclipboard('thirdOrderNum')">{{ i18n.base.paste }}</button>
-					</view>
-					
-				</view>
-				
-				<!-- 确定按钮 -->
-				<view v-if="wishinfo || orderinfo" class="btnview padding-left padding-right flex align-center justify-center margin-top">
-					<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
-				</view>
-				
-			</view>
-			
-			<!-- 普通心愿订单页面 -->
-			<view v-else-if="false && orderinfo && wishinfo" class="normalorderview">
-				
-				<!-- 心愿详情信息 -->
-				<view v-if="wishinfo" class="wishdetailview bg-white padding-sm solid-bottom">
-					
-					<!-- 心愿商品基本信息 -->
-					<view class="prodetailview padding-sm flex align-center">
-						
-						<!-- 商品轮播图 -->
-						<swiper class="screen-swiper square-dot" indicator-dots circular
-						 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
-							<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
-								<image :src="img" mode="aspectFill" @tap.stop="previewImgs(wishinfo.imgs,index)"></image>
-							</swiper-item>
-						</swiper>
-						
-						<!-- 商品标题和备注 链接 -->
-						<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
-							<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-							<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
-							<view class="bottomview margin-top-sm flex justify-between align-center">
-								<view class="priceview flex align-center">
-									<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-									<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
-								</view>
-								
-							</view>
-						</view>
-						
-					</view>
-					
-				</view>
-				
-				<!-- 订单基本信息 -->
-				<view class="orderinfoview">
-					
-					<!-- 订购信息字样 -->
-					<view class="cu-bar bg-white padding-left-sm padding-right-sm">
-						<view class="action">
-							<text class="cuIcon cuIcon-titles text-cyan"></text>
-							<text class="text-xl text-bold">{{ i18n.wishlist.wishorder.purchaseinfo }}</text>
-						</view>
-					</view>
-					
-					<!-- 订购数量详情表格 仅显示订购规格 -->
-					<view class="purchasetableview padding-sm">
-						<wishTableSpec ref="wishtablespec2" :wishinfo="wishinfo" sourcefrom="wishorder" ></wishTableSpec>
-					</view>
-					
-					<!-- 其他信息 -->
-					<view class="basicorderinfoview cu-list menu">
-						
-						<!-- 商品总价 -->
-						<view class="cu-item">
-							<view class="content">
-								<text class="cuIcon-goodsfill text-orange"></text>
-								<text class="text-grey">{{ i18n.wishlist.wishorder.totalproprice }}</text>
-							</view>
-							<view class="action">
-								<text class="text-price text-black text-xl">{{ orderinfo.totalProPrice }}</text>
-							</view>
-						</view>
-						
-						<!-- 国内总运费 -->
-						<view class="cu-item">
-							<view class="content">
-								<text class="cuIcon-deliver_fill text-green"></text>
-								<text class="text-grey">{{ i18n.wishlist.wishorder.totaldomesticshippingfee }}</text>
-							</view>
-							<view class="action">
-								<text class="text-price text-black text-xl">{{ orderinfo.totalDomesticShippingFee }}</text>
-							</view>
-						</view>
-						
-						<!-- 总服务费 -->
-						<view class="cu-item">
-							<view class="content">
-								<text class="cuIcon-servicefill text-blue"></text>
-								<text class="text-grey">{{ i18n.wishlist.wishorder.totalcommissionfee }}</text>
-							</view>
-							<view class="action">
-								<text class="text-price text-black text-xl">{{ orderinfo.totalCommissionFee }}</text>
-							</view>
-						</view>
-						
-						<!-- 订单总价 -->
-						<view class="cu-item">
-							<view class="content">
-								<text class="cuIcon-moneybagfill text-red"></text>
-								<text class="text-grey">{{ i18n.wishlist.wishorder.totalorderprice }}</text>
-							</view>
-							<view class="action">
-								<text class="text-price text-red text-xxl">{{ orderinfo.totalOrderPrice }}</text>
-							</view>
-						</view>
-						
-						<!-- 第三方平台类型 仅自身代理可见 -->
-						<view v-if="user._id == orderinfo.agentUser" class="cu-item">
-							<view class="content">
-								<text class="text-grey">{{ i18n.wishlist.common.thirdplatformtype }}</text>
-							</view>
-							<view class="action">
-								<text class="text-grey text-sm">{{ orderinfo.thirdPlatformType }}</text>
-							</view>
-						</view>
-						
-						<!-- 第三方平台订单号  仅自身代理可见 -->
-						<view v-if="user._id == orderinfo.agentUser" class="cu-item">
-							<view class="content">
-								<text class="text-grey">{{ i18n.wishlist.common.thirdplatformordernum }}</text>
-							</view>
-							<view class="action">
-								<text class="text-grey text-sm">{{ orderinfo.thirdOrderNum }}</text>
-								<button class="margin-left cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(orderinfo.thirdOrderNum)">{{ i18n.base.copy }}</button>
-							</view>
-						</view>
-						
-						<!-- 下单时间 -->
-						<view class="cu-item">
-							<view class="content">
-								<text class="text-grey">{{ i18n.wishlist.wishorder.makeordertime }}</text>
-							</view>
-							<view class="action">
-								<uni-dateformat class="text-grey text-sm" :date="orderinfo.creatTime" format="yyyy-MM-dd hh:mm:ss" />
-							</view>
-						</view>
-						
-						<!-- 发货时间 -->
-						<view v-if="orderinfo.deliveryTime" class="cu-item">
-							<view class="content">
-								<text class="text-grey">{{ i18n.wishlist.wishorder.deliverytime }}</text>
-							</view>
-							<view class="action">
-								<uni-dateformat class="text-grey text-sm" :date="orderinfo.deliveryTime" format="yyyy-MM-dd hh:mm:ss" />
-							</view>
-						</view>
-						
-						<!-- 收货时间 -->
-						<view v-if="orderinfo.receiveTime" class="cu-item">
-							<view class="content">
-								<text class="text-grey">{{ i18n.wishlist.wishorder.receivetime }}</text>
-							</view>
-							<view class="action">
-								<uni-dateformat class="text-grey text-sm" :date="orderinfo.receiveTime" format="yyyy-MM-dd hh:mm:ss" />
-							</view>
-						</view>
-						
 					</view>
 					
 				</view>
@@ -485,22 +296,23 @@
 		<!-- 按钮区域 -->
 		<view v-if="orderinfo && wishinfo" class="btnsview shadow-blur bg-white solid-top flex align-center justify-end padding">
 			
-			<!-- 如果是待付款订单 -->
-			<template v-if="orderinfo.status == 0">
+			<!-- 供应商视角 -->
+			<template v-if="user._id == orderinfo.creatUser">
 				
-				<!-- 客户角色 -->
-				<template v-if="user._id == orderinfo.creatUser">
-					<!-- 付款按钮 -->
+				<!-- 如果是待付款订单 -->
+				<template v-if="orderinfo.status == 0">
 					<button class="optionbtn cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
 				</template>
 				
 			</template>
 			
-			<!-- 如果是待发货则代理显示发货按钮 -->
-			<!-- orderinfo.status == 1 &&  -->
+			<!-- 代理员视角 -->
 			<template v-if="user._id == orderinfo.agentUser">
 				
-				<button class="cu-btn round bg-cyan" @tap.stop="deliveryproduct">{{ i18n.wishlist.wishorder.delivery }}</button>
+				<!-- 如果是待发货显示发货按钮 -->
+				<template v-if="orderinfo.status == 1">
+					<button class="cu-btn round bg-cyan" @tap.stop="deliveryproduct">{{ i18n.wishlist.wishorder.delivery }}</button>
+				</template>
 				
 			</template>
 			
@@ -514,6 +326,35 @@
 			
 			<view class="showcontentview">
 				
+				<template v-if="popuptype == 'agentpurchase'">
+					
+					<!-- 第三方订单号和下单图片 -->
+					<view class="width100 padding">
+						
+						<u-field class="round"
+								style="background-color: #F5F5F5;"
+								v-model="thirdOrderNum" :placeholder="i18n.wishlist.wishorder.pleaseinputthirdordernum"
+								:border-bottom="false" label-width="0"
+								clear-size="45"
+						>
+							<button slot="right" class="cu-btn round bg-cyan shadow" @tap.stop="pastefromclipboard('thirdOrderNum')">{{i18n.base.paste}}</button>
+							
+						</u-field>
+					
+						<view class="bg-white padding">
+							<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="1"
+							return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+							@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+							</uni-file-picker>
+						</view>
+						
+					</view>
+					
+					<button class="cu-btn block width100 bg-cyan" :style="{height: '100rpx'}" :disabled="!thirdOrderNum" @tap.stop="agentpurchasepro">
+						{{ i18n.base.confirm }}
+					</button>
+					
+				</template>
 				
 			</view>
 			
@@ -552,6 +393,8 @@
 				thirdOrderNum: '', // 第三方订单号
 				domesticShippingName: '', // 国内物流名称
 				domesticShippingNum: '', // 国内物流编号
+				
+				imgArr: [], // 图片数组
 				
 				popuptype: '', // 弹框显示内容类型 
 				ifshowpopup: false, // 是否显示弹框
@@ -668,11 +511,58 @@
 				uni.getClipboardData({
 					success(res) {
 						let content = res.data
+						console.log(content);
 						if(content) {
 							_this[datatype] = content
 						}
 					}
 				})
+			},
+			
+			// 选择图片成功
+			fileselect(e) {
+				this.imgArr.push.apply(this.imgArr, e.tempFiles)
+				// this.imgArr =  this.imgArr.concat(e.tempFiles)
+				console.log(`选择图片成功`);
+			},
+			
+			// 图片删除
+			filedelete(e) {
+				let deleteIndex = this.imgArr.findIndex(item => {
+					return e.tempFilePath == item.path
+				})
+				if(deleteIndex > -1) {
+					this.imgArr.splice(deleteIndex,1)
+				}
+			},
+			
+			// 图片上传
+			fileprogress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				
+				this.ifloading = false
+				// 继续代理下单操作
+				this.agentpurchasepro()
+			},
+			
+			// 上传图片失败
+			filefail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
+				
+				this.ifloading = false
+				uni.showToast({
+					title: this.i18n.error.uploaderror,
+					icon: 'none'
+				});
 			},
 			
 			// 客户立即支付
@@ -685,7 +575,15 @@
 				
 			},
 			
-			// 代理下单操作
+			// 代理开始下单操作
+			agentstartpurchasepro() {
+				
+				this.popuptype = 'agentpurchase'
+				this.ifshowpopup = true
+				
+			},
+			
+			// 代理下单
 			agentpurchasepro() {
 				
 				// 校验订单号
@@ -697,99 +595,70 @@
 					return
 				}
 				
-				uni.showModal({
-					title: _this.i18n.tip.optionconfirm,
-					content: _this.i18n.wishlist.timeline.purchasetip,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							// 确认进货
-							
-							let wishInfo = _this.wishinfo
-							
-							db.collection('wishlist')
-							.doc(wishInfo._id)
-							.update({
-								achieveFlag: 3 , // 代理已下单客户待收货
-								wishOrderId: newwishorderid, // 更新心愿绑定的心愿订单号
-							})
-							.then(response => {
-								// 操作成功
-								if(response.result.code == 0) {
-									
-									// 发送推送消息  给用户发送下单通知
-									_this.pushnoticemsg('purchaseorder')
-									
-									// 增加一条代理已经下单的时间轴
-									db.collection('wishlisttimeline')
-									.add({type: 91, wishId: wishInfo._id})
-									.then(response => {
-										// 增加时间轴成功
-										_this.ifloading = false
-										
-										// 更新列表 详情和时间轴
-										// 更新数据
-										uni.$emit('updatetimeline')
-										// 更新心愿单列表和详情
-										uni.$emit('updatewishlist')
-										uni.$emit('updatewishdetail')
-										
-										uni.showToast({
-											title: _this.i18n.tip.optionsuccess,
-											icon: 'none'
-										});
-										setTimeout(function() {
-											uni.navigateBack();
-										}, 1000);
-										
-									}).catch(error => {
-										_this.ifloading = false
-										console.log(error.message);
-									})
-									
-								}
-								// 操作失败
-								else {
-									_this.ifloading = false
-									uni.showToast({
-										title: _this.i18n.error.optionerror,
-										icon: 'none'
-									});
-									_this.delwishorderbyid(newwishorderid) // 操作失败,删除新增心愿订单
-								}
-							})
-							.catch(error => {
-								_this.ifloading = false
-								uni.showToast({
-									title: error.message,
-									icon: 'none'
-								});
-								
-								_this.delwishorderbyid(newwishorderid) // 操作失败,删除新增心愿订单
-								
-							})
-							
-						}
+				// 开始上传
+				// 检查是否需要上传图片
+				if(_this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					_this.ifloading = true
+					_this.$refs.filepickerref.upload()
+					return
+				}
+				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = _this.imgArr.map(item => (item.url)).join(',')
+				
+				let wishInfo = _this.wishinfo
+				
+				_this.ifloading = true
+				
+				const db = uniCloud.database();
+				db.collection('order')
+				.doc(_this.orderinfo._id)
+				.update({
+					thirdOrderNum: _this.thirdOrderNum, // 第三方订单号
+					thirdOrderImgs: imgs, // 第三方订单图片
+				})
+				.then(response => {
+					// 操作成功
+					_this.ifloading = false
+					if(response.result.code == 0) {
+						// 发送推送消息  给用户发送下单通知
+						_this.pushnoticemsg('purchaseorder')
+						_this.loaddata() // 刷新数据
 					}
-				});
+					// 操作失败
+					else {
+						_this.ifloading = false
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					_this.ifloading = false
+					uni.showToast({
+						title: error.message,
+						icon: 'none'
+					});
+				})
 				
 			},
 			
 			// 代理发货
 			deliveryproduct() {
+				
+				// 校验是否有第三方订单号 如果没有则执行代理下单
+				if(!this.orderinfo.thirdOrderNum) {
+					this.agentstartpurchasepro()
+					return
+				}
+				
 				// 区分无物流发货和物流发货
 				uni.showToast({
 					title: '代理开始发货',
 					icon: 'none'
 				});
-			},
-			
-			// 公共处理删除新增心愿订单的方法
-			delwishorderbyid(orderid) {
-				const db = uniCloud.database();
-				db.collection('order').doc(orderid).remove()
 			},
 			
 			// 推送消息
@@ -801,7 +670,7 @@
 						type: 'sendwxmsg',
 						info: {
 							msgtype: msgtype,
-							wishId: _this.wishinfo._id
+							orderId: _this.orderinfo._id
 						}
 					}
 				}).then(response => {
@@ -822,17 +691,6 @@
 			// 确认操作
 			confirm() {
 				
-				// 代理确认下单
-				if(this.type == 'agentpurchasepro') {
-					this.agentpurchasepro()
-				}
-				
-				// 客户确认收货
-				else if(this.type == 'clientconfirmreceive') {
-					
-					
-					
-				}
 				
 			},
 			
