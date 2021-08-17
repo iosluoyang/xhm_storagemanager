@@ -203,13 +203,9 @@
 						<text class="cuIcon-add"></text>
 					</button>
 					
-					<!-- 待确认状态下不显示 等待用户进行确认 -->
-					
-					<!-- 已确认待下单状态下  根据对应的心愿单状态选择进货或者更新时间轴 -->
-					
-					<!-- 已支付 -->
-					<button v-if="wishinfo.achieveFlag == 2 && wishOrderInfo && wishOrderInfo.status == 1" class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-						<text class="cuIcon-shop"></text>
+					<!-- 其他情况只要有订单则显示去往订单按钮 -->
+					<button v-else-if="wishOrderInfo" class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+						<text class="cuIcon-formfill"></text>
 					</button>
 					
 				</template>
@@ -231,7 +227,7 @@
 				
 				<!-- 其他情况显示订单按钮 -->
 				<button v-else class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-					<text class="cuIcon-text"></text>
+					<text class="cuIcon-formfill"></text>
 				</button>
 				
 			</template>

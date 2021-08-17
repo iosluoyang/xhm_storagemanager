@@ -293,6 +293,8 @@ const zh = {
 			checkwishorder: "查看心愿订单",
 			receiveall: "已收到全部货物",
 			receiveallconfirm: "请确认是否收到全部货物",
+			receiveparttip: "您已确认收到全部货物,请核实收货数量",
+			receivealltip: "您仅收到部分货物,后续将继续记录收货数量",
 			receiveparts: "收到部分货物",
 			purchaseinfo: "订购信息",
 			orderinfo: "订单信息",
@@ -309,8 +311,12 @@ const zh = {
 			receivetime: "收货时间",
 			purchase: "下单",
 			delivery: "发货",
+			receive: "确认收货",
 			timeupclosetip: "已过付款时间, 是否关闭订单?",
-			
+			havetrackingnum: "有物流单号",
+			havenotrackingnum: "没有物流单号",
+			pleaseinputshippingname: "请输入物流名称",
+			pleaseinputshippingnum: "请输入物流单号",
 		},
 		
 		// 收银台相关

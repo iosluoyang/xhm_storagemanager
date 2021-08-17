@@ -291,6 +291,8 @@ const en = {
 			checkwishorder: "Check wish order",
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
+			receiveparttip: "You got all the products, please check the total amount",
+			receivealltip: "You just got some of the products, will continue recording later",
 			receiveparts: "Receive Parts",
 			purchaseinfo: "Purchase Info",
 			orderinfo: "Order Info",
@@ -307,7 +309,12 @@ const en = {
 			receivetime: "Receive Time",
 			purchase: "Purchase",
 			delivery: "Delivery Order",
+			receive: "Confirm received",
 			timeupclosetip: "Payment time up, Do you want to close this order?",
+			havetrackingnum: "With Tracking Num",
+			havenotrackingnum: "Without Tracking Num",
+			pleaseinputshippingname: "Please input Shipping Name",
+			pleaseinputshippingnum: "Please input Shipping Number",
 			
 		},
 		

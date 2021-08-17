@@ -28,5 +28,7 @@
 </script>
 
 <style lang="scss" scoped>
-	
+	.hyloading{
+		z-index: 800;
+	}
 </style>

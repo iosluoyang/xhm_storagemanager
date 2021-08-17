@@ -44,22 +44,53 @@ exports.main = async (event, context) => {
 		let template_id = ''
 		let data = {}
 		let page = ''
-				
-		//获取集合对象
-		const wishcollection = db.collection('wishlist')
+		
 		let wishId = info.wishId
-		let wishres = await wishcollection
-			.doc(wishId)
-			// .field({'productTitle': true, 'creatUser': true, 'agentUser': true})
-			.get()
-		let wishInfo = wishres.data[0]
-		let productTitle = wishInfo.productTitle
-		productTitle = productTitle.substr(0,10) + '...'
+		let orderId = info.orderId
 		
-		console.log(wishInfo);
+		let wishInfo
+		let orderInfo
+		let productTitle
+		let creatUserId
+		let agentUserId
 		
-		let creatUserId = wishInfo.creatUser
-		let agentUserId = wishInfo.agentUser
+		//获取心愿集合对象(如果有wishId)
+		if(wishId) {
+			
+			const wishcollection = db.collection('wishlist')
+			
+			let wishres = await wishcollection
+				.doc(wishId)
+				.get()
+			wishInfo = wishres.data[0]
+			productTitle = wishInfo.productTitle.substr(0,10) + '...'
+			
+			console.log(`获取的心愿详情`);
+			console.log(wishInfo);
+			
+			creatUserId = wishInfo.creatUser
+			agentUserId = wishInfo.agentUser
+
+		}
+		
+		// 获取心愿订单对象(如果有orderId)
+		if(orderId) {
+			
+			const wishcollection = db.collection('order')
+			
+			let orderres = await wishcollection
+				.doc(orderId)
+				.get()
+			orderInfo = orderres.data[0]
+			productTitle = orderInfo.title.substr(0,10) + '...'
+			
+			console.log(`获取的订单详情`);
+			console.log(orderInfo);
+			
+			creatUserId = orderInfo.creatUser
+			agentUserId = orderInfo.agentUser
+			
+		}
 		
 		// 查找用户表中对应的微信openId
 		let creatuserres = await uniID.getUserInfo({uid: creatUserId})
@@ -69,12 +100,26 @@ exports.main = async (event, context) => {
 			creatUserWxOpenId = creatUserInfo.wx_openid['mp-weixin']
 		}
 		
-		let agentuserres = await uniID.getUserInfo({uid: agentUserId})
-		let agentUserInfo = agentuserres.userInfo
+		console.log(`获取的心愿客户信息`);
+		console.log(creatUserInfo);
+		
+		let agentUserInfo = {nickname: 'LAL'}
 		let agentUserWxOpenId = ''
-		if(agentUserInfo.wx_openid && agentUserInfo.wx_openid['mp-weixin']) {
-			agentUserWxOpenId = agentUserInfo.wx_openid['mp-weixin']
+		if(agentUserId) {
+			let agentuserres = await uniID.getUserInfo({uid: agentUserId})
+			agentUserInfo = agentuserres.userInfo
+			agentUserWxOpenId = ''
+			if(agentUserInfo.wx_openid && agentUserInfo.wx_openid['mp-weixin']) {
+				agentUserWxOpenId = agentUserInfo.wx_openid['mp-weixin']
+			}
+			
 		}
+		
+		console.log(`获取的心愿代理信息`);
+		console.log(agentUserInfo);
+		
+		
+		// 开始发送消息
 		
 		// 代理员接单提醒(发送给客户)
 		if(msgtype == 'agentbindwish') {
@@ -148,6 +193,29 @@ exports.main = async (event, context) => {
 			
 		}
 		
+		// 客户完成支付(发送给代理员)
+		else if(msgtype == 'finishpay') {
+			
+			template_id = 'YohhOYh5-nXQhDoOqTc-OQBdnp5_dxUU3q0aVtLmpoI'
+			touseropenid = agentUserWxOpenId // 发送代理员微信openId
+			let tips = `用户已经付款,请尽快处理`
+			
+			data = {
+				thing2: {value: productTitle}, // 心愿标题
+				character_string1: {value: orderInfo._id}, // 订单单号
+				amount3: {value: `¥ ${orderInfo.totalOrderPrice}`}, // 订单金额
+				thing7: {value: tips}, // 温馨提示
+				time8: {value: currenttimestr}, // 推送时间
+			}
+			
+			page = `/pages/wishlist/wishorder?wishOrderId=${orderId}&ifShare=true`
+			
+			console.log(`模拟发送的消息体为:`);
+			console.log(data);
+			console.log(page);
+			
+		}
+		
 		// 代理员下单(发送给客户)
 		else if(msgtype == 'purchaseorder') {
 			
@@ -156,7 +224,7 @@ exports.main = async (event, context) => {
 			let tips = `代理员已经下单,请耐心等待商家发货`
 			
 			data = {
-				character_string1: {value: wishId.substr(-10,10)}, // 订单编号
+				character_string1: {value: orderInfo._id}, // 订单编号
 				time2: {value: currenttimestr}, // 下单时间
 				thing8: {value: productTitle}, // 心愿标题
 				thing17: {value: agentUserInfo.nickname}, // 下单人

@@ -187,7 +187,7 @@
 			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
 			<view class="optionbtnview margin-top-sm">
 				
-				<button v-if="wishInfo.wishOrderId" class="cu-btn round bg-white margin-right" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
+				<button v-if="wishInfo.wishOrderId" class="cu-btn round margin-right" :style="{backgroundColor: '#ffffff'}" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
 				
 			</view>
 			
@@ -215,14 +215,9 @@
 			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
 			<view class="optionbtnview margin-top-sm">
 				
-				<button v-if="wishInfo.wishOrderInfo && wishInfo.wishOrderId" class="cu-btn round bg-white margin-right" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
+				<button v-if="wishInfo.wishOrderInfo && wishInfo.wishOrderId" class="cu-btn round margin-right" :style="{backgroundColor: '#ffffff'}" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
 				
 			</view>
-			
-			<!-- 商家身份进行收货操作 仅当为商家身份且心愿单状态为待收货 -->
-			<!-- <view v-if=" (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && wishInfo.achieveFlag == 3 " class="btnsview margin-top-sm solid-top padding-top-sm flex align-center">
-				<button class="cu-btn round" :style="{background: '#ffffff'}" @tap.stop="confirmproductreceive">{{ i18n.wishlist.timeline.confirmproductreceive }}</button>
-			</view> -->
 			
 		</view>
 		

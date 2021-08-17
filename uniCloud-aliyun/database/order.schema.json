@@ -13,9 +13,83 @@
 			"description": "ID，系统自动生成"
 		},
 		"creatTime": {
-			"description": "创建时间",
+			"description": "创建时间 也即下单时间",
 			"forceDefaultValue": {
 				"$env": "now"
+			}
+		},
+		"payTime": {
+			"bsonType": "timestamp",
+			"description": "付款时间",
+			"defaultValue": ""
+		},
+		"payType": {
+			"bsonType": "string",
+			"description": "支付方式",
+			"defaultValue": ""
+		},
+		"payImgs": {
+			"bsonType": "string",
+			"description": "付款凭证图片",
+			"defaultValue": ""
+		},
+		"deliveryTime": {
+			"bsonType": "timestamp",
+			"description": "发货时间",
+			"defaultValue": ""
+		},
+		"deliveryType": {
+			"bsonType":"int",
+			"description": "物流方式 0无物流发货 1物流发货"
+		},
+		"deliveryInfo": {
+			"bsonType":"object",
+			"description":"订单物流相关信息",
+			"properties": {
+				"domesticShippingName": {
+					"bsonType":"string",
+					"description":"发货国内快递名称"
+				},
+				"domesticShippingNum": {
+					"bsonType":"string",
+					"description":"发货国内快递单号 多个逗号拼接"
+				},
+				"remark": {
+					"bsonType":"string",
+					"description":"发货备注",
+					"defaultValue":""
+				},
+				"imgs": {
+					"bsonType":"string",
+					"description":"发货图片集合  多个逗号拼接",
+					"defaultValue":""
+				}
+			}
+		},
+		"receiveTime": {
+			"bsonType": "timestamp",
+			"description": "收货时间",
+			"defaultValue": ""
+		},
+		"receiveType": {
+			"bsonType":"int",
+			"description":"订单商品收货状态 0未收货 1部分收货 2全部收货",
+			"defaultValue": 0
+		},
+		"receiveInfo": {
+			"bsonType":"object",
+			"description":"订单收货相关信息",
+			"properties": {
+				"remark": {
+					"bsonType":"string",
+					"description":"收货备注",
+					"defaultValue":""
+				},
+				"imgs": {
+					"bsonType":"string",
+					"description":"收货图片集合",
+					"defaultValue":""
+				}
 			}
 		},
 		"creatUser": {
@@ -28,6 +102,10 @@
 			"description": "代理员的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
+		"status": {
+			"bsonType": "int",
+			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货完成"
+		},
 		"wishId": {
 			"bsonType": "string",
 			"description": "心愿id",
@@ -35,19 +113,28 @@
 		},
 		"title": {
 			"bsonType": "string",
-			"description": "订单标题"
+			"description": "订单标题",
+			"defaultValue": ""
 		},
 		"totalProPrice": {
 			"bsonType": "string",
-			"description": "商品总金额"
+			"description": "商品总金额",
+			"defaultValue": ""
 		},
 		"totalCommissionFee": {
 			"bsonType": "string",
-			"description": "服务费总金额"
+			"description": "服务费总金额",
+			"defaultValue": ""
 		},
 		"totalDomesticShippingFee": {
-			"bsonType":"string",
-			"description":"国内运费总金额"
+			"bsonType": "string",
+			"description": "国内运费总金额",
+			"defaultValue": ""
+		},
+		"totalOrderPrice": {
+			"bsonType": "string",
+			"description": "订单总价",
+			"defaultValue": ""
 		},
 		"thirdPlatformType": {
 			"bsonType": "string",
@@ -62,7 +149,13 @@
 		},
 		"thirdOrderNum": {
 			"bsonType": "string",
-			"description": "第三方订单号"
+			"description": "第三方订单号",
+			"defaultValue": ""
+		},
+		"thirdOrderImgs": {
+			"bsonType":"string",
+			"description":"第三方订单图片",
+			"defaultValue":""
 		}
 
 	}

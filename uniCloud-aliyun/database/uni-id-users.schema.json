@@ -262,9 +262,9 @@
 			"description": "用户自身邀请码"
 		},
 		"unitCommissionFee": {
-			"bsonType":"string",
-			"description":"该用户的服务费单价",
-			"defaultValue":"20"
+			"bsonType": "string",
+			"description": "该用户的服务费单价",
+			"defaultValue": "20"
 		}
 	}
 }

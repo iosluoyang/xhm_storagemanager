@@ -129,6 +129,26 @@
 					"bsonType": "string",
 					"description": "箱子重量,单位kg",
 					"defaultValue": ""
+				},
+				"domesticShippingFee": {
+					"bsonType": "string",
+					"description": "该心愿单的国内运费",
+					"defaultValue": ""
+				},
+				"commissionFee": {
+					"bsonType": "string",
+					"description": "该心愿单的服务费",
+					"defaultValue": ""
+				},
+				"proPrice": {
+					"bsonType": "string",
+					"description": "该心愿单的商品总价",
+					"defaultValue": ""
+				},
+				"totalPrice": {
+					"bsonType": "string",
+					"description": "该心愿单的所有费用总价",
+					"defaultValue": ""
 				}
 			}
 		},
@@ -200,6 +220,10 @@
 			"bsonType": "string",
 			"description": "第三方商品的pid",
 			"foreignKey": "linkproduct1688.thirdPid"
+		},
+		"wishOrderId": {
+			"bsonType": "string",
+			"description": "心愿生成订单后的心愿订单号"
 		}
 
 	}

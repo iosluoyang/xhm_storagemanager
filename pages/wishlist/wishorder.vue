@@ -6,11 +6,11 @@
 			<block slot="content">{{ i18n.nav.wishorder }}</block>
 		</cu-custom>
 		
-		<!-- 其他的内容视图 -->
+		<!-- 内容视图 -->
 		<view v-if="wishinfo && orderinfo" class="contentview padding-sm">
 			
 			<!-- 收货地址 -->
-			<view class="addressview shadow-warp bg-white padding flex">
+			<view v-if="false" class="addressview shadow-warp bg-white padding flex">
 				
 				<view class="iconview margin-right">
 					<text class="cuIcon cuIcon-deliver_fill text-blue u-font-40"></text>
@@ -24,6 +24,10 @@
 					<view class="addressview margin-top-sm text-wrap">
 						{{ `详细地址详细地址详细地址详细地址详细地址详细地址详细地址` }}
 					</view>
+				</view>
+				
+				<view class="shippingview">
+					
 				</view>
 				
 			</view>
@@ -146,7 +150,7 @@
 					<!-- 第三方平台类型 仅自身代理可见 -->
 					<view v-if="user._id == orderinfo.agentUser" class="cu-item">
 						<view class="content">
-							<text class="text-grey text-df">{{ i18n.wishlist.common.thirdplatformtype }}</text>
+							<text class="text-grey text-df">*{{ i18n.wishlist.common.thirdplatformtype }}</text>
 						</view>
 						<view class="action">
 							<text class="text-grey text-sm">{{ orderinfo.thirdPlatformType }}</text>
@@ -156,7 +160,7 @@
 					<!-- 第三方平台订单号  仅自身代理可见 -->
 					<view v-if="user._id == orderinfo.agentUser" class="cu-item">
 						<view class="content">
-							<text class="text-grey text-df">{{ i18n.wishlist.common.thirdplatformordernum }}</text>
+							<text class="text-grey text-df">*{{ i18n.wishlist.common.thirdplatformordernum }}</text>
 						</view>
 						<view v-if="orderinfo.thirdOrderNum" class="action">
 							<text class="text-grey text-sm">{{ orderinfo.thirdOrderNum }}</text>
@@ -170,7 +174,7 @@
 							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.paytype }}</text>
 						</view>
 						<view class="action">
-							<text class="text-grey text-sm">{{ orderinfo.payType }}</text>
+							<text class="text-grey text-sm">{{ orderinfo.payType == 'alipay' ? '支付宝/AliPay' : orderinfo.payType == 'wechatpay' ? '微信/WechatPay' : orderinfo.payType == 'bankcard' ? '银行卡/BankCard' : '未知/Unknown' }}</text>
 						</view>
 					</view>
 					
@@ -194,10 +198,10 @@
 						</view>
 					</view>
 					
-					<!-- 发货时间 -->
-					<view v-if="orderinfo.deliveryTime" class="cu-item">
+					<!-- 发货时间 仅自身代理可见 -->
+					<view v-if="user._id == orderinfo.agentUser && orderinfo.deliveryTime" class="cu-item">
 						<view class="content">
-							<text class="text-grey text-df">{{ i18n.wishlist.wishorder.deliverytime }}</text>
+							<text class="text-grey text-df">*{{ i18n.wishlist.wishorder.deliverytime }}</text>
 						</view>
 						<view class="action">
 							<uni-dateformat class="text-grey text-sm" :date="orderinfo.deliveryTime" format="yyyy-MM-dd hh:mm:ss" />
@@ -220,79 +224,6 @@
 			
 		</view>
 		
-		<!-- 其他操作输入区域 -->
-		<view v-if="false && orderinfo" class="optionview">
-			
-			<!-- 如果是已发货待收货则客户显示确认收货视图 -->
-			<view v-if="orderinfo.status == 2 && user._id == orderinfo.creatUser ">
-				
-				<!-- 收货状态 -->
-				<radio-group class="block" @change="(e) => {receiveAllFlag = Number(e.detail.value)}">
-					
-					<view class="flex justify-around">
-						<label class="radio">
-							<radio class='cyan margin-right-sm' :class="receiveAllFlag==1?'checked':''" :checked="receiveAllFlag==1?true:false" value="1"></radio>
-							{{ i18n.wishlist.receiveproduct.receiveall }}
-						</label>
-						<label class="radio">
-							<radio class='red radio margin-right-sm' :class="receiveAllFlag==0?'checked':''" :checked="receiveAllFlag==0?true:false" value="0"></radio>
-							{{ i18n.wishlist.receiveproduct.receiveparts }}
-						</label>
-					</view>
-					
-				</radio-group>
-				
-				<!-- 如果是部分收货的话则记录收货信息 -->
-				<view v-if="receiveAllFlag == 0" class="padding">
-					
-					<view class="partreceiveview">
-						
-						<view class="title text-bold">{{ `部分收货信息` }}</view>
-						<view class="cu-form-group solid margin-top-sm">
-							<textarea maxlength="-1" v-model="receiveproductcontent" placeholder="输入收货信息"></textarea>
-						</view>
-						
-					</view>
-					
-					<view class="remarkview margin-top-sm">
-						
-						<view class="title text-bold">{{ `备注` }}</view>
-						<view class="cu-form-group solid margin-top-sm">
-							<textarea maxlength="-1" v-model="remark" placeholder="请输入备注"></textarea>
-						</view>
-						
-					</view>
-					
-				</view>
-				
-				<!-- <view class="cu-form-group">
-					<view class="title">{{ `第三方订单号` }}</view>
-					<input class="text-right" type="text" v-model="thirdOrderNum" />
-					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('thirdOrderNum')">{{ i18n.base.paste }}</button>
-				</view>
-				
-				
-				<view class="cu-form-group">
-					<view class="title">{{ `国内物流名称` }}</view>
-					<input class="text-right" type="text" v-model="domesticShippingName" />
-				</view>
-				
-				<view class="cu-form-group">
-					<view class="title">{{ `国内物流单号` }}</view>
-					<input class="text-right" type="text" v-model="domesticShippingNum" />
-					<button class='cu-btn bg-green shadow' @tap.stop="pasteData('domesticShippingNum')">{{ i18n.base.paste }}</button>
-				</view> -->
-				
-				
-				<!-- 确定按钮 -->
-				<view class="btnview padding-left padding-right flex align-center justify-center margin-top">
-					<button class="cu-btn width50 round lg" :class="[ receiveAllFlag == '1' ? 'bg-cyan' : 'bg-red' ]" @tap.stop="confirm">{{ i18n.base.confirm }}</button>
-				</view>
-				
-			</view>
-			
-		</view>
-		
 		<!-- 按钮区域 -->
 		<view v-if="orderinfo && wishinfo" class="btnsview shadow-blur bg-white solid-top flex align-center justify-end padding">
 			
@@ -304,6 +235,11 @@
 					<button class="optionbtn cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
 				</template>
 				
+				<!-- 如果是待收货订单 -->
+				<template v-if="orderinfo.status == 2">
+					<button class="cu-btn round bg-cyan" @tap.stop="clientstarttoconfirmreceive">{{ i18n.wishlist.wishorder.receive }}</button>
+				</template>
+				
 			</template>
 			
 			<!-- 代理员视角 -->
@@ -311,7 +247,7 @@
 				
 				<!-- 如果是待发货显示发货按钮 -->
 				<template v-if="orderinfo.status == 1">
-					<button class="cu-btn round bg-cyan" @tap.stop="deliveryproduct">{{ i18n.wishlist.wishorder.delivery }}</button>
+					<button class="cu-btn round bg-cyan" @tap.stop="agentstartdeliverypro">{{ i18n.wishlist.wishorder.delivery }}</button>
 				</template>
 				
 			</template>
@@ -322,10 +258,11 @@
 		<loading :loadModal="ifloading"></loading>
 		
 		<!-- 弹出框 -->
-		<u-popup v-model="ifshowpopup" mode="bottom" safe-area-inset-bottom border-radius="30" height="auto">
+		<u-popup v-model="ifshowpopup" mode="bottom" safe-area-inset-bottom border-radius="30" height="auto" z-index="700">
 			
 			<view class="showcontentview">
 				
+				<!-- 代理下单 -->
 				<template v-if="popuptype == 'agentpurchase'">
 					
 					<!-- 第三方订单号和下单图片 -->
@@ -356,6 +293,136 @@
 					
 				</template>
 				
+				<!-- 代理发货 -->
+				<template v-if="popuptype == 'agentdelivery'">
+					
+					<!-- 发货的内容 -->
+					<view class="width100 padding">
+						
+						<view class="deliverytypeview flex align-center justify-between padding-sm text-center">
+							
+							<view class="text-wrap radius padding-sm" :class="[ deliveryType == 0 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="deliveryType = 0">{{ i18n.wishlist.wishorder.havenotrackingnum }}</view>
+							<view class="text-wrap radius padding-sm" :class="[ deliveryType == 1 ? 'bg-cyan text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="deliveryType = 1">{{ i18n.wishlist.wishorder.havetrackingnum }}</view>
+							
+						</view>
+						
+						<scroll-view scroll-y :style="{maxHeight: '800rpx'}">
+							
+							<template v-if="deliveryType == 1">
+								
+								<view class="margin-top-sm">
+									
+									<u-field class="round"
+											style="background-color: #F5F5F5;"
+											v-model="domesticShippingName" :placeholder="i18n.wishlist.wishorder.pleaseinputshippingname"
+											:border-bottom="false" label-width="0"
+											clear-size="45"
+									>
+										<button slot="right" class="cu-btn round bg-cyan shadow" @tap.stop="pastefromclipboard('domesticShippingName')">{{i18n.base.paste}}</button>
+										
+									</u-field>
+									
+								</view>
+								
+								<view class="margin-top-sm">
+									
+									<u-field class="round"
+											style="background-color: #F5F5F5;"
+											v-model="domesticShippingNum" :placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
+											:border-bottom="false" label-width="0"
+											clear-size="45"
+									>
+										<button slot="right" class="cu-btn round bg-cyan shadow" @tap.stop="pastefromclipboard('domesticShippingNum')">{{i18n.base.paste}}</button>
+										
+									</u-field>
+									
+								</view>
+								
+							</template>
+							
+							<!-- 备注内容 -->
+							<view class="remarkview margin-top-sm padding solid">
+								<textarea class="width100" auto-height maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.common.remark" placeholder-style="fontSize: 12px;" />
+							</view>
+							
+							<!-- 上传图片 -->
+							<view class="bg-white padding">
+								<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="9"
+								return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+								@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+								</uni-file-picker>
+							</view>
+							
+						</scroll-view>
+						
+					</view>
+					
+					<button class="cu-btn block width100 bg-cyan" :style="{height: '100rpx'}" @tap.stop="agentdeliverypro">
+						{{ i18n.base.confirm }}
+					</button>
+					
+				</template>
+				
+				<!-- 客户收货 -->
+				<template v-if="popuptype == 'customerreceive'">
+					
+					<!-- 收货的内容 -->
+					<view class="width100 padding">
+						
+						<view class="receivetypeview flex align-center justify-between padding-sm text-center">
+							
+							<view class="text-wrap radius padding-sm" :class="[ receiveType == 1 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 1">{{ i18n.wishlist.wishorder.receiveparts }}</view>
+							<view class="text-wrap radius padding-sm" :class="[ receiveType == 2 ? 'bg-cyan text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 2">{{ i18n.wishlist.wishorder.receiveall }}</view>
+							
+						</view>
+						
+						<view class="tipview flex align-center bg-white margin-bottom-sm">
+							
+							<text class="cuIcon cuIcon-infofill text-orange"></text>
+							<text class="text-sm text-wrap">{{ receiveType == 1 ? i18n.wishlist.wishorder.receiveparttip : i18n.wishlist.wishorder.receivealltip }}</text>
+							
+						</view>
+						
+						<scroll-view scroll-y :style="{maxHeight: '800rpx'}">
+							
+							<!-- 部分收货信息 -->
+							<view v-if="orderinfo && orderinfo.receiveType == 1 && (orderinfo.receiveInfo.remarks || orderinfo.receiveInfo.imgs) " class="receivepartsview solids padding-sm shadow-blur">
+								
+								<view v-if="orderinfo.receiveInfo.remark" class="cu-tag bg-gray round" @longpress="$basejs.copytoclipboard(orderinfo.receiveInfo.remark)">
+									{{ orderinfo.receiveInfo.remark }}
+								</view>
+								
+								<view v-if="orderinfo.receiveInfo.imgs" class="bg-white padding-sm">
+									<view class="grid col-4 grid-square">
+										<view class="bg-img" v-for="(img,index) in orderinfo.receiveInfo.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(orderinfo.receiveInfo.imgs, index)"></view>
+									</view>
+								</view>
+								
+							</view>
+							
+							<!-- 备注内容 -->
+							<view class="remarkview margin-top-sm padding solid">
+								<textarea class="width100" auto-height maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.common.remark" placeholder-style="fontSize: 12px;" />
+							</view>
+							
+							<!-- 上传图片 -->
+							<view class="bg-white padding">
+								<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="9"
+								return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+								@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+								</uni-file-picker>
+							</view>
+							
+						</scroll-view>
+						
+					</view>
+					
+					<button class="cu-btn block width100 bg-cyan" :style="{height: '100rpx'}" @tap.stop="clientconfirmreceive">
+						{{ i18n.base.confirm }}
+					</button>
+					
+				</template>
+				
 			</view>
 			
 		</u-popup>
@@ -367,12 +434,10 @@
 	
 	var _this
 	
-	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
-	
 	export default {
 		
 		components: {
-			wishTableSpec,
+			
 		},
 		
 		data() {
@@ -385,12 +450,12 @@
 				wishinfo: null, // 心愿详情数据
 				orderinfo: null, // 心愿订单数据
 				
-				receiveAllFlag: '1', // 收货状态 0 未全部收到货  1全部收到货  默认为1 字符串类型
+				receiveType: 2, // 收货状态 0未收货  1部分收货  2全部收到货 默认为2
 				receiveproductcontent: "", // 部分收货信息内容
 				remark: '', // 备注内容
 				
-				orderPriceInfo: null, // 订单相关的价格类型和金额
 				thirdOrderNum: '', // 第三方订单号
+				deliveryType: 1, // 发货方式 0无物流发货  1有物流发货  默认为1
 				domesticShippingName: '', // 国内物流名称
 				domesticShippingNum: '', // 国内物流编号
 				
@@ -468,6 +533,7 @@
 							
 							let wishinfo = orderinfo.wishId[0]
 							_this.wishinfo = wishinfo
+							_this.wishId = wishinfo._id
 							
 						}
 						else {
@@ -548,8 +614,27 @@
 				console.log(e);
 				
 				this.ifloading = false
-				// 继续代理下单操作
-				this.agentpurchasepro()
+				// 弹出框类型为agentpurchase
+				if(this.popuptype == 'agentpurchase') {
+					// 继续代理下单操作
+					this.agentpurchasepro()
+				}
+				// 弹出框类型为agentdelivery
+				else if(this.popuptype == 'agentdelivery') {
+					this.agentdeliverypro()
+				}
+				// 弹出框类型为customerreceive
+				else if(this.popuptype == 'customerreceive') {
+					this.clientconfirmreceive()
+				}
+				// 其他
+				else {
+					uni.showToast({
+						title: this.i18n.tip.addsuccess,
+						icon: 'none'
+					});
+				}
+				
 			},
 			
 			// 上传图片失败
@@ -622,9 +707,35 @@
 					// 操作成功
 					_this.ifloading = false
 					if(response.result.code == 0) {
-						// 发送推送消息  给用户发送下单通知
-						_this.pushnoticemsg('purchaseorder')
-						_this.loaddata() // 刷新数据
+						uni.showToast({
+							title: _this.i18n.tip.optionsuccess,
+							icon: 'none'
+						});
+						
+						_this.imgArr = []
+						
+						setTimeout(function(){
+							// 发送推送消息  给用户发送下单通知
+							_this.pushnoticemsg('purchaseorder')
+							_this.loaddata() // 刷新数据
+						}, 1000)
+						
+						// 添加下单成功的时间轴
+						db.collection('wishlisttimeline')
+						.add({type: 92, wishId: _this.wishId})
+						.then(response => {
+							if(response.result.code == 0) {
+								// 添加成功
+								uni.$emit('wishtimeline')
+							}
+							else {
+								console.log(response.result.message);
+							}
+						})
+						.catch(error => {
+							console.log(error);
+						})
+						
 					}
 					// 操作失败
 					else {
@@ -642,11 +753,14 @@
 						icon: 'none'
 					});
 				})
+				.finally(() => {
+					_this.ifshowpopup = false
+				})
 				
 			},
 			
-			// 代理发货
-			deliveryproduct() {
+			// 代理开始发货操作
+			agentstartdeliverypro() {
 				
 				// 校验是否有第三方订单号 如果没有则执行代理下单
 				if(!this.orderinfo.thirdOrderNum) {
@@ -654,11 +768,252 @@
 					return
 				}
 				
-				// 区分无物流发货和物流发货
-				uni.showToast({
-					title: '代理开始发货',
-					icon: 'none'
-				});
+				_this.popuptype = 'agentdelivery'
+				_this.ifshowpopup = true
+				
+			},
+			
+			// 代理发货
+			agentdeliverypro() {
+				
+				// 开始上传
+				// 检查是否需要上传图片
+				if(_this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					_this.ifloading = true
+					_this.$refs.filepickerref.upload()
+					return
+				}
+				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = _this.imgArr.map(item => (item.url)).join(',')
+				
+				// 更改订单状态为已发货, 更改物流方式
+				const db = uniCloud.database();
+				_this.ifloading = true
+				db.collection('order')
+				.doc(_this.wishOrderId)
+				.update({
+					status: 2,
+					deliveryTime: db.env.now,
+					deliveryType: _this.deliveryType,
+					deliveryInfo: {
+						domesticShippingName: _this.domesticShippingName,
+						domesticShippingNum: _this.domesticShippingNum,
+						remark: _this.remark,
+						imgs: imgs
+					}
+				})
+				.then(response => {
+					_this.ifloading = false
+					if(response.result.code == 0) {
+						// 更改成功
+						
+						// 更改对应的心愿为已发货待收货状态
+						let wishId = _this.wishId
+						db.collection('wishlist')
+						.doc(wishId)
+						.update({
+							achieveFlag: 3
+						})
+						.then(response => {
+							
+							uni.showToast({
+								title: _this.i18n.tip.optionsuccess,
+								icon: 'none'
+							});
+							_this.imgArr = []
+							_this.remark = ''
+							setTimeout(function() {
+								_this.loaddata()
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+							}, 1000);
+							
+						})
+						.catch(error => {
+							console.log(error);
+						})
+						
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					_this.ifloading = false
+					uni.showToast({
+						title: _this.i18n.error.optionerror,
+						icon: 'none'
+					});
+				})
+				.finally(() => {
+					_this.ifshowpopup = false
+				})
+				
+			},
+			
+			// 客户开始确认收货
+			clientstarttoconfirmreceive() {
+				
+				// 判断当前订单收货信息是否为部分收货
+				if(this.orderinfo.receiveType == 1) {
+					this.receiveType = 1
+				}
+				
+				_this.popuptype = 'customerreceive'
+				_this.ifshowpopup = true
+				
+			},
+			
+			// 客户收货
+			clientconfirmreceive() {
+				
+				// 开始上传
+				// 检查是否需要上传图片
+				if(_this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					_this.ifloading = true
+					_this.$refs.filepickerref.upload()
+					return
+				}
+				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = _this.imgArr.map(item => (item.url)).join(',')
+				
+				// 如果是全部收货
+				if(this.receiveType == 2) {
+					
+					const db = uniCloud.database();
+					
+					db.collection('order')
+					.doc(_this.wishOrderId)
+					.update({
+						status: 3,
+						receiveTime: db.env.now,
+						receiveType: 2,
+						receiveInfo: {
+							remark: _this.remark,
+							imgs: imgs
+						}
+						
+					})
+					.then(response => {
+						
+						if(response.result.code == 0) {
+							
+							_this.ifshowpopup = false
+							_this.imgsArr = []
+							
+							// 更新订单成功
+							_this.loaddata()
+							
+							uni.showToast({
+								title: _this.i18n.tip.optionsuccess,
+								icon: 'none'
+							});
+							
+							// 更改对应的心愿状态
+							db.collection('wishlist')
+							.doc(_this.wishId)
+							.update({achieveFlag: 4})
+							.then(response => {
+								// 更改状态成功
+								
+								// 更新心愿单列表和详情
+								uni.$emit('updatewishlist')
+								uni.$emit('updatewishdetail')
+								
+								// 增加时间轴信息
+								// 增加一条已完成的时间轴
+								db.collection('wishlisttimeline')
+								.add({type: 6, wishId: _this.wishId})
+								.then(response => {
+									// 增加时间轴成功
+									
+									// 更新列表 详情和时间轴
+									// 更新数据
+									uni.$emit('updatetimeline')
+									
+								})
+								.catch(error => {
+									console.log(error);
+								})
+							})
+							.catch(error => {
+								console.log(error);
+							})
+							
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.optionerror,
+								icon: 'none'
+							});
+						}
+						
+					})
+					.catch(error => {
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					})
+					
+				}
+				
+				// 部分收货
+				else if(this.receiveType == 1) {
+					
+					const db = uniCloud.database();
+					
+					db.collection('order')
+					.doc(_this.wishOrderId)
+					.update({
+						receiveTime: db.env.now,
+						receiveType: 1,
+						receiveInfo: {
+							remark: _this.remark,
+							imgs: imgs
+						}
+						
+					})
+					.then(response => {
+						
+						if(response.result.code == 0) {
+							
+							_this.ifshowpopup = false
+							_this.imgsArr = []
+							
+							// 更新订单成功
+							_this.loaddata()
+							
+							uni.showToast({
+								title: _this.i18n.tip.optionsuccess,
+								icon: 'none'
+							});
+
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.optionerror,
+								icon: 'none'
+							});
+						}
+						
+					})
+					.catch(error => {
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					})
+					
+				}
+				
 			},
 			
 			// 推送消息
@@ -693,85 +1048,6 @@
 				
 				
 			},
-			
-			// 客户确认收货
-			clientconfirmreceive() {
-				
-				// 如果是全部收货
-				if(this.receiveAllFlag == 1) {
-					uni.showModal({
-						title: _this.i18n.base.tip,
-						content: _this.i18n.wishlist.receiveproduct.receiveallconfirm,
-						showCancel: true,
-						cancelText: _this.i18n.base.cancel,
-						confirmText: _this.i18n.base.confirm,
-						success: res => {
-							if(res.confirm) {
-								
-								const db = uniCloud.database();
-								db.collection('wishlist')
-								.doc(_this.wishId)
-								.update({achieveFlag: 4})
-								.then(response => {
-									if(response.result.code == 0) {
-										
-										// 更改状态成功
-										// 增加时间轴信息
-										// 增加一条代理已经进货的时间轴
-										db.collection('wishlisttimeline')
-										.add({type: 6, wishId: _this.wishId})
-										.then(response => {
-											// 增加时间轴成功
-											
-											// 更新列表 详情和时间轴
-											// 更新数据
-											uni.$emit('updatetimeline')
-											// 更新心愿单列表和详情
-											uni.$emit('updatewishlist')
-											uni.$emit('updatewishdetail')
-											
-											uni.showToast({
-												title: _this.i18n.tip.optionsuccess,
-												icon: 'none'
-											});
-											
-											setTimeout(function() {
-												uni.navigateBack();
-											}, 1000);
-											
-										}).catch(error => {
-											console.log(error.message);
-											uni.showToast({
-												title: _this.i18n.error.optionerror,
-												icon: 'none'
-											});
-										})
-										
-									}
-									else {
-										uni.showToast({
-											title: _this.i18n.error.optionerror,
-											icon: 'none'
-										});
-									}
-								})
-								.catch(error => {
-									uni.showToast({
-										title: _this.i18n.error.optionerror,
-										icon: 'none'
-									});
-								})
-							}
-						}
-					});
-				}
-				
-				// 部分收货
-				else if(this.receiveAllFlag == 0) {
-					console.log(`部分收货`);
-				}
-				
-			}
 			
 			//
 			
