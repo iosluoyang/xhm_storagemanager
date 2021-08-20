@@ -275,7 +275,7 @@
 				// 	elements = [scanitem,typeitem,goodsitem,customeritem,personalitem,logisticitem,wishlistitem]
 				// }
 				
-				elements = [wishlistitem, personalitem]
+				elements = [scanitem, wishlistitem, personalitem]
 				
 				this.elements = elements
 				
@@ -302,33 +302,18 @@
 								_this.$basejs.scanQR().then(vaildcontent => {
 									
 									// 扫描成功
+									uni.showModal({
+										content: vaildcontent,
+										showCancel: true,
+										cancelText: _this.i18n.base.cancel,
+										confirmText: _this.i18n.base.copy,
+										success: res => {
+											if(res.confirm) {
+												_this.$basejs.copytoclipboard(vaildcontent)
+											}
+										}
+									});
 									
-									// 调用接口获取对应的pid
-									_this.$api.goodsapi.getpidbyqrcode({barCode: vaildcontent}).then(response => {
-										let pid = response.data.pid
-										// 找到了对应的pid  直接跳转至商品详情页
-										if(pid) {
-											uni.navigateTo({
-												url: `/pages/goods/goodsdetail?pid=${pid}`
-											});
-										}
-										// 未找到pid 说明有该二维码但是没有对应的商品 提示用户
-										else {
-											uni.showModal({
-												title: _this.i18n.base.tip,
-												content: _this.i18n.error.qrcodewithoutgoods,
-												showCancel: false,
-												confirmText: _this.i18n.base.confirm
-											});
-										}
-									}).catch(error => {
-										uni.showModal({
-											title: _this.i18n.base.tip,
-											content: _this.i18n.error.scanerror,
-											showCancel: false,
-											confirmText: _this.i18n.base.confirm
-										});
-									})
 									
 								}).catch((othercontent) => {
 									uni.showModal({

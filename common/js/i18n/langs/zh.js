@@ -54,6 +54,7 @@ const zh = {
 		resetpwd: "重置密码",
 		wishorder: "心愿订单",
 		payment: "收银台",
+		scan: "扫描",
 
 	},
 	

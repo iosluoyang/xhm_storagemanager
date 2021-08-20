@@ -53,6 +53,7 @@ const th = {
 		resetpwd: "Reset Password",
 		wishorder: "Wish Order",
 		payment: "Payment",
+		scan: "Scan",
 
 	},
 	

@@ -344,19 +344,11 @@ export function scanQR() {
 				// 扫描成功 检测扫码的结果
 				if(res.result) {
 					let result = res.result
-					if(result.indexOf(storeName()) !== -1) {
-						// 找到了有效的内容  截取标识字符串
-						let vaildcontent = result.replace(storeName(),'')
-						resolve(vaildcontent)
-					}
-					else{
-						// 不是规范的扫码内容 返回当前非规范的扫码内容
-						reject(result)
-					}
+					resolve(result)
 				}
 				// 没有扫描结果
 				else{
-					
+					reject('未获取内容')
 				}
 			},
 			fail() {

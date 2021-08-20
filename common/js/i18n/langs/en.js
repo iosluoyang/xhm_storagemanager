@@ -53,6 +53,7 @@ const en = {
 		resetpwd: "Reset Password",
 		wishorder: "Wish Order",
 		payment: "Payment",
+		scan: "Scan",
 
 	},
 	
