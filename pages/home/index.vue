@@ -88,7 +88,8 @@
 					{{ homenotice.title }}
 				</view>
 				
-				<scroll-view v-if="homenotice.content || homenotice.image" class="contentview margin-top" scroll-y :style="{maxHeight: '600rpx'}">
+				<!--  :style="{maxHeight: '600rpx'}" -->
+				<scroll-view v-if="homenotice.content || homenotice.image" class="contentview margin-top" scroll-y>
 					
 					<view v-if="homenotice.content" class="text-df">
 						{{ homenotice.content }}
@@ -423,7 +424,7 @@
 				
 			},
 			
-			
+			//
 		}
 	
 	}

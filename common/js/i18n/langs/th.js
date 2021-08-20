@@ -3,6 +3,7 @@ const th = {
 	// 公共参数
 	base: {
 		
+		copy: "Copy",
 		paste: "Paste",
 		edit: "Edit",
 		search: "Search",
@@ -34,7 +35,7 @@ const th = {
 		pricedesc: "Price Desc",
 		priceasc: "Price Asc",
 		sellnumdesc: "SellNum Desc",
-
+		paynow: "Pay Now",
 	},
 	
 	// 导航栏主分类
@@ -50,6 +51,8 @@ const th = {
 		storemanage: "Store Manage",
 		notice: "Notice",
 		resetpwd: "Reset Password",
+		wishorder: "Wish Order",
+		payment: "Payment",
 
 	},
 	
@@ -85,6 +88,7 @@ const th = {
 		handletimeline: {
 			typecontent: "Input Content",
 			typedomesticshippingfee: "Input Shipping fee(CN)",
+			typecommissionfee: "Input Commission Fee",
 		},
 		
 		me: {
@@ -156,17 +160,22 @@ const th = {
 			sellnum: "Sell Number",
 			spec: "Specification",
 			params: "Parameter",
+			pricesummary: "Price Summary",
 			remark: "Remark",
 			hurrylevel: "Hurry Level",
-			boxcontainernum: "Packing Quantity ",
-			boxsize: "Unit Size ",
+			boxcontainernum: "Packing Quantity",
+			boxsize: "Unit Size",
 			boxlength: "Length",
 			boxwidth: "Width",
 			boxheight: "Height",
-			boxvolume: "Unit Volume ",
+			boxvolume: "Unit Volume",
 			boxamount: "Number of box",
 			boxweight: "Unit Weight",
+			thirdplatformtype: "Platform Type",
+			thirdplatformordernum: "Platform OrderNum",
 			domesticshippingfee: "Shippingfee(CN)",
+			domesticshippingname: "Shipping Name(CN)",
+			domesticshippingnum: "Shipping Number(CN)",
 			internationalshippingunitfee: "Unit Shippingfee(TH)",
 			internationalshippingfee: "Shipping Fee(TH)",
 			internationalshippingname: "Shipping Name(TH)",
@@ -185,7 +194,7 @@ const th = {
 			achieveflagdata: {
 				all: "All",
 				unbindwish: "WishList",
-				ing: "Ing",
+				ing: "On process",
 				waittoconfirm: "To be Confirmed",
 				makeorder: "To be Purchase",
 				waitreceive: "To be Received",
@@ -255,6 +264,7 @@ const th = {
 			addcomment: "Say Something",
 			addext: "Fill Information",
 			confirmquotation: "Confirm Quotation",
+			addpurchaseinfo: "Fill Purchase Information",
 			editquotation: "Edit Quotation",
 			
 			purchasetip: "Once you Confirm to import , customer will receive the notification , please make sure customer already paid",
@@ -262,13 +272,60 @@ const th = {
 			wishagentbindtip: "Hi, I am your Wish Agent , will do my best to offer the service",
 			wishupdatequotationtip: "Already updated the newest quotation , please check the details above, agent will start to purchase once you click agree",
 			wishconfirmquotationagenttip: "Customer already confirmed the quotation , please make the order ASAP",
-			wishconfirmquotationcustomertip: "You already confirmed the quotation , the agent will make the order ASAP, please wait patiently",
+			wishconfirmquotationcustomertip: "You already confirmed the quotation , the agent will make the order ASAP, please wait patiently(If you have not pay yet , please pay first)",
 			agreequotation: "Already Agree the Quotation",
 			refusequotation: "Already Refused the Quotation",
 			importpro: "Purchase Product",
+			paytime: "Pay Time",
+			confirmproductreceive: "Confirm Product Receive",
 			wishrefusequotationagenttip: "Customer refused the quotation , please make the new quotation",
 			wishrefusequotationcustomertip: "You already refused the quotation , the agent will make the new quotation for you soon, please wait patiently",
+			wishfinishpay: "Customer already paid",
 			wishfinishpurchase: "Agent already Made the order , please notice the order status",
+			
+		},
+		
+		// 心愿订单相关
+		wishorder: {
+			
+			checkwishorder: "Check wish order",
+			receiveall: "Receive All",
+			receiveallconfirm: "Please make sure that you got all products",
+			receiveparttip: "You got all the products, please check the total amount",
+			receivealltip: "You just got some of the products, will continue recording later",
+			receiveparts: "Receive Parts",
+			purchaseinfo: "Purchase Info",
+			orderinfo: "Order Info",
+			confirminfo: "Confirm Info",
+			pleaseinputthirdordernum: "Please input the order Number",
+			totalproprice: "Product Price",
+			totaldomesticshippingfee: "Shipping Fee(CN)",
+			totalcommissionfee: "Commission Fee",
+			totalorderprice: "Order Price",
+			paytype: "pay Type",
+			makeordertime: "Purchase Time",
+			paytime: "Pay Time",
+			deliverytime: "Delivery Time",
+			receivetime: "Receive Time",
+			purchase: "Purchase",
+			delivery: "Delivery Order",
+			receive: "Confirm received",
+			timeupclosetip: "Payment time up, Do you want to close this order?",
+			havetrackingnum: "With Tracking Num",
+			havenotrackingnum: "Without Tracking Num",
+			pleaseinputshippingname: "Please input Shipping Name",
+			pleaseinputshippingnum: "Please input Shipping Number",
+			
+		},
+		
+		// 收银台相关
+		payment: {
+			paymentinfo: "Payment Info",
+			account: "Account",
+			name: "Name",
+			bankname: "Bank Name",
+			bankbranch: "Bank Branch Name",
+			pleaseuploadpaymentimg: "Have no payment image, Are you sure to continue ?(you can upload the payment image below)",
 			
 		}
 		
