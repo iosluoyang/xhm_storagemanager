@@ -266,16 +266,11 @@
 				
 				let elements = []
 				
-				// 根据当前的用户标识选择部分的功能显示(因为支持游客模式 所以只有登录状态下的管理员才能展示全部功能)
-				// 超级管理员
-				// if(this.$basejs.ifloginflag() && this.user.type === 0){
-				// 	elements = [scanitem,typeitem,goodsitem,customeritem,stockitem,personalitem,logisticitem,wishlistitem]
-				// }
-				// else{
-				// 	elements = [scanitem,typeitem,goodsitem,customeritem,personalitem,logisticitem,wishlistitem]
-				// }
+				// #ifndef H5
+				elements.push(scanitem)
+				// #endif
 				
-				elements = [scanitem, wishlistitem, personalitem]
+				elements = [wishlistitem, personalitem]
 				
 				this.elements = elements
 				
