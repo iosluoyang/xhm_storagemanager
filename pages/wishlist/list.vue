@@ -397,7 +397,7 @@
 						
 					})
 					.catch(error => {
-						if(error && error.message && error.message.indexOf('30203')) {
+						if(error && error.message && error.message.indexOf('30203') > -1) {
 							console.log(`重新登录`);
 							_this.$store.dispatch('user/resettoken').then(() => {
 								

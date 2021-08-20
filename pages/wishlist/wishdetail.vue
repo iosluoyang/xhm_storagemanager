@@ -198,8 +198,8 @@
 				<!-- 自身代理的心愿 -->
 				<template v-else=" wishinfo.agentUser && wishinfo.agentUser._id == user._id ">
 					
-					<!-- 进行中显示添加按钮 -->
-					<button v-if="wishinfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<!-- 进行中或待确认显示添加按钮 -->
+					<button v-if="wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 						<text class="cuIcon-add"></text>
 					</button>
 					

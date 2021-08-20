@@ -404,7 +404,7 @@
 						
 					}).catch(err => {
 						uni.showModal({
-							content: err.message,
+							content: err.message || err.errMsg,
 							showCancel: false,
 						});
 					})

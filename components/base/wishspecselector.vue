@@ -15,8 +15,20 @@
 					
 					<!-- 商品名称 -->
 					<view v-if="defaultProTitle" class="text-df t_twoline">{{ defaultProTitle }}</view>
-					<!-- 价格区域 -->
-					<view v-if="defaultProPrice" class="text-price text-red margin-top-sm">{{ defaultProPrice }}</view>
+					
+					<view class="bottomview margin-top-sm flex align-center justify-between">
+						
+						<!-- 价格 -->
+						<text v-if="defaultProPrice" class="text-price text-red">{{ defaultProPrice }}</text>
+						
+						<!-- 翻译按钮 -->
+						<button v-if="type == 'normal'" class="cu-btn round bg-blue" @click="translate">
+							<text class="margin-right-sm cuIcon cuIcon-global text-white"></text>
+							{{ i18n.base.translate }}
+						</button>
+						
+					</view>
+					
 					
 				</view>
 				
@@ -85,7 +97,12 @@
 												
 											</template>
 											
-											<input :class="[ type == 'edit' ? 'borderCDCDCD radius width50' : 'width100' ]" :disabled="type == 'normal' " type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
+											<template>
+												
+												<view v-if="type == 'normal'" class="text-wrap text-df">{{ seconditem.name }}</view>
+												<input v-if="type == 'edit'" class="borderCDCDCD radius width50" type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
+												
+											</template>
 										
 										</view>
 										
@@ -381,6 +398,64 @@
 						
 					}
 					this.specDataArr = dataArr
+					
+				},
+				
+				// 翻译规格文本
+				translate() {
+					
+					// 传入翻译文本的数组
+					let textArr = []
+					// 遍历规格数组
+					this.specDataArr.forEach(firstitem => {
+						textArr.push(firstitem.name)
+						firstitem.dataArr.forEach(seconditem => {
+							textArr.push(seconditem.name)
+						})
+					})
+					console.log(`要翻译的文本内容为`);
+					console.log(textArr);
+					
+					uni.showLoading();
+					
+					uniCloud.callFunction({
+						name: 'base',
+						data: {
+							type: 'translatecontent',
+							info: {
+								from: 'cn', // 默认为从中文开始翻译
+								to: _this.currentLang,
+								textArr: textArr
+							}
+						}
+					}).then(response => {
+						console.log(response);
+						uni.hideLoading()
+						// 翻译成功
+						if(response.result.code == 0) {
+							console.log(`翻译成功`);
+							console.log(response.result.data.result);
+							
+							// 获取到的翻译内容数组  进行遍历赋值
+							let resultArr = response.result.data.result
+							// 遍历规格数组 替换其内容
+							let index = 0
+							this.specDataArr.forEach(firstitem => {
+								firstitem.name = resultArr[index++]
+								firstitem.dataArr.forEach(seconditem => {
+									seconditem.name = resultArr[index++]
+								})
+							})
+							
+						}
+						else {
+							console.log(`翻译失败,原因是:${response.result.message}`);
+						}
+							
+					}).catch(error => {
+						uni.hideLoading()
+						console.log(error.message);
+					})
 					
 				},
 				

@@ -41,6 +41,16 @@ exports.main = async (event, context) => {
 	// 用户注册
 	if(type == 'register') {
 		
+		// 如果是物流公司角色的话则返回失败  提示敬请期待
+		if(info.role.includes('SHIPPING_ADMIN') || info.role.includes('SHIPPING_EMPLOYEE')) {
+			let result = {
+				errCode: "servererror",
+				errMsg: "暂不支持注册该角色,敬请期待(Can not regeister this role, will coming soon)"
+			}
+			
+			return result
+		}
+		
 		const res = await uniIDIns.register({
 			username: info.account,
 			password: info.password,

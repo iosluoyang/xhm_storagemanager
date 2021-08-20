@@ -5,7 +5,7 @@ const db = uniCloud.database()
 
 const uniID = require('uni-id')
 
-const { getWxAccessToken,sendWxMiniMsg } = require('hello-common')
+const { sendWxMiniMsg } = require('hello-common')
 
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
@@ -288,6 +288,42 @@ exports.main = async (event, context) => {
 		let res = sendWxMiniMsg(param)
 		
 		return res
+		
+	}
+	
+	// 翻译文本
+	else if(type == 'translatecontent') {
+		
+		console.log(`调用翻译接口的参数为:`);
+		console.log(info);
+		
+		let translateApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/translate.ac`
+		const res = await uniCloud.httpclient.request(translateApi, {
+		    method: 'POST',
+			data: {
+				info: JSON.stringify(info)
+			},
+			dataAsQueryString: true, // 是否强制转换data为queryString
+			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
+		    contentType: 'json', // 指定以application/json发送data内的数据
+		    dataType: 'json', // 指定返回值为json格式，自动进行parse
+		})
+		console.log(`base中获取到的翻译接口响应数据为`)
+		console.log(res);
+		if(res.status == 200 && res.data.errorCode == '000000') {
+			let result = {
+				code: 0,
+				data: res.data.data
+			}
+			return result
+		}
+		else {
+			let result = {
+				code: res.data.errorCode,
+				message: res.data.msg
+			}
+			return result
+		}
 		
 	}
 	

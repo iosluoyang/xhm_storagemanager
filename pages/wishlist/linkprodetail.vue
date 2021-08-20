@@ -10,7 +10,6 @@
 		<view v-if="linkProduct" class="prodetailview">
 			
 			<!-- 轮播图 -->
-			<!-- card-swiper screen-swiper square-dot round-dot -->
 			<swiper v-if="swiperImgsArr" class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
 				indicator-color="#8799a3" indicator-active-color="#6739b6" 
 				:autoplay="true" interval="3000" duration="300" @change="swiperChange">

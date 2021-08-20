@@ -26,14 +26,14 @@
 									<template v-if="subhead.type == 'arr'">
 										<u-tr class="u-tr">
 											<u-td class="u-td subth" v-for="(thirdsubhead, thirdsubheadindex) in subhead.childList" :key="thirdsubheadindex" :width="thirdsubhead.width">
-												<text class="text-center text-bold">{{ thirdsubhead.title }}</text>
+												<text class="text-center text-bold u-line-3">{{ thirdsubhead.title }}</text>
 											</u-td>
 										</u-tr>
 									</template>
 									
 									<!-- 普通类型 -->
 									<template v-else>
-										<text class="text-center text-bold">{{ subhead.title }}</text>
+										<text class="text-center text-bold u-line-3">{{ subhead.title }}</text>
 									</template>
 									
 								</u-td>
@@ -42,7 +42,7 @@
 						
 						<!-- 其他类型的表头 -->
 						<template v-else>
-							<text class="text-center text-bold">{{ headeritem.title }}</text>
+							<text class="text-center text-bold u-line-3">{{ headeritem.title }}</text>
 						</template>
 						
 					</u-td>

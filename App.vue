@@ -204,8 +204,8 @@
 				  },
 				  complete(res){
 					  // complete内res为上面的res或err
-					  // console.log(`接口调用完成`)
-					  // console.log(res)
+					  console.log(`接口调用完成`)
+					  console.log(res)
 				  }
 				
 				}
