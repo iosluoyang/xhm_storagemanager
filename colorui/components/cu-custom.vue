@@ -41,17 +41,13 @@
 				type: String,
 				default: ''
 			},
+			// 默认可以返回
 			isBack: {
 				type: [Boolean, String],
-				default: false
+				default: true
 			},
 			// 是否需要返回的二次确认  默认为否 
 			isBackConfirm: {
-				type: Boolean,
-				default: false
-			},
-			// 是否需要自行处理返回事件  默认为否
-			isOwnBackPage: {
 				type: Boolean,
 				default: false
 			},
@@ -62,31 +58,48 @@
 		},
 		methods: {
 			backPage() {
-				// 如果需要自行处理返回事件
-				if(this.isOwnBackPage) {
-					this.$emit('ownbackpage')
-					return
-				}
-				else {
-					if(this.isBackConfirm) {
-						
-						uni.showModal({
-							content: this.i18n.tip.exitconfirm,
-							showCancel: true,
-							cancelText: this.i18n.base.cancel,
-							confirmText: this.i18n.base.confirm,
-							success: res => {
-								if(res.confirm) {
+				
+				if(this.isBackConfirm) {
+					
+					uni.showModal({
+						content: this.i18n.tip.exitconfirm,
+						showCancel: true,
+						cancelText: this.i18n.base.cancel,
+						confirmText: this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								
+								// 如果没有前面的页面则重定向至首页
+								let pages = getCurrentPages()
+								if(pages.length == 1) {
+									// 仅有当前一个页面
+									uni.reLaunch({
+										url: '/pages/home/index'
+									})
+								}
+								else {
 									uni.navigateBack();
 								}
+								
 							}
-						});
-						
+						}
+					});
+					
+				}
+				else{
+					// 如果没有前面的页面则重定向至首页
+					let pages = getCurrentPages()
+					if(pages.length == 1) {
+						// 仅有当前一个页面
+						uni.reLaunch({
+							url: '/pages/home/index'
+						})
 					}
-					else{
+					else {
 						uni.navigateBack();
 					}
 				}
+				
 			}
 		}
 	}

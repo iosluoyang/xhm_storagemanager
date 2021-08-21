@@ -143,9 +143,15 @@ exports.main = async (event, context) => {
 				}
 			}
 			
-			// 写入收藏字段
+			// 如果存在text将data数据的sourceLink更改为text
+			if(text) {
+				data.product['sourceLink'] = text
+			}
+			
+			// 将返回值写入收藏字段
 			let newData = {...data}
 			newData.product['favorFlag'] = favorFlag
+			
 			
 			let result = {
 				code: 0,

@@ -2,7 +2,7 @@
 	<view class="contentview wishlistview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom class="customnav" bgColor="bg-gradual-pink" isBack>
+		<cu-custom class="customnav" bgColor="bg-gradual-pink">
 			
 			<view slot="content" class="search-form round">
 				<text class="cuIcon-search"></text>

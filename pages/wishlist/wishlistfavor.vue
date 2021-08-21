@@ -2,7 +2,7 @@
 	<view class="wishfavorlistview pagecontent">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-orange">
 			<block slot="content">{{ i18n.nav.mywishlistfavor }}</block>
 		</cu-custom>
 		

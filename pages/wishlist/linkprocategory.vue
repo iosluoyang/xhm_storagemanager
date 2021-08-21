@@ -2,7 +2,7 @@
 	<view class="u-wrap">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-blue" isBack>
+		<cu-custom bgColor="bg-gradual-blue">
 			<block slot="content">{{i18n.nav.procategory}}</block>
 		</cu-custom>
 		

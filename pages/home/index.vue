@@ -195,46 +195,6 @@
 					cuIcon: 'scan'
 				}
 				
-				// 分类管理功能
-				let typeitem = {
-					title: this.i18n.nav.goodstype,
-					id: 'producttype',
-					name: 'Different Types',
-					color: 'red',
-					cuIcon: 'sort',
-					url: '/pages/goodstype/index'
-				}
-				
-				// 商品功能
-				let goodsitem = {
-					title: this.i18n.nav.goodslist,
-					id: 'productlist',
-					name: 'All the Product',
-					color: 'blue',
-					cuIcon: 'goodsfavor',
-					url: '/pages/goods/goodslist'
-				}
-				
-				// 客户关系功能
-				let customeritem = {
-					title: this.i18n.nav.customer,
-					id: 'customer',
-					name: "My Customer",
-					color: 'purple',
-					cuIcon: 'peoplelist',
-					url: '/pages/customer/index'
-				}
-				
-				// 库存管理功能
-				let stockitem = {
-					title: this.i18n.nav.stock,
-					id: 'stockinout',
-					name: 'Stock',
-					color: 'green',
-					cuIcon: 'order',
-					url: '/pages/stock/index'
-				}
-				
 				// 物流管理功能
 				let logisticitem = {
 					title: this.i18n.nav.logistic,
@@ -265,10 +225,6 @@
 				}
 				
 				let elements = []
-				
-				// #ifndef H5
-				elements.push(scanitem)
-				// #endif
 				
 				elements = [wishlistitem, personalitem]
 				

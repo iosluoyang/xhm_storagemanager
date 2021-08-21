@@ -130,11 +130,6 @@ const httporigin = function(){
 
 }
 
-// 后台返回的图片标识字样
-const imgTagStr = function() {
-	return 'xhm_img'
-}
-
 // 阿里云图片前缀
 const imgUrl = function() {
 	// 配置列表信息
@@ -171,6 +166,5 @@ export default {
 	osssignenv: osssignenv, // 应用oss文件上传的签名环境信息
 	picuploadurl: picuploadurl, //图片上传的文件名前缀
 	imgUrl: imgUrl, // 应用阿里云图片前缀
-	imgTagStr: imgTagStr, // 后台返回的图片标识
 	httporigin: httporigin, //应用工程链接前缀
 }

@@ -2,7 +2,7 @@
 	<view class="linkprodetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-pink" isBack>
+		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.prodetail}}</block>
 		</cu-custom>
 		
@@ -319,6 +319,23 @@
 							
 							// 设置搜索历史记录
 							_this.setSearchRecordData()
+							
+							// 如果未能获取规格数据则提示
+							if(!linkProduct.specPropInfo) {
+								uni.showModal({
+									content: _this.i18n.wishlist.prodetail.havenolinkprodata,
+									showCancel: true,
+									cancelText: _this.i18n.base.cancel,
+									confirmText: _this.i18n.base.confirm,
+									success: res => {
+										if(res.confirm) {
+											uni.redirectTo({
+												url: '/pages/wishlist/handlewish?type=add'
+											});
+										} 
+									}
+								});
+							}
 							
 						}
 						else {

@@ -2,7 +2,7 @@
 	<view class="pagecontent paymentpage">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-blue" isBack>
+		<cu-custom bgColor="bg-blue">
 			<block slot="content">{{ i18n.nav.payment }}</block>
 		</cu-custom>
 		

@@ -1,7 +1,7 @@
 <template>
 	<view class="content addwishview bg-gray">
 		
-		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
+		<cu-custom bgColor="bg-gradual-pink" isBackConfirm>
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 
@@ -17,13 +17,12 @@
 			</view>
 			
 			<!-- 源网站链接 -->
-			<view v-if="sourceLink" class="cu-form-group">
+			<view class="cu-form-group">
 				<view class="title">
 					<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
 					{{i18n.wishlist.common.link}}:
 				</view>
-				<!-- <input type="text" confirm-type="next" v-model="sourceLink" @blur="analysisUrl" /> -->
-				<textarea v-model="sourceLink" @blur="analysisUrl" />
+				<input type="text" v-model="sourceLink" @blur="analysisUrl" />
 				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
 				
 			</view>
@@ -292,7 +291,6 @@
 					
 				}
 				
-				this.targetAmount = totalAmount
 				return totalAmount
 				
 			},
@@ -329,7 +327,6 @@
 						this.sourceMoneyType = info.sourceMoneyType // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 						this.targetPrice = info.targetPrice // 目标价格
 						this.targetMoneyType = info.targetMoneyType // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-						this.targetAmount = info.targetAmount // 目标数量
 						this.unitCommissionFee = info.creatUser[0].unitCommissionFee
 						this.hurryLevel = info.hurryLevel // 紧急程度 默认为2级 int 类型
 						this.remark = info.remark // 备注信息
@@ -600,8 +597,16 @@
 				
 				// 进行数据检查			
 				
+				// 检查是否有链接
+				if(!this.sourceLink) {
+					uni.showToast({
+						title: this.i18n.placeholder.handlewish.link,
+						icon: 'none'
+					});
+					return false
+				}
 				// 检查是否有商品标题
-				if(!this.productTitle) {
+				else if(!this.productTitle) {
 					uni.showToast({
 						title: this.i18n.placeholder.handlewish.title,
 						icon: 'none'
@@ -616,8 +621,8 @@
 					});
 					return false
 				}
-				// 检查是否有目标数量
-				else if(!this.targetAmount) {
+				// 检查是否有选择的数量
+				else if(!this.selectShowTotalAmount) {
 					uni.showToast({
 						title: this.i18n.placeholder.handlewish.amount,
 						icon: 'none'
@@ -668,7 +673,7 @@
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetPrice: _this.targetPrice, // 目标价格
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-					targetAmount: _this.targetAmount, // 目标数量
+					targetAmount: _this.selectShowTotalAmount, // 选购数量
 					specPropInfo: _this.specPropInfo, // 规格对象
 					productExt: uploadProductExt, // 商品的拓展字段
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型

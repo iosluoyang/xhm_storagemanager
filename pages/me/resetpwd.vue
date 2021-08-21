@@ -2,7 +2,7 @@
 	<view class="content">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-orange">
 			<block slot="content">{{i18n.nav.resetpwd}}</block>
 		</cu-custom>
 		

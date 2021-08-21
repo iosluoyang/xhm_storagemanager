@@ -2,7 +2,7 @@
 	<view class="logistic">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-pink" isBack>
+		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.logistic}}</block>
 		</cu-custom>
 		

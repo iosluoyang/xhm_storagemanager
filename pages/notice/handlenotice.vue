@@ -2,7 +2,7 @@
 	<view class="handlenoticeview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack isBackConfirm>
+		<cu-custom bgColor="bg-gradual-orange" isBackConfirm>
 			<block slot="content">{{ i18n.nav.notice }}</block>
 		</cu-custom>
 		

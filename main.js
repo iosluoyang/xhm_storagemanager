@@ -89,11 +89,6 @@ Vue.mixin({
 			return this.$store.getters.configData
 		},
 		
-		// 后台返回图片标识
-		imgTagStr() {
-			return defaultconfig.imgTagStr()
-		},
-		
 		// 阿里云图片前缀
 		imgUrl() {
 			return defaultconfig.imgUrl()
@@ -114,11 +109,6 @@ Vue.mixin({
 	},
 	
 	methods: {
-		
-		// 导航栏返回
-		pageBack() {
-			uni.navigateBack()
-		},
 		
 	},
 });

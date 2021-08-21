@@ -2,7 +2,7 @@
 	<view class="pagecontent wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-white' " isBack isOwnBackPage @ownbackpage="ownBackPage">
+		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-white' ">
 			<block slot="content">{{i18n.nav.wishdetail}}</block>
 		</cu-custom>
 		
@@ -139,7 +139,7 @@
 						<!-- 查看1688详情按钮 -->
 						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
 						
-						<!-- 复制源网站链接按钮 非H5平台且有源网站链接时出现-->
+						<!-- 复制源网站链接按钮 有源网站链接时出现-->
 						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
 						
 					</view>
@@ -259,7 +259,7 @@
 						
 						<!-- #ifndef H5 -->
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode)">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode);showpopup=false">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
@@ -282,7 +282,7 @@
 						
 						<!-- #ifndef H5 -->
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl)">
+							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl);showpopup=false">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
@@ -548,20 +548,6 @@
 		},
 		
 		methods: {
-			
-			// 返回事件
-			ownBackPage() {
-				if(this.ifShare) {
-					uni.reLaunch({
-						url: '/pages/home/index'
-					})
-				}
-				else {
-					uni.navigateBack({
-						delta: 1
-					});
-				}
-			},
 			
 			// 获取心愿详情
 			loaddetaildata() {

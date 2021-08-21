@@ -2,7 +2,7 @@
 	<view class="persondetail">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange" isBack>
+		<cu-custom bgColor="bg-gradual-orange">
 			<block slot="content">{{i18n.nav.me}}</block>
 		</cu-custom>
 		
@@ -394,100 +394,6 @@
 				}).finally(() => {
 				  _this.ifmodify = false // 关闭加载动画
 				})
-				
-				return
-				
-				// 修改其它信息资料
-				const modifyother = function(avatarUrl) {
-					
-					_this.ifmodify = true // 开始加载动画
-					
-					let data = {
-						// realName: _this.realname,
-						username: _this.username,
-						gender: _this.gender,
-						mobile: _this.mobile,
-						email: _this.email,
-						// avatar: avatarUrl,
-						comment: _this.comment
-					}
-					
-					// 开始修改个人信息
-					
-					
-					_this.$api.userapi.modifyuserdetail(data).then(response => {
-						// 修改成功
-						// 开始修改vuex的用户信息
-						
-						let olduser = _this.$store.getters.user
-						
-						let modifyuser = {
-							realName: data.realName,
-							userName: data.userName,
-							sex: data.sex,
-							phone: data.phone,
-							email: data.email,
-							avatar: data.avatar || olduser.avatar || null ,
-							signature: data.signature
-						}
-						let newuser = Object.assign({}, olduser, modifyuser)
-						
-						_this.$store.dispatch('user/updateuserdetail', newuser).then(() => {
-							// 更新成功
-							_this.ifmodify = false // 关闭加载动画
-							_this.avatarfile = null // 重置头像文件
-							uni.showToast({
-								title: _this.i18n.tip.fixsuccess,
-								icon: 'none'
-							});
-						})
-						
-						
-					}).catch(error => {
-						// 修改失败
-						uni.showToast({
-							title: _this.i18n.error.fixerror,
-							icon: 'none'
-						});
-						
-						_this.ifmodify = false // 关闭加载动画
-						_this.btnanimationname = 'shake'
-						setTimeout(function() {
-							_this.btnanimationname = null
-						}, 1000);
-						
-					})
-					
-					
-				}
-				
-				// 如果有头像文件则说明修改了头像 开始上传头像文件
-				if(this.avatarfile) {
-					
-					this.ifmodify = true // 开始加载动画
-					
-					this.$basejs.uploadmultipleimgs([this.avatarfile]).then(imgUrls => {
-						_this.ifmodify = false // 取消加载动画
-						
-						// 上传图片成功
-						let avatarUrl = imgUrls[0]
-						// 开始修改其它资料
-						modifyother(avatarUrl)
-						
-					}).catch(error => {
-						_this.ifmodify = false // 取消加载动画
-						// 上传图片失败
-						uni.showToast({
-							title: this.i18n.error.picuploaderror,
-							icon: 'none'
-						});
-					})
-				}
-				// 没有头像则直接开始修改其它资料
-				else{
-					// 开始修改其它资料
-					modifyother()
-				}
 				
 			}
 		},

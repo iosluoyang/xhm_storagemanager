@@ -1,7 +1,7 @@
 <template>
 	<view class="handletimelineview content">
 		
-		<cu-custom isBack bgColor="bg-gradual-pink" isBackConfirm>
+		<cu-custom bgColor="bg-gradual-pink" isBackConfirm>
 			<block slot="content">{{ i18n.nav.wishdetail }}</block>
 		</cu-custom>
 		
@@ -43,7 +43,6 @@
 			<!-- 选择更新时间轴的类型 -->
 			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo.agentUser == user._id" class="cu-bar btn-group">
 				
-					
 				<!-- 普通时间轴 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
 				
@@ -52,8 +51,7 @@
 				
 				<!-- 确定报价单信息 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'confirmquotation' ? 'bg-gradual-purple' : 'line-purple sm' ]" @tap.stop="type='confirmquotation'">{{ i18n.wishlist.timeline.confirmquotation }}</button>
-					
-
+				
 			</view>
 			
 			<!-- 表单区域 -->
@@ -433,8 +431,8 @@
 			updateproext() {
 				
 				// 将服务费和运费保留两位小数
-				this.productExt.domesticShippingFee = parseFloat(this.productExt.domesticShippingFee).toFixed(2)
-				this.productExt.commissionFee = parseFloat(this.productExt.commissionFee).toFixed(2)
+				this.productExt.domesticShippingFee = this.productExt.domesticShippingFee && this.productExt.domesticShippingFee != 'NaN' ? parseFloat(this.productExt.domesticShippingFee).toFixed(2) : ''
+				this.productExt.commissionFee = this.productExt.commissionFee ? parseFloat(this.productExt.commissionFee).toFixed(2) : ''
 				
 				_this.ifloading = true
 				const db = uniCloud.database();

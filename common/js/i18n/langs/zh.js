@@ -69,7 +69,7 @@ const zh = {
 		},
 		
 		handlewish: {
-			link: "请拷贝1688链接",
+			link: "请粘贴1688链接",
 			title: "请输入商品标题",
 			aliasname: "设置商品别名 eg: #LAL0716",
 			amount: "请输入订购数量",

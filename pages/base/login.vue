@@ -2,7 +2,7 @@
 	<view class="content loginview">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom v-if="!ifforbidback" bgColor="transparent" isBack></cu-custom>
+		<cu-custom v-if="!ifforbidback" bgColor="transparent"></cu-custom>
 		
 		<!-- 登录注册主页面 -->
 		<view class="maincontent flex flex-direction align-center padding-xl">

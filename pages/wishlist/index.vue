@@ -2,7 +2,7 @@
 	<view class="wishlistview content">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-pink" isBack>
+		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.wishlist}}</block>
 		</cu-custom>
 		
@@ -23,7 +23,7 @@
 			
 			<!-- 搜索按钮 -->
 			<view class="cu-bar btn-group margin-top">
-				<button class="cu-btn bg-gradual-orange shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
+				<button class="cu-btn bg-gradual-pink shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
 			</view>
 			
 			<!-- 搜索记录区域 -->

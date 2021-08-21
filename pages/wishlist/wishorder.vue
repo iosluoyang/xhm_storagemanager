@@ -2,7 +2,7 @@
 	<view class="pagecontent wishorderpage">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-cyan" isBack>
+		<cu-custom bgColor="bg-cyan">
 			<block slot="content">{{ i18n.nav.wishorder }}</block>
 		</cu-custom>
 		

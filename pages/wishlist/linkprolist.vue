@@ -2,7 +2,7 @@
 	<view class="linkprolistview pagecontent">
 		
 		<!-- 导航栏 -->
-		<cu-custom bgColor="bg-gradual-blue" isBack>
+		<cu-custom bgColor="bg-gradual-blue">
 			
 			<!-- 搜索框 -->
 			<view slot="content" class="search-form round">
