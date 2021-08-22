@@ -327,10 +327,13 @@
 								<view class="margin-top-sm">
 									
 									<u-field class="round"
+											:maxlength="-1"
+											fixed clear-size="45" label-width="0" 
 											style="background-color: #F5F5F5;"
-											v-model="domesticShippingNum" :placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
-											:border-bottom="false" label-width="0"
-											clear-size="45"
+											:border-bottom="false" 
+											v-model="domesticShippingNum" 
+											:placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
+											
 									>
 										<button slot="right" class="cu-btn round bg-cyan shadow" @tap.stop="pastefromclipboard('domesticShippingNum')">{{i18n.base.paste}}</button>
 										
