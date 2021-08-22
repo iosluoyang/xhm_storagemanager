@@ -4,7 +4,7 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow" @tap.stop="gotowishdetail" @longpress.stop="changewishliststatus">
+		<view class="cu-item shadow" @tap.stop="clickwishitem" @longpress.stop="changewishliststatus">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
@@ -182,8 +182,8 @@
 			
 			methods: {
 	
-				// 跳转心愿详情
-				gotowishdetail() {
+				// 点击心愿列表
+				clickwishitem() {
 					uni.navigateTo({
 						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});

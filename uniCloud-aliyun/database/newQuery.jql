@@ -34,3 +34,7 @@ db.collection('uni-id-users').get()
 db.collection('order').doc('611a1f815c2db800013ec4d4').get({getOne: true})
 
 db.collection('wishlist').where(`sourceLink == ''`).get()
+
+db.collection('linkproduct1688').remove()
+
+db.collection('favorpro').remove()

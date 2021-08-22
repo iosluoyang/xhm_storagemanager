@@ -126,7 +126,7 @@ exports.main = async (event, context) => {
 						
 			template_id = 'aTdSoJyxsBld6VOHFZ6WnVU7h9pdZyq9mzRyiTkgJd8'
 			touseropenid = creatUserWxOpenId // 发送用户微信openId
-			let tips = `该心愿已被接单,代理员将尽快为您处理`
+			let tips = `心愿已被接单-Agent accept`
 			
 			data = {
 				thing7: {value: productTitle}, // 订单名称
@@ -144,7 +144,7 @@ exports.main = async (event, context) => {
 			
 			template_id = 'dMO7jl3o1lgYqd3PrcgALEu30xt6AYXc-xKFC8QFJqY'
 			touseropenid = creatUserWxOpenId // 发送用户微信openId
-			let tips = `该心愿报价单更新,请尽快确认`
+			let tips = `心愿报价单更新-Quotation`
 			
 			data = {
 				thing2: {value: productTitle}, // 心愿标题
@@ -162,7 +162,7 @@ exports.main = async (event, context) => {
 			
 			template_id = 'dMO7jl3o1lgYqd3PrcgALEu30xt6AYXc-xKFC8QFJqY'
 			touseropenid = agentUserWxOpenId // 发送代理员微信openId
-			let tips = `用户拒绝了该报价单,请点击查看`
+			let tips = `用户拒绝报价-User refuse`
 			
 			data = {
 				thing2: {value: productTitle}, // 心愿标题
@@ -180,7 +180,7 @@ exports.main = async (event, context) => {
 			
 			template_id = 'dMO7jl3o1lgYqd3PrcgALEu30xt6AYXc-xKFC8QFJqY'
 			touseropenid = agentUserWxOpenId // 发送代理员微信openId
-			let tips = `用户同意了该报价单,请尽快处理`
+			let tips = `用户同意报价-User agree`
 			
 			data = {
 				thing2: {value: productTitle}, // 心愿标题
@@ -198,7 +198,7 @@ exports.main = async (event, context) => {
 			
 			template_id = 'YohhOYh5-nXQhDoOqTc-OQBdnp5_dxUU3q0aVtLmpoI'
 			touseropenid = agentUserWxOpenId // 发送代理员微信openId
-			let tips = `用户已经付款,请尽快处理`
+			let tips = `用户已付款-User paid`
 			
 			data = {
 				thing2: {value: productTitle}, // 心愿标题
@@ -221,7 +221,7 @@ exports.main = async (event, context) => {
 			
 			template_id = 'SiEZ87XeyqXepGhjYI94fTlDneG7iAtMYcQDuRlGncM'
 			touseropenid = creatUserWxOpenId // 发送客户微信openId
-			let tips = `代理员已经下单,请耐心等待商家发货`
+			let tips = `代理已下单-Agent purchase`
 			
 			data = {
 				character_string1: {value: orderInfo._id}, // 订单编号
@@ -240,7 +240,7 @@ exports.main = async (event, context) => {
 			
 			template_id = '7dzi8oH8BaVuvGEK-zl3n5bdQHthpU_0LuDnTmLIox8'
 			touseropenid = creatUserWxOpenId // 发送客户微信openId
-			let tips = `代理员已经发货,请耐心等待货物到达`
+			let tips = `代理已发货-Order delivery`
 			
 			data = {
 				time11: {value: currenttimestr}, // 发货时间

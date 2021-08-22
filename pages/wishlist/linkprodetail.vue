@@ -297,7 +297,7 @@
 						// console.log(`获取成功${JSON.stringify(res)}`);
 						if(res.result.code == 0) {
 							
-							let linkProduct = res.result.data.product
+							let linkProduct = res.result.data
 							
 							let swiperImgsArr =  linkProduct.imgs ? linkProduct.imgs.split(',') : []
 							_this.swiperImgsArr = swiperImgsArr.length > _this.eachMaxDetailImgNum ? swiperImgsArr.slice(0,_this.eachMaxDetailImgNum) : swiperImgsArr
@@ -306,8 +306,6 @@
 							let detailImgsArr = linkProduct.detailImgs ? linkProduct.detailImgs.split(',') : []
 							_this.detailImgsArr = detailImgsArr.length > _this.eachMaxDetailImgNum ? detailImgsArr.slice(0,_this.eachMaxDetailImgNum) : detailImgsArr
 							
-							// console.log(`当前的数据信息为`);
-							// console.log(linkProduct);
 							_this.attributeList = linkProduct.attributeList // 属性数组
 							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
 							_this.isFavor = linkProduct.favorFlag == 1 // 是否收藏
@@ -523,7 +521,7 @@
 				console.log(selectSpecPropInfo);
 				// 跳转心愿单发布详情页面 替换规格对象为选择过之后的规格对象
 				if(selectSpecPropInfo) {
-					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.searchText}}
+					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.linkProduct.linkUrl}}
 					console.log(newLinkProduct);
 					uni.setStorageSync('productInfo1688', newLinkProduct)
 					uni.redirectTo({

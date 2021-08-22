@@ -128,13 +128,36 @@ exports.main = async (event, context) => {
 		if(res.status == 200 && res.data && res.data.errorCode == '000000') {
 			
 			let data = res.data.data
+			let product = data.product
+			
+			// 尝试将第三方商品数据入库
+			try{
+				
+				// 将当前查询出来的第三方商品信息入1688商品数据库
+				let linkproduct1688 = {
+					pid: product.pid,
+					thirdPid: product.thirdPid,
+					title: product.title,
+					priceRange: product.priceRange,
+					imgs: product.imgs
+				}
+				const linkproductcollection = db.collection('linkproduct1688')
+				let linkprockres = await linkproductcollection.doc(product.pid).set(linkproduct1688)
+				console.log(`第三方商品入库回调为:`);
+				console.log(linkprockres);
+				
+			}catch(e){
+				//TODO handle the exception
+				console.log(`第三方商品入库回调失败,原因为`);
+				console.log(e);
+			}
 			
 			// 查询当前商品是否被查询用户收藏
 			let favorFlag = 0 // 默认为未收藏
 			// 如果用户登录则开始查询
 			if(uid) {
 				let favorcollection = db.collection('favorpro')
-				let favorres =  await favorcollection.where({creatUser: uid, thirdPid: data.product.thirdPid}).get({getOne: true})
+				let favorres =  await favorcollection.where({creatUser: uid, thirdPid: product.thirdPid}).get({getOne: true})
 				console.log(`查询收藏表的数据为:`);
 				console.log(favorres);
 				if(favorres.affectedDocs > 0) {
@@ -143,40 +166,15 @@ exports.main = async (event, context) => {
 				}
 			}
 			
-			// 如果存在text将data数据的sourceLink更改为text
-			if(text) {
-				data.product['sourceLink'] = text
-			}
-			
 			// 将返回值写入收藏字段
-			let newData = {...data}
-			newData.product['favorFlag'] = favorFlag
-			
+			product['favorFlag'] = favorFlag
 			
 			let result = {
 				code: 0,
-				data: newData
+				data: product
 			}
 			
-			// 尝试将第三方商品数据入库
-			try{
-				
-				// 将当前查询出来的第三方商品信息入1688商品数据库
-				let thirdProductInfo = data.product
-				let pid = thirdProductInfo.pid
-				let thirdPid = thirdProductInfo.thirdPid
-				const linkproductcollection = db.collection('linkproduct1688')
-				let linkprockres = await linkproductcollection.doc(thirdPid).set(thirdProductInfo)
-				console.log(`第三方商品入库回调为:`);
-				console.log(linkprockres);
-				
-			}catch(e){
-				//TODO handle the exception
-				console.log(`第三方商品入库回调失败,原因为`);
-				console.log(e);
-			}finally{
-				return result
-			}
+			return result
 			
 		}
 		else {
