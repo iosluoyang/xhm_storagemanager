@@ -36,6 +36,10 @@ const zh = {
 		priceasc: "价格升序",
 		sellnumdesc: "销量降序",
 		paynow: "立即支付",
+		analysis: "解析",
+		single: "单个",
+		multiple: "多个",
+		intotal: "共计",
 
 	},
 	

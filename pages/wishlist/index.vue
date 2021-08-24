@@ -131,11 +131,10 @@
 				else {
 					
 					// 将搜索文本存储在本地
-					// uni.setStorageSync('linkprosearchtext',this.searchText)
 					let searchText = encodeURIComponent(this.searchText)
 					
 					uni.navigateTo({
-						url: `/pages/wishlist/linkprodetail?type=searchText&searchText=${searchText}`
+						url: `/pages/wishlist/linkprodetail?searchText=${searchText}`
 					});
 					
 					// 清空搜索文本

@@ -71,8 +71,11 @@
 								</text> -->
 								
 								
-								<!-- 再次购买或者代理心愿按钮 -->
+								<!-- 再次购买或者代理心愿按钮或是否支付标识 -->
 								<template>
+									
+									<!-- 待下单状态下根据是否支付增加不同标识 -->
+									<text v-if="ownwishitem.achieveFlag == 2" class="cuIcon u-font-40" :class=" ownwishitem.wishOrderInfo.status == 0 ? 'cuIcon-remind text-red' : 'cuIcon-check text-blue' "></text>
 									
 									<!-- 再次购买按钮 商家角色且心愿为待收货或者已完成-->
 									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.common.buyagain }}</button>

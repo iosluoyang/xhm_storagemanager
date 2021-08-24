@@ -144,7 +144,6 @@
 				
 				ifloading: false, // 是否正在加载
 				
-				type: 'searchText', // searchText代表通过搜索文本进行搜索  thirdPid代表通过第三方pid进行搜索
 				searchrecordmaxnum: 5, // 搜索历史最大数量
 				
 				searchText: '', // 搜索文本
@@ -207,10 +206,6 @@
 			
 			_this = this
 			
-			if(option.type) {
-				this.type = option.type
-			}
-			
 			if(option.searchText) {
 				// let searchText = uni.getStorageSync('linkprosearchtext')
 				
@@ -219,8 +214,9 @@
 				// uni.removeStorageSync('linkprosearchtext')
 			}
 			
-			let thirdPid = option.thirdPid
-			if(thirdPid) this.thirdPid = thirdPid
+			if(option.thirdPid) {
+				this.thirdPid = option.thirdPid
+			}
 			
 			this.loadDetailData()
 			

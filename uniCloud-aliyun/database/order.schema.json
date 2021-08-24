@@ -108,8 +108,7 @@
 		},
 		"wishId": {
 			"bsonType": "string",
-			"description": "心愿id",
-			"foreignKey": "wishlist._id" // 使用foreignKey表示，此字段关联wishlist表的_id
+			"description": "心愿id" // 此处不能做外键关联 所以需要单独查询一次
 		},
 		"title": {
 			"bsonType": "string",

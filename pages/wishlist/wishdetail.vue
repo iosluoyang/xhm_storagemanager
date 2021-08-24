@@ -257,13 +257,11 @@
 							</view>
 						</view>
 						
-						<!-- #ifndef H5 -->
 						<view class="action">
 							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode);showpopup=false">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
-						<!-- #endif -->
 						
 					</view>
 					
@@ -280,13 +278,11 @@
 							</view>
 						</view>
 						
-						<!-- #ifndef H5 -->
 						<view class="action">
 							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl);showpopup=false">
 								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
 							</button>
 						</view>
-						<!-- #endif -->
 						
 					</view>
 					
@@ -351,7 +347,7 @@
 					</view>
 					<view class="cu-bar bg-white flex justify-around">
 						<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
-						<button open-type="share" class="cu-btn round bg-gradual-orange">{{i18n.base.confirm}}</button>
+						<button open-type="share" class="cu-btn round bg-gradual-orange" @tap="showpopup = false">{{i18n.base.confirm}}</button>
 					</view>
 				
 				</view>

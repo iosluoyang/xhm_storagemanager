@@ -10,31 +10,3 @@
 
 const db = uniCloud.database();
 const dbCmd = db.command;
-
-db.collection('wishlisttimeline').remove()
-
-db.collection('wishlist').remove()
-
-db.collection('favorpro').remove()
-
-db.collection('linkproduct1688').remove()
-
-db.collection('notice').remove()
-
-// db.collection('wishlist').where(`agentUser != null`).update({agentFlag: 1})
-
-// db.collection('wishlisttimeline').where(` wishId == '60fa2ad49c77390001e2621c' && type == 91 `).remove()
-
-// db.collection('wishlist').where(`aliasName != ''`).get()
-
-db.collection('wishlist').where(`achieveFlag == 0`).get()
-
-db.collection('uni-id-users').get()
-
-db.collection('order').doc('611a1f815c2db800013ec4d4').get({getOne: true})
-
-db.collection('wishlist').where(`sourceLink == ''`).get()
-
-db.collection('linkproduct1688').remove()
-
-db.collection('favorpro').remove()

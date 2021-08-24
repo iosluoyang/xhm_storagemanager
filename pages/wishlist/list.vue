@@ -307,6 +307,7 @@
 				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
+				let orderbystr = `remindFlag desc, creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
 				// 代理员
 				if(this.user.role == 'PRODUCT_AGENT') {
 					
@@ -317,6 +318,11 @@
 					// 如果statsu =-1则代表查自己关联过的所有心愿单
 					else if(achieveFlag == -1) {
 						wherestr = `agentUser._id == $cloudEnv_uid`
+					}
+					// 如果status = 2则代表查关联过的待下单的心愿单 此时排序字段增加按照wishOrderInfo.status来进行倒序排序
+					else if(achieveFlag == 2) {
+						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
+						orderbystr = `remindFlag desc, wishOrderInfo.status desc, creatTime desc`
 					}
 					
 					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
@@ -336,6 +342,12 @@
 						wherestr = `creatUser._id == $cloudEnv_uid`
 					}
 					
+					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderInfo.status来进行升序排序
+					else if(achieveFlag == 2) {
+						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
+						orderbystr = `remindFlag desc, wishOrderInfo.status asc, creatTime desc`
+					}
+					
 					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
 					else {
 						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
@@ -346,10 +358,10 @@
 					
 				}
 				
-				db.collection('wishlist,uni-id-users')
+				db.collection('wishlist,uni-id-users,order')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel')
-					.orderBy(`remindFlag desc, creatTime desc`)
+					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel, wishOrderId as wishOrderInfo')
+					.orderBy(orderbystr)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
 					.get()
@@ -365,9 +377,10 @@
 							list.forEach(item => {
 								item.creatUser = item.creatUser[0]
 								item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
+								item.wishOrderInfo = item.wishOrderInfo ? item.wishOrderInfo[0] : null
 							})
-							// console.log(`本次共获取${list.length}个数据,具体数据为:`);
-							// console.log(list);
+							console.log(`本次共获取${list.length}个数据,具体数据为:`);
+							console.log(list);
 							if(pageNum == 1) {
 								dataArr = [] //清空数据源
 								mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部

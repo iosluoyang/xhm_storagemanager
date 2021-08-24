@@ -14,7 +14,7 @@
 				</u-tr>
 				
 				<!-- 表头 -->
-				<u-tr v-if="tableHeaderArr" class="u-tr tableheader">
+				<u-tr v-if="tableHeaderArr" class="u-tr tableheader bg-gray">
 					<u-td class='u-td eachheaderitem' v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
 						
 						<!-- 数组类型的表头 -->
@@ -42,7 +42,7 @@
 						
 						<!-- 其他类型的表头 -->
 						<template v-else>
-							<text class="text-center text-bold u-line-3">{{ headeritem.title }}</text>
+							<text class="text-center text-black text-bold u-line-3">{{ headeritem.title }}</text>
 						</template>
 						
 					</u-td>
@@ -520,6 +520,7 @@
 				}
 				.u-td{
 					height: auto;
+					word-break: break-all;
 				}
 			}
 		}

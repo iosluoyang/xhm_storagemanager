@@ -36,6 +36,10 @@ const en = {
 		priceasc: "Price Asc",
 		sellnumdesc: "SellNum Desc",
 		paynow: "Pay Now",
+		analysis: "Analysis",
+		single: "Single",
+		multiple: "Multiple",
+		intotal: "In Total",
 	},
 	
 	// 导航栏主分类

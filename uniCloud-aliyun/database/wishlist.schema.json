@@ -223,7 +223,8 @@
 		},
 		"wishOrderId": {
 			"bsonType": "string",
-			"description": "心愿生成订单后的心愿订单号"
+			"description": "心愿生成订单后的心愿订单号",
+			"foreignKey":"order._id"
 		}
 
 	}
