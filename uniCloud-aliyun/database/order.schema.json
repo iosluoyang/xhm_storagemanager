@@ -80,6 +80,10 @@
 			"bsonType":"object",
 			"description":"订单收货相关信息",
 			"properties": {
+				"domesticShippingNum": {
+					"bsonType":"string",
+					"description":"收货国内快递单号 多个逗号拼接"
+				},
 				"remark": {
 					"bsonType":"string",
 					"description":"收货备注",

@@ -319,8 +319,10 @@
 						
 						<scroll-view scroll-y :style="{height: 'calc(100% - 144rpx)'}">
 							
+							<!-- 物流发货 -->
 							<template v-if="deliveryType == 1">
 								
+								<!-- 物流名称 -->
 								<view class="field1">
 									
 									<u-field class="round"
@@ -340,6 +342,7 @@
 									
 								</view>
 								
+								<!-- 物流单号 -->
 								<view class="field2 margin-top-sm margin-bottom-sm" :class="[multipleShipping ? 'padding-sm solid' : '']">
 									
 									<button class="cu-btn round changeiconbtn margin-bottom-sm margin-left-sm" @tap.stop="multipleShipping = !multipleShipping">
@@ -454,14 +457,14 @@
 				<template v-if="popuptype == 'customerreceive'">
 					
 					<!-- 收货的内容 -->
-					<view class="topcontentview padding" :style="{height: 'calc(100% - 100rpx)', boxSizing: 'border-box', overFlow: 'scroll'}">
+					<view class="topcontentview padding" :style="{height: 'calc(100% - 100rpx)', boxSizing: 'border-box'}">
 						
 						<view class="receivetypeview" :style="{height: '164rpx'}">
 							
 							<view class="flex align-center justify-between padding-sm text-center">
 								
-								<view class="text-wrap radius padding-sm" :class="[ receiveType == 1 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 1">{{ i18n.wishlist.wishorder.receiveparts }}</view>
 								<view class="text-wrap radius padding-sm" :class="[ receiveType == 2 ? 'bg-cyan text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 2">{{ i18n.wishlist.wishorder.receiveall }}</view>
+								<view class="text-wrap radius padding-sm" :class="[ receiveType == 1 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 1">{{ i18n.wishlist.wishorder.receiveparts }}</view>
 								
 							</view>
 							
@@ -475,6 +478,22 @@
 						</view>
 						
 						<scroll-view scroll-y :style="{height: 'calc(100% - 164rpx)'}">
+							
+							<!-- 当前发货的信息  如果是物流发货则显示发货信息 -->
+							<view v-if="orderinfo.deliveryType == 1" class="deliveryproview padding solid-bottom">
+								
+								<view v-if="multipleshippingnumarr && multipleshippingnumarr.length > 0">
+								
+									<view class="tip flex align-center margin-bottom-sm">
+										<text class="text-sm text-sm text-bold">{{ i18n.wishlist.common.domesticshippingnum }}</text>
+										<text class="text-bold margin-left">{{ `(${receivemultipleshippingnumarr.length}/${multipleshippingnumarr.length})` }}</text>
+									</view>
+									
+									<text v-for="(item,index) in multipleshippingnumarr" :key="index" class="cu-tag round sm margin-bottom-sm padding-sm" :class="[ receivemultipleshippingnumarr.includes(item) ? 'bg-grey' : 'line-gray' ]" @tap.stop="receiveoneshippingorder(item)">{{ item }}</text>
+									
+								</view>
+								
+							</view>
 							
 							<!-- 部分收货信息 -->
 							<view v-if="orderinfo && orderinfo.receiveType == 1 && (orderinfo.receiveInfo.remarks || orderinfo.receiveInfo.imgs) " class="receivepartsview solids padding-sm shadow-blur">
@@ -491,10 +510,11 @@
 								
 							</view>
 							
-							<!-- 备注内容 -->
-							<view class="remarkview margin-top-sm padding solid">
-								<textarea class="width100" auto-height maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.wishlist.common.remark" placeholder-style="fontSize: 12px;" />
-							</view>
+							<u-field v-model="remark" :placeholder="i18n.wishlist.common.remark"
+									type="textarea" :maxlength="-1" auto-height label-width="0"
+									:field-style="{fontSize: '12px',}"
+									placeholder-style="fontSize: '12px'"
+							></u-field>
 							
 							<!-- 上传图片 -->
 							<view class="bg-white padding">
@@ -552,6 +572,7 @@
 				multipleShipping: false, // 是否多个物流编号 默认为否
 				multipleshippingnum: '', // 多个物流编号的内容
 				multipleshippingnumarr: [], // 多个物流编号的数组
+				receivemultipleshippingnumarr: [], // 收货时的多个物流编号的数组
 				
 				imgArr: [], // 图片数组
 				
@@ -1131,13 +1152,29 @@
 			clientstarttoconfirmreceive() {
 				
 				// 判断当前订单收货信息是否为部分收货
-				if(this.orderinfo.receiveType == 1) {
-					this.receiveType = 1
+				if(this.orderinfo.receiveType == 1 || this.orderinfo.receiveType == 2) {
+					this.receiveType = this.orderinfo.receiveType
+				}
+				
+				// 初始化代理发货物流数据
+				if(this.orderinfo.deliveryInfo && this.orderinfo.deliveryInfo.domesticShippingNum) {
+					this.multipleshippingnumarr = this.orderinfo.deliveryInfo.domesticShippingNum.split(',')
 				}
 				
 				_this.popuptype = 'customerreceive'
 				_this.ifshowpopup = true
 				
+			},
+			
+			// 客户收货时点击某一个物流单号
+			receiveoneshippingorder(item) {
+				let existIndex = this.receivemultipleshippingnumarr.findIndex(thatitem => thatitem == item)
+				if(existIndex > -1) {
+					this.receivemultipleshippingnumarr.splice(existIndex, 1)
+				}
+				else {
+					this.receivemultipleshippingnumarr.push(item)
+				}
 			},
 			
 			// 客户收货
