@@ -119,32 +119,6 @@
 						<text>kg</text>
 					</view>
 					
-					<!-- 国内运费 -->
-					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.domesticshippingfee }}</view>
-						<input class="text-right" type="digit" v-model="productExt.domesticShippingFee" />
-						<text>RMB</text>
-					</view>
-					
-					<!-- 服务费 -->
-					<view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.tabledata.commissionfee }}</view>
-						<input class="text-right" type="digit" v-model="productExt.commissionFee" />
-						<text>RMB</text>
-					</view>
-					
-					<!-- 国际物流名称 -->
-					<!-- <view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.internationalshippingname }}</view>
-						<input class="text-right" type="text" v-model="productExt.internationalShippingName" />
-					</view> -->
-					
-					<!-- 国际物流编码 -->
-					<!-- <view class="cu-form-group">
-						<view class="title">{{ i18n.wishlist.common.internationalshippingcode }}</view>
-						<input class="text-right" type="text" v-model="productExt.internationalShippingCode" />
-					</view> -->
-					
 				</view>
 				
 				<!-- 确认报价区域 -->
@@ -152,7 +126,56 @@
 					
 					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
 					
-					<button class="cu-btn block radius line-purple shadow-blur margin-top-sm" @tap.stop="showSelector = true">{{ i18n.wishlist.timeline.editquotation }}</button>
+					<view class="editpriceview padding-sm">
+						
+						<view class="btnsview flex align-center">
+							
+							<template v-if="!iseditprice">
+								<button class="cu-btn round bg-gradual-purple" @tap.stop="starttoeditprice">
+									<text class="cuIcon cuIcon-edit margin-right-sm"></text>
+									{{ `${i18n.base.edit} ${i18n.wishlist.common.price}` }}
+								</button>
+								
+								<button class="cu-btn round bg-gradual-pink margin-left" @tap.stop="showSelector = true">
+									<text class="cuIcon cuIcon-edit margin-right-sm"></text>
+									{{ `${i18n.base.edit} ${i18n.wishlist.common.amount}` }}
+								</button>
+								
+							</template>
+							
+							<template v-if="iseditprice">
+								<button class="cu-btn round sm bg-grey cuIcon cuIcon-close" @tap.stop="iseditprice = false"></button>
+								<button class="cu-btn margin-left round sm bg-cyan cuIcon cuIcon-check" @tap.stop=" finisheditprice "></button>
+							</template>
+							
+						</view>
+						
+						<view v-if="iseditprice" class="editpriceview cu-list menu">
+							
+							<!-- 商品总价 -->
+							<view class="cu-form-group">
+								<view class="title">{{ i18n.wishlist.common.price }}</view>
+								<input class="text-right" type="digit" v-model="tmpProductExt.proPrice" />
+								<text>RMB</text>
+							</view>
+							
+							<!-- 国内运费 -->
+							<view class="cu-form-group">
+								<view class="title">{{ i18n.wishlist.common.domesticshippingfee }}</view>
+								<input class="text-right" type="digit" v-model="tmpProductExt.domesticShippingFee" />
+								<text>RMB</text>
+							</view>
+							
+							<!-- 服务费 -->
+							<view class="cu-form-group">
+								<view class="title">{{ i18n.wishlist.common.tabledata.commissionfee }}</view>
+								<input class="text-right" type="digit" v-model="tmpProductExt.commissionFee" />
+								<text>RMB</text>
+							</view>
+							
+						</view>
+						
+					</view>
 					
 				</view>
 				
@@ -161,7 +184,7 @@
 		</view>
 		
 		<!-- 确定按钮 -->
-		<view v-if="wishinfo" class="cu-bar btn-group margin">
+		<view v-if="wishinfo && !iseditprice" class="cu-bar btn-group margin">
 			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
 		</view>
 		
@@ -211,7 +234,10 @@
 					boxHeight: '',
 					boxVolume: '',
 					domesticShippingFee: '',
+					proPrice: '',
+					commissionFee: '',
 				} ,// 心愿商品的拓展字段
+				tmpProductExt: null, // 信息临时变量
 				specPropInfo: null, // 规格信息
 				timelineId: null, // 当前时间轴id
 				timelineInfo: null, // 时间轴数据
@@ -227,6 +253,7 @@
 				showSelector: false, // 是否显示规格选择器
 				content: '', // 备注
 				textareaHighScreen: false, // textarea是否高屏显示
+				iseditprice: false, // 是否正在编辑价格
 				
 				
 				
@@ -376,6 +403,19 @@
 				}
 			},
 			
+			// 开始编辑价格
+			starttoeditprice() {
+				this.tmpProductExt = {...this.productExt}
+				this.iseditprice = true
+			},
+			
+			// 编辑完价格
+			finisheditprice() {
+				this.productExt = this.tmpProductExt
+				this.$set(this.tmpWishInfo, 'productExt', this.productExt) // 变更临时变量的规格数据
+				this.iseditprice = false
+			},
+			
 			// 选择图片成功
 			fileselect(e) {
 				console.log(`图片选择成功`);
@@ -497,7 +537,7 @@
 					// productExt不能所有数值均为空
 					let productExt = this.productExt
 					if(!productExt.boxContainerNum && !productExt.boxLength && !productExt.boxWidth && !productExt.boxHeight 
-						&& !productExt.boxVolume && !productExt.domesticShippingFee) 
+						&& !productExt.boxVolume) 
 					{
 						uni.showToast({
 							title: this.i18n.placeholder.handletimeline.typecontent,
@@ -515,13 +555,13 @@
 					
 					// 上传规格数据前校验国内运费
 					if(!_this.productExt.domesticShippingFee || _this.productExt.domesticShippingFee == '') {
+						
 						uni.showToast({
 							title: _this.i18n.placeholder.handletimeline.typedomesticshippingfee,
 							icon: 'none'
 						});
-						setTimeout(function() {
-							_this.type = 'addext'
-						}, 1000);
+						
+						_this.iseditprice = true
 						
 						return
 					}
@@ -532,9 +572,8 @@
 							title: _this.i18n.placeholder.handletimeline.typecommissionfee,
 							icon: 'none'
 						});
-						setTimeout(function() {
-							_this.type = 'addext'
-						}, 1000);
+						
+						_this.iseditprice = true
 						
 						return
 						

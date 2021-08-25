@@ -168,7 +168,7 @@ const en = {
 			pricesummary: "Price Summary",
 			remark: "Remark",
 			hurrylevel: "Hurry Level",
-			boxcontainernum: "Packing Quantity",
+			boxcontainernum: "Packing",
 			boxsize: "Unit Size",
 			boxlength: "Length",
 			boxwidth: "Width",

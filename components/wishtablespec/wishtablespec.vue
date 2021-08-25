@@ -148,7 +148,14 @@
 				
 				<!-- 总结区域内容 -->
 				<u-tr class="u-tr">
-					<u-td class="u-td">{{ tableData.totalProPrice }}</u-td>
+					<u-td class="u-td">
+						
+						<view class="flex flex-direction align-center justify-center">
+							<text class="">{{ tableData.totalProPrice }}</text>
+							<text v-if=" tableData.totalProPriceOld && tableData.totalProPriceOld != tableData.totalProPrice " :style="{ textDecoration: 'line-through' }" class="">{{ `(${tableData.totalProPriceOld})` }}</text>
+						</view>
+						
+					</u-td>
 					<u-td class="u-td">{{ tableData.totalDomesticShippingFee }}</u-td>
 					<u-td class="u-td">{{ tableData.totalCommissionFee }}</u-td>
 					<u-td class="u-td">
@@ -186,8 +193,6 @@
 				</u-tr>
 				
 			</template>
-			
-			<!-- 物流信息区域 -->
 			
 		</u-table>
 		
@@ -234,12 +239,14 @@
 			totalPrice() {
 				
 				if(this.tableData) {
-					let totalProPrice = parseFloat(this.tableData.totalProPrice).toFixed(2)
-					let totalDomesticShippingFee = parseFloat(this.tableData.totalDomesticShippingFee).toFixed(2)
-					let totalCommissionFee = parseFloat(this.tableData.totalCommissionFee).toFixed(2)
-					let totalPrice = +totalProPrice + +totalDomesticShippingFee + +totalCommissionFee
-					totalPrice = parseFloat(totalPrice).toFixed(2)
-					return totalPrice
+					if(this.tableData.totalProPrice && this.tableData.totalDomesticShippingFee && this.tableData.totalCommissionFee) {
+						let totalProPrice = parseFloat(this.tableData.totalProPrice).toFixed(2)
+						let totalDomesticShippingFee = parseFloat(this.tableData.totalDomesticShippingFee).toFixed(2)
+						let totalCommissionFee = parseFloat(this.tableData.totalCommissionFee).toFixed(2)
+						let totalPrice = +totalProPrice + +totalDomesticShippingFee + +totalCommissionFee
+						totalPrice = parseFloat(totalPrice).toFixed(2)
+						return totalPrice
+					}
 				}
 				return '/'
 			}
@@ -274,7 +281,7 @@
 					
 					let proMainImg = this.wishinfo.imgs.split(',')[0]
 					
-					let firstList =  _this.wishinfo.specPropInfo.propValList
+					let firstList = _this.wishinfo.specPropInfo.propValList
 					firstList.forEach(firstitem => {
 						let totalAmount = 0
 						let totalProPrice = 0
@@ -448,16 +455,18 @@
 				let totalSpecAmount = specList.length
 				// console.log(`共有${totalSpecAmount}种类型`);
 				let totalDomesticShippingFee = _this.wishinfo.productExt.domesticShippingFee ? parseFloat(_this.wishinfo.productExt.domesticShippingFee).toFixed(2) : ''
-				let totalCommissionFee = parseFloat( _this.wishinfo.productExt.commissionFee).toFixed(2)
+				let totalCommissionFee = _this.wishinfo.productExt.commissionFee ? parseFloat( _this.wishinfo.productExt.commissionFee).toFixed(2) : ''
 				specList.forEach(eachitem => {
 					totalAmount += Number(eachitem.totalAmount)
 					totalProPrice += +parseFloat(eachitem.totalProPrice).toFixed(2)
 				})
-				totalProPrice = parseFloat(totalProPrice).toFixed(2)
+				totalProPrice = parseFloat(totalProPrice).toFixed(2) // 计算出来的商品总价
+				let agentEditProPrice = _this.wishinfo.productExt.proPrice ? parseFloat(_this.wishinfo.productExt.proPrice).toFixed(2) : '' // 代理编辑的商品总价
 				
 				// 表格内容初始化数据
 				let priceData = {
-					totalProPrice: totalProPrice,
+					totalProPrice: agentEditProPrice ? agentEditProPrice : totalProPrice, // 若存在代理编辑商品价格则取代理编辑价格显示
+					totalProPriceOld: totalProPrice, // 计算出来的商品总价
 					totalDomesticShippingFee: totalDomesticShippingFee,
 					totalCommissionFee: totalCommissionFee
 				}
