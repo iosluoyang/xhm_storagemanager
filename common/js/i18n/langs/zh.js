@@ -37,8 +37,8 @@ const zh = {
 		sellnumdesc: "销量降序",
 		paynow: "立即支付",
 		analysis: "解析",
-		single: "单个",
-		multiple: "多个",
+		single: "单个模式",
+		multiple: "多个模式",
 		intotal: "共计",
 
 	},
@@ -322,6 +322,9 @@ const zh = {
 			havenotrackingnum: "没有物流单号",
 			pleaseinputshippingname: "请输入物流名称",
 			pleaseinputshippingnum: "请输入物流单号",
+			pleaseinputmultipleshippingnum: "您可以输入或者粘贴多个运单号,点击右侧转化按钮进行智能分析",
+			receiverecord: "收货记录",
+			pleasechoosereceivealltype: "系统检测到您已全部收货,请选择全部收货"
 		},
 		
 		// 收银台相关

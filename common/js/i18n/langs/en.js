@@ -37,8 +37,8 @@ const en = {
 		sellnumdesc: "SellNum Desc",
 		paynow: "Pay Now",
 		analysis: "Analysis",
-		single: "Single",
-		multiple: "Multiple",
+		single: "Single Model",
+		multiple: "Multiple Model",
 		intotal: "In Total",
 	},
 	
@@ -320,7 +320,9 @@ const en = {
 			havenotrackingnum: "Without Tracking Num",
 			pleaseinputshippingname: "Please input Shipping Name",
 			pleaseinputshippingnum: "Please input Shipping Number",
-			
+			pleaseinputmultipleshippingnum: "You can input multiple shipping number , click the tranfer button on the right to analysis",
+			receiverecord: "Receive Record",
+			pleasechoosereceivealltype: "System found that you already received all the products, please choose receive all",
 		},
 		
 		// 收银台相关

@@ -222,6 +222,7 @@
 						
 						let countdata = res.result.data
 						// 设置achieveFlag = 0,1,2,3时的角标数量  没有的设置为0(防止更新为0时数据不更新的问题)
+						// console.log(countdata);
 						_this.tabArr.map((item) => {
 							if(item.status == 0 || item.status == 1 || item.status == 2 || item.status == 3 ) {
 								let selectitem = countdata.find(dataitem => (dataitem.achieveFlag == item.status))
@@ -330,8 +331,8 @@
 						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
 					}
 					
-					// 增加搜索关键字查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName))`
+					// 增加搜索关键字和供应商昵称的查询条件
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) )`
 					
 				}
 				// 普通供应商

@@ -84,12 +84,12 @@
 					
 				</view>
 				
-				<view class="productsummaryview margin-top-sm flex justify-end align-center">
+				<!-- <view class="productsummaryview margin-top-sm flex justify-end align-center">
 					
 					<text class="text-df text-black">{{ i18n.wishlist.wishorder.totalproprice }}:</text>
 					<text class="margin-left-sm text-bold text-xl text-red text-price">{{ orderinfo.totalProPrice }}</text>
 					
-				</view>
+				</view> -->
 				
 			</view>
 			
@@ -240,7 +240,7 @@
 				
 				<!-- 如果是待收货订单 -->
 				<template v-if="orderinfo.status == 2">
-					<button class="cu-btn round bg-cyan" @tap.stop="clientstarttoconfirmreceive">{{ i18n.wishlist.wishorder.receive }}</button>
+					<button class="cu-btn round bg-cyan" @tap.stop="clientstartconfirmreceive">{{ i18n.wishlist.wishorder.receive }}</button>
 				</template>
 				
 			</template>
@@ -323,14 +323,13 @@
 							<template v-if="deliveryType == 1">
 								
 								<!-- 物流名称 -->
-								<view class="field1">
+								<view class="field1 round bgf5">
 									
-									<u-field class="round"
+									<u-field
 											v-model="domesticShippingName" 
 											:placeholder="i18n.wishlist.wishorder.pleaseinputshippingname"
 											placeholder-style="fontSize: '12px'"
-											:style="{background: '#F5F5F5'}"
-											:border-bottom="true" label-width="0" 
+											:border-bottom="false" label-width="0" 
 											clear-size="45"
 									>
 										<button slot="right" class="cu-btn round bg-cyan shadow" @tap.stop="pastefromclipboard('domesticShippingName')">
@@ -343,80 +342,89 @@
 								</view>
 								
 								<!-- 物流单号 -->
-								<view class="field2 margin-top-sm margin-bottom-sm" :class="[multipleShipping ? 'padding-sm solid' : '']">
+								<view class="field2 margin-top-sm margin-bottom-sm">
 									
-									<button class="cu-btn round changeiconbtn margin-bottom-sm margin-left-sm" @tap.stop="multipleShipping = !multipleShipping">
+									<button class="cu-btn round changeiconbtn bg-grey margin-bottom-sm margin-left-sm" @tap.stop="multipleShipping = !multipleShipping">
 										<text class="cuIcon cuIcon-order"></text>
-										<text class="text-df text-sm margin-left-sm">{{ multipleShipping ? i18n.base.single : i18n.base.multiple }}</text>
+										<text class="text-df text-sm margin-left-sm">{{ multipleShipping ? i18n.base.multiple : i18n.base.single }}</text>
 									</button>
 									
 									<!-- 单个物流编号 -->
 									<template v-if="!multipleShipping">
 										
-										<u-field class="round"
-												:maxlength="20"
-												fixed clear-size="45" label-width="0" :border-bottom="true"
-												:style="{background: '#F5F5F5'}"
-												v-model="domesticShippingNum" 
-												:placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
-												placeholder-style="fontSize: '12px'"
-												
-										>
+										<view class="round bgf5">
 											
-											<view slot="right" class="optionview flex align-center">
+											<u-field v-model="domesticShippingNum" 
+													:placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
+													placeholder-style="fontSize: '12px'"
+													:maxlength="20" clear-size="45" label-width="0" :border-bottom="false"
+											>
 												
-												<!-- #ifndef H5 -->
-												<button class="cu-btn round cuIcon cuIcon-scan bg-blue shadow margin-right-sm" @tap.stop="scanshippingnum"></button>
-												<!-- #endif -->
+												<view slot="right" class="optionview flex align-center">
+													
+													<!-- #ifndef H5 -->
+													<button class="cu-btn round cuIcon cuIcon-scan bg-blue shadow margin-right-sm" @tap.stop="scanshippingnum"></button>
+													<!-- #endif -->
+													
+													<button class="cu-btn round bg-cyan shadow cuIcon cuIcon-copy" @tap.stop="pastefromclipboard('domesticShippingNum')"></button>
+													
+												</view>
 												
-												<button class="cu-btn round bg-cyan shadow cuIcon cuIcon-copy" @tap.stop="pastefromclipboard('domesticShippingNum')"></button>
-												
-											</view>
+											</u-field>
 											
-										</u-field>
+										</view>
 										
 									</template>
 									
 									<!-- 多个物流编号 -->
 									<template v-if="multipleShipping">
 										
-										<view v-if="multipleshippingnumarr && multipleshippingnumarr.length > 0">
-										
+										<view class="topview" v-if="multipleshippingnumarr && multipleshippingnumarr.length > 0">
+											
+											<!-- 提示区域 -->
 											<view class="tip flex align-center margin-bottom-sm">
 												<text class="text-sm text-sm text-bold">{{ i18n.wishlist.common.domesticshippingnum }}</text>
 												<text class=" margin-left-sm cuIcon-deletefill text-red" @tap.stop="deleteMultipleshippingarr"></text>
 												<text class="text-bold margin-left">{{ `(${i18n.base.intotal}:${multipleshippingnumarr.length})` }}</text>
 											</view>
 											
-											<text v-for="(item,index) in multipleshippingnumarr" :key="index" class="cu-tag round sm margin-bottom-sm padding-sm" @longpress="deleteoneshipping(index)">{{ item }}</text>
+											<!-- 多个单号区域 -->
+											<view v-for="(item,index) in multipleshippingnumarr" :key="index" class="cu-tag line-grey round sm margin-bottom-sm padding-sm" @longpress="$basejs.copytoclipboard(item)">
+												{{ item }}
+												<text class="cuIcon cuIcon-close margin-left-sm" @tap.stop="deleteoneshipping(index)"></text>
+											</view>
 											
 										</view>
 										
-										<u-field
-												type="textarea"
-												:maxlength="-1"
-												:auto-height="true"
-												fixed clear-size="45" label-width="0" 
-												:style="{background: '#F5F5F5'}"
-												:border-bottom="true" 
-												v-model="multipleshippingnum" 
-												:placeholder="i18n.wishlist.wishorder.pleaseinputshippingnum"
-												placeholder-style="fontSize: '12px'"
-												
-										>
+										<!-- 输入区域 -->
+										<view class="inputview bgf5">
 											
+											<u-field
+													type="textarea"
+													:maxlength="-1"
+													:auto-height="false"
+													fixed clear-size="45" label-width="0" 
+													:border-bottom="false" 
+													v-model="multipleshippingnum" 
+													:placeholder="i18n.wishlist.wishorder.pleaseinputmultipleshippingnum"
+													placeholder-style="fontSize: '12px'"
+													
+											>
+												
+												<view slot="right" class="optionview flex align-center">
+													
+													<!-- #ifndef H5 -->
+													<button class="cu-btn round cuIcon cuIcon-scan bg-blue shadow margin-right-sm" @tap.stop="scanshippingnum"></button>
+													<!-- #endif -->
+													
+													<button class="cu-btn round cuIcon cuIcon-forwardfill bg-orange shadow" @tap.stop="analysismultipleshippingnum"></button>
+													
+												</view>
+												
+											</u-field>
 											
-											<view slot="right" class="optionview flex align-center">
-												
-												<!-- #ifndef H5 -->
-												<button class="cu-btn round cuIcon cuIcon-scan bg-blue shadow margin-right-sm" @tap.stop="scanshippingnum"></button>
-												<!-- #endif -->
-												
-												<button class="cu-btn round cuIcon cuIcon-forwardfill bg-orange shadow" @tap.stop="analysismultipleshippingnum"></button>
-												
-											</view>
-											
-										</u-field>
+										</view>
+										
 										
 									</template>
 									
@@ -425,10 +433,10 @@
 							</template>
 							
 							<!-- 备注内容 -->
-							<view class="remarkview">
+							<view class="remarkview bgf5">
 								
 								<u-field v-model="remark" :placeholder="i18n.wishlist.common.remark"
-										type="textarea" :maxlength="-1" auto-height label-width="0"
+										type="textarea" :maxlength="-1" auto-height label-width="0" :border-bottom="false"
 										:field-style="{fontSize: '12px',}"
 										placeholder-style="fontSize: '12px'"
 								></u-field>
@@ -459,12 +467,13 @@
 					<!-- 收货的内容 -->
 					<view class="topcontentview padding" :style="{height: 'calc(100% - 100rpx)', boxSizing: 'border-box'}">
 						
+						<!-- 收货类型 -->
 						<view class="receivetypeview" :style="{height: '164rpx'}">
 							
 							<view class="flex align-center justify-between padding-sm text-center">
 								
-								<view class="text-wrap radius padding-sm" :class="[ receiveType == 2 ? 'bg-cyan text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 2">{{ i18n.wishlist.wishorder.receiveall }}</view>
-								<view class="text-wrap radius padding-sm" :class="[ receiveType == 1 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="receiveType = 1">{{ i18n.wishlist.wishorder.receiveparts }}</view>
+								<view class="text-wrap radius padding-sm" :class="[ receiveType == 2 ? 'bg-cyan text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="changeReceiveType(2)">{{ i18n.wishlist.wishorder.receiveall }}</view>
+								<view class="text-wrap radius padding-sm" :class="[ receiveType == 1 ? 'bg-grey text-bold' : 'solid' ]" :style="{width: '40%'}" @tap.stop="changeReceiveType(1)">{{ i18n.wishlist.wishorder.receiveparts }}</view>
 								
 							</view>
 							
@@ -479,13 +488,38 @@
 						
 						<scroll-view scroll-y :style="{height: 'calc(100% - 164rpx)'}">
 							
-							<!-- 当前发货的信息  如果是物流发货则显示发货信息 -->
+							<!-- 收货信息记录 -->
+							<u-collapse v-if="orderinfo && orderinfo.receiveInfo && orderinfo.receiveInfo.partReceiveRecordArr" :item-style="{ border: '#CDCDCD 2rpx solid' }" :arrow="true" :accordion="true">
+								<u-collapse-item name="receiverecord" :title=" i18n.wishlist.wishorder.receiverecord " align="center">
+									
+									<view class="cu-list menu-avatar comment">
+										<view class="cu-item" v-for="(item, index) in orderinfo.receiveInfo.partReceiveRecordArr" :key="index">
+											<view class="cu-avatar round bg-grey">{{ index+1 }}</view>
+											<view class="content" :style="{width: '100%'}">
+												<uni-dateformat class="text-grey text-sm" :date="item.creatTime" />
+												<view v-if="item.content" class="text-gray text-content text-df">{{ item.content }}</view>
+												<view v-if="item.imgs" class="margin-top-sm grid col-4 grid-square">
+													<view class="bg-img" v-for="(img,imgindex) in item.imgs.split(',')" :key="imgindex" :style="[{ backgroundImage:'url(' + img + ')', height: '100rpx' }]" @tap.stop="previewImgs(item.imgs, imgindex)"></view>
+												</view>
+												<scroll-view class="width100" v-if="item.domesticShippingNum" :scroll-x="true" :style="{whiteSpace: 'nowrap'}">
+													<view class="cu-tag round bg-grey padding-left-sm padding-right-sm" :style="{display: 'inline-block'}" v-for="(eachshipping,shippingindex) in item.domesticShippingNum.split(',')" :key="shippingindex">
+														{{ eachshipping }}
+													</view>
+												</scroll-view>
+											</view>
+										</view>
+									</view>
+									
+								</u-collapse-item>
+							</u-collapse>
+							
+							<!-- 当前发货的物流单号信息 -->
 							<view v-if="orderinfo.deliveryType == 1" class="deliveryproview padding solid-bottom">
 								
 								<view v-if="multipleshippingnumarr && multipleshippingnumarr.length > 0">
 								
 									<view class="tip flex align-center margin-bottom-sm">
-										<text class="text-sm text-sm text-bold">{{ i18n.wishlist.common.domesticshippingnum }}</text>
+										<text class="text-lg text-black text-bold">{{ i18n.wishlist.common.domesticshippingnum }}</text>
 										<text class="text-bold margin-left">{{ `(${receivemultipleshippingnumarr.length}/${multipleshippingnumarr.length})` }}</text>
 									</view>
 									
@@ -494,27 +528,17 @@
 								</view>
 								
 							</view>
-							
-							<!-- 部分收货信息 -->
-							<view v-if="orderinfo && orderinfo.receiveType == 1 && (orderinfo.receiveInfo.remarks || orderinfo.receiveInfo.imgs) " class="receivepartsview solids padding-sm shadow-blur">
+
+							<!-- 备注 -->
+							<view class="remarkview bgf5 margin-top-sm">
 								
-								<view v-if="orderinfo.receiveInfo.remark" class="cu-tag bg-gray round" @longpress="$basejs.copytoclipboard(orderinfo.receiveInfo.remark)">
-									{{ orderinfo.receiveInfo.remark }}
-								</view>
-								
-								<view v-if="orderinfo.receiveInfo.imgs" class="bg-white padding-sm">
-									<view class="grid col-4 grid-square">
-										<view class="bg-img" v-for="(img,index) in orderinfo.receiveInfo.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(orderinfo.receiveInfo.imgs, index)"></view>
-									</view>
-								</view>
+								<u-field v-model="remark" :placeholder="i18n.wishlist.common.remark"
+										type="textarea" :border-bottom="false" :maxlength="-1" auto-height label-width="0"
+										:field-style="{fontSize: '12px',}"
+										placeholder-style="fontSize: '12px'"
+								></u-field>
 								
 							</view>
-							
-							<u-field v-model="remark" :placeholder="i18n.wishlist.common.remark"
-									type="textarea" :maxlength="-1" auto-height label-width="0"
-									:field-style="{fontSize: '12px',}"
-									placeholder-style="fontSize: '12px'"
-							></u-field>
 							
 							<!-- 上传图片 -->
 							<view class="bg-white padding">
@@ -647,7 +671,7 @@
 						if(orderinfo) {
 							_this.orderinfo = orderinfo
 							_this.wishId = orderinfo.wishId
-							
+
 							// 获取对应的心愿详情数据
 							db.collection('wishlist')
 							.doc(orderinfo.wishId)
@@ -751,12 +775,13 @@
 				
 				if(Array.isArray(pattresult) && pattresult.length > 0) {
 					
-					let arraystr = ''
+					let arraystr = ``
 					pattresult.forEach(eachitem => {
 						arraystr += eachitem + '\n'
 					})
 					
 					uni.showModal({
+						title: `${pattresult.length}`,
 						content: arraystr,
 						showCancel: true,
 						cancelText: _this.i18n.base.cancel,
@@ -880,7 +905,7 @@
 				}
 				// 弹出框类型为customerreceive
 				else if(this.popuptype == 'customerreceive') {
-					this.clientconfirmreceive()
+					this.clientreceivepro()
 				}
 				// 其他
 				else {
@@ -1148,22 +1173,52 @@
 				
 			},
 			
-			// 客户开始确认收货
-			clientstarttoconfirmreceive() {
+			// 客户开始确认收货操作
+			clientstartconfirmreceive() {
 				
-				// 判断当前订单收货信息是否为部分收货
+				// 判断当前收货类型
 				if(this.orderinfo.receiveType == 1 || this.orderinfo.receiveType == 2) {
 					this.receiveType = this.orderinfo.receiveType
 				}
 				
-				// 初始化代理发货物流数据
-				if(this.orderinfo.deliveryInfo && this.orderinfo.deliveryInfo.domesticShippingNum) {
+				// 有物流发货
+				if(this.orderinfo.deliveryType == 1) {
+					
 					this.multipleshippingnumarr = this.orderinfo.deliveryInfo.domesticShippingNum.split(',')
+					// 全部收货
+					if(this.receiveType == 2) {
+						this.receivemultipleshippingnumarr = [...this.multipleshippingnumarr]
+					}
+					// 部分收货  返显当前已经选择的物流编码
+					else if(this.receiveType == 1){
+						if(this.orderinfo.receiveInfo && this.orderinfo.receiveInfo.domesticShippingNum) {
+							this.receivemultipleshippingnumarr = this.orderinfo.receiveInfo.domesticShippingNum.split(',')
+						}
+					}
+					
 				}
 				
 				_this.popuptype = 'customerreceive'
 				_this.ifshowpopup = true
 				
+			},
+			
+			// 客户收货切换收货方式
+			changeReceiveType(receiveType) {
+				
+				this.receiveType = receiveType
+				// 如果是全部收货且有多个物流编号数组的时候则将收货编码数组赋值为多个物流编号数组
+				if(this.receiveType == 2) {
+					this.receivemultipleshippingnumarr = [...this.multipleshippingnumarr]
+				}
+				else {
+					if(this.orderinfo && this.orderinfo.receiveInfo) {
+						this.receivemultipleshippingnumarr = this.orderinfo.receiveInfo.domesticShippingNum.split(',')
+					}
+					else {
+						this.receivemultipleshippingnumarr = []
+					}
+				}
 			},
 			
 			// 客户收货时点击某一个物流单号
@@ -1177,8 +1232,44 @@
 				}
 			},
 			
-			// 客户收货
+			// 客户确认收货
 			clientconfirmreceive() {
+				
+				// 检查数据
+				
+				// 如果是物流发货且选择的部分收货且此时选择的物流单号数量等于全部的物流单号时提示为全部收货
+				if(_this.orderinfo.deliveryType == 1 && _this.receiveType == 1 && _this.receivemultipleshippingnumarr.length == _this.multipleshippingnumarr.length) {
+					uni.showModal({
+						content:  _this.i18n.wishlist.wishorder.pleasechoosereceivealltype,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								_this.receiveType = 2
+							}
+						}
+					});
+					return
+				}
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始收货操作
+							_this.clientreceivepro()
+						}
+					}
+				});
+				
+			},
+			
+			// 客户收货
+			clientreceivepro() {
 				
 				// 开始上传
 				// 检查是否需要上传图片
@@ -1191,30 +1282,47 @@
 				
 				// 上传图片已经成功 此时开始提交其他数据
 				let imgs = _this.imgArr.map(item => (item.url)).join(',')
+				let domesticShippingNum = _this.receivemultipleshippingnumarr.join(',') // 收货的物流单号
 				
-				// 如果是全部收货
-				if(this.receiveType == 2) {
+				// 区分全部收货或部分收货
+				const db = uniCloud.database();
+				
+				// 全部收货
+				if(_this.receiveType == 2) {
 					
-					const db = uniCloud.database();
+					// 如果之前有部分收货信息的话则此时在全部收货时增加一条全部收货记录
+					let partReceiveRecordArr = _this.orderinfo.receiveInfo && _this.orderinfo.receiveInfo.partReceiveRecordArr || []
+					if(partReceiveRecordArr && partReceiveRecordArr.length > 0) {
+						let newrecorddata = {
+							creatTime: db.env.now,
+							creatUser: _this.user._id,
+							content: _this.remark,
+							imgs: imgs,
+							domesticShippingNum: domesticShippingNum,
+						}
+						partReceiveRecordArr.unshift(newrecorddata)
+					}
 					
+					uni.showLoading()
 					db.collection('order')
 					.doc(_this.wishOrderId)
 					.update({
-						status: 3,
+						status: 3, // 全部收货更改订单状态为3
 						receiveTime: db.env.now,
-						receiveType: 2,
+						receiveType: 2, // 收货类型 0未收货 1部分收货 2全部收货
 						receiveInfo: {
+							domesticShippingNum: domesticShippingNum,
 							remark: _this.remark,
-							imgs: imgs
+							imgs: imgs,
+							partReceiveRecordArr: partReceiveRecordArr, // 全部收货记录
 						}
-						
 					})
 					.then(response => {
-						
+						uni.hideLoading()
 						if(response.result.code == 0) {
 							
 							_this.ifshowpopup = false
-							_this.imgsArr = []
+							_this.imgArr = []
 							
 							// 更新订单成功
 							_this.loaddata()
@@ -1224,10 +1332,10 @@
 								icon: 'none'
 							});
 							
-							// 更改对应的心愿状态
+							// 如果是全部收货 更改对应的心愿状态
 							db.collection('wishlist')
 							.doc(_this.wishId)
-							.update({achieveFlag: 4})
+							.update({achieveFlag: 4}) // 更改心愿为已完成
 							.then(response => {
 								// 更改状态成功
 								
@@ -1265,6 +1373,7 @@
 						
 					})
 					.catch(error => {
+						uni.hideLoading()
 						uni.showToast({
 							title: _this.i18n.error.optionerror,
 							icon: 'none'
@@ -1274,27 +1383,39 @@
 				}
 				
 				// 部分收货
-				else if(this.receiveType == 1) {
+				else if(_this.receiveType == 1) {
 					
-					const db = uniCloud.database();
+					// 部分收货信息数组
+					let partReceiveRecordArr = _this.orderinfo && _this.orderinfo.receiveInfo && _this.orderinfo.receiveInfo.partReceiveRecordArr || []
+					let newrecorddata = {
+						creatTime: db.env.now,
+						creatUser: _this.user._id,
+						content: _this.remark,
+						imgs: imgs,
+						domesticShippingNum: domesticShippingNum,
+					}
+					partReceiveRecordArr.unshift(newrecorddata)
 					
+					uni.showLoading()
 					db.collection('order')
 					.doc(_this.wishOrderId)
 					.update({
 						receiveTime: db.env.now,
-						receiveType: 1,
+						receiveType: 1, // 收货类型 0未收货 1部分收货 2全部收货
 						receiveInfo: {
+							domesticShippingNum: domesticShippingNum,
 							remark: _this.remark,
-							imgs: imgs
+							imgs: _this.imgs,
+							partReceiveRecordArr: partReceiveRecordArr, // 部分收货记录数组
 						}
-						
 					})
 					.then(response => {
-						
+						uni.hideLoading()
 						if(response.result.code == 0) {
 							
 							_this.ifshowpopup = false
-							_this.imgsArr = []
+							_this.imgArr = []
+							_this.remark = ''
 							
 							// 更新订单成功
 							_this.loaddata()
@@ -1303,7 +1424,7 @@
 								title: _this.i18n.tip.optionsuccess,
 								icon: 'none'
 							});
-
+							
 						}
 						else {
 							uni.showToast({
@@ -1314,6 +1435,7 @@
 						
 					})
 					.catch(error => {
+						uni.hideLoading()
 						uni.showToast({
 							title: _this.i18n.error.optionerror,
 							icon: 'none'

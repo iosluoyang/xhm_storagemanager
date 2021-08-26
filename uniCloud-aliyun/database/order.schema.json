@@ -82,17 +82,48 @@
 			"properties": {
 				"domesticShippingNum": {
 					"bsonType":"string",
-					"description":"收货国内快递单号 多个逗号拼接"
+					"description":"收货国内快递单号 多个逗号拼接, 部分收货或全部收货使用"
 				},
 				"remark": {
 					"bsonType":"string",
 					"description":"收货备注",
-					"defaultValue":""
+					"defaultValue":"全部收货时使用"
 				},
 				"imgs": {
 					"bsonType":"string",
 					"description":"收货图片集合",
-					"defaultValue":""
+					"defaultValue":"全部收货时使用"
+				},
+				"partReceiveRecordArr" : {
+					"bsonType":"array",
+					"description":"部分收货时收货信息",
+					"defaultValue": [],
+					"properties": {
+						"creatTime": {
+							"bsonType":"timestamp",
+							"description":"创建时间",
+							"defaultValue":""
+						},
+						"creatUser": {
+							"bsonType": "string",
+							"description": "发布者的uid",
+							"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+						},
+						"content": {
+							"bsonType":"string",
+							"description":"发布的内容",
+							"defaultValue":""
+						},
+						"imgs": {
+							"bsonType":"string",
+							"description":"发布的图片集合 用逗号分割",
+							"defaultValue":""
+						},
+						"domesticShippingNum": {
+							"bsonType":"string",
+							"description":"本次收货国内快递单号 多个逗号拼接"
+						}
+					}
 				}
 			}
 		},

@@ -36,6 +36,10 @@ const th = {
 		priceasc: "Price Asc",
 		sellnumdesc: "SellNum Desc",
 		paynow: "Pay Now",
+		analysis: "Analysis",
+		single: "Single Model",
+		multiple: "Multiple Model",
+		intotal: "In Total",
 	},
 	
 	// 导航栏主分类
@@ -164,7 +168,7 @@ const th = {
 			pricesummary: "Price Summary",
 			remark: "Remark",
 			hurrylevel: "Hurry Level",
-			boxcontainernum: "Packing Quantity",
+			boxcontainernum: "Packing",
 			boxsize: "Unit Size",
 			boxlength: "Length",
 			boxwidth: "Width",
@@ -292,8 +296,8 @@ const th = {
 			checkwishorder: "Check wish order",
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
-			receiveparttip: "You got all the products, please check the total amount",
-			receivealltip: "You just got some of the products, will continue recording later",
+			receiveparttip: "You just got some of the products, will continue recording later",
+			receivealltip: "You got all the products, please check the total amount",
 			receiveparts: "Receive Parts",
 			purchaseinfo: "Purchase Info",
 			orderinfo: "Order Info",
@@ -316,7 +320,9 @@ const th = {
 			havenotrackingnum: "Without Tracking Num",
 			pleaseinputshippingname: "Please input Shipping Name",
 			pleaseinputshippingnum: "Please input Shipping Number",
-			
+			pleaseinputmultipleshippingnum: "You can input multiple shipping number , click the tranfer button on the right to analysis",
+			receiverecord: "Receive Record",
+			pleasechoosereceivealltype: "System found that you already received all the products, please choose receive all",
 		},
 		
 		// 收银台相关
