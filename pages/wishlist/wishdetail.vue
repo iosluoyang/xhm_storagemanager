@@ -84,16 +84,18 @@
 					<!-- 商品标题和价格区域 -->
 					<view class="text-content padding-left-sm padding-right-sm padding-bottom-sm">
 						
-						<view class="text-bold text-xl">
+						<view class="tilteview">
 							
 							<!-- 紧急程度 -->
 							<!-- <text class="hurryleveltext margin-right-sm">
 								<text v-for="item in wishinfo.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
 							</text> -->
 							
+							<!-- 商品外链二维码 有纯链接时有二维码 -->
+							<text v-if="productExt && productExt.pureUrl" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="ifshowqrcode = true"></text>
 							<!-- 商品标题 -->
-							<text class="protitle">{{ `${wishinfo.productTitle}`}}</text>
-							<view v-if="wishinfo.aliasName" class="margin-left cu-tag radius bg-pink">
+							<text class="protitle text-bold text-xl">{{ `${wishinfo.productTitle}`}}</text>
+							<view v-if="wishinfo.aliasName" class="margin-left cu-tag radius bg-pink" @longpress="$basejs.copytoclipboard(wishinfo.aliasName)">
 								{{ wishinfo.aliasName }}
 							</view>
 			
@@ -250,6 +252,7 @@
 							<view>
 								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
 								{{ productExt.secretCode || '' }}
+								<text class="margin-left-sm cuIcon cuIcon-qr_code text-df" @tap.stop="ifshowqrcode = true"></text>
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
@@ -258,8 +261,8 @@
 						</view>
 						
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.secretCode);showpopup=false">
-								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(productExt.secretCode);showpopup=false">
+								<!-- <text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> -->
 							</button>
 						</view>
 						
@@ -279,8 +282,8 @@
 						</view>
 						
 						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow" @click="$basejs.copytoclipboard(productExt.pureUrl);showpopup=false">
-								<text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> 
+							<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(productExt.pureUrl);showpopup=false">
+								<!-- <text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> -->
 							</button>
 						</view>
 						
@@ -355,6 +358,10 @@
 			</template>
 			
 		</u-popup>
+		
+		<!-- 弹出二维码组件 -->
+		<!-- secretCode pureUrl -->
+		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="250" :ifshow.sync="ifshowqrcode"></alertqrcode>
 				
 	</view>
 </template>
@@ -408,6 +415,8 @@
 				showSelector: false, // 是否显示多规格选择器
 				
 				paybtnanimation: false, // 是否显示支付按钮的动画  默认为否
+				
+				ifshowqrcode: false, // 是否显示弹出二维码  默认否
 				
 			};
 		},

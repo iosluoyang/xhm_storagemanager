@@ -43,6 +43,10 @@ Vue.component('cu-custom',cuCustom)
 import loading from '@/components/base/loading.vue'
 Vue.component('loading',loading)
 
+// 弹出二维码组件
+import alertqrcode from '@/components/base/alertqrcode.vue'
+Vue.component('alertqrcode',alertqrcode)
+
 // 上拉加载下拉刷新组件
 import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
 import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
