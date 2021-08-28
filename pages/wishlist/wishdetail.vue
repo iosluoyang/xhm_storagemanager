@@ -200,14 +200,9 @@
 				<!-- 自身代理的心愿 -->
 				<template v-else=" wishinfo.agentUser && wishinfo.agentUser._id == user._id ">
 					
-					<!-- 进行中或待确认显示添加按钮 -->
-					<button v-if="wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<!-- 显示添加按钮 -->
+					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 						<text class="cuIcon-add"></text>
-					</button>
-					
-					<!-- 其他情况只要有订单则显示去往订单按钮 -->
-					<button v-else-if="wishOrderInfo" class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-						<text class="cuIcon-formfill"></text>
 					</button>
 					
 				</template>
@@ -223,14 +218,14 @@
 				</button>
 				
 				<!-- 待确认时显示滑动到时间轴按钮 -->
-				<button v-else-if="wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
+				<button v-if="wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
 					<text class="cuIcon-magic"></text>
 				</button>
 				
 				<!-- 其他情况显示订单按钮 -->
-				<button v-else class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+				<!-- <button v-else class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
 					<text class="cuIcon-formfill"></text>
-				</button>
+				</button> -->
 				
 			</template>
 			
@@ -361,7 +356,7 @@
 		
 		<!-- 弹出二维码组件 -->
 		<!-- secretCode pureUrl -->
-		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="250" :ifshow.sync="ifshowqrcode"></alertqrcode>
+		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="200" :ifshow.sync="ifshowqrcode"></alertqrcode>
 				
 	</view>
 </template>

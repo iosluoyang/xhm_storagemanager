@@ -7,19 +7,24 @@
 			
 			<view class="maincontentview" :style="{ width: qrcodeSize + 'px'}">
 				
+				<!-- 二维码图片 -->
 				<image v-if="qrcodeImgSrc" class="qrcodeimg" :style="{width: qrcodeSize + 'px', height: qrcodeSize + 'px'}" :src="qrcodeImgSrc" mode="aspectFit"></image>
 				
-				<view class="text-df text-sm text-wrap u-line-2 text-center margin-top-sm">{{ qrCodeContent }}</view>
-				
-				<view class="optionbtnview">
-					
-					
+				<view class="text-sm text-wrap u-line-2 padding-sm">
+					{{ qrCodeContent }}
+					<text class="cuIcon cuIcon-copy margin-left-sm" @tap.stop="$basejs.copytoclipboard(qrCodeContent)"></text>
 				</view>
+				
+				<!-- <view class="optionbtnview">
+					
+					
+				</view> -->
 				
 			</view>
 			
 		</u-popup>
 		
+		<!-- 画布 -->
 		<canvas class="canvasview" :style="{width: qrcodeSize + 'px', height: qrcodeSize + 'px'}" id="customqrcode" canvas-id="customqrcode" />
 		
 	</view>
@@ -241,7 +246,7 @@
 							console.log(`转换图片完成`);
 							console.log(res);
 						}
-					})
+					}, _this) // 注意此处使用_this代表组件内的实例
 					
 				},
 				
@@ -299,7 +304,7 @@
 	
 	.alertqrcode{
 		
-		#customqrcode{
+		.canvasview{
 			position: fixed;
 			right: 100vw;
 			bottom: 100vh;

@@ -126,8 +126,10 @@
 					
 					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
 					
+					<!-- 编辑价格区域 -->
 					<view class="editpriceview padding-sm">
 						
+						<!-- 按钮区域 -->
 						<view class="btnsview flex align-center">
 							
 							<template v-if="!iseditprice">
@@ -405,7 +407,12 @@
 			
 			// 开始编辑价格
 			starttoeditprice() {
-				this.tmpProductExt = {...this.productExt}
+				// 将商品总价设置为规格表格中的商品总价为初始值
+				let priceInfo = this.$refs.wishtablespec.getPriceInfo()
+				let proPrice = priceInfo.totalProPrice
+				
+				this.tmpProductExt = {...this.productExt, ...{proPrice: proPrice}}
+				
 				this.iseditprice = true
 			},
 			
