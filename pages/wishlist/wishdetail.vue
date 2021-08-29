@@ -34,6 +34,12 @@
 					<!-- 图片区域 -->
 					<view class="picview pos-relative">
 						
+						<!-- 卖家信息 -->
+						<view v-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id && wishinfo.sellerInfo" class="sellerInfoView pos-absolute flex padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx', zIndex: 10}">
+							<text class="cuIcon cuIcon-shopfill text-white"></text>
+							<text class="text-sm u-line-2 margin-left-sm">{{ wishinfo.sellerInfo.title }}</text>
+						</view>
+						
 						<!-- 状态标签 -->
 						<view class="cu-tag pos-absolute radius" style="right: 0;top: 0;z-index: 10;" :class="wishbgcolor">{{ wishtagtext }}</view>
 						
@@ -558,7 +564,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,aliasName,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid,wishOrderId')
+					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,aliasName,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,sellerInfo,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid,wishOrderId')
 					.get({
 						getOne:true
 					})

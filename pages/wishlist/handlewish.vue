@@ -212,6 +212,7 @@
 				productTitle: '', // 商品标题
 				aliasName: '', // 别名
 				sourceLink: '', // 源网站链接
+				sellerInfo: null, // 卖家信息
 								
 				productSecretCode: '', // 商品编码口令
 				productPureUrl: '', //商品纯链接
@@ -368,6 +369,7 @@
 				_this.productInfo1688 = productInfo1688
 				_this.sourceLink = productInfo1688.sourceLink
 				_this.analysisUrl() // 解析链接
+				_this.sellerInfo = productInfo1688.sellerInfo
 				_this.productTitle = productInfo1688.title
 				_this.sourcePrice = productInfo1688.priceRange
 				let imgsArr = productInfo1688.imgs.split(',') // 商品图片
@@ -669,6 +671,7 @@
 					productTitle: _this.productTitle, // 商品标题
 					aliasName: _this.aliasName, // 商品别名
 					sourceLink: _this.sourceLink, // 源网站链接
+					sellerInfo: _this.sellerInfo, // 商品卖家信息
 					sourcePrice: _this.sourcePrice, // 源网站价格
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetPrice: _this.targetPrice, // 目标价格

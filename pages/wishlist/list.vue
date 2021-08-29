@@ -361,7 +361,7 @@
 				
 				db.collection('wishlist,uni-id-users,order')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel, wishOrderId as wishOrderInfo')
+					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel, wishOrderId as wishOrderInfo')
 					.orderBy(orderbystr)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)

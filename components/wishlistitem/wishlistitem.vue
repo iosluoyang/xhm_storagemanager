@@ -10,6 +10,12 @@
 			<view class="image">
 				
 				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill" style="height: 300rpx;"></image>
+				
+				<!-- 卖家信息 -->
+				<view v-if="user.role == 'PRODUCT_AGENT' && ownwishitem.sellerInfo" class="sellerInfoView pos-absolute flex padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
+					<text class="cuIcon cuIcon-shopfill text-white"></text>
+					<text class="text-sm u-line-2 margin-left-sm">{{ ownwishitem.sellerInfo.title }}</text>
+				</view>
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
 					

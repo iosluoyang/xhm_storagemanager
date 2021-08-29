@@ -48,6 +48,40 @@
 		"sourceLink": {
 			"description": "原网址链接"
 		},
+		"sellerInfo": {
+			"bsonType":"object",
+			"description":"该心愿商品对应的店铺信息",
+			"properties": {
+				"nick": {
+					"bsonType":"string",
+					"description":"店铺名称"
+				},
+				"sellerId": {
+					"bsonType":"string",
+					"description":"卖家id"
+				},
+				"shopId": {
+					"bsonType":"string",
+					"description":"店铺id"
+				},
+				"shopName": {
+					"bsonType":"string",
+					"description":"店铺名称"
+				},
+				"sId": {
+					"bsonType":"string",
+					"description":"卖家昵称id"
+				},
+				"title": {
+					"bsonType":"string",
+					"description":"卖家标题"
+				},
+				"zhuy": {
+					"bsonType":"string",
+					"description":"卖家店铺主页"
+				}
+			}
+		},
 		"sourcePrice": {
 			"description": "原商品价格"
 		},
