@@ -567,6 +567,10 @@
 				
 				let bigTypeAmount = 0
 				
+				if(!this.specPropInfo) {
+					return bigTypeAmount
+				}
+				
 				let firstList =  this.specPropInfo.propValList
 				
 				firstList.forEach(firstitem => {
@@ -624,7 +628,7 @@
 					return false
 				}
 				// 检查是否有选择的数量
-				else if(!this.selectShowTotalAmount) {
+				else if(!this.selectShowTotalAmount && !this.targetAmount) {
 					uni.showToast({
 						title: this.i18n.placeholder.handlewish.amount,
 						icon: 'none'
@@ -676,7 +680,7 @@
 					sourceMoneyType: _this.sourceMoneyType, // 源网站价格币种 默认为RMB  RMB人民币 THB泰铢
 					targetPrice: _this.targetPrice, // 目标价格
 					targetMoneyType: _this.targetMoneyType, // 目标价格币种 默认为RMB  RMB人民币 THB泰铢
-					targetAmount: _this.selectShowTotalAmount, // 选购数量
+					targetAmount: _this.selectShowTotalAmount || _this.targetAmount, // 选购数量
 					specPropInfo: _this.specPropInfo, // 规格对象
 					productExt: uploadProductExt, // 商品的拓展字段
 					hurryLevel: _this.hurryLevel, // 紧急程度  int 类型

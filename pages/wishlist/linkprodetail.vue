@@ -102,7 +102,7 @@
 			
 			<!-- 立即购买按钮 -->
 			<view class="btn-group flex align-center ">
-				<button class="cu-btn bg-gradual-pink round shadow-blur width50" @click="showSelector = true">{{ i18n.base.buynow }}</button>
+				<button class="cu-btn bg-gradual-pink round shadow-blur width50" @click="starttobuy">{{ i18n.base.buynow }}</button>
 			</view>
 		
 		</view>
@@ -303,7 +303,7 @@
 							_this.detailImgsArr = detailImgsArr.length > _this.eachMaxDetailImgNum ? detailImgsArr.slice(0,_this.eachMaxDetailImgNum) : detailImgsArr
 							
 							_this.attributeList = linkProduct.attributeList // 属性数组
-							_this.specPropInfo = linkProduct.specPropInfo // 规格对象
+							_this.specPropInfo = linkProduct.specPropInfo  // 规格对象
 							_this.isFavor = linkProduct.favorFlag == 1 // 是否收藏
 							
 							_this.linkProduct = linkProduct
@@ -313,23 +313,6 @@
 							
 							// 设置搜索历史记录
 							_this.setSearchRecordData()
-							
-							// 如果未能获取规格数据则提示
-							if(!linkProduct.specPropInfo) {
-								uni.showModal({
-									content: _this.i18n.wishlist.prodetail.havenolinkprodata,
-									showCancel: true,
-									cancelText: _this.i18n.base.cancel,
-									confirmText: _this.i18n.base.confirm,
-									success: res => {
-										if(res.confirm) {
-											uni.redirectTo({
-												url: '/pages/wishlist/handlewish?type=add'
-											});
-										} 
-									}
-								});
-							}
 							
 						}
 						else {
@@ -507,6 +490,35 @@
 							icon: 'none'
 						});
 					})
+				}
+				
+			},
+			
+			// 开始购买
+			starttobuy() {
+				
+				// 如果有规格数据则显示规格弹框  没有规格数据则提示进入手动录入模式
+				if(this.specPropInfo && this.linkProduct.specPropInfo.propValList && this.linkProduct.specPropInfo.propValList.length > 0) {
+					this.showSelector = true
+				}
+				else {
+					
+					uni.showModal({
+						content: _this.i18n.wishlist.prodetail.havenolinkprodata,
+						showCancel: true,
+						cancelText: _this.i18n.base.cancel,
+						confirmText: _this.i18n.base.confirm,
+						success: res => {
+							if(res.confirm) {
+								let newLinkProduct = {...this.linkProduct, ...{specPropInfo: null}, ...{sourceLink: this.linkProduct.linkUrl}}
+								console.log(newLinkProduct);
+								uni.setStorageSync('productInfo1688', newLinkProduct)
+								uni.redirectTo({
+									url: '/pages/wishlist/handlewish?type=add'
+								});
+							} 
+						}
+					});
 				}
 				
 			},
