@@ -71,20 +71,21 @@
 							<!-- 右侧区域 -->
 							<view class="text-gray text-sm flex align-center">
 								
-								<!-- 紧急程度 -->
-								<!-- <text class="hurryleveltext margin-right-sm">
-									<text v-for="item in ownwishitem.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-								</text> -->
-								
-								
-								<!-- 再次购买或者代理心愿按钮或是否支付标识 -->
 								<template>
 									
-									<!-- 待下单状态下根据是否支付增加不同标识 -->
-									<text v-if="ownwishitem.achieveFlag == 2" class="cuIcon u-font-40" :class=" ownwishitem.wishOrderInfo.status == 0 ? 'cuIcon-remind text-red' : 'cuIcon-check text-blue' "></text>
+									<!-- 付款按钮  商家角色且为待付款 -->
+									<view v-if="ownwishitem.achieveFlag == 2 && ownwishitem.wishOrderInfo.status == 0" class="payview flex align-center">
+										<!-- 商家自身 -->
+										<button v-if="user && user._id == ownwishitem.creatUser._id" class="cu-btn round bg-gradual-red u-font-20" @tap.stop="paynow">
+											<view class="flex flex-direction align-center">
+												<text class="u-font-20">{{ i18n.base.paynow }}</text>
+												<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
+											</view>
+										</button>
+									</view>
 									
 									<!-- 再次购买按钮 商家角色且心愿为待收货或者已完成-->
-									<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.common.buyagain }}</button>
+									<!-- <button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && (ownwishitem.achieveFlag == 3 || ownwishitem.achieveFlag == 4)" class="cu-btn round bg-pink light" @tap.stop="buyagain">{{ i18n.wishlist.common.buyagain }}</button> -->
 									
 									<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
 									<button v-if="user && user.role == 'PRODUCT_AGENT' && ownwishitem.agentFlag == 0" 
@@ -94,10 +95,12 @@
 										<text class="cuIcon cuIcon-servicefill margin-right-sm"></text>
 										{{ i18n.wishlist.common.agentbindwish }}
 									</button>
-								
+									
+									<!-- 跳转订单按钮 -->
+									<button v-if="user && ownwishitem.wishOrderInfo" class="cu-btn round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
+									
 								</template>
 								
-							
 							</view>
 						
 						</view>
@@ -139,6 +142,7 @@
 					
 					bindAnimation: false, // 是否显示绑定动画  默认为否
 					ownwishitem: this.wishitem,
+					paymenttimediff: 0, // 待付款订单倒计时
 					
 				}
 			},
@@ -189,6 +193,13 @@
 				_this = this
 			},
 			
+			mounted() {
+				// 挂载之后如果为待付款状态则开始计算倒计时
+				if(this.ownwishitem.achieveFlag == 2 && this.ownwishitem.wishOrderInfo && this.ownwishitem.wishOrderInfo.status == 0) {
+					this.gettimecountstamp()
+				}
+			},
+			
 			methods: {
 	
 				// 点击心愿列表
@@ -196,6 +207,39 @@
 					uni.navigateTo({
 						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});
+				},
+				
+				// 计算付款倒计时时长
+				gettimecountstamp() {
+					
+					let nowtimestamp = new Date().getTime()
+					let ordercreattimestamp = this.ownwishitem.wishOrderInfo.creatTime
+					let wishorderpaymenttimestamp = this.$store.getters.configData.wishorderPaymentTime || 1000 * 60 * 60 * 24
+					let timediff = (ordercreattimestamp + wishorderpaymenttimestamp - nowtimestamp)  / 1000
+					this.paymenttimediff = timediff
+					
+					if(this.paymenttimediff <= 0) {
+						this.paymenttimediff = 0
+					}
+					
+				},
+				
+				// 付款操作
+				paynow() {
+					let orderId = this.ownwishitem.wishOrderInfo._id
+					uni.navigateTo({
+						url: `/pages/wishlist/payment?orderType=wishorder&orderId=${orderId}`
+					});
+				},
+				
+				// 跳转订单详情
+				jumpToOrderDetail() {
+					
+					let wishOrderId = this.ownwishitem.wishOrderInfo._id
+					uni.navigateTo({
+						url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
+					});
+					
 				},
 				
 				// 再次购买

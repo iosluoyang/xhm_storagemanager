@@ -2,7 +2,7 @@
 	<view class="pagecontent wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-white' ">
+		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-pink' ">
 			<block slot="content">{{i18n.nav.wishdetail}}</block>
 		</cu-custom>
 		
@@ -132,8 +132,8 @@
 						<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
 						<!-- #endif -->
 						
-						<!-- 再次购买按钮 -->
-						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
+						<!-- 复制源网站链接按钮 有源网站链接时出现-->
+						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
 						
 						<!-- 编辑按钮 仅自己可编辑 且在该心愿单为进行中时显示 -->
 						<button v-if="wishinfo.achieveFlag == 0 && wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
@@ -144,11 +144,14 @@
 						<!-- 计算国际运费按钮 -->
 						<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
 						
+						<!-- 再次购买按钮 -->
+						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
+						
+						<!-- 查看订单按钮 -->
+						<button v-if="user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
+						
 						<!-- 查看1688详情按钮 -->
 						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
-						
-						<!-- 复制源网站链接按钮 有源网站链接时出现-->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
 						
 					</view>
 					
@@ -211,6 +214,11 @@
 						<text class="cuIcon-add"></text>
 					</button>
 					
+					<!-- 如果有订单信息则显示订单按钮 -->
+					<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+						<text class="cuIcon-formfill"></text>
+					</button> -->
+					
 				</template>
 				
 			</template>
@@ -228,8 +236,8 @@
 					<text class="cuIcon-magic"></text>
 				</button>
 				
-				<!-- 其他情况显示订单按钮 -->
-				<!-- <button v-else class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+				<!-- 如果有订单信息则显示订单按钮 -->
+				<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
 					<text class="cuIcon-formfill"></text>
 				</button> -->
 				
@@ -253,7 +261,6 @@
 							<view>
 								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
 								{{ productExt.secretCode || '' }}
-								<text class="margin-left-sm cuIcon cuIcon-qr_code text-df" @tap.stop="ifshowqrcode = true"></text>
 							</view>
 							<view class="text-gray text-sm">
 								<text class="cuIcon-infofill margin-right-xs"></text>
@@ -361,7 +368,6 @@
 		</u-popup>
 		
 		<!-- 弹出二维码组件 -->
-		<!-- secretCode pureUrl -->
 		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="200" :ifshow.sync="ifshowqrcode"></alertqrcode>
 				
 	</view>

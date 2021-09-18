@@ -308,7 +308,7 @@
 				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
-				let orderbystr = `remindFlag desc, creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
+				let orderbystr = `creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
 				// 代理员
 				if(this.user.role == 'PRODUCT_AGENT') {
 					
@@ -320,10 +320,10 @@
 					else if(achieveFlag == -1) {
 						wherestr = `agentUser._id == $cloudEnv_uid`
 					}
-					// 如果status = 2则代表查关联过的待下单的心愿单 此时排序字段增加按照wishOrderInfo.status来进行倒序排序
+					// 如果status = 2则代表查关联过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
 					else if(achieveFlag == 2) {
 						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
-						orderbystr = `remindFlag desc, wishOrderInfo.status desc, creatTime desc`
+						orderbystr = `wishOrderId.status asc, creatTime desc`
 					}
 					
 					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
@@ -331,8 +331,8 @@
 						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
 					}
 					
-					// 增加搜索关键字和供应商昵称的查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) )`
+					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
 					
 				}
 				// 普通供应商
@@ -343,10 +343,10 @@
 						wherestr = `creatUser._id == $cloudEnv_uid`
 					}
 					
-					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderInfo.status来进行升序排序
+					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
 					else if(achieveFlag == 2) {
 						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
-						orderbystr = `remindFlag desc, wishOrderInfo.status asc, creatTime desc`
+						orderbystr = `wishOrderId.status asc, creatTime desc`
 					}
 					
 					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
@@ -355,7 +355,7 @@
 					}
 					
 					// 增加搜索关键字查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName))`
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
 					
 				}
 				

@@ -45,7 +45,7 @@
 						
 						<!-- 显示状态 -->
 						<template v-if="type == 'normal'">
-							<text >{{ firstitem.name }}</text>
+							<text >{{ firstitem.translateName || firstitem.name }}</text>
 							<u-badge type='warning' absolute :offset="[5,0]" :count="calculatefirstamount(firstitem)" :overflow-count="999"></u-badge>
 						</template>
 						
@@ -99,7 +99,7 @@
 											
 											<template>
 												
-												<view v-if="type == 'normal'" class="text-wrap text-df">{{ seconditem.name }}</view>
+												<view v-if="type == 'normal'" class="text-wrap text-df">{{ seconditem.translateName || seconditem.name }}</view>
 												<input v-if="type == 'edit'" class="borderCDCDCD radius width50" type="text" v-model="seconditem.name" placeholder="eg: 大号/Big" />
 												
 											</template>
@@ -338,6 +338,7 @@
 								
 								let secondItemInfo = {
 									name: seconditem.propVal,
+									translateName: '', // 翻译文本
 									specId: seconditem.specId,
 									amount: amount,
 									stock: seconditem.stockCount,
@@ -349,6 +350,7 @@
 							
 							let firstItemInfo = {
 								name: firstitem.propVal,
+								translateName: '', // 翻译文本
 								img: firstitem.img,
 								amount: totalAmount, // 二级分类的所有数量总和
 								dataArr: tempSecondList
@@ -438,12 +440,13 @@
 							
 							// 获取到的翻译内容数组  进行遍历赋值
 							let resultArr = response.result.data.result
-							// 遍历规格数组 替换其内容
+							// 遍历规格数组 设置翻译版本的内容
 							let index = 0
+							// 遍历注意严格按照顺序
 							this.specDataArr.forEach(firstitem => {
-								firstitem.name = resultArr[index++]
+								firstitem['translateName'] = resultArr[index++]
 								firstitem.dataArr.forEach(seconditem => {
-									seconditem.name = resultArr[index++]
+									seconditem['translateName'] = resultArr[index++]
 								})
 							})
 							

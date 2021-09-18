@@ -440,7 +440,6 @@
 						ifShow: true,
 						// #endif
 					},
-					
 				]
 				
 				tableHeaderArr = tableHeaderArr.filter(item => (item.ifShow))

@@ -185,11 +185,11 @@
 			</view>
 			
 			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
-			<view class="optionbtnview margin-top-sm">
+			<!-- <view class="optionbtnview margin-top-sm">
 				
-				<button v-if="wishInfo.wishOrderId" class="cu-btn round margin-right" :style="{backgroundColor: '#ffffff'}" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
+				<button v-if="wishInfo.wishOrderInfo && wishInfo.wishOrderId" class="cu-btn round margin-right" :style="{backgroundColor: '#ffffff'}" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
 				
-			</view>
+			</view> -->
 			
 		</view>
 		
@@ -213,11 +213,11 @@
 			</view>
 			
 			<!-- 操作区域 查看订单按钮 当该心愿有心愿订单id时显示 -->
-			<view class="optionbtnview margin-top-sm">
+			<!-- <view class="optionbtnview margin-top-sm">
 				
 				<button v-if="wishInfo.wishOrderInfo && wishInfo.wishOrderId" class="cu-btn round margin-right" :style="{backgroundColor: '#ffffff'}" @tap.stop="checkwishorder">{{ i18n.wishlist.wishorder.checkwishorder }}</button>
 				
-			</view>
+			</view> -->
 			
 		</view>
 		
