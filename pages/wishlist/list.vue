@@ -5,8 +5,9 @@
 		<cu-custom class="customnav" bgColor="bg-gradual-pink">
 			
 			<view slot="content" class="search-form round">
-				<text class="cuIcon-search"></text>
-				<input :adjust-position="false" type="text" :placeholder="i18n.placeholder.wishlistlist.search" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input>
+				<!-- <text class="cuIcon-search"></text> -->
+				<!-- <input :adjust-position="false" type="text" :placeholder="i18n.placeholder.wishlistlist.search" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input> -->
+				<u-field v-model="searchText" type="text" icon="search" :label-width="0" :border-bottom="false" :placeholder="i18n.placeholder.wishlistlist.search" confirm-type="search" @confirm="searchwishlist"></u-field>
 			</view>
 			
 			<!-- 小程序中没有右侧搜索按钮 -->

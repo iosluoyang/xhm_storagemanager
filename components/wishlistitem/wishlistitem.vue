@@ -97,7 +97,7 @@
 									</button>
 									
 									<!-- 跳转订单按钮 -->
-									<button v-if="user && ownwishitem.wishOrderInfo" class="cu-btn round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
+									<button v-if="user && ownwishitem.wishOrderInfo" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
 									
 								</template>
 								

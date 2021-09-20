@@ -148,7 +148,7 @@
 						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
 						
 						<!-- 查看订单按钮 -->
-						<button v-if="user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
+						<button v-if="wishOrderInfo && user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
 						
 						<!-- 查看1688详情按钮 -->
 						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
