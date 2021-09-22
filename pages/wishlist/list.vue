@@ -247,5 +247,10 @@
 		height: 100%;
 		
 	}
+</style>
 
+<style>
+	page{
+		height: 100%;
+	}
 </style>
