@@ -20,6 +20,9 @@
 	
 	export default {
 		mixins: [MescrollMixin,MescrollMoreItemMixin], // 注意此处还需使用MescrollMoreItemMixin (必须写在MescrollMixin后面)
+		components: {
+			wishlistitem,
+		},
 		data() {
 			return {
 				downOption:{

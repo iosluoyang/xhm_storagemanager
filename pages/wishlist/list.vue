@@ -52,11 +52,8 @@
 				
 			};
 		},
-		
-		// mixins: [MescrollMixin], // 使用mixin
-		
+				
 		components: {
-			// wishlistitem,
 			wishlistMescrollSwiperItem,
 		},
 		
@@ -107,49 +104,36 @@
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.all,
 						status: -1,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.ing,
 						status: 0,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
 						status: 1,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.makeorder,
 						status: 2,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.waitreceive,
 						status: 3,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.finish,
 						status: 4,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.closed,
 						status: 99,
-						loaded: false,
 						count: 0
 					}
 				]
@@ -159,9 +143,7 @@
 					let unbindwishitem = {
 						name: this.i18n.wishlist.common.achieveflagdata.unbindwish,
 						status: -2,
-						loaded: false,
 						count: 0,
-						dataArr: []
 					}
 					tabArr.unshift(unbindwishitem)
 				}
@@ -263,11 +245,6 @@
 	page,.wishlistview{
 		
 		height: 100%;
-		
-		.wishlistview{
-			
-			
-		}
 		
 	}
 
