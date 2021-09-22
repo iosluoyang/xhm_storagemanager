@@ -65,9 +65,9 @@
 <script>
 	var _this
 	
-	import MescrollUni from '@/components/mescroll-uni/mescroll-uni.vue'
-	import MescrollBody from '@/components/mescroll-uni/mescroll-body.vue'
-	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js" // 引入mescroll-mixins.js
+	import MescrollUni from '@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-uni.vue'
+	import MescrollBody from '@/uni_modules/mescroll-uni/components/mescroll-body/mescroll-body.vue'
+	import MescrollMixin from "@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-mixins.js" // 引入mescroll-mixins.js
 	
 	export default {
 		

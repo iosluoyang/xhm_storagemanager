@@ -5,8 +5,6 @@
 		<cu-custom class="customnav" bgColor="bg-gradual-pink">
 			
 			<view slot="content" class="search-form round">
-				<!-- <text class="cuIcon-search"></text> -->
-				<!-- <input :adjust-position="false" type="text" :placeholder="i18n.placeholder.wishlistlist.search" v-model="searchText" @confirm="searchwishlist" confirm-type="search"></input> -->
 				<u-field v-model="searchText" type="text" icon="search" :label-width="0" :border-bottom="false" :placeholder="i18n.placeholder.wishlistlist.search" confirm-type="search" @confirm="searchwishlist"></u-field>
 			</view>
 			
@@ -20,33 +18,15 @@
 		</cu-custom>
 		
 		<!-- 选项卡 -->
-		<scroll-view scroll-x scroll-with-animation :scroll-left="scrollLeft" class="bg-white nav">
-			<view class="flex text-center">
-				<view class="cu-item flex-sub" :class=" index==current ? 'text-pink' : '' " v-for="(tabitem,index) in tabArr" :key="index" @tap="changetap" :data-index="index">
-					<text>{{ tabitem.name }}</text>
-					<template>
-						<text v-if="tabitem.status == -2" class="cuIcon cuIcon-likefill text-purple pos-static"></text>
-						<view v-else-if="tabitem.count > 0 && (tabitem.status == 0 || tabitem.status == 1 || tabitem.status == 2 || tabitem.status == 3)  " class="cu-tag badge pos-static">{{ tabitem.count > 99 ? '99+' : tabitem.count }}</view>
-					</template>
-				</view>
-			</view>
-		</scroll-view>
+		<view class="u-tabs-box">
+			<u-tabs-swiper active-color="#e03997" ref="tabs" :list="tabArr" :current="current" @change="tabsChange" :is-scroll="true" swiperWidth="750"></u-tabs-swiper>
+		</view>
 		
-		<!-- swiper视图 -->
-		<swiper class="swiper-box" :style="{height: 'calc(100% - '+CustomBar+'px - 45px )'}" :current="current" disable-touch  @animationfinish="animationfinish">
-			
-			<swiper-item class="swiper-item" v-for="(tabitem,index) in tabArr" :key="index">
-				
-				<mescroll-uni class="mescroll" :fixed="false" :ref=" 'mescrollRef' + index.toString() "  @init="mescrollInit" @down="downCallback" @up="upCallback" :down="downOption">
-					
-					<view class="wishlistview">
-						<wishlistitem class="eachwish" v-for="(wishitem, wishindex) in tabitem.dataArr" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
-					</view>
-										
-				</mescroll-uni>
-				
+		<!-- swiper区域 -->
+		<swiper :style="{height: 'calc(100% - '+CustomBar+'px - 80rpx )' }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
+			<swiper-item v-for="(tabitem,index) in tabArr" :key="index">
+				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" 'calc(100% - '+CustomBar+'px - 80rpx )' "></wishlistMescrollSwiperItem>
 			</swiper-item>
-			
 		</swiper>
 		
 	</view>
@@ -56,9 +36,7 @@
 	
 	var _this	
 	
-	// 引入mescroll-mixins.js
-	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
-	import wishlistitem from '@/components/wishlistitem/wishlistitem.vue'
+	import wishlistMescrollSwiperItem from '@/components/wishlistitem/wishlist-mescroll-swiper-item.vue';
 	
 	export default {
 		
@@ -68,24 +46,18 @@
 				currentStatus: 0, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本
 				current: 0, // 当前选项卡的索引 默认为0
+				swiperCurrent: 0, // swiper组件的current值，表示当前那个swiper-item是活动的
 				scrollLeft: 0, // 选项卡左侧滑动的距离
 				tabArr:[], // 选项卡数组
-				mescrollArr: [], // mescroll组件数组  数量和tabArr保持一致
-				
-				//下拉刷新配置
-				downOption: {
-					use: true, // 是否启用下拉刷新; 默认true
-					auto: false, // 是否在初始化完毕之后自动执行下拉刷新的回调; 默认true
-					isLock: false, // 是否锁定
-				},
 				
 			};
 		},
 		
-		mixins: [MescrollMixin], // 使用mixin
+		// mixins: [MescrollMixin], // 使用mixin
 		
 		components: {
-			wishlistitem,
+			// wishlistitem,
+			wishlistMescrollSwiperItem,
 		},
 		
 		onLoad(option) {
@@ -196,7 +168,7 @@
 				
 				// 设置选中索引
 				let selectIndex = tabArr.findIndex(item => ( _this.currentStatus == item.status ))
-				if(selectIndex > -1) { this.current = selectIndex }
+				if(selectIndex > -1) { this.current = this.swiperCurrent = selectIndex }
 				this.tabArr = tabArr
 				
 				// 获取角标数量
@@ -243,32 +215,34 @@
 				
 			},
 			
-			// 切换tap
-			changetap(e) {
-				let index = e.currentTarget.dataset.index
-				this.current = index
-				this.scrollLeft = (index - 1) * 60
+			// tabs通知swiper切换
+			tabsChange(index) {
+				this.swiperCurrent = index;
 			},
 			
-			// swiper切换结束
-			animationfinish({ detail: { current } }) {
-				
-				//第一次切换tab，动画结束后需要加载数据
-				let tabItem = _this.tabArr[current]
-				this.current = current
-				this.scrollLeft = (current - 1) * 60
-				
-				//如果没有加载过该选项的数据  则进行下拉刷新的操作
-				if(!tabItem.loaded){
-					//第一次进入到该tab的话要进行数据的加载
-					_this.starttorefresh()
+			// swiper-item左右移动，通知tabs的滑块跟随移动
+			transition(e) {
+				let dx = e.detail.dx;
+				this.$refs.tabs.setDx(dx);
+			},
+			
+			// 由于swiper的内部机制问题，快速切换swiper不会触发dx的连续变化，需要在结束时重置状态
+			// swiper滑动结束，分别设置tabs和swiper的状态
+			animationfinish(e) {
+				let current = e.detail.current;
+				this.$refs.tabs.setFinishCurrent(current);
+				this.swiperCurrent = current;
+				this.current = current;
+			},
+			
+			// 获取指定下标的mescroll对象
+			getMescroll(i){
+				let mescrollItems = this.$refs.mescrollItem;
+				if(mescrollItems){
+					let item = mescrollItems[i]
+					if(item) return item.mescroll
 				}
-				
-			},
-			
-			// 初始化mescroll 将其加入mescrollArr中
-			mescrollInit(mescroll) {
-				this.mescrollArr.push(mescroll)
+				return null
 			},
 			
 			//开始手动下拉刷新
@@ -276,164 +250,9 @@
 				// 获取角标
 				this.getbadgenum()
 				// 刷新当前数据
-				let mescroll = this.mescrollArr[this.current]
+				let mescroll =this.getMescroll(this.current)
+				console.log(mescroll);
 				mescroll.resetUpScroll(true)
-			},
-			
-			// 下拉刷新的回调
-			downCallback(mescroll) {
-				// 手动刷新当前的mescroll数据
-				this.starttorefresh()
-			},
-			
-			// 上拉加载的回调
-			upCallback(mescroll) {
-	
-				let pageNum = mescroll.num; // 页码, 默认从1开始
-				let pageSize = mescroll.size; // 页长, 默认每页10条
-				let date = pageNum === 1 ? '' : mescroll.date // 请求时间标识
-				let currenttabitem = this.tabArr[this.current]
-				let dataArr = currenttabitem.dataArr
-				
-				// 获取当前要请求的心愿状态
-				let achieveFlag = currenttabitem.status
-				// 排序方式
-				let sortType = 0
-				// 当前搜索文本
-				let searchText = this.searchText
-				
-				// 开始进行接口请求
-				
-				const db = uniCloud.database();
-				// && creatUser._id == $cloudEnv_uid
-				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
-				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
-				let wherestr = ''
-				let orderbystr = `creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
-				// 代理员
-				if(this.user.role == 'PRODUCT_AGENT') {
-					
-					// 如果status=-2则代表查所有未关联代理员的心愿
-					if(achieveFlag == -2) {
-						wherestr = `agentFlag == 0`
-					}
-					// 如果statsu =-1则代表查自己关联过的所有心愿单
-					else if(achieveFlag == -1) {
-						wherestr = `agentUser._id == $cloudEnv_uid`
-					}
-					// 如果status = 2则代表查关联过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
-					else if(achieveFlag == 2) {
-						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
-						orderbystr = `wishOrderId.status asc, creatTime desc`
-					}
-					
-					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
-					else {
-						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
-					}
-					
-					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
-					
-				}
-				// 普通供应商
-				else if(this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
-					
-					// 如果statsu =-1则代表查自己发布过的所有心愿单
-					if(achieveFlag == -1) {
-						wherestr = `creatUser._id == $cloudEnv_uid`
-					}
-					
-					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
-					else if(achieveFlag == 2) {
-						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
-						orderbystr = `wishOrderId.status asc, creatTime desc`
-					}
-					
-					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
-					else {
-						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
-					}
-					
-					// 增加搜索关键字查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
-					
-				}
-				
-				db.collection('wishlist,uni-id-users,order')
-					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel, wishOrderId as wishOrderInfo')
-					.orderBy(orderbystr)
-					.skip((pageNum - 1) * pageSize)
-					.limit(pageSize)
-					.get()
-					.then(response => {
-						
-						if(response.result.code == 0) {
-							
-							// 加载成功
-							let list = response.result.data || []
-							console.log(list);
-							
-							// 手动将creatUser的数据从数组转换为对象
-							list.forEach(item => {
-								item.creatUser = item.creatUser[0]
-								item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
-								item.wishOrderInfo = item.wishOrderInfo ? item.wishOrderInfo[0] : null
-							})
-							console.log(`本次共获取${list.length}个数据,具体数据为:`);
-							console.log(list);
-							if(pageNum == 1) {
-								dataArr = [] //清空数据源
-								mescroll.scrollTo(0,0) // 如果是第一页则滑动到顶部
-							} 
-							//将请求的数据添加至现有数据源中
-							dataArr = dataArr.concat(list)
-							//无法检测数组对象长度的变更 故使用$set方法进行变更
-							_this.$set(currenttabitem,'dataArr',dataArr)
-							_this.$set(currenttabitem,'loaded',true)
-							
-							// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
-							_this.$nextTick(()=>{
-								let hasNext = list.length === mescroll.size //如果当前页的数据量不等于每页请求的数据量  则说明已经没有下一页了
-								mescroll.endSuccess(list.length,hasNext)
-							})
-							
-						}
-						else {
-							uni.showToast({
-								title: _this.i18n.error.loaderror,
-								icon: 'none'
-							});
-							// 失败隐藏下拉加载状态
-							mescroll.endErr()
-							console.log(response.message);
-						}
-						
-					})
-					.catch(error => {
-						if(error && error.message && error.message.indexOf('30203') > -1) {
-							console.log(`重新登录`);
-							_this.$store.dispatch('user/resettoken').then(() => {
-								
-								uni.redirectTo({
-									url: '/pages/base/login'
-								});
-								setTimeout(function() {
-									
-									uni.showToast({
-										title: _this.i18n.tip.pleaselogin,
-										icon: 'none'
-									});
-									
-								}, 1000);
-								
-							})
-						}
-						// 失败隐藏下拉加载状态
-						mescroll.endErr()
-					})
-				
 			},
 			
 		},
@@ -447,30 +266,9 @@
 		
 		.wishlistview{
 			
-			height: 100%;
 			
-			.swiper-box{
-				
-				.swiper-item{
-					width: 100%;
-					height: 100%;
-					
-					.mescroll{
-						width: 100%;
-						height: 100%;
-					}
-				}
-				
-			}
 		}
 		
-		/deep/.mescroll{
-			.mescroll-empty{
-				.empty-icon{
-					display: inline-block;
-				}
-			}
-		}
 	}
 
 </style>

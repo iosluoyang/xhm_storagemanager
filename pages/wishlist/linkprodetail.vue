@@ -129,7 +129,7 @@
 	
 	var _this
 
-	import mescrollTop from '@/components/mescroll-uni/components/mescroll-top.vue'
+	import mescrollTop from '@/uni_modules/mescroll-uni/components/mescroll-uni/components/mescroll-top.vue'
 	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
 	
 	export default {
