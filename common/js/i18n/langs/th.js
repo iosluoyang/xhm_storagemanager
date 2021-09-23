@@ -208,6 +208,7 @@ const th = {
 			},
 			buyagain: "Buy Again",
 			agentbindwish: "Bind Wish",
+			agentbindallwish: "Bind All Wish",
 			tabledata: {
 				index: "Index",
 				title: "Name",

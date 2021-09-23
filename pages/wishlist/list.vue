@@ -16,10 +16,10 @@
 			<!-- #endif -->
 			
 		</cu-custom>
-		
+
 		<!-- 选项卡 -->
 		<view class="u-tabs-box">
-			<u-tabs-swiper active-color="#e03997" ref="tabs" :list="tabArr" :current="current" @change="tabsChange" :is-scroll="true" swiperWidth="750"></u-tabs-swiper>
+			<u-tabs-swiper active-color="#e03997" ref="tabs" :list="tabArr" :current="current" bar-width="100" :bold="false" @change="tabsChange" :is-scroll="true" swiperWidth="750"></u-tabs-swiper>
 		</view>
 		
 		<!-- swiper区域 -->
@@ -42,6 +42,11 @@
 		
 		data() {
 			return {
+				
+				// 状态栏高度，H5中，此值为0，因为H5不可操作状态栏
+				statusBarHeight: uni.getSystemInfoSync().statusBarHeight,
+				// 导航栏内容区域高度，不包括状态栏高度在内
+				navbarHeight: 44,
 				
 				currentStatus: 0, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本

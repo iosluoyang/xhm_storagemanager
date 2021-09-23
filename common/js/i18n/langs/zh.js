@@ -209,6 +209,7 @@ const zh = {
 			},
 			buyagain: "再次购买",
 			agentbindwish: "代理心愿",
+			agentbindallwish: "一键代理全部心愿",
 			tabledata: {
 				index: "索引",
 				title: "名称",

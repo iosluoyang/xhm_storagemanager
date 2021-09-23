@@ -310,7 +310,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar,unitCommissionFee},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid')
+				.field('creatUser{nickname,avatar,unitCommissionFee},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,optionTime,productExt,specPropInfo,thirdPidType,thirdPid,sellerInfo')
 				.get({
 					getOne:true
 				})
@@ -339,6 +339,8 @@
 						
 						this.productExt = info.productExt
 						this.specPropInfo = info.specPropInfo
+						this.sellerInfo = info.sellerInfo
+						
 						
 					}
 					else {

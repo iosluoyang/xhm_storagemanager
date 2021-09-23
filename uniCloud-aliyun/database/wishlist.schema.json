@@ -37,6 +37,11 @@
 			"description": "是否已经关联代理人的标识",
 			"defaultValue": 0 // 默认没有关联
 		},
+		"optionTime": {
+			"description":"操作时间, 在代理员或商家 新增时间轴/编辑时间轴/更新拓展信息/确认报价单 等操作时进行实时更新",
+			"bsonType":"timestamp",
+			"defaultValue":""
+		},
 		"productTitle": {
 			"bsonType": "string",
 			"description": "商品标题"

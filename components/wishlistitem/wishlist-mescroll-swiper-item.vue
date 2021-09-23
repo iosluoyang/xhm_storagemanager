@@ -5,8 +5,32 @@
 	-->
 	<!-- ref动态生成: 字节跳动小程序编辑器不支持一个页面存在相同的ref (如不考虑字节跳动小程序可固定值为 ref="mescrollRef") -->
 	<!-- top的高度等于悬浮菜单tabs的高度 -->
-	 <mescroll-uni :ref="'mescrollRef'+i" @init="mescrollInit" :height="height" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick">
-		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
+	<mescroll-uni :ref="'mescrollRef'+i" @init="mescrollInit" :height="height" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
+		<!-- 顶部提示 -->
+		<u-top-tips ref="uTips" :navbar-height="0"></u-top-tips>
+		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem" type="normaltype" @showSameStoreWish="showSameStoreWish"></wishlistitem>
+		<!-- 底部弹框 -->
+		<u-popup v-model="ifshowpopup" mode="bottom" border-radius="20" height="80%">
+			
+			<view class="contentview height100">
+				
+				<view class="titleview padding text-center text-pink" style="height: 50px;">
+					<text class="cuIcon cuIcon-shopfill text-lg margin-right"></text>
+					<text class="text-bold text-black">还有相同商店的其他心愿哦！</text>
+					<text class="cuIcon cuIcon-shopfill text-lg margin-left"></text>
+				</view>
+				
+				<scroll-view class="extrascrollview" scroll-y :style="{ height: 'calc(100% - 50px - 100rpx)' }">
+					<wishlistitem v-for="(wishitem, wishindex) in sameStoreDataList" :key=" `samestore-${wishitem._id}` " :wishitem="wishitem" type="samestoretype"></wishlistitem>
+				</scroll-view>
+				
+				<button class="bottombtn cu-btn block width100 bg-pink" :style="{height: '100rpx'}" @tap.stop="bindallwish">
+					{{ i18n.wishlist.common.agentbindallwish }}
+				</button>
+				
+			</view>
+			
+		</u-popup>
 	</mescroll-uni>
 </template>
 
@@ -35,7 +59,9 @@
 						tip: '~ Empty ~', // 提示
 					}
 				},
-				dataList: [] //列表数据
+				ifshowpopup: false, // 是否显示底部弹框
+				dataList: [], //列表数据
+				sameStoreDataList: [], // 同店铺的未关联心愿列表
 			}
 		},
 		props:{
@@ -59,6 +85,7 @@
 			_this = this
 		},
 		methods: {
+			
 			/*下拉刷新的回调 */
 			downCallback() {
 				// 这里加载你想下拉刷新的数据, 比如刷新轮播数据
@@ -66,6 +93,7 @@
 				// 下拉刷新的回调,默认重置上拉加载列表为第一页 (自动执行 page.num=1, 再触发upCallback方法 )
 				this.mescroll.resetUpScroll()
 			},
+			
 			/*上拉加载的回调: 其中page.num:当前页 从1开始, page.size:每页数据条数,默认10 */
 			upCallback(mescroll) {
 				
@@ -89,13 +117,16 @@
 				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
-				let orderbystr = `creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
+				let orderbystr = `optionTime desc, creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
+				let getCountFlag = false // 是否获取查询列表数据的所有数据库数量  默认为否
+				
 				// 代理员
 				if(this.user.role == 'PRODUCT_AGENT') {
 					
 					// 如果status=-2则代表查所有未关联代理员的心愿
 					if(achieveFlag == -2) {
 						wherestr = `agentFlag == 0`
+						getCountFlag =true // 代理查询所有未关联的心愿单的总数量
 					}
 					// 如果statsu =-1则代表查自己关联过的所有心愿单
 					else if(achieveFlag == -1) {
@@ -122,6 +153,7 @@
 					// 如果statsu =-1则代表查自己发布过的所有心愿单
 					if(achieveFlag == -1) {
 						wherestr = `creatUser._id == $cloudEnv_uid`
+						getCountFlag =true // 代理查询所有自己发布过的心愿单数量
 					}
 					
 					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
@@ -142,11 +174,13 @@
 				
 				db.collection('wishlist,uni-id-users,order')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,hurryLevel, wishOrderId as wishOrderInfo')
+					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,optionTime,hurryLevel, wishOrderId as wishOrderInfo')
 					.orderBy(orderbystr)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
-					.get()
+					.get({
+						getCount: pageNum == 1 && getCountFlag, // 仅第一页查询时有显示数量
+					})
 					.then(response => {
 						
 						if(response.result.code == 0) {
@@ -168,6 +202,14 @@
 							} 
 							//将请求的数据添加至现有数据源中
 							this.dataList = dataList.concat(list)
+							
+							// 如果有数量则toast提示数量
+							if(response.result.count) {
+								this.$refs.uTips.show({
+									title: `In total ${response.result.count}`,
+									type: 'success',
+								})
+							}
 							
 							// 如果渲染的数据较复杂,可延时隐藏下拉加载状态: 如
 							_this.$nextTick(()=>{
@@ -210,15 +252,62 @@
 						mescroll.endErr()
 					})
 				
+			},
+			
+			// 关联其他店铺的心愿
+			showSameStoreWish(unbindsamestorewishlist) {
+				this.sameStoreDataList = unbindsamestorewishlist
+				this.ifshowpopup = true
+			},
+			
+			// 一键关联其他店铺的心愿单
+			bindallwish() {
 				
+				const _this = this
+				
+				let bindwishlist = this.sameStoreDataList
+				const db = uniCloud.database();
+				
+				let promiseArr = []
+				bindwishlist.forEach(eachwish => {
+					
+					let promise = new Promise((resolve, reject) => {
+						
+						db.collection('wishlist').doc(eachwish._id)
+						.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
+						.then(response => {
+							
+							resolve(response)
+						})
+						.catch(error => {
+							reject(error)
+						})
+						
+					})
+					promiseArr.push(promise)
+					
+				})
+				
+				Promise.all(promiseArr).then(response => {
+					uni.showToast({
+						title: _this.i18n.tip.optionsuccess,
+						icon: 'none'
+					});
+					
+					console.log(`关联成功`);
+					console.log(response);
+					// 关联成功
+					_this.ifshowpopup = false
+					_this.mescroll.resetUpScroll(true)
+					
+				}).catch(error => {
+					console.log(`关联失败`);
+					console.log(error);
+				})
 				
 			},
-			//点击空布局按钮的回调
-			emptyClick(){
-				uni.showToast({
-					title:'点击了按钮,具体逻辑自行实现'
-				})
-			}
+			
+			//
 		}
 	}
 </script>

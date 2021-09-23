@@ -368,7 +368,7 @@
 		</u-popup>
 		
 		<!-- 弹出二维码组件 -->
-		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="200" :ifshow.sync="ifshowqrcode"></alertqrcode>
+		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="180" :ifshow.sync="ifshowqrcode"></alertqrcode>
 				
 	</view>
 </template>
@@ -904,7 +904,7 @@
 							let wishinfo = _this.wishinfo
 							const db = uniCloud.database();
 							db.collection('wishlist').doc(wishinfo._id)
-							.update({agentUser:db.env.uid, agentFlag: 1})
+							.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
 							.then(response => {
 								// 关联成功
 								uni.showToast({

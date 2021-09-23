@@ -11,10 +11,10 @@
 				
 				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill" style="height: 300rpx;"></image>
 				
-				<!-- 卖家信息 -->
-				<view v-if="user.role == 'PRODUCT_AGENT' && ownwishitem.sellerInfo" class="sellerInfoView pos-absolute flex padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
+				<!-- 卖家信息 代理显示店铺名称 -->
+				<view v-if="user.role == 'PRODUCT_AGENT' && ownwishitem.sellerInfo" class="sellerInfoView pos-absolute flex align-center padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
 					<text class="cuIcon cuIcon-shopfill text-white"></text>
-					<text class="text-sm u-line-2 margin-left-sm">{{ ownwishitem.sellerInfo.title }}</text>
+					<text class="text-sm u-line-1 margin-left-sm">{{ ownwishitem.sellerInfo.title }}</text>
 				</view>
 				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
 				<view class="cu-bar bg-shadeBottom flex-direction align-start">
@@ -42,8 +42,8 @@
 			
 			</view>
 			
-			<!-- 卡片下方-内容区域 -->
-			<view class="cu-list menu-avatar">
+			<!-- 卡片下方-内容区域  同商店类型不展示 -->
+			<view v-if=" type != 'samestoretype' " class="cu-list menu-avatar">
 				<view class="cu-item">
 					
 					<!-- 头像 -->
@@ -118,8 +118,6 @@
 
 <script>
 	
-	var _this
-	
 	export default {
 		
 			name:'wishlistitem',
@@ -133,6 +131,12 @@
 				// 心愿单列表数据
 				wishitem: {
 					default: null,
+				},
+				
+				// 心愿单类型 normaltype  为正常类型  samestoretype为同商店类型
+				type: {
+					type: String,
+					default: 'normal'
 				},
 
 			},
@@ -190,7 +194,7 @@
 			},
 			
 			created() {
-				_this = this
+				
 			},
 			
 			mounted() {
@@ -256,67 +260,113 @@
 				agentBindWish() {
 					
 					const _this = this
+					let wishinfo = _this.ownwishitem
+					const db = uniCloud.database();
 					
-					uni.showModal({
-						content: _this.i18n.tip.optionconfirm,
-						showCancel: true,
-						cancelText: _this.i18n.base.cancel,
-						confirmText: _this.i18n.base.confirm,
-						success: res => {
-							if(res.confirm) {
+					// 检测是否有关联的同用户同商家的未关联的心愿列表
+					db.collection('wishlist')
+					.where({
+						creatUser: wishinfo.creatUser._id,
+						agentFlag: 0,
+						sellerInfo: {
+							sellerId: wishinfo.sellerInfo.sellerId
+						}
+					})
+					.get()
+					.then(response => {
+						if(response.result.code == 0) {
+							
+							// 获取当前还未关联的心愿列表
+							let unbindwishlist = response.result.data
+							// 如果未关联数量超过1个则说明有其他未关联的 则需要一起关联代理
+							if(unbindwishlist.length > 1) {
+								// 提示代理进行多项关联
+								_this.$emit('showSameStoreWish', unbindwishlist)
+							}
+							// 否则代表仅有单个心愿单 进行代理
+							else {
 								
-								// 开始关联商品
-								_this.bindAnimation = true
+								uni.showModal({
+									content: _this.i18n.tip.optionconfirm,
+									showCancel: true,
+									cancelText: _this.i18n.base.cancel,
+									confirmText: _this.i18n.base.confirm,
+									success: res => {
+										if(res.confirm) {
+											_this.agentOptionBindWish(wishinfo)
+										}
+									}
+								});
 								
-								let wishinfo = _this.ownwishitem
-								const db = uniCloud.database();
-								db.collection('wishlist').doc(wishinfo._id)
-								.update({agentUser:db.env.uid, agentFlag: 1})
-								.then(response => {
-
-									// 关联成功
-									uni.showToast({
-										title: _this.i18n.tip.addsuccess,
-										icon: 'none'
-									});
-									
-									// 添加一个代理人关联心愿时间轴记录
-									db.collection('wishlisttimeline')
-									.add({type: 90,wishId: wishinfo._id})
-									.then(response => {
-										// 创建时间轴成功
-										// 更改数据
-										_this.ownwishitem.agentFlag = 1
-										
-									})
-									.catch(error => {
-										uni.showToast({
-											title: error.message,
-											icon: 'none'
-										});
-										setTimeout(function() {
-											_this.bindAnimation = false
-										}, 1000);
-									})
-									
-									// 发送代理员关联消息通知
-									_this.pushnoticemsg('agentbindwish')
-									
-								})
-								.catch(error => {
-									// 关联失败
-									uni.showToast({
-										title: error.message,
-										icon: 'none'
-									});
-									setTimeout(function() {
-										_this.bindAnimation = false
-									}, 1000);
-								})
 								
 							}
+							
 						}
-					});
+					})
+					.catch(error => {
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
+					})
+
+				},
+				
+				// 代理进行关联接口调用
+				agentOptionBindWish() {
+					
+					const _this = this
+					// 开始关联商品
+					_this.bindAnimation = true
+					const db = uniCloud.database();
+					let wishinfo = _this.ownwishitem
+					
+					console.log(wishinfo.productTitle);
+					return
+					
+					db.collection('wishlist').doc(wishinfo._id)
+					.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
+					.then(response => {
+					
+						// 关联成功
+						uni.showToast({
+							title: _this.i18n.tip.addsuccess,
+							icon: 'none'
+						});
+						
+						// 添加一个代理人关联心愿时间轴记录
+						db.collection('wishlisttimeline')
+						.add({type: 90,wishId: wishinfo._id})
+						.then(response => {
+							// 创建时间轴成功
+							// 更改数据
+							_this.ownwishitem.agentFlag = 1
+							
+						})
+						.catch(error => {
+							uni.showToast({
+								title: error.message,
+								icon: 'none'
+							});
+							setTimeout(function() {
+								_this.bindAnimation = false
+							}, 1000);
+						})
+						
+						// 发送代理员关联消息通知
+						_this.pushnoticemsg('agentbindwish')
+						
+					})
+					.catch(error => {
+						// 关联失败
+						uni.showToast({
+							title: error.message,
+							icon: 'none'
+						});
+						setTimeout(function() {
+							_this.bindAnimation = false
+						}, 1000);
+					})
 					
 				},
 				

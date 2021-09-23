@@ -485,7 +485,7 @@
 				const db = uniCloud.database();
 				db.collection('wishlist')
 				.doc(this.wishId)
-				.update({productExt: this.productExt})
+				.update({productExt: this.productExt, optionTime: db.env.now})
 				.then(res => {
 					if(res.result.code == 0) {
 						// 更新成功
@@ -609,7 +609,7 @@
 								const db = uniCloud.database();
 								db.collection('wishlist')
 								.doc(_this.wishId)
-								.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1, productExt: newProductExt})
+								.update({specPropInfo: _this.tmpWishInfo.specPropInfo, achieveFlag: 1, productExt: newProductExt, optionTime: db.env.now})
 								.then(response => {
 									
 									// 更新成功
@@ -719,15 +719,11 @@
 							if(res.result.code == 0) {
 								
 								// 发布成功
+								// 更新对应的心愿操作时间
+								db.collection('wishlist').doc(info.wishId).update({optionTime: db.env.now})
 								
 								// 更新事件轴数据
 								uni.$emit('updatetimeline')
-								
-								// 如果是待确认状态则更新心愿单列表和详情
-								if(info.type == 3) {
-									uni.$emit('updatewishlist')
-									uni.$emit('updatewishdetail')
-								}
 								
 								uni.showToast({
 									title: _this.i18n.tip.addsuccess,
@@ -781,14 +777,11 @@
 							// 编辑成功
 							if(res.result.code == 0) {
 								
+								// 更新对应的心愿操作时间
+								db.collection('wishlist').doc(info.wishId).update({optionTime: db.env.now})
+								
 								// 更新事件轴数据
 								uni.$emit('updatetimeline')
-								
-								// 如果是待确认状态则更新心愿单列表和详情
-								if(info.type == 3) {
-									uni.$emit('updatewishlist')
-									uni.$emit('updatewishdetail')
-								}
 								
 								uni.showToast({
 									title: _this.i18n.tip.fixsuccess,

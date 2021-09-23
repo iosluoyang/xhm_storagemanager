@@ -110,12 +110,12 @@
                 "desc" : "我们需要获取您的位置以便于帮助您找到附近的商家"
             }
         },
-		"plugins": {
-			"WechatSI": {
-				"version": "0.3.1",
-				"provider": "wx069ba97219f66d99"
-			}
-		}
+        "plugins" : {
+            "WechatSI" : {
+                "version" : "0.3.1",
+                "provider" : "wx069ba97219f66d99"
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true
@@ -158,7 +158,7 @@
         "sdkConfigs" : {
             "maps" : {}
         },
-        "domain" : "https://jxc.xiaohemu.net",
+        "domain" : "http://thaieasy.xiaohemu.net",
         "title" : "XHM_Storage",
         "optimization" : {
             "treeShaking" : {
