@@ -323,9 +323,7 @@
 					// 有二级属性
 					if(specPropInfo.secondPropName) {
 						
-						let firstList = specPropInfo.propValList
-						
-						firstList.forEach(firstitem => {
+						specPropInfo.propValList.forEach(firstitem => {
 							
 							// 对应的二级属性数组
 							let secondList = firstitem.specStockList
@@ -346,7 +344,6 @@
 								}
 								tempSecondList.push(secondItemInfo)
 							})
-							
 							
 							let firstItemInfo = {
 								name: firstitem.propVal,
@@ -379,6 +376,7 @@
 								
 								let secondItemInfo = {
 									name: seconditem.propVal,
+									translateName: '', // 翻译文本
 									specId: seconditem.specId,
 									amount: amount,
 									stock: seconditem.stockCount,
@@ -391,6 +389,7 @@
 						
 						let firstItemInfo = {
 							name: specPropInfo.propName,
+							translateName: '', // 翻译文本
 							img: imgArr,
 							amount: totalAmount, // 二级分类的所有数量总和
 							dataArr: tempSecondList
@@ -449,6 +448,7 @@
 									seconditem['translateName'] = resultArr[index++]
 								})
 							})
+							// this.$forceUpdate()
 							
 						}
 						else {

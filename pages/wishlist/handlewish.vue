@@ -8,59 +8,64 @@
 		<!-- 填写的表单信息 -->
 		<form class="fillcontentform">
 			
-			<!-- 我发现 -->
-			<view class="cu-bar bg-white margin-top">
-				<view class="action">
-					<text class="cuIcon cuIcon-titles text-green"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.handlewish.ifound }}</text>
-				</view>
-			</view>
-			
-			<!-- 源网站链接 -->
-			<view class="cu-form-group">
-				<view class="title">
-					<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
-					{{i18n.wishlist.common.link}}:
-				</view>
-				<input type="text" v-model="sourceLink" @blur="analysisUrl" />
-				<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
+			<!-- 我发现区域 -->
+			<template v-if="false">
 				
-			</view>
-			
-			<!-- 链接解析结果 -->
-			<view class="cu-form-group flex" v-if="productSecretCode || productPureUrl">
-				<view v-if="productSecretCode" class="flex-sub bg-blue light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productSecretCode)">{{ productSecretCode }}</view>
-				<view v-if="productPureUrl" class="flex-sub bg-yellow light padding-sm margin-xs radius text-cut" @tap.stop="copyStr(productPureUrl)">{{ productPureUrl }}</view>
-			</view>
-			
-			<!-- 商品标题 -->
-			<view class="cu-form-group">
-				<view class="title">{{i18n.wishlist.common.title}} :</view>
-				<textarea v-model="productTitle" :placeholder="i18n.placeholder.handlewish.title"
-				auto-height
-				:show-confirm-bar="false" 
-				disable-default-padding
-				/>
-				<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pasteData('productTitle')">{{i18n.base.paste}}</button>
-			</view>
-			
-			<!-- 商品价格 -->
-			<view class="cu-form-group">
-				
-				<view class="title">{{i18n.wishlist.common.price}} :</view>
-				
-				<view class="content flex-sub flex align-center">
-					<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
-					<input type="text" :style="{color: 'red'}" disabled v-model="sourcePrice" @input="typesourcePrice" />
+				<!-- 我发现 -->
+				<view class="cu-bar bg-white margin-top">
+					<view class="action">
+						<text class="cuIcon cuIcon-titles text-green"></text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.handlewish.ifound }}</text>
+					</view>
 				</view>
 				
-				<!-- 源网站货币种类选择 -->
-				<!-- <view class="flex align-center margin-left">
-					<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
-					<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
-				</view> -->
-
-			</view>
+				<!-- 源网站链接 -->
+				<view class="cu-form-group">
+					<view class="title">
+						<!-- <text class="cuIcon cuIcon-info" @tap.stop="showTipModal('sourceLink')"></text> -->
+						{{i18n.wishlist.common.link}}:
+					</view>
+					<input type="text" v-model="sourceLink" @blur="analysisUrl" />
+					<button class="cu-btn bg-cyan shadow margin-right-sm" @tap.stop="pasteData('sourceLink')">{{i18n.base.paste}}</button>
+					
+				</view>
+				
+				<!-- 链接解析结果 -->
+				<view class="cu-form-group flex" v-if="productSecretCode || productPureUrl">
+					<view v-if="productSecretCode" class="flex-sub bg-blue light padding-sm margin-xs radius text-cut" @tap.stop="$basejs.copytoclipboard(productSecretCode)">{{ productSecretCode }}</view>
+					<view v-if="productPureUrl" class="flex-sub bg-yellow light padding-sm margin-xs radius text-cut" @tap.stop="$basejs.copytoclipboard(productPureUrl)">{{ productPureUrl }}</view>
+				</view>
+				
+				<!-- 商品标题 -->
+				<view class="cu-form-group">
+					<view class="title">{{i18n.wishlist.common.title}} :</view>
+					<textarea v-model="productTitle" :placeholder="i18n.placeholder.handlewish.title"
+					auto-height
+					:show-confirm-bar="false" 
+					disable-default-padding
+					/>
+					<button class="cu-btn bg-cyan shadow margin-left" @tap.stop="pasteData('productTitle')">{{i18n.base.paste}}</button>
+				</view>
+				
+				<!-- 商品价格 -->
+				<view class="cu-form-group">
+					
+					<view class="title">{{i18n.wishlist.common.price}} :</view>
+					
+					<view class="content flex-sub flex align-center">
+						<text :class="[ sourceMoneyType == 'RMB' ? 'text-red' : 'text-blue', 'margin-right-sm' ]">{{ sourceMoneyType == 'RMB' ? 'RMB' : 'THB' }}</text>
+						<input type="text" :style="{color: 'red'}" disabled v-model="sourcePrice" @input="typesourcePrice" />
+					</view>
+					
+					<!-- 源网站货币种类选择 -->
+					<!-- <view class="flex align-center margin-left">
+						<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
+						<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
+					</view> -->
+				
+				</view>
+				
+			</template>
 			
 			<!-- 我想要 -->
 			<view class="cu-bar bg-white margin-top">
@@ -76,55 +81,20 @@
 				<view class="title">{{i18n.wishlist.common.aliasname}} :</view>
 				
 				<view class="content flex-sub flex align-center">
-					<input class="text-right" type="text" placeholder-class=" text-sm text-grey " v-model="aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" />
+					<input class="text-right" :auto-focus=" type == 'add' " type="text" placeholder-class=" text-sm text-grey " v-model="aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" />
 				</view>
 				
-				<!-- 源网站货币种类选择 -->
-				<!-- <view class="flex align-center margin-left">
-					<button class="cu-btn sm round margin-right" :class="sourceMoneyType === 'RMB' ? 'bg-red shadow' : 'line-red' " @tap.stop="sourceMoneyType='RMB'">¥</button>
-					<button class="cu-btn sm round " :class="sourceMoneyType === 'THB' ? 'bg-blue shadow' : 'line-blue' " @tap.stop="sourceMoneyType='THB'">฿</button>
-				</view> -->
-			
 			</view>
 			
-			<!-- 订购数量 -->
-			<template>
-				
-				<!-- 选择规格 -->
-				<view v-if="specPropInfo" class="cu-list menu">
-					<view class="cu-item borderbottom arrow" @tap.stop="showSelector = true">
-						
-						<view class="title">{{i18n.placeholder.handlewish.selectamount}}</view>
-						
-						<view class="action">
-							<text class="text-black text-bold text-df">{{ `${selectShowTotalAmount.toString()}` }}</text>
-						</view>
-						
-					</view>
-				</view>
-				
-				<!-- 输入规格数量 -->
-				<view v-else class="cu-form-group solid-bottom">
-					<view class="title">{{i18n.wishlist.common.amount}} :</view>
-					<input class="text-right" maxlength="-1" disable-default-padding :cursor-spacing="100" v-model="targetAmount" :placeholder="i18n.placeholder.handlewish.amount" />
-				</view>
-				
-			</template>
-			
-			<!-- 紧急程度  暂时屏蔽 -->
-			<view v-if="false" class="cu-form-group solid-bottom">
-				<view class="title">{{i18n.wishlist.common.hurrylevel}}</view>
-				<picker :range="hurrylevelDataArr" range-key="name" :value="hurryLevel - 1" @change="hurrylevelchange">
-					<view class="picker">
-						<text v-for="item in hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-						<text class="margin-left-sm">{{ hurryLevel == 0 ? i18n.placeholder.handlewish.selecthurrylevel : hurrylevelDataArr[hurryLevel - 1].name }}</text>
-					</view>
-				</picker>
+			<!-- 输入规格数量 -->
+			<view v-if="!specPropInfo" class="cu-form-group solid-bottom">
+				<view class="title">{{i18n.wishlist.common.amount}} :</view>
+				<input class="text-right" maxlength="-1" disable-default-padding :cursor-spacing="100" v-model="targetAmount" :placeholder="i18n.placeholder.handlewish.amount" />
 			</view>
 			
 			<!-- 备注 -->
 			<view class="cu-form-group">
-				<textarea maxlength="-1" :auto-focus=" type == 'add' " :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.placeholder.handlewish.remark" />
+				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.placeholder.handlewish.remark" />
 			</view>
 			
 			<!-- 图片上传 -->
@@ -181,27 +151,17 @@
 			
 		</u-popup>
 		
-		<!-- 多规格弹框 -->
-		<wishSpecSelector	v-if="specPropInfo"
-							:specPropInfo="specPropInfo" 
-							:ifshow.sync="showSelector"
-							:defaultProTitle="productTitle"
-							:defaultProPrice="sourcePrice"
-							@finishSelect="specFinishSelect">
-		</wishSpecSelector>
-		
 	</view>
 </template>
 
 <script>
 		
 	var _this
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
 	
 	export default {
 		
 		components: {
-			wishSpecSelector
+			
 		},
 				
 		data() {
@@ -386,11 +346,6 @@
 				
 			},
 			
-			// 选择完规格
-			specFinishSelect(selectSpecPropInfo) {
-				this.specPropInfo = selectSpecPropInfo
-			},
-			
 			// 设置紧急程度数组
 			setHurryLevelArr() {
 				
@@ -475,23 +430,6 @@
 				
 			},
 						
-			// 复制内容
-			copyStr(content) {
-				
-				// #ifndef H5
-				uni.setClipboardData({
-					data: content,
-					success() {
-						uni.showToast({
-							title: _this.i18n.tip.copysuccess,
-							icon: 'none'
-						});
-					}
-				})
-				// #endif
-				
-			},
-			
 			// 输入价格
 			typesourcePrice(e) {
 				let sourcePrice = e.detail.value
@@ -603,18 +541,10 @@
 			// 上传数据
 			uploaddata() {
 				
-				// 进行数据检查			
-				
-				// 检查是否有链接
-				if(!this.sourceLink) {
-					uni.showToast({
-						title: this.i18n.placeholder.handlewish.link,
-						icon: 'none'
-					});
-					return false
-				}
+				// 进行数据检查	
+						
 				// 检查是否有商品标题
-				else if(!this.productTitle) {
+				if(!this.productTitle) {
 					uni.showToast({
 						title: this.i18n.placeholder.handlewish.title,
 						icon: 'none'
@@ -706,11 +636,7 @@
 							wishId: res.result.id,
 							type: 0, // 时间轴类型  0 心愿单创建  1心愿单普通时间轴更新 2心愿单编辑  3心愿单待确认  4心愿单确认通过  5心愿单确认拒绝  6心愿单完成
 						}
-						db.collection('wishlisttimeline').add(timelineinfo).then(res => {
-							console.log(`创建默认时间轴成功`);
-						}).catch(err => {
-							console.log(`创建默认时间轴失败`);
-						})
+						db.collection('wishlisttimeline').add(timelineinfo)
 						
 						// 发布成功
 						uni.$emit('updatewishlist')

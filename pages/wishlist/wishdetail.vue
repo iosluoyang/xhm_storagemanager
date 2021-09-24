@@ -60,12 +60,7 @@
 						<view class="publisherandremarkview flex align-center width100">
 							
 							<!-- 头像 -->
-							<view class="avatarview flex align-center" style="flex-shrink: 0;">
-								<image v-if="wishinfo.creatUser && wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
-								<view v-else class="cu-avatar round sm">
-									<text class="cuIcon-people"></text>
-								</view>
-							</view>
+							<image v-if="wishinfo.creatUser && wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
 							
 							<!-- 右侧区域 -->
 							<template>

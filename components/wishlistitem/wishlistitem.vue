@@ -263,6 +263,7 @@
 					let wishinfo = _this.ownwishitem
 					const db = uniCloud.database();
 					
+					uni.showLoading();
 					// 检测是否有关联的同用户同商家的未关联的心愿列表
 					db.collection('wishlist')
 					.where({
@@ -293,11 +294,10 @@
 									confirmText: _this.i18n.base.confirm,
 									success: res => {
 										if(res.confirm) {
-											_this.agentOptionBindWish(wishinfo)
+											_this.agentOptionBindWish()
 										}
 									}
 								});
-								
 								
 							}
 							
@@ -308,6 +308,9 @@
 							title: error.message,
 							icon: 'none'
 						});
+					})
+					.finally(() => {
+						uni.hideLoading()
 					})
 
 				},
@@ -320,9 +323,6 @@
 					_this.bindAnimation = true
 					const db = uniCloud.database();
 					let wishinfo = _this.ownwishitem
-					
-					console.log(wishinfo.productTitle);
-					return
 					
 					db.collection('wishlist').doc(wishinfo._id)
 					.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
@@ -372,6 +372,8 @@
 				
 				// 推送消息
 				pushnoticemsg(msgtype) {
+					
+					const _this = this
 					
 					let info
 					// 根据不同的消息类型准备不同的数据内容
