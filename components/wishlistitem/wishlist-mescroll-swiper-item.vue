@@ -5,9 +5,14 @@
 	-->
 	<!-- ref动态生成: 字节跳动小程序编辑器不支持一个页面存在相同的ref (如不考虑字节跳动小程序可固定值为 ref="mescrollRef") -->
 	<!-- top的高度等于悬浮菜单tabs的高度 -->
-	<mescroll-uni :ref="'mescrollRef'+i" @init="mescrollInit" :height="height" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
+	<mescroll-uni :ref="'mescrollRef'+i" @init="mescrollInit" :height=" height " :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
 		<!-- 顶部提示 -->
 		<u-top-tips :ref="'uTips' + i" :navbar-height="0"></u-top-tips>
+		<!-- 顶部筛选区域 -->
+		<u-dropdown class="u-dropdown" active-color="#e03997">
+			<u-dropdown-item v-model="agentStatus" title="代理状态" :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
+			<u-dropdown-item v-model="sortStatus" title="排序" :options="sortStatusOption" @change="changeSortStatus"></u-dropdown-item>
+		</u-dropdown>
 		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem" type="normaltype" @showSameStoreWish="showSameStoreWish"></wishlistitem>
 		<!-- 底部弹框 -->
 		<u-popup v-model="ifshowpopup" mode="bottom" border-radius="20" height="80%">
@@ -21,7 +26,7 @@
 				</view>
 				
 				<scroll-view class="extrascrollview" scroll-y :style="{ height: 'calc(100% - 50px - 100rpx)' }">
-					<wishlistitem v-for="(wishitem, wishindex) in sameStoreDataList" :key=" `samestore-${wishitem._id}` " :wishitem="wishitem" type="samestoretype"></wishlistitem>
+					<wishlistitem v-for="(wishitem, wishindex) in sameStoreDataList" :key="wishitem._id" :wishitem="wishitem" type="samestoretype"></wishlistitem>
 				</scroll-view>
 				
 				<button class="bottombtn cu-btn block width100 bg-pink" :style="{height: '100rpx'}" @tap.stop="bindallwish">
@@ -32,6 +37,7 @@
 			
 		</u-popup>
 	</mescroll-uni>
+	
 </template>
 
 <script>
@@ -59,6 +65,14 @@
 						tip: '~ Empty ~', // 提示
 					}
 				},
+				
+				stickyH5NavHeight: this.CustomBar + uni.upx2px(80),
+				agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
+				agentStatusOption: [], // 代理状态筛选项
+				
+				sortStatus: 0, // 排序方式 0创建时间降序 1创建时间升序 2操作时间降序 3操作时间升序
+				sortStatusOption: [], // 排序状态筛选项
+				
 				ifshowpopup: false, // 是否显示底部弹框
 				dataList: [], //列表数据
 				sameStoreDataList: [], // 同店铺的未关联心愿列表
@@ -83,8 +97,63 @@
 		},
 		created() {
 			_this = this
+			
+			// 初始化筛选项
+			_this.setFilterOptionData()
+			
 		},
 		methods: {
+			
+			// 设置初始化筛选项
+			setFilterOptionData() {
+				
+				let agentStatusOption = [
+					{
+						label: '全部',
+						value: -1
+					},
+					{
+						label: '未代理',
+						value: 0
+					},
+					{
+						label: '已代理',
+						value: 1
+					}
+				]
+				this.agentStatusOption = agentStatusOption
+				
+				let sortStatusOption = [
+					{
+						label: '创建时间降序',
+						value: 0
+					},
+					{
+						label: '创建时间升序',
+						value: 1
+					},
+					{
+						label: '操作时间降序',
+						value: 2
+					},
+					{
+						label: '操作时间倒序',
+						value: 3
+					}
+				]
+				this.sortStatusOption = sortStatusOption
+				
+			},
+			
+			changeAgentStatus(value) {
+				this.agentStatus = value
+				this.mescroll.resetUpScroll(true)
+			},
+			
+			changeSortStatus(value) {
+				this.sortStatus = value
+				this.mescroll.resetUpScroll(true)
+			},
 			
 			/*下拉刷新的回调 */
 			downCallback() {
@@ -156,10 +225,15 @@
 						getCountFlag =true // 代理查询所有自己发布过的心愿单数量
 					}
 					
+					// 正在进行中
+					else if(achieveFlag == 0) {
+						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid` + this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`
+					}
+					
 					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
 					else if(achieveFlag == 2) {
 						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
-						orderbystr = `wishOrderId.status asc, creatTime desc`
+						orderbystr = `wishOrderId.status asc, optionTime desc, creatTime desc`
 					}
 					
 					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
@@ -348,4 +422,10 @@
 			//
 		}
 	}
+
 </script>
+
+<style lang="scss" scoped>
+	
+	
+</style>
