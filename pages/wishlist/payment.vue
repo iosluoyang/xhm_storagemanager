@@ -405,6 +405,7 @@
 						_this.pushnoticemsg('finishpay')
 						
 						// 刷新心愿详情数据和心愿订单数据
+						uni.$emit('updatewishlist')
 						uni.$emit('updatewishdetail')
 						uni.$emit('updatewishorderdetail')
 						

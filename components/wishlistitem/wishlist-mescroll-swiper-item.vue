@@ -5,15 +5,12 @@
 	-->
 	<!-- ref动态生成: 字节跳动小程序编辑器不支持一个页面存在相同的ref (如不考虑字节跳动小程序可固定值为 ref="mescrollRef") -->
 	<!-- top的高度等于悬浮菜单tabs的高度 -->
-	<mescroll-uni :ref="'mescrollRef'+i" @init="mescrollInit" :height=" height " :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
+	<mescroll-uni class="mescrollview" :ref="'mescrollRef'+i" @init="mescrollInit" :height="height" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
 		<!-- 顶部提示 -->
 		<u-top-tips :ref="'uTips' + i" :navbar-height="0"></u-top-tips>
-		<!-- 顶部筛选区域 -->
-		<u-dropdown class="u-dropdown" active-color="#e03997">
-			<u-dropdown-item v-model="agentStatus" title="代理状态" :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
-			<u-dropdown-item v-model="sortStatus" title="排序" :options="sortStatusOption" @change="changeSortStatus"></u-dropdown-item>
-		</u-dropdown>
+		
 		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem" type="normaltype" @showSameStoreWish="showSameStoreWish"></wishlistitem>
+		
 		<!-- 底部弹框 -->
 		<u-popup v-model="ifshowpopup" mode="bottom" border-radius="20" height="80%">
 			
@@ -36,6 +33,7 @@
 			</view>
 			
 		</u-popup>
+		
 	</mescroll-uni>
 	
 </template>
@@ -66,12 +64,11 @@
 					}
 				},
 				
-				stickyH5NavHeight: this.CustomBar + uni.upx2px(80),
-				agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
-				agentStatusOption: [], // 代理状态筛选项
+				// agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
+				// agentStatusOption: [], // 代理状态筛选项
 				
-				sortStatus: 0, // 排序方式 0创建时间降序 1创建时间升序 2操作时间降序 3操作时间升序
-				sortStatusOption: [], // 排序状态筛选项
+				// payStatus: -1, // 支付状态 -1全部 0未支付 1已支付
+				// payStatusOption: [], // 支付状态筛选项
 				
 				ifshowpopup: false, // 是否显示底部弹框
 				dataList: [], //列表数据
@@ -80,6 +77,18 @@
 		},
 		props:{
 			searchText: '', // 搜索文本
+			agentStatus: {
+				type: Number,
+				default: -1
+			},// 代理状态 -1全部 0未代理 1已代理
+			payStatus: {
+				type: Number,
+				default: -1
+			},// 支付状态 -1全部 0未支付 1已支付
+			deliveryStatus: {
+				type: Number,
+				default: -1
+			},// 发货状态 -1全部 0未发货 1已发货
 			i: Number, // 每个tab页的专属下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 			index: { // 当前tab的下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 				type: Number,
@@ -97,63 +106,9 @@
 		},
 		created() {
 			_this = this
-			
-			// 初始化筛选项
-			_this.setFilterOptionData()
-			
+
 		},
 		methods: {
-			
-			// 设置初始化筛选项
-			setFilterOptionData() {
-				
-				let agentStatusOption = [
-					{
-						label: '全部',
-						value: -1
-					},
-					{
-						label: '未代理',
-						value: 0
-					},
-					{
-						label: '已代理',
-						value: 1
-					}
-				]
-				this.agentStatusOption = agentStatusOption
-				
-				let sortStatusOption = [
-					{
-						label: '创建时间降序',
-						value: 0
-					},
-					{
-						label: '创建时间升序',
-						value: 1
-					},
-					{
-						label: '操作时间降序',
-						value: 2
-					},
-					{
-						label: '操作时间倒序',
-						value: 3
-					}
-				]
-				this.sortStatusOption = sortStatusOption
-				
-			},
-			
-			changeAgentStatus(value) {
-				this.agentStatus = value
-				this.mescroll.resetUpScroll(true)
-			},
-			
-			changeSortStatus(value) {
-				this.sortStatus = value
-				this.mescroll.resetUpScroll(true)
-			},
 			
 			/*下拉刷新的回调 */
 			downCallback() {
@@ -174,8 +129,6 @@
 				
 				// 获取当前要请求的心愿状态
 				let achieveFlag = currenttabitem.status
-				// 排序方式
-				let sortType = 0
 				// 当前搜索文本
 				let searchText = this.searchText
 				
@@ -189,13 +142,14 @@
 				let orderbystr = `optionTime desc, creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
 				let getCountFlag = false // 是否获取查询列表数据的所有数据库数量  默认为否
 				
+				console.log(`组件内部查询的agentStatus为:${this.agentStatus}--payStatus为:${this.payStatus}`);
 				// 代理员
 				if(this.user.role == 'PRODUCT_AGENT') {
 					
 					// 如果status=-2则代表查所有未关联代理员的心愿
 					if(achieveFlag == -2) {
 						wherestr = `agentFlag == 0`
-						getCountFlag =true // 代理查询所有未关联的心愿单的总数量
+						getCountFlag = true // 代理查询所有未关联的心愿单的总数量
 					}
 					// 如果statsu =-1则代表查自己关联过的所有心愿单
 					else if(achieveFlag == -1) {
@@ -212,6 +166,14 @@
 						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
 					}
 					
+					// 增加筛选状态的查询条件
+					// 代理状态
+					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
+					// 支付状态
+					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
+					// 发货状态
+					wherestr += `${ this.deliveryStatus == 1 ? ' && (wishOrderId.deliveryTime != "") ' : this.deliveryStatus == 0 ? ' && wishOrderId.deliveryTime == "" ' : '' } `
+					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
 					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
 					
@@ -222,17 +184,18 @@
 					// 如果statsu =-1则代表查自己发布过的所有心愿单
 					if(achieveFlag == -1) {
 						wherestr = `creatUser._id == $cloudEnv_uid`
-						getCountFlag =true // 代理查询所有自己发布过的心愿单数量
+						getCountFlag = true // 查询所有自己发布过的心愿单数量
 					}
 					
 					// 正在进行中
 					else if(achieveFlag == 0) {
-						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid` + this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`
+						wherestr = `achieveFlag == 0 && creatUser._id == $cloudEnv_uid`
 					}
 					
-					// 如果status = 2则代表查自己发布过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
+					// 如果status = 2则代表查自己发布过的待下单的心愿单
 					else if(achieveFlag == 2) {
 						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
+						// 此时排序字段增加按照wishOrderId.status来进行正序排序 status=0未支付 status=1已支付
 						orderbystr = `wishOrderId.status asc, optionTime desc, creatTime desc`
 					}
 					
@@ -241,11 +204,20 @@
 						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
 					}
 					
-					// 增加搜索关键字查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
+					// 增加筛选状态的查询条件
+					// 代理状态
+					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
+					// 支付状态
+					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
+					// 发货状态
+					wherestr += `${ this.deliveryStatus == 1 ? ' && (wishOrderId.deliveryTime != "")' : this.deliveryStatus == 0 ? ' && wishOrderId.deliveryTime == "" ' : '' } `
+					
+					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
 					
 				}
 				
+				console.log(`查询语句为:\n${wherestr}`);
 				db.collection('wishlist,uni-id-users,order')
 					.where(wherestr)
 					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,optionTime,hurryLevel, wishOrderId as wishOrderInfo')
@@ -426,6 +398,5 @@
 </script>
 
 <style lang="scss" scoped>
-	
 	
 </style>

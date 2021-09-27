@@ -22,10 +22,47 @@
 			<u-tabs-swiper active-color="#e03997" ref="tabs" :list="tabArr" :current="current" bar-width="100" :bold="false" @change="tabsChange" :is-scroll="true" swiperWidth="750"></u-tabs-swiper>
 		</view>
 		
+		<!-- 顶部筛选区域 -->
+		<u-dropdown v-if="filterFlag" class="u-dropdown" active-color="#e03997" height="80rpx">
+			
+			<!-- 普通供应商视角下 -->
+			<template v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') ">
+				
+				<!-- 心愿单全部分类 -->
+				<template v-if="computedCurrentStatus == -1">
+					<u-dropdown-item v-model="agentStatus" title="代理状态" :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
+				</template>
+				
+				<u-dropdown-item v-model="payStatus" title="支付状态" :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
+				
+				<!-- 待下单分类 -->
+				<template v-if="computedCurrentStatus == 2">
+					<!-- 发货状态筛选项 当心愿单为待购买status == 2时出现 -->
+					<u-dropdown-item v-model="deliveryStatus" title="发货状态" :options="deliveryStatusOption" @change="changeDeliveryStatus"></u-dropdown-item>
+				</template>
+				
+			</template>
+			
+			
+			<!-- 代理员视角下 -->
+			<template v-if="user && user.role == 'PRODUCT_AGENT' ">
+				
+				<u-dropdown-item v-model="payStatus" title="支付状态" :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
+				
+				<!-- 待下单分类 -->
+				<template v-if="computedCurrentStatus == 2">
+					<!-- 发货状态筛选项 当心愿单为待购买status == 2时出现 -->
+					<u-dropdown-item v-model="deliveryStatus" title="发货状态" :options="deliveryStatusOption" @change="changeDeliveryStatus"></u-dropdown-item>
+				</template>
+				
+			</template>
+			
+		</u-dropdown>
+		
 		<!-- swiper区域 -->
-		<swiper :style="{height: 'calc(100% - '+CustomBar+'px - 80rpx )' }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
+		<swiper :style="{height: filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
 			<swiper-item v-for="(tabitem,index) in tabArr" :key="index">
-				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" 'calc(100% - '+CustomBar+'px - 80rpx )' "></wishlistMescrollSwiperItem>
+				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' " :agentStatus="agentStatus" :payStatus="payStatus" :deliveryStatus="deliveryStatus"></wishlistMescrollSwiperItem>
 			</swiper-item>
 		</swiper>
 		
@@ -43,13 +80,19 @@
 		data() {
 			return {
 				
-				// 状态栏高度，H5中，此值为0，因为H5不可操作状态栏
-				statusBarHeight: uni.getSystemInfoSync().statusBarHeight,
-				// 导航栏内容区域高度，不包括状态栏高度在内
-				navbarHeight: 44,
-				
-				currentStatus: 0, // 默认选中的状态为进行中的状态
+				currentStatus: -1, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本
+				
+				
+				agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
+				agentStatusOption: [], // 代理状态筛选项
+				
+				payStatus: -1, // 支付状态 -1全部 0未支付 1已支付
+				payStatusOption: [], // 支付状态筛选项
+				
+				deliveryStatus: -1, // 发货状态  0未发货 1已发货
+				deliveryStatusOption: [], // 发货状态筛选项
+				
 				current: 0, // 当前选项卡的索引 默认为0
 				swiperCurrent: 0, // swiper组件的current值，表示当前那个swiper-item是活动的
 				scrollLeft: 0, // 选项卡左侧滑动的距离
@@ -75,12 +118,11 @@
 			// 初始化选项卡数组数据
 			this.initTabArr()
 			
+			// 初始化筛选项
+			this.setFilterOptionData()
+			
 			// 监听更新事件
 			uni.$on('updatewishlist', function(data) {
-				// 如果为拷贝心愿则切换到进行中
-				if(data && data.type && data.type == 'copywish') {
-					_this.currentStatus = 0
-				}
 				_this.getbadgenum()
 				_this.starttorefresh()
 			})
@@ -93,6 +135,46 @@
 		onUnload() {
 			uni.$off('updatewishlist')
 			uni.$off('updatebadgenum')
+		},
+		
+		computed: {
+			
+			// 当前计算的心愿状态
+			computedCurrentStatus() {
+				
+				if(this.tabArr && this.tabArr.length > 0) {
+					let currentItem = this.tabArr[this.swiperCurrent]
+					let currentStatus = currentItem.status
+					return currentStatus
+				}
+				return this.currentStatus || -1
+				
+			},
+			
+			// 筛选面板标识 false为没有筛选面板  true为有筛选面板  默认没有
+			filterFlag() {
+				
+				let computedCurrentStatus = this.computedCurrentStatus
+				
+				// 普通供应商
+				if(this.user && this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
+					// 根据当前选择的心愿状态区分筛选面板内容
+					if(computedCurrentStatus == -1 || computedCurrentStatus == 2) {
+						// 设置筛选面板数据
+						return true
+					}
+				}
+				// 商品代理员
+				else if(this.user && this.user.role == 'PRODUCT_AGENT') {
+					// 根据当前选择的心愿状态区分筛选面板内容
+					if(computedCurrentStatus == -1 || computedCurrentStatus == 2) {
+						// 设置筛选面板数据
+						return true
+					}
+				}
+				
+				return false
+			}
 		},
 		
 		methods: {
@@ -160,12 +242,82 @@
 				
 				// 获取角标数量
 				this.getbadgenum()
+			
+			},
+			
+			// 设置初始化筛选项
+			setFilterOptionData() {
 				
-				// 更新完视图后进行手动刷新
-				this.$nextTick(()=>{
-					this.starttorefresh()
-				})
+				let agentStatusOption = [
+					{
+						label: '全部',
+						value: -1
+					},
+					{
+						label: '未代理',
+						value: 0
+					},
+					{
+						label: '已代理',
+						value: 1
+					}
+				]
+				this.agentStatusOption = agentStatusOption
 				
+				let payStatsuOption = [
+					{
+						label: '全部',
+						value: -1
+					},
+					{
+						label: '待支付',
+						value: 0
+					},
+					{
+						label: '已支付',
+						value: 1
+					}
+				]
+				this.payStatusOption = payStatsuOption
+				
+				let deliveryStatusOption = [
+					{
+						label: '全部',
+						value: -1,
+					},
+					{
+						label: '未发货',
+						value: 0,
+					},
+					{
+						label: '已发货',
+						value: 1,
+					}
+				]
+				this.deliveryStatusOption = deliveryStatusOption
+				
+			},
+			
+			changeAgentStatus(value) {
+				this.agentStatus = value
+				this.starttorefresh()
+			},
+			
+			changePayStatus(value) {
+				this.payStatus = value
+				this.starttorefresh()
+			},
+			
+			changeDeliveryStatus(value) {
+				this.deliveryStatus = value
+				this.starttorefresh()
+			},
+			
+			// 重置筛选项
+			resetFilterData() {
+				this.agentStatus = -1
+				this.payStatus = -1
+				this.deliveryStatus = -1
 			},
 			
 			// 获取操作条上的角标数量
@@ -220,6 +372,8 @@
 				this.$refs.tabs.setFinishCurrent(current);
 				this.swiperCurrent = current;
 				this.current = current;
+				// 重置筛选条件
+				this.resetFilterData()
 			},
 			
 			// 获取指定下标的mescroll对象
@@ -236,10 +390,14 @@
 			starttorefresh(){
 				// 获取角标
 				this.getbadgenum()
-				// 刷新当前数据
-				let mescroll =this.getMescroll(this.current)
-				console.log(mescroll);
-				mescroll.resetUpScroll(true)
+				this.$nextTick(function(){
+					// 刷新当前数据
+					let mescroll =this.getMescroll(this.current)
+					console.log(mescroll);
+					if(mescroll) {
+						mescroll.resetUpScroll(true)
+					}
+				})
 			},
 			
 		},
@@ -248,9 +406,7 @@
 
 <style lang="scss" scoped>
 	page,.wishlistview{
-		
 		height: 100%;
-		
 	}
 </style>
 
