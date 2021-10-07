@@ -411,9 +411,9 @@
 					const _this = this
 					
 					// 只有超级管理员有变更心愿状态的功能
-					if(_this.user.role !== 'ADMIN') {
-						return
-					}
+					// if(_this.user.role !== 'ADMIN') {
+					// 	return
+					// }
 					
 				   // 心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
 				   let optionList = [

@@ -10,6 +10,3 @@
 
 const db = uniCloud.database();
 const dbCmd = db.command;
-
-db.collection('uni-id-users').where(`username == 'merchant1'`).get()
-'60935ff54b94800001ec46bb'
