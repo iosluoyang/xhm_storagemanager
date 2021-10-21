@@ -251,6 +251,23 @@ const en = {
 		// 我的心愿列表页面list
 		list: {
 			
+			all: "All",
+			agentstatus: {
+				title: 'Bind Status',
+				unbind: 'UnBind',
+				bind: 'Bind'
+			},
+			paystatus: {
+				title: 'Pay Status',
+				unpay: 'unPay',
+				pay: 'Paid'
+			},
+			purchasestatus: {
+				title: 'Purchase Status',
+				unpurchase: 'UnPurchase',
+				purchase: 'Purchase'
+			}
+			
 		},
 		
 		// 心愿详情页面wishdetail

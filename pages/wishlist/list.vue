@@ -30,29 +30,30 @@
 				
 				<!-- 心愿单全部分类 -->
 				<template v-if="computedCurrentStatus == -1">
-					<u-dropdown-item v-model="agentStatus" title="代理状态" :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
+					<u-dropdown-item v-model="agentStatus" :title=" i18n.wishlist.list.agentstatus.title " :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
 				</template>
 				
-				<u-dropdown-item v-model="payStatus" title="支付状态" :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
+				<!-- 全部或者待下单分类 -->
+				<u-dropdown-item v-if="computedCurrentStatus == -1 || computedCurrentStatus == 2" v-model="payStatus" :title=" i18n.wishlist.list.paystatus.title " :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
 				
 				<!-- 待下单分类 -->
 				<template v-if="computedCurrentStatus == 2">
-					<!-- 发货状态筛选项 当心愿单为待购买status == 2时出现 -->
-					<u-dropdown-item v-model="deliveryStatus" title="发货状态" :options="deliveryStatusOption" @change="changeDeliveryStatus"></u-dropdown-item>
+					<!-- 订货筛选项 当心愿单为待购买status == 2时出现 -->
+					<u-dropdown-item v-model="purchaseStatus" :title=" i18n.wishlist.list.purchasestatus.title " :options="purchaseStatusOption" @change="changePurchaseStatus"></u-dropdown-item>
 				</template>
 				
 			</template>
 			
-			
 			<!-- 代理员视角下 -->
-			<template v-if="user && user.role == 'PRODUCT_AGENT' ">
+			<template v-else-if="user && user.role == 'PRODUCT_AGENT' ">
 				
-				<u-dropdown-item v-model="payStatus" title="支付状态" :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
+				<!-- 待下单分类 -->
+				<u-dropdown-item v-if="computedCurrentStatus == 2" v-model="payStatus" :title=" i18n.wishlist.list.paystatus.title " :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
 				
 				<!-- 待下单分类 -->
 				<template v-if="computedCurrentStatus == 2">
-					<!-- 发货状态筛选项 当心愿单为待购买status == 2时出现 -->
-					<u-dropdown-item v-model="deliveryStatus" title="发货状态" :options="deliveryStatusOption" @change="changeDeliveryStatus"></u-dropdown-item>
+					<!-- 订货筛选项 当心愿单为待购买status == 2时出现 -->
+					<u-dropdown-item v-model="purchaseStatus" :title=" i18n.wishlist.list.purchasestatus.title " :options="purchaseStatusOption" @change="changePurchaseStatus"></u-dropdown-item>
 				</template>
 				
 			</template>
@@ -62,7 +63,7 @@
 		<!-- swiper区域 -->
 		<swiper :style="{height: filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
 			<swiper-item v-for="(tabitem,index) in tabArr" :key="index">
-				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' " :agentStatus="agentStatus" :payStatus="payStatus" :deliveryStatus="deliveryStatus"></wishlistMescrollSwiperItem>
+				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' " :agentStatus="agentStatus" :payStatus="payStatus" :purchaseStatus="purchaseStatus"></wishlistMescrollSwiperItem>
 			</swiper-item>
 		</swiper>
 		
@@ -90,8 +91,8 @@
 				payStatus: -1, // 支付状态 -1全部 0未支付 1已支付
 				payStatusOption: [], // 支付状态筛选项
 				
-				deliveryStatus: -1, // 发货状态  0未发货 1已发货
-				deliveryStatusOption: [], // 发货状态筛选项
+				purchaseStatus: -1, // 订货状态  0未订货 1已订货
+				purchaseStatusOption: [], // 订货状态筛选项
 				
 				current: 0, // 当前选项卡的索引 默认为0
 				swiperCurrent: 0, // swiper组件的current值，表示当前那个swiper-item是活动的
@@ -143,7 +144,7 @@
 			computedCurrentStatus() {
 				
 				if(this.tabArr && this.tabArr.length > 0) {
-					let currentItem = this.tabArr[this.swiperCurrent]
+					let currentItem = this.tabArr[this.current]
 					let currentStatus = currentItem.status
 					return currentStatus
 				}
@@ -167,7 +168,7 @@
 				// 商品代理员
 				else if(this.user && this.user.role == 'PRODUCT_AGENT') {
 					// 根据当前选择的心愿状态区分筛选面板内容
-					if(computedCurrentStatus == -1 || computedCurrentStatus == 2) {
+					if(computedCurrentStatus == 2) {
 						// 设置筛选面板数据
 						return true
 					}
@@ -250,15 +251,15 @@
 				
 				let agentStatusOption = [
 					{
-						label: '全部',
+						label: this.i18n.wishlist.list.all,
 						value: -1
 					},
 					{
-						label: '未代理',
+						label: this.i18n.wishlist.list.agentstatus.unbind,
 						value: 0
 					},
 					{
-						label: '已代理',
+						label: this.i18n.wishlist.list.agentstatus.bind,
 						value: 1
 					}
 				]
@@ -266,35 +267,35 @@
 				
 				let payStatsuOption = [
 					{
-						label: '全部',
+						label: this.i18n.wishlist.list.all,
 						value: -1
 					},
 					{
-						label: '待支付',
+						label: this.i18n.wishlist.list.paystatus.unpay,
 						value: 0
 					},
 					{
-						label: '已支付',
+						label: this.i18n.wishlist.list.paystatus.pay,
 						value: 1
 					}
 				]
 				this.payStatusOption = payStatsuOption
 				
-				let deliveryStatusOption = [
+				let purchaseStatusOption = [
 					{
-						label: '全部',
+						label: this.i18n.wishlist.list.all,
 						value: -1,
 					},
 					{
-						label: '未发货',
+						label: this.i18n.wishlist.list.purchasestatus.unpurchase,
 						value: 0,
 					},
 					{
-						label: '已发货',
+						label: this.i18n.wishlist.list.purchasestatus.purchase,
 						value: 1,
 					}
 				]
-				this.deliveryStatusOption = deliveryStatusOption
+				this.purchaseStatusOption = purchaseStatusOption
 				
 			},
 			
@@ -308,8 +309,8 @@
 				this.starttorefresh()
 			},
 			
-			changeDeliveryStatus(value) {
-				this.deliveryStatus = value
+			changePurchaseStatus(value) {
+				this.purchaseStatus = value
 				this.starttorefresh()
 			},
 			
@@ -317,7 +318,7 @@
 			resetFilterData() {
 				this.agentStatus = -1
 				this.payStatus = -1
-				this.deliveryStatus = -1
+				this.purchaseStatus = -1
 			},
 			
 			// 获取操作条上的角标数量

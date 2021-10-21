@@ -75,13 +75,23 @@
 									
 									<!-- 付款按钮  商家角色且为待付款 -->
 									<view v-if="ownwishitem.achieveFlag == 2 && ownwishitem.wishOrderInfo.status == 0" class="payview flex align-center">
+										
 										<!-- 商家自身 -->
-										<button v-if="user && user._id == ownwishitem.creatUser._id" class="cu-btn round bg-gradual-red u-font-20" @tap.stop="paynow">
-											<view class="flex flex-direction align-center">
-												<text class="u-font-20">{{ i18n.base.paynow }}</text>
-												<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
-											</view>
-										</button>
+										<template v-if="user && user._id == ownwishitem.creatUser._id">
+											<button class="cu-btn round bg-gradual-red u-font-20" @tap.stop="paynow">
+												<view class="flex flex-direction align-center">
+													<text class="u-font-20">{{ i18n.base.paynow }}</text>
+													<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
+												</view>
+											</button>
+										</template>
+										
+										<!-- 代理员自身 -->
+										<template v-if="user && user._id == ownwishitem.agentUser._id">
+											<!-- <text class="cuIcon cuIcon-pay text-red u-font-40"></text> -->
+											<text class="u-font-20 bg-gradual-red cu-btn round">{{ i18n.base.paynow }}</text>
+										</template>
+										
 									</view>
 									
 									<!-- 再次购买按钮 商家角色且心愿为待收货或者已完成-->

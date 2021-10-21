@@ -252,6 +252,23 @@ const zh = {
 		// 我的心愿列表页面list
 		list: {
 			
+			all: "全部",
+			agentstatus: {
+				title: '代理状态',
+				unbind: '未代理',
+				bind: '已代理'
+			},
+			paystatus: {
+				title: '支付状态',
+				unpay: '未支付',
+				pay: '已支付'
+			},
+			purchasestatus: {
+				title: '订货状态',
+				unpurchase: '未订货',
+				purchase: '已订货'
+			}
+			
 		},
 		
 		// 心愿详情页面wishdetail

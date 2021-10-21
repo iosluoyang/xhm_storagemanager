@@ -85,10 +85,10 @@
 				type: Number,
 				default: -1
 			},// 支付状态 -1全部 0未支付 1已支付
-			deliveryStatus: {
+			purchaseStatus: {
 				type: Number,
 				default: -1
-			},// 发货状态 -1全部 0未发货 1已发货
+			},// 订货状态 -1全部 0未订货 1已订货
 			i: Number, // 每个tab页的专属下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 			index: { // 当前tab的下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 				type: Number,
@@ -171,8 +171,8 @@
 					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
 					// 支付状态
 					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
-					// 发货状态
-					wherestr += `${ this.deliveryStatus == 1 ? ' && (wishOrderId.deliveryTime != "") ' : this.deliveryStatus == 0 ? ' && wishOrderId.deliveryTime == "" ' : '' } `
+					// 订货状态
+					wherestr += `${ this.purchaseStatus == 1 ? ' && (wishOrderId.thirdOrderNum != "") ' : this.purchaseStatus == 0 ? ' && wishOrderId.thirdOrderNum == "" ' : '' } `
 					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
 					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
@@ -209,8 +209,8 @@
 					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
 					// 支付状态
 					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
-					// 发货状态
-					wherestr += `${ this.deliveryStatus == 1 ? ' && (wishOrderId.deliveryTime != "")' : this.deliveryStatus == 0 ? ' && wishOrderId.deliveryTime == "" ' : '' } `
+					// 订货状态
+					wherestr += `${ this.purchaseStatus == 1 ? ' && (wishOrderId.thirdOrderNum != "")' : this.purchaseStatus == 0 ? ' && wishOrderId.thirdOrderNum == "" ' : '' } `
 					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
 					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`

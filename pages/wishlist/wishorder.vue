@@ -10,24 +10,30 @@
 		<view v-if="wishinfo && orderinfo" class="contentview padding-sm">
 			
 			<!-- 收货地址 -->
-			<view v-if="false" class="addressview shadow-warp bg-white padding flex">
+			<view v-if="true" class="addressview shadow-warp bg-white padding flex">
 				
 				<view class="iconview margin-right">
 					<text class="cuIcon cuIcon-deliver_fill text-blue u-font-40"></text>
 				</view>
 				
-				<view class="addresscontentview">
+				<view v-if="false" class="addresscontentview">
 					<view class="contactview text-lg flex align-center">
 						<view class="text-black text-bold">{{ `收货人` }}</view>
 						<view class="text-black margin-left">{{ `18818881888` }}</view>
 					</view>
 					<view class="addressview margin-top-sm text-wrap">
-						{{ `详细地址详细地址详细地址详细地址详细地址详细地址详细地址` }}
+						{{ `收货地址收货地址收货地址收货地址收货地址收货地址收货地址收货地址` }}
 					</view>
 				</view>
 				
-				<view class="shippingview">
-					
+				<view v-if="orderinfo.deliveryInfo" class="shippingview">
+					<view class="cu-list">
+						<view class="cu-item">
+							<view class="title">{{ `物流公司` }}</view>
+							<view class="content">{{ `内容` }}</view>
+						</view>
+					</view>
+					{{ JSON.stringify(orderinfo.deliveryInfo) }}
 				</view>
 				
 			</view>
