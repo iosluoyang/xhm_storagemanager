@@ -127,6 +127,16 @@
 				}
 			}
 		},
+		"rateTime": {
+			"bsonType":"timestamp",
+			"description":"用户评分时间",
+			"defaultValue":""
+		},
+		"rateNum": {
+			"bsonType":"int",
+			"description":"评分分数",
+			"defaultValue": -1
+		},
 		"creatUser": {
 			"bsonType": "string",
 			"description": "发布者的uid",
@@ -139,7 +149,7 @@
 		},
 		"status": {
 			"bsonType": "int",
-			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货完成"
+			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货完成 4已评价完成"
 		},
 		"wishId": {
 			"bsonType": "string",

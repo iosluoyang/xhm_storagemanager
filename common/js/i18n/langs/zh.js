@@ -312,13 +312,25 @@ const zh = {
 		
 		// 心愿订单相关
 		wishorder: {
-			
+			status:{
+				topay: '待付款',
+				todelivery: '待发货',
+				toreceive: '待收货',
+				done: '已完成'
+			},
 			checkwishorder: "查看心愿订单",
 			receiveall: "已收到全部货物",
 			receiveallconfirm: "请确认是否收到全部货物",
 			receiveparttip: "您仅收到部分货物,后续将继续记录收货数量",
 			receivealltip: "您已确认收到全部货物,请核实收货数量",
 			receiveparts: "收到部分货物",
+			shippinginfo: "物流信息",
+			shipping: {
+				shippingname: "物流名称",
+				shippingnum: "物流单号",
+				shippingremark: "物流备注",
+				shippingpic: "物流图片"
+			},
 			purchaseinfo: "订购信息",
 			orderinfo: "订单信息",
 			confirminfo: "确认信息",
@@ -335,6 +347,7 @@ const zh = {
 			purchase: "下单",
 			delivery: "发货",
 			receive: "确认收货",
+			rate: "评分",
 			timeupclosetip: "已过付款时间, 是否关闭订单?",
 			havetrackingnum: "有物流单号",
 			havenotrackingnum: "没有物流单号",

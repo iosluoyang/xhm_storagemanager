@@ -311,12 +311,25 @@ const th = {
 		// 心愿订单相关
 		wishorder: {
 			
+			status:{
+				topay: 'pay',
+				todelivery: 'delivery',
+				toreceive: 'receive',
+				done: 'done'
+			},
 			checkwishorder: "Check wish order",
 			receiveall: "Receive All",
 			receiveallconfirm: "Please make sure that you got all products",
 			receiveparttip: "You just got some of the products, will continue recording later",
 			receivealltip: "You got all the products, please check the total amount",
 			receiveparts: "Receive Parts",
+			shippinginfo: "Shipping Info",
+			shipping: {
+				shippingname: "Shipping Name",
+				shippingnum: "Shipping Number",
+				shippingremark: "Shipping Remark",
+				shippingpic: "Shipping Picture"
+			},
 			purchaseinfo: "Purchase Info",
 			orderinfo: "Order Info",
 			confirminfo: "Confirm Info",
@@ -333,6 +346,7 @@ const th = {
 			purchase: "Purchase",
 			delivery: "Delivery Order",
 			receive: "Confirm received",
+			rate: "Rate",
 			timeupclosetip: "Payment time up, Do you want to close this order?",
 			havetrackingnum: "With Tracking Num",
 			havenotrackingnum: "Without Tracking Num",

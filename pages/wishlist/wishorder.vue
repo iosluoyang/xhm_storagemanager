@@ -9,31 +9,59 @@
 		<!-- 内容视图 -->
 		<view v-if="wishinfo && orderinfo" class="contentview padding-sm">
 			
-			<!-- 收货地址 -->
-			<view v-if="true" class="addressview shadow-warp bg-white padding flex">
+			<!-- 步骤条 -->
+			<view v-if="stepList" class="cu-steps">
 				
-				<view class="iconview margin-right">
-					<text class="cuIcon cuIcon-deliver_fill text-blue u-font-40"></text>
+				<view class="cu-item" :class="item.status < orderinfo.status ? 'text-red' : '' " v-for="(item,index) in stepList" :key="index">
+					<text :class="'cuIcon-' + item.cuIcon"></text> {{item.name}}
 				</view>
 				
-				<view v-if="false" class="addresscontentview">
-					<view class="contactview text-lg flex align-center">
-						<view class="text-black text-bold">{{ `收货人` }}</view>
-						<view class="text-black margin-left">{{ `18818881888` }}</view>
-					</view>
-					<view class="addressview margin-top-sm text-wrap">
-						{{ `收货地址收货地址收货地址收货地址收货地址收货地址收货地址收货地址` }}
-					</view>
+			</view>
+			
+			<!-- 物流信息 -->
+			<view v-if="orderinfo.deliveryInfo" class="addressview padding solid margin-top-sm">
+				
+				<view class="iconview flex align-center">
+					<text class="cuIcon cuIcon-deliver_fill text-blue u-font-40 margin-right"></text>
+					<text class="text-black text-bold">{{ i18n.wishlist.wishorder.shippinginfo }}</text>
 				</view>
 				
-				<view v-if="orderinfo.deliveryInfo" class="shippingview">
-					<view class="cu-list">
-						<view class="cu-item">
-							<view class="title">{{ `物流公司` }}</view>
-							<view class="content">{{ `内容` }}</view>
-						</view>
-					</view>
-					{{ JSON.stringify(orderinfo.deliveryInfo) }}
+				<view v-if="orderinfo.deliveryInfo" class="shippingview margin-top-sm">
+					
+					<!-- 物流信息集合 手风琴 -->
+					<u-collapse :item-style="{marginTop: '20rpx'}" event-type="close" :arrow="true" :accordion="true">
+						
+						<u-collapse-item v-if="orderinfo.deliveryInfo.domesticShippingName" :index="1" :title=" i18n.wishlist.wishorder.shipping.shippingname " :key="1">
+							<view class="collapse-item">
+								<text>{{ orderinfo.deliveryInfo.domesticShippingName }}</text>
+								<text class="cuIcon cuIcon-copy text-blue margin-left-sm" @tap.stop="$basejs.copytoclipboard(orderinfo.deliveryInfo.domesticShippingName)"></text>
+							</view>
+						</u-collapse-item>
+						
+						<u-collapse-item v-if="orderinfo.deliveryInfo.domesticShippingNum" :index="2" :title=" i18n.wishlist.wishorder.shipping.shippingnum " :key="2">
+							<view class="collapse-item flex flex-wrap">
+								<view class="cu-tag round bg-grey" v-for="(eachshipping,shippingindex) in orderinfo.deliveryInfo.domesticShippingNum.split(',')" :key="shippingindex" @tap.stop="$basejs.copytoclipboard(eachshipping)">
+									{{ eachshipping }}
+								</view>
+							</view>
+						</u-collapse-item>
+						
+						<u-collapse-item v-if="orderinfo.deliveryInfo.remark" :index="3" :title=" i18n.wishlist.wishorder.shipping.shippingremark " :key="3">
+							<view class="collapse-item">
+								<text>{{ orderinfo.deliveryInfo.remark }}</text>
+							</view>
+						</u-collapse-item>
+						
+						<u-collapse-item v-if="orderinfo.deliveryInfo.imgs" :index="4" :title=" i18n.wishlist.wishorder.shipping.shippingpic " :key="4">
+							<view class="collapse-item bg-white padding">
+								<view class="grid col-4 grid-square">
+									<view class="bg-img" v-for="(item,index) in orderinfo.deliveryInfo.imgs.split(',')" :key="index" :style="[{ backgroundImage:'url(' + item + ')' }]" @tap.stop="previewImgs(orderinfo.deliveryInfo.imgs, index)"></view>
+								</view>
+							</view>
+						</u-collapse-item>
+						
+					</u-collapse>
+					
 				</view>
 				
 			</view>
@@ -237,7 +265,7 @@
 			<template v-if="user._id == orderinfo.creatUser">
 				
 				<!-- 查看心愿按钮 -->
-				<button class="cu-btn round bg-pink margin-right-sm" @tap.stop="gotowishdetail">{{ i18n.nav.wishdetail }}</button>
+				<!-- <button class="cu-btn round bg-pink margin-right-sm" @tap.stop="gotowishdetail">{{ i18n.nav.wishdetail }}</button> -->
 				
 				<!-- 如果是待付款订单 -->
 				<template v-if="orderinfo.status == 0">
@@ -247,6 +275,11 @@
 				<!-- 如果是待收货订单 -->
 				<template v-if="orderinfo.status == 2">
 					<button class="cu-btn round bg-cyan" @tap.stop="clientstartconfirmreceive">{{ i18n.wishlist.wishorder.receive }}</button>
+				</template>
+				
+				<!-- 如果是待评价订单 -->
+				<template v-if="orderinfo.status == 3">
+					<button class="cu-btn round bg-red" @tap.stop="clientstartconfirmrate">{{ i18n.wishlist.wishorder.rate }}</button>
 				</template>
 				
 			</template>
@@ -260,7 +293,7 @@
 				</template>
 				
 				<!-- 查看心愿按钮 -->
-				<button class="cu-btn round bg-pink margin-right-sm" @tap.stop="gotowishdetail">{{ i18n.nav.wishdetail }}</button>
+				<!-- <button class="cu-btn round bg-pink margin-right-sm" @tap.stop="gotowishdetail">{{ i18n.nav.wishdetail }}</button> -->
 				
 				<!-- 如果是待发货显示发货按钮 -->
 				<template v-if="orderinfo.status == 1">
@@ -564,6 +597,27 @@
 					
 				</template>
 				
+				<!-- 客户评分 -->
+				<template v-if="popuptype == 'customerrate'">
+					
+					<view class="topcontentview padding">
+						
+						<view class="titleview text-lg text-bold text-center">{{ `我们需要您的评价` }}</view>
+						
+						<view class="flex align-center justify-center padding margin-top">
+							<u-rate :count="rateTotalNum" v-model="rateNum"
+									active-color="#FA3534" inactive-color="#b2b2b2" gutter="20" size="60"
+							>
+							</u-rate>
+						</view>
+						
+					</view>
+					
+					<button class="bottombtn cu-btn block width50 bg-gradual-red" :style="{height: '100rpx', margin: '0 auto'}" @tap.stop="clientconfirmrate">
+						{{ i18n.base.confirm }}
+					</button>
+					
+				</template>
 			</view>
 			
 		</u-popup>
@@ -583,6 +637,7 @@
 		
 		data() {
 			return {
+				
 				ifloading: false, // 是否正在加载
 				
 				wishId: null, // 心愿id
@@ -590,6 +645,8 @@
 				
 				wishinfo: null, // 心愿详情数据
 				orderinfo: null, // 心愿订单数据
+				
+				shippingItemArr: [], // 物流信息数组
 				
 				receiveType: 2, // 收货状态 0未收货  1部分收货  2全部收到货 默认为2
 				receiveproductcontent: "", // 部分收货信息内容
@@ -608,6 +665,11 @@
 				
 				popuptype: '', // 弹框显示内容类型 
 				ifshowpopup: false, // 是否显示弹框
+				
+				stepList: [], // 步骤器数据
+				
+				rateNum: 0, // 当前评价分数
+				rateTotalNum: 5, // 当前评分总数
 				
 			}
 		},
@@ -677,6 +739,9 @@
 						if(orderinfo) {
 							_this.orderinfo = orderinfo
 							_this.wishId = orderinfo.wishId
+							
+							// 加载步骤器数据
+							_this.setStepsData()
 
 							// 获取对应的心愿详情数据
 							db.collection('wishlist')
@@ -731,6 +796,34 @@
 				.finally(() => {
 					_this.ifloading = false
 				})
+				
+			},
+			
+			// 设置步骤
+			setStepsData() {
+				
+				// 0已下单待付款 1已付款待发货 2已发货待收货 3已收货完成
+				let stepsList = [
+					{
+						cuIcon: 'moneybagfill',
+						name: this.i18n.wishlist.wishorder.status.topay,
+						status: 0,
+					}, {
+						cuIcon: 'deliver_fill',
+						name: this.i18n.wishlist.wishorder.status.todelivery,
+						status: 1,
+					}, {
+						cuIcon: 'homefill',
+						name: this.i18n.wishlist.wishorder.status.toreceive,
+						status: 2,
+					}, {
+						cuIcon: 'roundcheckfill',
+						name: this.i18n.wishlist.wishorder.status.done,
+						status: 3,
+					},
+				]
+				
+				this.stepList = stepsList
 				
 			},
 			
@@ -1349,6 +1442,10 @@
 								uni.$emit('updatewishlist')
 								uni.$emit('updatewishdetail')
 								
+								// 弹出评分框
+								_this.popuptype = 'customerrate'
+								_this.ifshowpopup = true
+								
 								// 增加时间轴信息
 								// 增加一条已完成的时间轴
 								db.collection('wishlisttimeline')
@@ -1449,6 +1546,67 @@
 					})
 					
 				}
+				
+			},
+			
+			// 客户开始评价
+			clientstartconfirmrate() {
+				_this.poptype = 'customerrate'
+				_this.ifshowpopup = true
+			},
+			
+			// 客户完成评价
+			clientconfirmrate() {
+				
+				let rateNum = Number(this.rateNum)
+				
+				if(rateNum == 0) {
+					uni.showToast({
+						title: '请先进行评价(please rate first)',
+						icon: 'none'
+					});
+					return
+				}
+				
+				// 开始更新
+				const db = uniCloud.database();
+				db.collection('order')
+				.doc(_this.wishOrderId)
+				.update({
+					status: 4, // 更改订单状态为4 已评价
+					rateTime: db.env.now,
+					rateNum: rateNum
+				})
+				.then(response => {
+					uni.hideLoading()
+					if(response.result.code == 0) {
+						
+						_this.ifshowpopup = false
+						
+						// 更新订单成功
+						_this.loaddata()
+						
+						uni.showToast({
+							title: _this.i18n.tip.optionsuccess,
+							icon: 'none'
+						});
+						
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					}
+					
+				})
+				.catch(error => {
+					uni.hideLoading()
+					uni.showToast({
+						title: _this.i18n.error.optionerror,
+						icon: 'none'
+					});
+				})
 				
 			},
 			
