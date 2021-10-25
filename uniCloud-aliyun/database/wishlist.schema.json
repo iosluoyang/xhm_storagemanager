@@ -50,6 +50,37 @@
 			"bsonType": "string",
 			"description": "商品别名"
 		},
+		"warehouse": {
+			"bsonType":"object",
+			"description":"该心愿商品对应的转运仓信息",
+			"properties": {
+				"company": {
+					"bsonType":"string",
+					"description":"物流公司名称",
+					"defaultValue":""
+				},
+				"city": {
+					"bsonType":"string",
+					"description":"仓库所在城市",
+					"defaultValue":""
+				},
+				"shippingWay": {
+					"bsonType":"string",
+					"description":"物流方式  sea海运 car陆运",
+					"defaultValue":""
+				},
+				"price": {
+					"bsonType":"string",
+					"description":"物流价格",
+					"defaultValue":""
+				},
+				"shippingCode": {
+					"bsonType":"string",
+					"description":"仓库代码",
+					"defaultValue":""
+				}
+			}
+		},
 		"sourceLink": {
 			"description": "原网址链接"
 		},

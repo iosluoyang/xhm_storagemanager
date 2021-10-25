@@ -87,13 +87,32 @@
 			</view>
 			
 			<!-- 输入规格数量 -->
-			<view v-if="!specPropInfo" class="cu-form-group solid-bottom">
+			<view v-if="!specPropInfo" class="cu-form-group">
 				<view class="title">{{i18n.wishlist.common.amount}} :</view>
 				<input class="text-right" maxlength="-1" disable-default-padding :cursor-spacing="100" v-model="targetAmount" :placeholder="i18n.placeholder.handlewish.amount" />
 			</view>
 			
-			<!-- 备注 -->
+			<!-- 选择仓库 -->
+			<view class="cu-form-group" @tap.stop="selectshow = !selectshow">
+				<view class="title">{{i18n.wishlist.common.warehouse}}</view>
+				<view class="content flex align-center justify-end">
+					<view class="selectcontent text-right">
+						<text :class="[ selectwarehouseinfo ? 'text-black' : 'text-sm text-gray' ]">{{ selectwarehouseinfo ? `${selectwarehouseinfo.company.label}->${selectwarehouseinfo.city.label}->${selectwarehouseinfo.shippingway.label}` : i18n.placeholder.handlewish.warehouse }}</text>
+						<text v-if="selectwarehouseinfo" class="text-red text-sm block">≈{{ selectwarehouseinfo.shippingway.extra }}</text>
+					</view>
+					<text class="cuIcon cuIcon-right"></text>
+				</view>
+				
+			</view>
+			
+			<!-- 唛头 -->
 			<view class="cu-form-group">
+				<view class="title">{{i18n.wishlist.common.shippingcode}}</view>
+				<input class="text-right" :placeholder="i18n.placeholder.handlewish.shippingcode" name="shippingcode" v-model="shippingCode"></input>
+			</view>
+			
+			<!-- 备注 -->
+			<view class="cu-form-group margin-top">
 				<textarea maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="100" v-model="remark" :placeholder="i18n.placeholder.handlewish.remark" />
 			</view>
 			
@@ -151,6 +170,9 @@
 			
 		</u-popup>
 		
+		<!-- 仓库地址选择器 -->
+		<u-select v-model="selectshow" mode="mutil-column-auto" :list="warehouseselectlist" @confirm="confirmselect"></u-select>
+		
 	</view>
 </template>
 
@@ -173,6 +195,11 @@
 				aliasName: '', // 别名
 				sourceLink: '', // 源网站链接
 				sellerInfo: null, // 卖家信息
+				selectshow: false, // 是否显示仓库选择器
+				warehouseselectlist: [], // 仓库地址选择器数据
+				selectwarehouseinfo: null, // 当前选择的仓库信息
+				shippingCode: '', // 仓库代码
+				
 								
 				productSecretCode: '', // 商品编码口令
 				productPureUrl: '', //商品纯链接
@@ -233,6 +260,9 @@
 			
 			// 设置紧急程度数组
 			this.setHurryLevelArr()
+			
+			// 设置收货仓库地址
+			this.getwarehousedatalist()
 			
 		},
 		
@@ -429,7 +459,141 @@
 				}
 				
 			},
-						
+			
+			// 获取收货仓库数据
+			getwarehousedatalist() {
+				
+				let list = [
+					{
+						value: 'aat',
+						label: 'AAT',
+						children: [
+							{
+								value: 'gz',
+								label: '广州/GuangZhou',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3300/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							},
+							{
+								value: 'yw',
+								label: '义乌/YiWu',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3300/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							}
+						]
+					},
+					{
+						value: 'tlm',
+						label: 'TLM',
+						children: [
+							{
+								value: 'gz',
+								label: '广州/GuangZhou',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3650/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5700/m³'
+									}
+								]
+							},
+							{
+								value: 'yw',
+								label: '义乌/YiWu',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3650/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5700/m³'
+									}
+								]
+							}
+						]
+					},
+					{
+						value: 'cargo',
+						label: 'Cargo',
+						children: [
+							{
+								value: 'gz',
+								label: '广州/GuangZhou',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3500/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							},
+							{
+								value: 'yw',
+								label: '义乌/YiWu',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3500/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							}
+						]
+					}
+				]
+				
+				this.warehouseselectlist = list
+				
+			},
+			
+			// 选择收货仓库
+			confirmselect(e) {
+				this.selectwarehouseinfo = {
+					company: e[0],
+					city: e[1],
+					shippingway: e[2],
+				}
+				console.log(this.selectwarehouseinfo);
+			},
+			
 			// 输入价格
 			typesourcePrice(e) {
 				let sourcePrice = e.detail.value
@@ -567,6 +731,22 @@
 					});
 					return false
 				}
+				// 检查是否有选择的仓库
+				else if(!this.selectwarehouseinfo) {
+					uni.showToast({
+						title: this.i18n.placeholder.handlewish.warehouse,
+						icon: 'none'
+					});
+					return false
+				}
+				// 检查是否有唛头
+				else if(!this.shippingCode) {
+					uni.showToast({
+						title: this.i18n.placeholder.handlewish.shippingcode,
+						icon: 'none'
+					});
+					return false
+				}
 				// 检查是否有图片
 				else if(this.imgArr.length == 0) {
 					uni.showToast({
@@ -606,6 +786,13 @@
 				let info = {
 					productTitle: _this.productTitle, // 商品标题
 					aliasName: _this.aliasName, // 商品别名
+					warehouse: {
+						company: _this.selectwarehouseinfo.company.value,
+						city: _this.selectwarehouseinfo.city.value,
+						shippingWay: _this.selectwarehouseinfo.shippingway,
+						price: _this.selectwarehouseinfo.shippingway.extra,
+						shippingCode: _this.shippingCode
+					},
 					sourceLink: _this.sourceLink, // 源网站链接
 					sellerInfo: _this.sellerInfo, // 商品卖家信息
 					sourcePrice: _this.sourcePrice, // 源网站价格
