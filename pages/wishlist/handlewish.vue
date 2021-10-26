@@ -98,17 +98,31 @@
 				<view class="content flex align-center justify-end">
 					<view class="selectcontent text-right">
 						<text :class="[ selectwarehouseinfo ? 'text-black' : 'text-sm text-gray' ]">{{ selectwarehouseinfo ? `${selectwarehouseinfo.company.label}->${selectwarehouseinfo.city.label}->${selectwarehouseinfo.shippingway.label}` : i18n.placeholder.handlewish.warehouse }}</text>
-						<text v-if="selectwarehouseinfo" class="text-red text-sm block">≈{{ selectwarehouseinfo.shippingway.extra }}</text>
+						<text v-if="selectwarehouseinfo" class="text-red text-sm block">≈{{ selectwarehouseinfo.price.value }}</text>
 					</view>
 					<text class="cuIcon cuIcon-right"></text>
 				</view>
-				
 			</view>
 			
 			<!-- 唛头 -->
-			<view class="cu-form-group">
+			<view class="cu-form-group pos-relative">
 				<view class="title">{{i18n.wishlist.common.shippingcode}}</view>
-				<input class="text-right" :placeholder="i18n.placeholder.handlewish.shippingcode" name="shippingcode" v-model="shippingCode"></input>
+				<view class="inputview pos-relative">
+					<input class="text-right" :placeholder="i18n.placeholder.handlewish.shippingcode" name="shippingcode" :value="shippingCode" @focus="typeshippingcodefocus" @blur="typeshippingcodeblur" @input="typeshippingcode"></input>
+					
+					<!-- 提示信息 -->
+					<view v-show="ifshowcodetip && codelistsearchresult && codelistsearchresult.length > 0" class="tipsview pos-absolute shadow shadow-blur bg-white"
+								style="top: 35px; left: 0; right: 0;z-index: 10;"
+					>
+						
+						<view class="contentview padding-sm" style="max-height: 200rpx;overflow: scroll;">
+							<view v-for="(item,index) in codelistsearchresult" :key="item" class="text-grey padding-sm" @tap.stop="shippingCode = item">{{ item }}</view>
+						</view>
+						
+					</view>
+					
+				</view>
+				
 			</view>
 			
 			<!-- 备注 -->
@@ -199,6 +213,9 @@
 				warehouseselectlist: [], // 仓库地址选择器数据
 				selectwarehouseinfo: null, // 当前选择的仓库信息
 				shippingCode: '', // 仓库代码
+				ifshowcodetip: false, // 是否显示仓库代码提示
+				codelistsearchresult: null, // 仓库代码提示数组
+				merchantcodeshipcodelist: null, // 商家个人仓库代码列表数据
 				
 								
 				productSecretCode: '', // 商品编码口令
@@ -241,6 +258,12 @@
 			
 			this.type = option.type // add 新增  edit编辑 copy拷贝
 			
+			// 设置收货仓库地址
+			this.getwarehousedatalist()
+			
+			// 设置紧急程度数组
+			this.setHurryLevelArr()
+			
 			// 如果是新增
 			if(this.type === 'add') {
 				// 如果有第三方商品信息则自动加载数据
@@ -257,12 +280,6 @@
 				this.id = option.id // 心愿详情id(编辑或者拷贝的原心愿id)
 				this.getwishdetail()
 			}
-			
-			// 设置紧急程度数组
-			this.setHurryLevelArr()
-			
-			// 设置收货仓库地址
-			this.getwarehousedatalist()
 			
 		},
 		
@@ -300,7 +317,7 @@
 				let wherestr = ` _id == '${_this.id}' `
 				db.collection('wishlist,uni-id-users')
 				.where(wherestr)
-				.field('creatUser{nickname,avatar,unitCommissionFee},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,optionTime,productExt,specPropInfo,thirdPidType,thirdPid,sellerInfo')
+				.field('creatUser{nickname,avatar,unitCommissionFee},_id,achieveFlag,productTitle,aliasName,hurryLevel,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,remark,creatTime,optionTime,productExt,specPropInfo,thirdPidType,thirdPid,sellerInfo,warehouse')
 				.get({
 					getOne:true
 				})
@@ -331,6 +348,52 @@
 						this.specPropInfo = info.specPropInfo
 						this.sellerInfo = info.sellerInfo
 						
+						// 获取仓库信息
+						let warehouse = info.warehouse
+						let selectwarehouseinfo = {}
+						
+						if(warehouse) {
+							console.log(warehouse);
+							console.log(this.warehouseselectlist);
+							// 根据warehouse的值进行遍历找到对应的选中项
+							this.warehouseselectlist.forEach(companyitem => {
+								if(companyitem.value == warehouse.company) {
+									selectwarehouseinfo.company = {
+										label: companyitem.label,
+										value: companyitem.value
+									}
+									
+									companyitem.children.forEach(cityitem => {
+										if(cityitem.value == warehouse.city) {
+											selectwarehouseinfo.city = {
+												label: cityitem.label,
+												value: cityitem.value
+											}
+											
+											cityitem.children.forEach(shippingwayitem => {
+												if(shippingwayitem.value == warehouse.shippingWay) {
+													selectwarehouseinfo.shippingway = {
+														label: shippingwayitem.label,
+														value: shippingwayitem.value
+													}
+													
+													selectwarehouseinfo.price = {
+														label: 'price',
+														value: shippingwayitem.extra
+													}
+												}
+											})
+										}
+									})
+								}
+							})
+							
+							if(selectwarehouseinfo && selectwarehouseinfo.company && selectwarehouseinfo.city && selectwarehouseinfo.shippingway && selectwarehouseinfo.price) {
+								this.selectwarehouseinfo = selectwarehouseinfo
+							}
+							
+							this.shippingCode = warehouse.shippingCode
+						}
 						
 					}
 					else {
@@ -408,7 +471,6 @@
 			
 			// 显示提示弹框
 			showTipModal(type) {
-				
 				let modalImg = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-444a0d7a-4a95-4237-9dec-e7b434d01cda/32115416-4de9-439e-9cd3-ce844306167c.gif'
 				console.log(type);
 				// 来源链接
@@ -469,6 +531,22 @@
 						label: 'AAT',
 						children: [
 							{
+								value: 'any',
+								label: '任意/AnyCity',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3300/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							},
+							{
 								value: 'gz',
 								label: '广州/GuangZhou',
 								children: [
@@ -506,6 +584,22 @@
 						value: 'tlm',
 						label: 'TLM',
 						children: [
+							{
+								value: 'any',
+								label: '任意/AnyCity',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3650/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5700/m³'
+									}
+								]
+							},
 							{
 								value: 'gz',
 								label: '广州/GuangZhou',
@@ -545,6 +639,22 @@
 						label: 'Cargo',
 						children: [
 							{
+								value: 'any',
+								label: '任意/AnyCity',
+								children: [
+									{
+										value: 'sea',
+										label: '海运/Sea',
+										extra: '฿3500/kg'
+									},
+									{
+										value: 'car',
+										label: '陆运/Car',
+										extra: '฿5500/m³'
+									}
+								]
+							},
+							{
 								value: 'gz',
 								label: '广州/GuangZhou',
 								children: [
@@ -582,16 +692,77 @@
 				
 				this.warehouseselectlist = list
 				
+				// 加载个人仓库代码集合
+				if(this.user && this.user._id == '61081eaecd84d6000127f027') {
+					let merchantshippingcodelist = [
+						'AAT/0046/SEA',
+						'BL-SMARII(M)',
+						'TLM-5369sea'
+					]
+					
+					this.merchantcodeshipcodelist = merchantshippingcodelist
+				}
+				
 			},
 			
 			// 选择收货仓库
 			confirmselect(e) {
 				this.selectwarehouseinfo = {
-					company: e[0],
-					city: e[1],
-					shippingway: e[2],
+					company: {
+						label: e[0].label,
+						value: e[0].value
+					},
+					city: {
+						label: e[1].label,
+						value: e[1].value
+					},
+					shippingway: {
+						label: e[2].label,
+						value: e[2].value
+					},
+					price: {
+						label: 'price',
+						value: e[2].extra
+					},
 				}
 				console.log(this.selectwarehouseinfo);
+			},
+			
+			// 输入仓库代码
+			typeshippingcode(e) {
+				let shippingCode = e.detail.value
+				this.shippingCode = shippingCode
+				// 根据输入的内容进行搜索
+				this.$u.debounce(this.searchshippingcode, 500)
+			},
+			
+			// 输入仓库代码聚焦
+			typeshippingcodefocus() {
+				this.ifshowcodetip = true
+				this.searchshippingcode() // 手动调用一次搜索方法
+			},
+			
+			// 输入仓库代码失去焦点后
+			typeshippingcodeblur() {
+				// 加个延时 否则数据点击事件不生效
+				setTimeout(function() {
+					_this.ifshowcodetip = false
+				}, 100);
+			},
+			
+			// 搜索仓库代码结果
+			searchshippingcode() {
+				let typeshippingcode = this.shippingCode
+				
+				// 从该供应商的仓库代码中选择匹配的仓库代码
+				if(this.merchantcodeshipcodelist) {
+					let codelistsearchresult = this.merchantcodeshipcodelist.filter((item) => {
+						return item.indexOf(typeshippingcode) > -1
+					})
+					
+					this.codelistsearchresult = codelistsearchresult
+				}
+				
 			},
 			
 			// 输入价格
@@ -789,8 +960,8 @@
 					warehouse: {
 						company: _this.selectwarehouseinfo.company.value,
 						city: _this.selectwarehouseinfo.city.value,
-						shippingWay: _this.selectwarehouseinfo.shippingway,
-						price: _this.selectwarehouseinfo.shippingway.extra,
+						shippingWay: _this.selectwarehouseinfo.shippingway.value,
+						price: _this.selectwarehouseinfo.price.value,
 						shippingCode: _this.shippingCode
 					},
 					sourceLink: _this.sourceLink, // 源网站链接
