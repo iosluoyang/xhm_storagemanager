@@ -54,6 +54,7 @@ const zh = {
 		wishdetail: "心愿详情",
 		me: "个人中心",
 		storemanage: "店铺管理",
+		shipping: "物流",
 		notice: "公告",
 		resetpwd: "重置密码",
 		wishorder: "心愿订单",

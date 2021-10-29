@@ -93,7 +93,7 @@
 			</view>
 			
 			<!-- 选择仓库 -->
-			<view class="cu-form-group" @tap.stop="selectshow = !selectshow">
+			<view v-if="false" class="cu-form-group" @tap.stop="selectshow = !selectshow">
 				<view class="title">{{i18n.wishlist.common.warehouse}}</view>
 				<view class="content flex align-center justify-end">
 					<view class="selectcontent text-right">
@@ -105,7 +105,7 @@
 			</view>
 			
 			<!-- 唛头 -->
-			<view class="cu-form-group pos-relative">
+			<view v-if="false" class="cu-form-group pos-relative">
 				<view class="title">{{i18n.wishlist.common.shippingcode}}</view>
 				<view class="inputview pos-relative">
 					<input class="text-right" :placeholder="i18n.placeholder.handlewish.shippingcode" name="shippingcode" :value="shippingCode" @focus="typeshippingcodefocus" @blur="typeshippingcodeblur" @input="typeshippingcode"></input>
@@ -170,6 +170,30 @@
 				<view class="titleview padding-xl text-lg text-center text-bold text-black">{{ modalTitle }}</view>
 				
 				<view class="contentview padding text-df text-center">{{ modalContent }}</view>
+				
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<button class="cu-btn bg-grey" @tap="hideModal">{{ i18n.base.cancel }}</button>
+					</view>
+					<view class="action">
+						<button class="cu-btn bg-gradual-pink margin-left" @tap="confirmModal">{{ i18n.base.confirm }}</button>
+					</view>
+				</view>
+				
+			</view>
+			
+			<!-- 同商店心愿展示 -->
+			<view v-if="modalType == 'samestorewish'" class="bg-white contentview">
+				
+				<view class="contentview padding text-df text-center">{{ modalContent }}</view>
+				
+				<scroll-view scroll-x class="width100 padding-left padding-right shadow-blur flex align-center">
+					
+					<view class="eachwish" v-for="(item, index) in samestorewishlist" :key="item._id">
+						{{ JSON.stringify(item) }}
+					</view>
+					
+				</scroll-view>
 				
 				<view class="cu-bar bg-white">
 					<view class="action">
@@ -249,6 +273,8 @@
 				
 				showSelector: false, // 是否显示多规格选择器  默认为否
 				
+				samestorewishlist: null, // 同商店心愿列表
+				
 			};
 		},
 		
@@ -272,6 +298,9 @@
 					// 设置1688数据
 					this.set1688productInfo(productInfo1688)
 					uni.removeStorageSync('productInfo1688')
+					
+					// 同商家检测
+					this.getsamestorewishinfo()
 				}
 			}
 			
@@ -306,6 +335,42 @@
 		},
 		
 		methods: {
+			
+			// 获取同商家心愿单信息
+			getsamestorewishinfo() {
+				
+				return
+				const db = uniCloud.database();
+				// 心愿状态在待确认之前并且拥有相同的卖家id
+				db.collection('wishlist')
+				.where(`creatUser == '${this.user._id}' && achieveFlag < 2 && sellerInfo.sellerId == '${this.sellerInfo.sellerId}'`)
+				.get()
+				.then(response => {
+					
+					if(response.result.code == 0) {
+						let datalist = response.result.data
+						
+						// this.samestorewishlist = datalist
+						// this.modalTitle = ''
+						// this.modalContent = `还有这些心愿来自同一个商店, 是否进行关联?关联后心愿单将进行合并。`
+						// this.showModal = true
+						
+					}
+					else {
+						uni.showToast({
+							title: response.result.message,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
 			
 			// 获取心愿详情
 			getwishdetail() {
@@ -394,6 +459,9 @@
 							
 							this.shippingCode = warehouse.shippingCode
 						}
+						
+						// 同商家检测
+						this.getsamestorewishinfo()
 						
 					}
 					else {

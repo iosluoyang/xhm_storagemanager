@@ -25,6 +25,14 @@
 			}
 		}
 		,{
+		    "path" : "pages/me/shipping",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "物流"
+		    }
+		    
+		}
+		,{
 		    "path" : "pages/me/resetpwd",
 		    "style" : {
 				"navigationBarTitleText":"重置密码"
@@ -60,6 +68,7 @@
 			// 	"navigationBarTitleText":"查询物流"
 			// }
    //      }
+        
     ],
 	"subPackages": [
 		// 心愿单分包

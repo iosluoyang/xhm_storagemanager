@@ -109,7 +109,12 @@ exports.main = async (event, context) => {
 	// getlinkdetail 获取链接商品的详情
 	else if(type == 'getlinkdetail') {
 		
-		let linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
+		let linkApi = ''
+		// 根据不同的平台类型进行不同的链接请求
+		let platform = info.platform || '1688'
+		if(platform == '1688') {
+			linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
+		}
 		let text = info.text
 		let thirdPid = info.thirdPid
 		console.log(`参数为:text->${text}  thirdPid->${thirdPid}`);
@@ -123,7 +128,7 @@ exports.main = async (event, context) => {
 		    contentType: 'json', // 指定以application/json发送data内的数据
 		    dataType: 'json', // 指定返回值为json格式，自动进行parse
 		})
-		console.log(`wishlist中获取到的1688api商品详情的响应数据为`)
+		console.log(`wishlist中获取到的商品详情的响应数据为`)
 		console.log(res);
 		if(res.status == 200 && res.data && res.data.errorCode == '000000') {
 			
@@ -146,9 +151,34 @@ exports.main = async (event, context) => {
 				console.log(`第三方商品入库回调为:`);
 				console.log(linkprockres);
 				
+				// 将当前查询出来的商品信息入商品库
+				let productInfo = {
+					
+					platform: platform,
+					platformPid: product.thirdPid,
+					platformLink: product.linkUrl,
+					title: product.title,
+					price: product.priceRange,
+					imgs: product.imgs,
+					detailImgs: product.detailImgs,
+					specInfo: product.specPropInfo,
+					attributeList: product.attributeList,
+					sellerInfo: {
+						nickName: product.sellerInfo.nick,
+						sellerId: product.sellerInfo.sellerId,
+						shopName: product.sellerInfo.shopName
+					}
+					
+				}
+				
+				const productcollection = db.collection('product')
+				let productres = await productcollection.doc(productInfo.platformPid).set(productInfo)
+				console.log(`商品入库回调为:`);
+				console.log(productres);
+				
 			}catch(e){
 				//TODO handle the exception
-				console.log(`第三方商品入库回调失败,原因为`);
+				console.log(`商品入库回调失败,原因为`);
 				console.log(e);
 			}
 			

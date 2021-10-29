@@ -1,0 +1,36 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description":"心愿单关联的草稿箱商品表",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatTime" : {
+			"bsonType":"timestamp",
+			"description":"创建时间",
+			"forceDefaultValue":{
+				"$env":"now"
+			}
+		},
+		"uid": {
+			"bsonType":"string",
+			"description":"创建草稿箱的用户id",
+			"forceDefaultValue": {
+				"$env":"uid"
+			}
+		},
+		"pid": {
+			"bsonType":"int",
+			"description":"关联的linkproduct1688里面的商品pid",
+			"foreignKey":"linkproduct1688"
+		}
+	}
+}

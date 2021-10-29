@@ -1,0 +1,138 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description":"商品表，后续会从多个平台采集商品数据入库",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"platform": {
+			"bsonType":"string",
+			"description":"商品来源平台",
+			"enum": [
+				"1688",
+				"taobao",
+				"jd",
+				"pdd"
+			]
+		},
+		"platformPid": {
+			"bsonType":"string",
+			"description":"商品来源平台的pid"
+		},
+		"platformLink": {
+			"bsonType":"string",
+			"description":"商品来源平台的链接url"
+		},
+		"title": {
+			"bsonType":"string",
+			"description":"商品标题"
+		},
+		"price": {
+			"bsonType":"string",
+			"description":"商品价格"
+		},
+		"imgs": {
+			"bsonType":"string",
+			"description":"商品图片"
+		},
+		"detailImgs": {
+			"bsonType":"string",
+			"description":"商品详情图片"
+		},
+		"attributeList": {
+			"bsonType":"array",
+			"description":"商品属性数组",
+			"properties": {
+				"attributeName": {
+					"bsonType":"string",
+					"description":"属性名称"
+				},
+				"attributeVal": {
+					"bsonType":"string",
+					"description":"属性值"
+				}
+			}
+		},
+		"specInfo": {
+			"bsonType":"object",
+			"description":"商品规格对象",
+			"properties": {
+				"propName": {
+					"bsonType":"string",
+					"description":"一级规格名称"
+				},
+				"secondPropName": {
+					"bsonType":"string",
+					"description":"二级规格名称"
+				},
+				"propValList": {
+					"bsonType":"array",
+					"description":"一级规格数组",
+					"arrayType":"object",
+					"properties": {
+						"propVal": {
+							"bsonType":"string",
+							"description":"一级规格名称"
+						},
+						"img": {
+							"bsonType":"string",
+							"description":"一级规格图片"
+						},
+						"specStockList": {
+							"bsonType":"array",
+							"description":"一级规格下的二级规格数组",
+							"arrayType":"object",
+							"properties": {
+								"price": {
+									"bsonType":"string",
+									"description":"二级规格的价格"
+								},
+								"propVal": {
+									"bsonType":"string",
+									"description":"二级规格名称"
+								},
+								"specId": {
+									"bsonType":"string",
+									"description":"二级规格id"
+								},
+								"stockCount": {
+									"bsonType":"string",
+									"description":"二级规格库存"
+								}
+							}
+						}
+						
+					}
+				}
+			}
+		},
+		"sellerInfo": {
+			"bsonType":"object",
+			"description":"商品卖家信息",
+			"properties": {
+				"nickName": {
+					"bsonType":"string",
+					"description":"卖家昵称"
+				},
+				"sellerId": {
+					"bsonType":"string",
+					"description":"卖家id"
+				},
+				"shopName": {
+					"bsonType":"string",
+					"description":"店铺名称"
+				}
+			}
+		}
+		
+	}
+}

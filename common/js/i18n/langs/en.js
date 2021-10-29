@@ -53,6 +53,7 @@ const en = {
 		wishdetail: "Wish Detail",
 		me: "Me",
 		storemanage: "Store Manage",
+		shipping: "Shipping",
 		notice: "Notice",
 		resetpwd: "Reset Password",
 		wishorder: "Wish Order",

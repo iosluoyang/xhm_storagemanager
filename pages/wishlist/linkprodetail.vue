@@ -278,7 +278,8 @@
 				_this.ifloading = true
 				let data = {
 					text: this.searchText,
-					thirdPid: this.thirdPid
+					thirdPid: this.thirdPid,
+					platform: '1688', // 默认为获取1688平台商品数据
 				}
 				// 开始加载规格信息
 				uniCloud.callFunction({
@@ -527,6 +528,7 @@
 			specFinishSelect(selectSpecPropInfo) {
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
+				
 				// 跳转心愿单发布详情页面 替换规格对象为选择过之后的规格对象
 				if(selectSpecPropInfo) {
 					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.linkProduct.linkUrl}}

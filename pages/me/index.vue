@@ -21,14 +21,14 @@
 				<!-- 个人资料 包含昵称和标签以及个人简介 -->
 				<view class="contentview">
 					
-					<view class="topview flex flex-direction">
+					<view class="topview flex align-center">
 						
-						<view class="username text-white text-cut text-bold text-xl margin-right-sm" :style="{maxWidth: '400rpx'}">
+						<view class="username text-white text-cut text-bold text-xl margin-right-sm" :style="{maxWidth: '200rpx'}">
 							{{ iflogin ? user && user.nickname ? user.nickname : i18n.base.defaultusername : i18n.tip.pleaselogin }}
 						</view>
 						
 						<!-- 标签 -->
-						<view v-if="iflogin" class="usertag cu-tag radius margin-top-sm" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
+						<view v-if="iflogin" class="usertag cu-tag radius" :class="[ $basejs.getrolenameandcolor(user.role).bgColor ]">
 							{{ $basejs.getrolenameandcolor(user.role).title }}
 						</view>
 						
@@ -133,6 +133,16 @@
 					// url: '/pages/me/storemanage'
 				}
 				
+				// 仓库代码 仅商家管理员有
+				let shippingitem = {
+					id: 'shippingcode',
+					cuIcon: 'deliver_fill',
+					color: 'orange',
+					badge: 0,
+					name: this.i18n.nav.shipping,
+					url: '/pages/me/shipping'
+				}
+				
 				// 公告管理
 				let noticeitem = {
 					id: 'notice',
@@ -187,6 +197,9 @@
 					if(this.user.role == 'MERCHANT_ADMIN') {
 						// 添加店铺管理选项
 						panelList.push(storemanageitem)
+						
+						// 添加仓库代码选项
+						panelList.push(shippingitem)
 					}
 					
 				}
