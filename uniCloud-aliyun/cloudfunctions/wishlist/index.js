@@ -172,7 +172,7 @@ exports.main = async (event, context) => {
 				}
 				
 				const productcollection = db.collection('product')
-				let productres = await productcollection.doc(productInfo.platformPid).set(productInfo)
+				let productres = await productcollection.doc(product.pid).set(productInfo)
 				console.log(`商品入库回调为:`);
 				console.log(productres);
 				
