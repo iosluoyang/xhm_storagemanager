@@ -4,14 +4,58 @@
 	"description":"心愿草稿箱商品表",
 	"required": [],
 	"permission": {
-		"read": false,
-		"create": false,
-		"update": false,
-		"delete": false
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
 	},
 	"properties": {
 		"_id": {
 			"description": "ID，系统自动生成"
+		},
+		"status": {
+			"bsonType":"int",
+			"description":"草稿箱商品状态 0未加入心愿单 1已加入心愿单  默认为0",
+			"defaultValue": 0
+		},
+		"pid": {
+			"bsonType":"string",
+			"description":"关联基本商品表的pid",
+			"foreignKey":"product._id"
+		},
+		"creatUid": {
+			"bsonType":"string",
+			"description":"创建者uid,关联用户表的uid",
+			"foreignKey":"uni-id-users._id",
+			"forceDefaultValue": {
+				"$env":"uid"
+			}
+		},
+		"creatTime": {
+			"bsonType":"timestamp",
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"selectSpec": {
+			"bsonType":"array",
+			"description":"用户选择的商品规格数组",
+			"arrayType":"object",
+			"properties": {
+				"specId": {
+					"bsonType":"string",
+					"description":"选中规格的id"
+				},
+				"amount": {
+					"bsonType":"string",
+					"description":"选中规格的数量"
+				}
+			}
+		},
+		"aliaName": {
+			"bsonType":"string",
+			"description":"心愿草稿商品别名"
 		}
 	}
 }
