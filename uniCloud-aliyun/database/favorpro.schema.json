@@ -27,15 +27,25 @@
 				"$env": "uid"
 			} // 强制设置creatUid的值为当前登录用户的id
 		},
-		"thirdPid": {
+		"platform": {
+			"bsonType":"string",
+			"description":"收藏商品的渠道来源",
+			"enum": [
+				"1688",
+				"taobao",
+				"jd",
+				"pdd"
+			]
+		},
+		"platformPid": {
 			"bsonType": "string",
 			"description": "收藏商品的第三方pid",
-			"foreignKey": "linkproduct1688.thirdPid" // 使用foreignKey表示，此字段关联linkproduct1688表的thirdPid
+			"foreignKey": "product.platformPid"
 		},
 		"pid": {
-			"bsonType": "int",
+			"bsonType": "string",
 			"description": "收藏商品的pid",
-			"foreignKey": "linkproduct1688.pid" // 使用foreignKey表示，此字段关联linkproduct1688表的pid
+			"foreignKey": "product._id"
 		}
 	}
 }

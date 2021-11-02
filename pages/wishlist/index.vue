@@ -27,7 +27,7 @@
 			</view>
 			
 			<!-- 搜索记录区域 -->
-			<view v-if="searchrecord1688 && searchrecord1688.length > 0" class="searchrecord bg-white">
+			<view v-if="searchrecord && searchrecord.length > 0" class="searchrecord bg-white">
 				
 				<view class="titleview flex margin align-center text-sm">
 					{{ i18n.base.searchhistory }}
@@ -36,11 +36,11 @@
 				
 				<scroll-view scroll-x class="recordlistview padding-sm bg-gray" :style="{whiteSpace: 'nowrap'}">
 					
-					<view class="eachsearchrecord margin-left-sm shadow-blur shadow-warp bg-white radius padding-bottom-sm pos-relative" :style="{display: 'inline-block'}" v-for="(item, index) in searchrecord1688" :key="index" @tap.stop="searchRecord(item)">
+					<view class="eachsearchrecord margin-left-sm shadow-blur shadow-warp bg-white radius padding-bottom-sm pos-relative" :style="{display: 'inline-block'}" v-for="(item, index) in searchrecord" :key="index" @tap.stop="searchRecord(item)">
 						<!-- 删除按钮 -->
 						<text class="cuIcon cuIcon-roundclosefill text-white pos-absolute" :style="{right: '10rpx', top: '10rpx', zIndex: 100}" @tap.stop="deleteRecord(index)"></text>
 						<!-- 图片 -->
-						<u-image :src="item.img" mode="aspectFill" width="150rpx" height="150rpx"></u-image>
+						<u-image :src="item.imgs.split(',')[0]" mode="aspectFill" width="150rpx" height="150rpx"></u-image>
 						<!-- 标题 -->
 						<view class="title margin-top-sm text-sm text-cut padding-left-sm" :style="{width: '150rpx', height: '30rpx', boxSizing: 'border-box'}">{{ item.title }}</view>
 					</view>
@@ -89,7 +89,7 @@
 		data() {
 			return {
 				searchText: '', // 搜索文本
-				searchrecord1688: null, // 搜索历史
+				searchrecord: null, // 搜索历史
 			};
 		},
 		
@@ -100,8 +100,8 @@
 		
 		onShow() {
 			// 加载搜索历史
-			let searchrecord1688 = uni.getStorageSync('searchrecordarr1688')
-			this.searchrecord1688 = searchrecord1688
+			let searchrecord = uni.getStorageSync('searchrecordarr')
+			this.searchrecord = searchrecord
 		},
 			
 		methods: {
@@ -155,10 +155,10 @@
 					success: res => {
 						if(res.confirm) {
 							
-							_this.searchrecord1688.splice(index, 1)
-							let searchrecord1688Arr = uni.getStorageSync('searchrecordarr1688') || []
-							searchrecord1688Arr.splice(index, 1)
-							uni.setStorageSync('searchrecordarr1688', searchrecord1688Arr)
+							_this.searchrecord.splice(index, 1)
+							let searchrecordArr = uni.getStorageSync('searchrecordarr') || []
+							searchrecordArr.splice(index, 1)
+							uni.setStorageSync('searchrecordarr', searchrecordArr)
 							
 						}
 					}
@@ -177,8 +177,8 @@
 					confirmText: this.i18n.base.confirm,
 					success: res => {
 						if(res.confirm) {
-							this.searchrecord1688 = null
-							uni.removeStorageSync('searchrecordarr1688')
+							this.searchrecord = null
+							uni.removeStorageSync('searchrecordarr')
 						}
 					}
 				});
@@ -187,9 +187,10 @@
 			
 			// 点击记录进行搜索
 			searchRecord(item) {
-				let thirdPid = item.thirdPid
+				let platform = item.platform
+				let platFormPid = item.platformPid
 				uni.navigateTo({
-					url: '/pages/wishlist/linkprodetail?thirdPid=' + thirdPid
+					url: `/pages/wishlist/linkprodetail?platform=${platform}&platformPid=${platFormPid}`
 				});
 			},
 			

@@ -25,7 +25,7 @@
 						
 						<!-- 价格 和 取消收藏按钮-->
 						<view class="priceinfo margin-top-sm flex align-center justify-between">
-							<text class="text-red text-price text-lg">{{item.productInfo.priceRange}}</text>
+							<text class="text-red text-price text-lg">{{item.productInfo.price}}</text>
 							<text class="cuIcon cuIcon-favorfill text-orange u-font-40" @tap.stop="unfavoritem(index)"></text>
 						</view>
 						
@@ -81,9 +81,9 @@
 				let dataArr = [...this.dataArr]
 				
 				const db = uniCloud.database();
-				db.collection('favorpro,linkproduct1688')
+				db.collection('favorpro,product')
 				.where(`creatUser == $cloudEnv_uid`)
-				.field('pid as productInfo, thirdPid, favorTime, creatUser')
+				.foreignKey('favorpro.pid')
 				.orderBy(`favorTime desc`)
 				.skip((pageNum - 1) * pageSize)
 				.limit(pageSize)
@@ -95,8 +95,7 @@
 						// 加载成功
 						let list = response.result.data || []
 						// 将查询出来的对应商品数组取第一个作为对象
-						list.map((eachpro => ( eachpro.productInfo = eachpro.productInfo[0] )))
-						console.log(list);
+						list.map((eachpro => ( eachpro.productInfo = eachpro.pid[0] )))
 
 						if(pageNum == 1) {
 							dataArr = [] //清空数据源
@@ -165,9 +164,10 @@
 			
 			// 点击详情
 			gotoprodetail(item) {
-				let thirdPid = item.productInfo.thirdPid
+				let platform = item.productInfo.platform
+				let platformPid = item.productInfo.platformPid
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
+					url: `/pages/wishlist/linkprodetail?platform=${platform}&platformPid=${platformPid}`
 				});
 			},
 			

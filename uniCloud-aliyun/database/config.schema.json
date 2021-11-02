@@ -10,18 +10,6 @@
 	"properties": {
 		"_id": {
 			"description": "ID，系统自动生成"
-		},
-		"config_version": {
-			"bsonType": "string",
-			"description": "配置文件版本号"
-		},
-		"appName": {
-			"bsonType": "string",
-			"description": "app名称"
-		},
-		"serviceImg": {
-			"bsonType": "string",
-			"description": "客服微信图片地址"
 		}
 	}
 }

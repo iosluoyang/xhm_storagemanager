@@ -51,6 +51,7 @@ const zh = {
 		mywishlistfavor: "收藏心愿",
 		procategory: "商品分类",
 		prodetail: "商品详情",
+		wishdraft: "心愿草稿箱",
 		wishdetail: "心愿详情",
 		me: "个人中心",
 		storemanage: "店铺管理",
@@ -245,6 +246,7 @@ const zh = {
 			detail: "详情",
 			attribute: "属性",
 			tradeprotocol: "订购须知",
+			stock: "库存",
 			havenolinkprodata: "暂时没有找到该商品,是否手动添加?",
 		},
 		

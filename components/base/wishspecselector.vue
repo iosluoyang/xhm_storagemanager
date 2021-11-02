@@ -29,7 +29,6 @@
 						
 					</view>
 					
-					
 				</view>
 				
 			</view>
@@ -121,7 +120,7 @@
 											
 											<!-- 库存区域 -->
 											<view class="stockview flex align-center">
-												<text>库存:</text>
+												<text>{{ i18n.wishlist.prodetail.stock }}:</text>
 												<input style="width: 100rpx;" :class="[ type == 'edit' ? 'borderCDCDCD radius' : '' ]" type="number" v-model="seconditem.stock" :disabled="true" />
 												
 												<!-- 编辑状态下的删除按钮 -->
@@ -448,7 +447,6 @@
 									seconditem['translateName'] = resultArr[index++]
 								})
 							})
-							// this.$forceUpdate()
 							
 						}
 						else {

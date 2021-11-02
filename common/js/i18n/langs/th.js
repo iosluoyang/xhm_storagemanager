@@ -50,6 +50,7 @@ const th = {
 		mywishlistfavor: "Favor List",
 		procategory: "Category",
 		prodetail: "Product Detail",
+		wishdraft: "wish Draft",
 		wishdetail: "Wish Detail",
 		me: "Me",
 		storemanage: "Store Manage",
@@ -243,6 +244,7 @@ const th = {
 			detail: "Detail",
 			attribute: "Attribute",
 			tradeprotocol: "Instruction",
+			stock: "Stock",
 			havenolinkprodata: "Cant find this product , Do you want to add it manually ?",
 		},
 		

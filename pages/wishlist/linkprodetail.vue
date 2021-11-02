@@ -7,18 +7,19 @@
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
-		<view v-if="linkProduct" class="prodetailview">
+		<view v-if="linkProduct" class="prodetailview padding-left-sm padding-right-sm">
 			
 			<!-- 轮播图 -->
-			<swiper v-if="swiperImgsArr" class="card-swiper square-dot bg-gray" :indicator-dots="true" :circular="true"
+			<swiper v-if="swiperImgsArr" class="screen-swiper round-dot bg-white swiper padding-sm" :indicator-dots="true" :circular="true"
 				indicator-color="#8799a3" indicator-active-color="#6739b6" 
 				:autoplay="true" interval="3000" duration="300" @change="swiperChange">
 				<swiper-item v-for="(item,index) in swiperImgsArr" :key="index"
 								:class=" swiperIndex==index?'cur': '' "
+								class="radius"
 								@tap.stop="previewImgs(swiperImgsArr, index)"
 				>
 				
-					<view class="swiper-item">
+					<view class="swiper-item height100 width100">
 						<image :src="item" mode="aspectFill" :lazy-load="false"></image>
 					</view>
 					
@@ -26,9 +27,9 @@
 			</swiper>
 			
 			<!-- 标题售价等区域 -->
-			<view class="titleheaderview margin-top padding-left-sm padding-right-sm">
+			<view class="titleheaderview margin-top">
 				<view class="title text-black text-bold text-xl" @longpress="$basejs.copytoclipboard(linkProduct.title)">{{ linkProduct.title }}</view>
-				<view class="text-price text-red margin-top-sm u-font-40">{{ linkProduct.priceRange }}</view>
+				<view class="text-price text-red margin-top-sm u-font-40">{{ linkProduct.price }}</view>
 			</view>
 			
 			<!-- tab视图 -->
@@ -41,7 +42,7 @@
 			</u-sticky>
 			
 			<!-- tab内容区域 -->
-			<view class="tabcontentview padding-left-sm padding-right-sm">
+			<view class="tabcontentview">
 				
 				<!-- 如果是详情 -->
 				<view v-if="detailImgsArr" v-show="TabCur == 0" class="detailimgsview">
@@ -118,7 +119,7 @@
 							:specPropInfo="specPropInfo" 
 							:ifshow.sync="showSelector"
 							:defaultProTitle="linkProduct.title"
-							:defaultProPrice="linkProduct.priceRange"
+							:defaultProPrice="linkProduct.price"
 							@finishSelect="specFinishSelect">
 		</wishSpecSelector>
 		
@@ -147,7 +148,8 @@
 				searchrecordmaxnum: 5, // 搜索历史最大数量
 				
 				searchText: '', // 搜索文本
-				thirdPid: '', // 第三方pid
+				platform: '', // 第三方平台名称
+				platformPid: '', // 第三方pid
 				
 				linkProduct: null, // 外链商品详情
 				attributeList: [], // 属性数组
@@ -207,15 +209,14 @@
 			_this = this
 			
 			if(option.searchText) {
-				// let searchText = uni.getStorageSync('linkprosearchtext')
 				
 				let searchText = decodeURIComponent(option.searchText)
 				this.searchText = searchText
-				// uni.removeStorageSync('linkprosearchtext')
 			}
 			
-			if(option.thirdPid) {
-				this.thirdPid = option.thirdPid
+			if(option.platform && option.platformPid) {
+				this.platform = option.platform
+				this.platformPid = option.platformPid
 			}
 			
 			this.loadDetailData()
@@ -278,8 +279,8 @@
 				_this.ifloading = true
 				let data = {
 					text: this.searchText,
-					thirdPid: this.thirdPid,
-					platform: '1688', // 默认为获取1688平台商品数据
+					platform: this.platform || '1688', // 默认为获取1688平台商品数据
+					platformPid: this.platformPid || '',
 				}
 				// 开始加载规格信息
 				uniCloud.callFunction({
@@ -298,7 +299,6 @@
 							
 							let swiperImgsArr =  linkProduct.imgs ? linkProduct.imgs.split(',') : []
 							_this.swiperImgsArr = swiperImgsArr.length > _this.eachMaxDetailImgNum ? swiperImgsArr.slice(0,_this.eachMaxDetailImgNum) : swiperImgsArr
-							
 							
 							let detailImgsArr = linkProduct.detailImgs ? linkProduct.detailImgs.split(',') : []
 							_this.detailImgsArr = detailImgsArr.length > _this.eachMaxDetailImgNum ? detailImgsArr.slice(0,_this.eachMaxDetailImgNum) : detailImgsArr
@@ -350,17 +350,9 @@
 			// 设置搜索历史
 			setSearchRecordData() {
 				
-				let searchRecord = {
-					pid: _this.linkProduct.pid,
-					thirdPid: _this.linkProduct.thirdPid,
-					title: _this.linkProduct.title,
-					img: _this.linkProduct.imgs ? _this.linkProduct.imgs.split(',')[0] : '',
-					price: _this.linkProduct.priceRange
-				}
+				let searchRecordArr = uni.getStorageSync('searchrecordarr') || []
 				
-				let searchRecordArr = uni.getStorageSync('searchrecordarr1688') || []
-				
-				let ifExist = searchRecordArr.findIndex((record) => (record.thirdPid == searchRecord.thirdPid)) > -1
+				let ifExist = searchRecordArr.findIndex((record) => (record.platformPid == _this.linkProduct.platformPid)) > -1
 				
 				// 不存在则进行记录
 				if(!ifExist) {
@@ -370,12 +362,12 @@
 						searchRecordArr.pop()
 					}
 					// 将最新搜索记录放首位
-					searchRecordArr.unshift(searchRecord)
-					uni.setStorageSync('searchrecordarr1688', searchRecordArr)
+					searchRecordArr.unshift(_this.linkProduct)
+					uni.setStorageSync('searchrecordarr', searchRecordArr)
 				}
 				
 				console.log(`当前搜索记录为:`);
-				let localsearchrecord = uni.getStorageSync('searchrecordarr1688')
+				let localsearchrecord = uni.getStorageSync('searchrecordarr')
 				console.log(localsearchrecord);
 				
 			},
@@ -443,7 +435,7 @@
 				if(this.isFavor) {
 					// 取消收藏
 					const dbCmd = db.command
-					db.collection('favorpro').where(dbCmd.or({thirdPid: linkProduct.thirdPid},{pid: linkProduct.pid})).remove()
+					db.collection('favorpro').where( `pid == '${linkProduct.pid}'` ).remove()
 					.then(res => {
 						
 						if(res.result.code == 0) {
@@ -469,7 +461,7 @@
 				}
 				else {
 					// 开始收藏
-					let data = {thirdPid: linkProduct.thirdPid,pid: linkProduct.pid}
+					let data = {platformPid: linkProduct.platformPid,pid: linkProduct.pid, platform: linkProduct.platform}
 					db.collection('favorpro').add(data).then(res => {
 						if(res.result.code == 0) {
 							uni.showToast({
@@ -529,9 +521,77 @@
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
 				
+				// 将该选择规格加入心愿草稿箱
+				const db = uniCloud.database();
+				// 查看是否存在同一用户同一商品pid且状态为0(未加入心愿单)的记录 如果有则进行合并
+				let wherequery = ` creatUid == $cloudEnv_uid && pid == '${this.linkProduct.pid}' && status == 0 `
+				console.log(wherequery);
+				db.collection('wish-draft-product').where(wherequery).get()
+				.then(response => {
+					console.log(response.result);
+					if(response.result.code == 0) {
+						// 获取成功 此时看是否有存在的数据
+						
+						// 未加入过草稿箱  此时添加一条草稿箱数据
+						if(response.result.data.length == 0) {
+							let draftprodata = {
+								status: 0, //
+								pid: this.linkProduct.pid,
+								selectSpecPropInfo: selectSpecPropInfo
+							}
+							db.collection('wish-draft-product').add(draftprodata).then(response => {
+								// 添加成功
+								uni.showToast({
+									title: this.i18n.tips.optionsuccess,
+									icon: 'none'
+								});
+							}).catch(error => {
+								uni.showToast({
+									title: this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
+						}
+						// 加入过草稿箱 此时进行规格合并
+						else {
+							let data = response.result.data[0]
+							let docId = data._id
+							let oldSelectSpecPropInfo = {...data.selectSpecPropInfo}
+							// 遍历规格进行增加
+							
+							selectSpecPropInfo.propValList.forEach((firstitem, firstindex) => {
+								firstitem.specStockList.forEach((seconditem, secondindex) => {
+									let oldseconditem = oldSelectSpecPropInfo.propValList[firstindex].specStockList[secondindex]
+									if(seconditem.specId == oldseconditem.specId) {
+										seconditem.amount += oldseconditem.amount
+									}
+								})
+							})
+							
+							console.log(selectSpecPropInfo);
+							
+							db.collection('wish-draft-product').doc(docId).update({selectSpecPropInfo: selectSpecPropInfo}).then(response => {
+								// 
+							}).catch(error => {
+								uni.showToast({
+									title: this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
+						}
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: this.i18n.error.optionerror,
+						icon: 'none'
+					});
+				})
+				
+				return
 				// 跳转心愿单发布详情页面 替换规格对象为选择过之后的规格对象
 				if(selectSpecPropInfo) {
-					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}, ...{sourceLink: this.linkProduct.linkUrl}}
+					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}}
 					console.log(newLinkProduct);
 					uni.setStorageSync('productInfo1688', newLinkProduct)
 					uni.redirectTo({

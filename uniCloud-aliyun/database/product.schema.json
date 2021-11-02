@@ -62,7 +62,7 @@
 				}
 			}
 		},
-		"specInfo": {
+		"specPropInfo": {
 			"bsonType":"object",
 			"description":"商品规格对象",
 			"properties": {

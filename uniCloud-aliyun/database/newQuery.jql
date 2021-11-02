@@ -8,6 +8,8 @@
 // 数据库查询有最大返回条数限制，详见：https://uniapp.dcloud.net.cn/uniCloud/cf-database?id=limit
 // 详细JQL语法，请参考 https://uniapp.dcloud.net.cn/uniCloud/clientdb?id=jsquery
 
-
 const db = uniCloud.database();
 const dbCmd = db.command;
+
+db.collection('favorpro').where(`creatUser == '60935ff54b94800001ec46bb'`).get()
+db.collection('favorpro').where(`creatUser == '60935ff54b94800001ec46bb'`).remove()

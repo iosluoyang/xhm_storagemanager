@@ -109,19 +109,25 @@ exports.main = async (event, context) => {
 	// getlinkdetail 获取链接商品的详情
 	else if(type == 'getlinkdetail') {
 		
+		let text = info.text
+		let platform = info.platform || '1688'
+		let platformPid = info.platformPid
+		
 		let linkApi = ''
 		// 根据不同的平台类型进行不同的链接请求
-		let platform = info.platform || '1688'
 		if(platform == '1688') {
 			linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
 		}
-		let text = info.text
-		let thirdPid = info.thirdPid
-		console.log(`参数为:text->${text}  thirdPid->${thirdPid}`);
+		
+		let datainfo = {
+			text: text,
+			thirdPid: platformPid
+		}
+		console.log(`参数为:text->${text}  platform->${info.platform}  platformPid=>${info.platformPid}`);
 		const res = await uniCloud.httpclient.request(linkApi, {
 		    method: 'POST',
 			data: {
-				info: JSON.stringify(info)
+				info: JSON.stringify(datainfo)
 			},
 			dataAsQueryString: true, // 是否强制转换data为queryString
 			// nestedQuerystring: true, // 转换data为queryString时默认不支持嵌套Object，此选项设置为true则支持转换嵌套Object
@@ -134,48 +140,33 @@ exports.main = async (event, context) => {
 			
 			let data = res.data.data
 			let product = data.product
+			product.pid = product.pid.toString()
 			
-			// 尝试将第三方商品数据入库
+			let productInfo = {
+				
+				platform: platform,
+				platformPid: product.thirdPid || '',
+				platformLink: product.linkUrl || '',
+				title: product.title || '',
+				price: product.priceRange || '',
+				imgs: product.imgs || '',
+				detailImgs: product.detailImgs || '',
+				specPropInfo: product.specPropInfo || null,
+				attributeList: product.attributeList || [],
+				sellerInfo: {
+					nickName: product.sellerInfo.nick || '',
+					sellerId: product.sellerInfo.sellerId || '',
+					shopName: product.sellerInfo.shopName || ''
+				},
+				
+			}
+			
+			// 尝试将当前查询出来的商品信息入商品库
 			try{
-				
-				// 将当前查询出来的第三方商品信息入1688商品数据库
-				let linkproduct1688 = {
-					pid: product.pid,
-					thirdPid: product.thirdPid,
-					title: product.title,
-					priceRange: product.priceRange,
-					imgs: product.imgs
-				}
-				const linkproductcollection = db.collection('linkproduct1688')
-				let linkprockres = await linkproductcollection.doc(product.pid).set(linkproduct1688)
-				console.log(`第三方商品入库回调为:`);
-				console.log(linkprockres);
-				
-				// 将当前查询出来的商品信息入商品库
-				let productInfo = {
-					
-					platform: platform,
-					platformPid: product.thirdPid,
-					platformLink: product.linkUrl,
-					title: product.title,
-					price: product.priceRange,
-					imgs: product.imgs,
-					detailImgs: product.detailImgs,
-					specInfo: product.specPropInfo,
-					attributeList: product.attributeList,
-					sellerInfo: {
-						nickName: product.sellerInfo.nick,
-						sellerId: product.sellerInfo.sellerId,
-						shopName: product.sellerInfo.shopName
-					}
-					
-				}
-				
 				const productcollection = db.collection('product')
 				let productres = await productcollection.doc(product.pid).set(productInfo)
 				console.log(`商品入库回调为:`);
 				console.log(productres);
-				
 			}catch(e){
 				//TODO handle the exception
 				console.log(`商品入库回调失败,原因为`);
@@ -187,21 +178,22 @@ exports.main = async (event, context) => {
 			// 如果用户登录则开始查询
 			if(uid) {
 				let favorcollection = db.collection('favorpro')
-				let favorres =  await favorcollection.where({creatUser: uid, thirdPid: product.thirdPid}).get({getOne: true})
-				console.log(`查询收藏表的数据为:`);
-				console.log(favorres);
-				if(favorres.affectedDocs > 0) {
+				let favorres =  await favorcollection.where({creatUser: uid, pid: product.pid}).count()
+				if(favorres.total > 0) {
 					// 找到了收藏表中的数据 则为已收藏状态
 					favorFlag = 1
 				}
 			}
 			
 			// 将返回值写入收藏字段
-			product['favorFlag'] = favorFlag
+			productInfo['favorFlag'] = favorFlag
+			
+			// 将pid写入字段
+			productInfo['pid'] = product.pid.toString()
 			
 			let result = {
 				code: 0,
-				data: product
+				data: productInfo
 			}
 			
 			return result

@@ -38,24 +38,66 @@
 				"$env": "now"
 			}
 		},
-		"selectSpec": {
-			"bsonType":"array",
-			"description":"用户选择的商品规格数组",
-			"arrayType":"object",
+		"selectSpecPropInfo": {
+			"bsonType":"object",
+			"description":"选中的商品规格对象",
 			"properties": {
-				"specId": {
+				"propName": {
 					"bsonType":"string",
-					"description":"选中规格的id"
+					"description":"一级规格名称"
 				},
-				"amount": {
+				"secondPropName": {
 					"bsonType":"string",
-					"description":"选中规格的数量"
+					"description":"二级规格名称"
+				},
+				"propValList": {
+					"bsonType":"array",
+					"description":"一级规格数组",
+					"arrayType":"object",
+					"properties": {
+						"propVal": {
+							"bsonType":"string",
+							"description":"一级规格名称"
+						},
+						"img": {
+							"bsonType":"string",
+							"description":"一级规格图片"
+						},
+						"specStockList": {
+							"bsonType":"array",
+							"description":"一级规格下的二级规格数组",
+							"arrayType":"object",
+							"properties": {
+								"price": {
+									"bsonType":"string",
+									"description":"二级规格的价格"
+								},
+								"propVal": {
+									"bsonType":"string",
+									"description":"二级规格名称"
+								},
+								"specId": {
+									"bsonType":"string",
+									"description":"二级规格id"
+								},
+								"stockCount": {
+									"bsonType":"string",
+									"description":"二级规格库存"
+								},
+								"amount": {
+									"bsonType":"int",
+									"description":"选择的规格数量"
+								}
+							}
+						}
+					}
 				}
 			}
 		},
 		"aliaName": {
 			"bsonType":"string",
-			"description":"心愿草稿商品别名"
+			"description":"心愿草稿商品别名",
+			"defaultValue":""
 		}
 	}
 }
