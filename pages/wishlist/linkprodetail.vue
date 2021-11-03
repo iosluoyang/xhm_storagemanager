@@ -4,6 +4,7 @@
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.prodetail}}</block>
+			<text class="cuIcon cuIcon-cartfill text-white u-font-40 margin-right" slot="right" @tap.stop="jumptodraft"></text>
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
@@ -347,6 +348,13 @@
 				
 			},
 			
+			// 跳转心愿草稿箱
+			jumptodraft() {
+				uni.navigateTo({
+					url: '/pages/wishlist/wishdraftpro'
+				});
+			},
+			
 			// 设置搜索历史
 			setSearchRecordData() {
 				
@@ -525,7 +533,6 @@
 				const db = uniCloud.database();
 				// 查看是否存在同一用户同一商品pid且状态为0(未加入心愿单)的记录 如果有则进行合并
 				let wherequery = ` creatUid == $cloudEnv_uid && pid == '${this.linkProduct.pid}' && status == 0 `
-				console.log(wherequery);
 				db.collection('wish-draft-product').where(wherequery).get()
 				.then(response => {
 					console.log(response.result);
@@ -537,12 +544,13 @@
 							let draftprodata = {
 								status: 0, //
 								pid: this.linkProduct.pid,
+								sellerId: this.linkProduct.sellerInfo.sellerId,
 								selectSpecPropInfo: selectSpecPropInfo
 							}
 							db.collection('wish-draft-product').add(draftprodata).then(response => {
 								// 添加成功
 								uni.showToast({
-									title: this.i18n.tips.optionsuccess,
+									title: this.i18n.tip.optionsuccess,
 									icon: 'none'
 								});
 							}).catch(error => {
@@ -571,7 +579,19 @@
 							console.log(selectSpecPropInfo);
 							
 							db.collection('wish-draft-product').doc(docId).update({selectSpecPropInfo: selectSpecPropInfo}).then(response => {
-								// 
+								// 更新成功
+								if(response.result.code == 0) {
+									uni.showToast({
+										title: this.i18n.tip.optionsuccess,
+										icon: 'none'
+									});
+								}
+								else {
+									uni.showToast({
+										title: this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								}
 							}).catch(error => {
 								uni.showToast({
 									title: this.i18n.error.optionerror,
@@ -580,6 +600,12 @@
 							})
 						}
 					}
+					else {
+						uni.showToast({
+							title: this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					}
 				})
 				.catch(error => {
 					uni.showToast({
@@ -587,17 +613,6 @@
 						icon: 'none'
 					});
 				})
-				
-				return
-				// 跳转心愿单发布详情页面 替换规格对象为选择过之后的规格对象
-				if(selectSpecPropInfo) {
-					let newLinkProduct = {...this.linkProduct, ...{specPropInfo: selectSpecPropInfo}}
-					console.log(newLinkProduct);
-					uni.setStorageSync('productInfo1688', newLinkProduct)
-					uni.redirectTo({
-						url: '/pages/wishlist/handlewish?type=add'
-					});
-				}
 				
 			},
 			

@@ -23,6 +23,11 @@
 			"description":"关联基本商品表的pid",
 			"foreignKey":"product._id"
 		},
+		"sellerId": {
+			"bsonType":"string",
+			"description":"商家id",
+			"defaultValue":""
+		},
 		"creatUid": {
 			"bsonType":"string",
 			"description":"创建者uid,关联用户表的uid",
