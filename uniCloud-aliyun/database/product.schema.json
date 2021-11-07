@@ -14,6 +14,11 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"pid": {
+			"bsonType":"string",
+			"description":"商品pid  同_id",
+			"defaultValue":""
+		},
 		"platform": {
 			"bsonType":"string",
 			"description":"商品来源平台",

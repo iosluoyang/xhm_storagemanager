@@ -132,9 +132,8 @@
 					
 					// 将搜索文本存储在本地
 					let searchText = encodeURIComponent(this.searchText)
-					
 					uni.navigateTo({
-						url: `/pages/wishlist/linkprodetail?searchText=${searchText}`
+						url: `/pages/wishlist/linkprodetail?searchText=${searchText}&platform=1688`
 					});
 					
 					// 清空搜索文本
@@ -187,10 +186,8 @@
 			
 			// 点击记录进行搜索
 			searchRecord(item) {
-				let platform = item.platform
-				let platFormPid = item.platformPid
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?platform=${platform}&platformPid=${platFormPid}`
+					url: `/pages/wishlist/linkprodetail?pid=${item.pid}&platformPid=${item.platformPid}`
 				});
 			},
 			

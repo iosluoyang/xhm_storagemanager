@@ -164,10 +164,8 @@
 			
 			// 点击详情
 			gotoprodetail(item) {
-				let platform = item.productInfo.platform
-				let platformPid = item.productInfo.platformPid
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?platform=${platform}&platformPid=${platformPid}`
+					url: `/pages/wishlist/linkprodetail?pid=${item.productInfo.pid}&platformPid=${item.productInfo.platformPid}`
 				});
 			},
 			

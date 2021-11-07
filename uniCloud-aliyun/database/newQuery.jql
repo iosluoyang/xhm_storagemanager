@@ -10,6 +10,3 @@
 
 const db = uniCloud.database();
 const dbCmd = db.command;
-
-db.collection('favorpro').where(`creatUser == '60935ff54b94800001ec46bb'`).get()
-db.collection('favorpro').where(`creatUser == '60935ff54b94800001ec46bb'`).remove()

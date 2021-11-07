@@ -112,18 +112,20 @@ exports.main = async (event, context) => {
 		let text = info.text
 		let platform = info.platform || '1688'
 		let platformPid = info.platformPid
+		let pid = info.pid
 		
-		let linkApi = ''
-		// 根据不同的平台类型进行不同的链接请求
+		let linkApi = '' // 请求接口链接
+		
 		if(platform == '1688') {
 			linkApi = `https://xhm.xiaohemu.net/tshuser/pro/apiapp/app/purchase/productdetail1688.ac`
 		}
 		
 		let datainfo = {
 			text: text,
+			pid: pid,
 			thirdPid: platformPid
 		}
-		console.log(`参数为:text->${text}  platform->${info.platform}  platformPid=>${info.platformPid}`);
+		console.log(`参数为:text->${text}  platform=>${info.platform}  platformPid=>${info.platformPid}  pid=>${info.pid}`);
 		const res = await uniCloud.httpclient.request(linkApi, {
 		    method: 'POST',
 			data: {
@@ -144,6 +146,7 @@ exports.main = async (event, context) => {
 			
 			let productInfo = {
 				
+				pid: product.pid,
 				platform: platform,
 				platformPid: product.thirdPid || '',
 				platformLink: product.linkUrl || '',
@@ -167,6 +170,7 @@ exports.main = async (event, context) => {
 				let productres = await productcollection.doc(product.pid).set(productInfo)
 				console.log(`商品入库回调为:`);
 				console.log(productres);
+				
 			}catch(e){
 				//TODO handle the exception
 				console.log(`商品入库回调失败,原因为`);

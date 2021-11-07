@@ -151,6 +151,7 @@
 				searchText: '', // 搜索文本
 				platform: '', // 第三方平台名称
 				platformPid: '', // 第三方pid
+				pid: '', // 商品pid
 				
 				linkProduct: null, // 外链商品详情
 				attributeList: [], // 属性数组
@@ -215,9 +216,16 @@
 				this.searchText = searchText
 			}
 			
-			if(option.platform && option.platformPid) {
+			if(option.platform) {
 				this.platform = option.platform
+			}
+			
+			if(option.platformPid) {
 				this.platformPid = option.platformPid
+			}
+			
+			if(option.pid) {
+				this.pid = option.pid
 			}
 			
 			this.loadDetailData()
@@ -280,8 +288,9 @@
 				_this.ifloading = true
 				let data = {
 					text: this.searchText,
-					platform: this.platform || '1688', // 默认为获取1688平台商品数据
-					platformPid: this.platformPid || '',
+					platform: this.platform, // 平台来源
+					platformPid: this.platformPid, // 第三方平台pid
+					pid: this.pid
 				}
 				// 开始加载规格信息
 				uniCloud.callFunction({
@@ -360,7 +369,7 @@
 				
 				let searchRecordArr = uni.getStorageSync('searchrecordarr') || []
 				
-				let ifExist = searchRecordArr.findIndex((record) => (record.platformPid == _this.linkProduct.platformPid)) > -1
+				let ifExist = searchRecordArr.findIndex((record) => (record.pid == _this.linkProduct.pid)) > -1
 				
 				// 不存在则进行记录
 				if(!ifExist) {
@@ -553,6 +562,10 @@
 									title: this.i18n.tip.optionsuccess,
 									icon: 'none'
 								});
+								
+								// 通知更新草稿箱数据
+								uni.$emit('updatecartdata')
+								
 							}).catch(error => {
 								uni.showToast({
 									title: this.i18n.error.optionerror,
@@ -585,6 +598,10 @@
 										title: this.i18n.tip.optionsuccess,
 										icon: 'none'
 									});
+									
+									// 通知更新草稿箱数据
+									uni.$emit('updatecartdata')
+									
 								}
 								else {
 									uni.showToast({
