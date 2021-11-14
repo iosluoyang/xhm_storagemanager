@@ -103,7 +103,18 @@ Vue.mixin({
 	},
 	
 	onShow() {
-		
+		// 需要检查用户登录信息的在此处进行检测
+		if(this.needtochecktoken) {
+			// 检测是否有用户信息，有用户信息的话检测token是否失效
+			if(this.user) {
+				uniCloud.callFunction({
+					name: 'user',
+					data: {
+						type: 'checktoken',
+					}
+				})
+			}
+		}
 	},
 	
 	methods: {

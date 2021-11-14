@@ -144,7 +144,7 @@
 				
 				console.log(`组件内部查询的agentStatus为:${this.agentStatus}--payStatus为:${this.payStatus}`);
 				// 代理员
-				if(this.user.role == 'PRODUCT_AGENT') {
+				if(this.user && this.user.role == 'PRODUCT_AGENT') {
 					
 					// 如果status=-2则代表查所有未关联代理员的心愿
 					if(achieveFlag == -2) {

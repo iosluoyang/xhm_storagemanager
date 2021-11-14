@@ -1,7 +1,7 @@
 {
     "passwordSecret": "passwordSecret-xhm_storagemanager",
     "tokenSecret": "tokenSecret-xhm_storagemanager",
-    "tokenExpiresIn": 216000,
+    "tokenExpiresIn": 86400,
     "tokenExpiresThreshold": 600,
     "bindTokenToDevice": false, 
     "passwordErrorLimit": 6,

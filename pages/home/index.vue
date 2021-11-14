@@ -120,7 +120,7 @@
 		
 		data() {
 			return {
-				
+				needtochecktoken: true, // 是否检测用户token信息
 				elements: [],
 				languageArr: [], // 当前语言数组
 				ifshowmodal: false, // 是否显示单选切换弹框  默认为否

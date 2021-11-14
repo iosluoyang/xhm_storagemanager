@@ -380,7 +380,7 @@
 	export default {
 		data() {
 			return {
-				
+				needtochecktoken: true, // 是否检测用户token信息
 				id: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishinfo: null, // 当前心愿详情

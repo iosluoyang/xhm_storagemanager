@@ -97,6 +97,14 @@ exports.main = async (event, context) => {
 		return res
 	}
 	
+	// 检测用户token
+	else if(type == 'checktoken') {
+		const res = uniIDIns.checkToken(token)
+		console.log(`user云函数-checktoken函数返回值:`);
+		console.log(res);
+		return res
+	}
+	
 	// 用户登出
 	else if(type == 'logout') {
 		const res = await uniIDIns.logout(token)

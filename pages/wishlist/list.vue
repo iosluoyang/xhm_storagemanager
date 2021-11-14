@@ -81,6 +81,8 @@
 		data() {
 			return {
 				
+				needtochecktoken: true, // 是否检测用户token信息
+				
 				currentStatus: -1, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本
 				
@@ -158,7 +160,7 @@
 				let computedCurrentStatus = this.computedCurrentStatus
 				
 				// 普通供应商
-				if(this.user && this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
+				if(this.user && (this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE')) {
 					// 根据当前选择的心愿状态区分筛选面板内容
 					if(computedCurrentStatus == -1 || computedCurrentStatus == 2) {
 						// 设置筛选面板数据
@@ -227,7 +229,7 @@
 				]
 				
 				// 如果是代理员则前面添加心愿池选项 -2未关联心愿
-				if(this.user.role == 'PRODUCT_AGENT') {
+				if(this.user && this.user.role == 'PRODUCT_AGENT') {
 					let unbindwishitem = {
 						name: this.i18n.wishlist.common.achieveflagdata.unbindwish,
 						status: -2,
@@ -324,6 +326,7 @@
 			// 获取操作条上的角标数量
 			getbadgenum() {
 				
+				if(!this.user) {return}
 				const db = uniCloud.database();
 				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUser == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? `agentUser == $cloudEnv_uid` : ''
 				db.collection('wishlist')

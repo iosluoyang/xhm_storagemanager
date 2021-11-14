@@ -163,7 +163,19 @@
 					  }
 					  // token过期则提示用户重新登录
 					  else if(code == 30203) {
-					  	_this.havetologin()
+					  	// _this.havetologin()
+						_this.$store.dispatch('user/resettoken').then(() => {
+							
+							setTimeout(function() {
+								
+								uni.showToast({
+									title: _this.i18n.tip.pleaselogin,
+									icon: 'none'
+								});
+								
+							}, 1000);
+							
+						})
 					  }
 					  // token 不合法
 					  else if(code == 30202) {
