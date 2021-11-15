@@ -146,7 +146,7 @@
 				let interceptor = {
 					
 				  invoke(param) {
-					  // console.log(`拦截器获取到的API参数为:`);
+						// console.log(`拦截器获取到的API参数为:`);
 					  // console.log(param);
 				    // param为拦截Api的参数 例 {name: 'functionName', data: {'functionParam1': 1, 'functionParam2': 2}}
 				    // 此处返回错误可终止api执行
