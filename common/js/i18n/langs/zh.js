@@ -6,6 +6,7 @@ const zh = {
 		copy: "复制",
 		paste: "粘贴",
 		edit: "编辑",
+		delete: "删除",
 		search: "搜索",
 		searchhistory: "搜索记录",
 		cancel: "取消",

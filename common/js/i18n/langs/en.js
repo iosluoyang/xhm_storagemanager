@@ -6,6 +6,7 @@ const en = {
 		copy: "Copy",
 		paste: "Paste",
 		edit: "Edit",
+		delete: "Delete",
 		search: "Search",
 		searchhistory: "Search Record",
 		cancel: "Cancel",
