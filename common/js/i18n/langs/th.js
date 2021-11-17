@@ -52,6 +52,7 @@ const th = {
 		procategory: "Category",
 		prodetail: "Product Detail",
 		wishdraft: "wish Draft",
+		makewishorder: "Make Wish Order",
 		wishdetail: "Wish Detail",
 		me: "Me",
 		storemanage: "Store Manage",

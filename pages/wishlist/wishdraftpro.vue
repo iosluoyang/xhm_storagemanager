@@ -239,6 +239,7 @@
 						eachproduct['ifSelect'] = true
 						eachproduct['selectSpecPropInfo'] = selectSpecPropInfoList[productindex]
 						eachproduct['draftproId'] = ids[productindex]
+						delete eachproduct._id
 						productList.push(eachproduct)
 						if(productindex == 0) {
 							eachstore['sellerInfo'] = eachproduct.sellerInfo
@@ -364,21 +365,22 @@
 				
 				let dataList = this.$refs?.udb?.dataList || []
 				// 获取当前选择的规格商品id
-				let selectSpecProArr = []
+				let selectSpecProIdArr = []
 				dataList.forEach(eachstore => {
 					eachstore.productList.forEach(eachpro => {
 						if(eachpro.ifSelect) {
-							let tmpEachPro = {...eachpro}
-							selectSpecProArr.push(tmpEachPro)
+							selectSpecProIdArr.push(eachpro.draftproId)
 						}
 					})
 				})
 				
-				console.log(selectSpecProArr);
+				console.log(selectSpecProIdArr);
 				
-				// 跳转至下单页
-				
-				
+				// 跳转至下单页 将选择的draftId数组传递至下单页进行请求
+				uni.setStorageSync('makeorderdraftidarr', selectSpecProIdArr)
+				uni.navigateTo({
+					url: '/pages/wishlist/makewishorder/makewishorder?sourceFrom=draftpro'
+				});
 			},
 			
 		}
@@ -388,7 +390,7 @@
 <style lang="scss" scoped>
 	
 	.pagecontent {
-		padding-bottom: calc(50px + 0px + env(safe-area-inset-bottom) / 2);;
+		padding-bottom: calc(50px + 0px + env(safe-area-inset-bottom) / 2);
 		.bottombar{
 			position: fixed;
 			bottom: 0;

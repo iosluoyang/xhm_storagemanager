@@ -98,11 +98,6 @@
 					}
 				}
 			}
-		},
-		"aliaName": {
-			"bsonType":"string",
-			"description":"心愿草稿商品别名",
-			"defaultValue":""
 		}
 	}
 }

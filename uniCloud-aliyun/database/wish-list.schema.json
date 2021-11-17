@@ -1,0 +1,182 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description": "心愿单数据表",
+	"required": [],
+	"permission": {
+		"read": true, // " 'merchant' in auth.role "
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"creatUser": {
+			"bsonType": "string",
+			"description": "发布者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue": {
+				"$env": "uid"
+			} // 强制设置creatUid的值为当前登录用户的id
+		},
+		"agentUser": {
+			"bsonType": "string",
+			"description": "代理员的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"agentFlag": {
+			"bsonType": "int",
+			"description": "是否已经关联代理人的标识",
+			"defaultValue": 0 // 默认没有关联
+		},
+		"updateTime": {
+			"description":"更新时间, 在代理员或商家 新增时间轴/编辑时间轴/更新拓展信息/确认报价单 等操作时进行实时更新",
+			"bsonType":"timestamp",
+			"defaultValue":""
+		},
+		"achieveFlag": {
+			"bsonType": "int",
+			"description": "心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭",
+			"defaultValue": 0
+		},
+		"remindFlag": {
+			"bsonType": "int",
+			"description": "是否需要提醒的标识  0否 1是",
+			"defaultValue": 0
+		},
+		"productExt": {
+			"bsonType": "object",
+			"description": "心愿单商品的拓展字段",
+			"properties": {
+				"secretCode": {
+					"bsonType": "string",
+					"description": "商品口令",
+					"defaultValue": ""
+				},
+				"pureUrl": {
+					"bsonType": "string",
+					"description": "商品纯链接",
+					"defaultValue": ""
+				},
+				"boxContainNum": {
+					"bsonType": "int",
+					"description": "一箱的商品数量",
+					"defaultValue": ""
+				},
+				"boxLength": {
+					"bsonType": "int",
+					"description": "一箱的长度",
+					"defaultValue": ""
+				},
+				"boxWidth": {
+					"bsonType": "int",
+					"description": "一箱的宽度",
+					"defaultValue": ""
+				},
+				"boxHeight": {
+					"bsonType": "int",
+					"description": "一箱的高度",
+					"defaultValue": ""
+				},
+				"boxVolume": {
+					"bsonType": "string",
+					"description": "箱子体积",
+					"defaultValue": ""
+				},
+				"boxWeight": {
+					"bsonType": "string",
+					"description": "箱子重量,单位kg",
+					"defaultValue": ""
+				},
+				"domesticShippingFee": {
+					"bsonType": "string",
+					"description": "该心愿单的国内运费",
+					"defaultValue": ""
+				},
+				"commissionFee": {
+					"bsonType": "string",
+					"description": "该心愿单的服务费",
+					"defaultValue": ""
+				},
+				"proPrice": {
+					"bsonType": "string",
+					"description": "该心愿单的商品总价",
+					"defaultValue": ""
+				},
+				"totalPrice": {
+					"bsonType": "string",
+					"description": "该心愿单的所有费用总价",
+					"defaultValue": ""
+				}
+			}
+		},
+		"specPropInfo": {
+			"bsonType": "object",
+			"description": "心愿单商品的规格对象",
+			"properties": {
+				"propName": {
+					"bsonType": "string",
+					"description": "第一属性名称",
+					"defaultValue": "第一属性"
+				},
+				"secondPropName": {
+					"bsonType": "string",
+					"description": "第二属性名称",
+					"defaultValue": "第二属性"
+				},
+				"propValList": {
+					"bsonType": "array",
+					"description": "第一属性的值集合",
+					"arrayType": "object",
+					"properties": {
+						"propVal": {
+							"bsonType": "string",
+							"description": "第一属性的名称值"
+						},
+						"img": {
+							"bsonType": "string",
+							"description": "第一属性的值图片"
+						},
+						"specStockList": {
+							"bsonType": "array",
+							"description": "第一属性下的二级属性集合",
+							"arrayType": "object",
+							"properties": {
+								"propVal": {
+									"bsonType": "string",
+									"description": "第一/二属性名称值"
+								},
+								"specId": {
+									"bsonType": "int",
+									"description": "规格id"
+								},
+								"stockCount": {
+									"bsonType": "int",
+									"description": "规格的库存数量"
+								},
+								"price": {
+									"bsonType": "string",
+									"description": "规格的价格"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"wishOrderId": {
+			"bsonType": "string",
+			"description": "心愿生成订单后的心愿订单号",
+			"foreignKey":"order._id"
+		}
+
+	}
+}

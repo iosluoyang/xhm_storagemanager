@@ -53,6 +53,7 @@ const zh = {
 		procategory: "商品分类",
 		prodetail: "商品详情",
 		wishdraft: "心愿草稿箱",
+		makewishorder: "心愿单下单",
 		wishdetail: "心愿详情",
 		me: "个人中心",
 		storemanage: "店铺管理",

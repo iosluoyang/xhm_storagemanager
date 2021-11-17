@@ -107,6 +107,12 @@
 				
 				},
 				{
+				    "path" : "makewishorder/makewishorder",
+				    "style" :	{
+						"navigationBarTitleText": "心愿单下单"
+					}
+				},
+				{
 					"path":"index",
 					"style": {
 						"navigationBarTitleText":"心愿单"
