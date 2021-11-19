@@ -10,3 +10,5 @@
 
 const db = uniCloud.database();
 const dbCmd = db.command;
+
+db.collection('wish').remove()

@@ -250,9 +250,61 @@
 				let dataList = this.$refs.udb.dataList
 				console.log(dataList);
 				
+				let draftIds = []
+				
 				// 根据每一个商店生成一个心愿单
+				let addWishArr = []
 				dataList.forEach(eachstore => {
 					
+					let samestoreproductlist = eachstore.productList
+					// 生成心愿单数据
+					let wishdata = {
+						productList: samestoreproductlist
+					}
+					// 草稿箱id数据
+					let addIds = samestoreproductlist.map(eachproduct => (eachproduct.draftproId))
+					draftIds = draftIds.concat(addIds)
+					
+					addWishArr.push(wishdata)
+					
+				})
+				
+				const db = uniCloud.database();
+				db.collection('wish').add(addWishArr)
+				.then(response => {
+					// 添加成功
+					if(response.result.code == 0) {
+						// 添加成功后将草稿箱中的数据状态变更为已加入心愿单
+						db.collection('wish-draft-product').where( `_id in ${JSON.stringify(draftIds)}` )
+						.update({status: 1})
+						.then(response => {
+							// 修改成功
+							console.log(`修改草稿箱数据成功`);
+							console.log(response.result);
+							
+							// 更新草稿箱数据
+							uni.$emit('updatecartdata')
+							
+						})
+						.catch(error => {
+							uni.showToast({
+								title: _this.i18n.tip.optionerror,
+								icon: 'none'
+							});
+						})
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.tip.optionerror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.tip.optionerror,
+						icon: 'none'
+					});
 				})
 				
 			},

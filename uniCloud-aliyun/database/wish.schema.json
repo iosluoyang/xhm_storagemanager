@@ -13,10 +13,24 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
 		"creatUid": {
-			"arrayType":"string",
+			"bsonType":"string",
 			"description":"创建心愿用户uid, 关联用户表_id",
-			"foreignKey":"uni-id-users._id"
+			"foreignKey":"uni-id-users._id",
+			"forceDefaultValue": {
+				"$env": "uid"
+			} // 强制设置creatUid的值为当前登录用户的id
+		},
+		"agentFlag": {
+			"bsonType": "int",
+			"description": "是否已经关联代理人的标识",
+			"defaultValue": 0 // 默认没有关联
 		},
 		"agentUid": {
 			"bsonType": "string",
@@ -45,6 +59,10 @@
 				98, // 已退款
 				99 // 已关闭
 			]
+		},
+		"productList": {
+			"bsonType":"array",
+			"description":"心愿单对应的商品列表,其中每条数据都为心愿草稿箱中的数据格式"
 		},
 		"warehouse": {
 			"bsonType":"object",
@@ -76,9 +94,6 @@
 					"defaultValue":""
 				}
 			}
-		},
-		"productlist": {
-			
 		}
 	}
 }
