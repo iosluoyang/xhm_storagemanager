@@ -124,6 +124,9 @@
 			
 		</view>
 		
+		<!-- 加载条 -->
+		<loading :loadModal="ifloading"></loading>
+		
 	</view>
 </template>
 
@@ -140,7 +143,7 @@
 		data() {
 			return {
 				sourceFrom: 'draftpro', // 下单页来源  draftpro 为心愿草稿箱  directbuy 为直购下单
-				udbquery: '', // udb查询where语句
+				ifloading: false, // 是否加载中
 				draftIds: [], // 选中心愿草稿的id数组
 				summaryInfo: null, // 计算的汇总信息
 			}
@@ -269,6 +272,8 @@
 					
 				})
 				
+				this.ifloading = true
+				
 				const db = uniCloud.database();
 				db.collection('wish').add(addWishArr)
 				.then(response => {
@@ -278,15 +283,21 @@
 						db.collection('wish-draft-product').where( `_id in ${JSON.stringify(draftIds)}` )
 						.update({status: 1})
 						.then(response => {
-							// 修改成功
+							
+							_this.ifloading = false
 							console.log(`修改草稿箱数据成功`);
-							console.log(response.result);
 							
 							// 更新草稿箱数据
 							uni.$emit('updatecartdata')
 							
+							// 跳转到心愿单列表页面
+							uni.redirectTo({
+								url: '/pages/wishlist/list'
+							});
+							
 						})
 						.catch(error => {
+							_this.ifloading = false
 							uni.showToast({
 								title: _this.i18n.tip.optionerror,
 								icon: 'none'
@@ -294,6 +305,7 @@
 						})
 					}
 					else {
+						_this.ifloading = false
 						uni.showToast({
 							title: _this.i18n.tip.optionerror,
 							icon: 'none'
@@ -301,6 +313,7 @@
 					}
 				})
 				.catch(error => {
+					_this.ifloading = false
 					uni.showToast({
 						title: _this.i18n.tip.optionerror,
 						icon: 'none'

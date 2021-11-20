@@ -9,30 +9,7 @@
 		<!-- 顶部提示 -->
 		<u-top-tips :ref="'uTips' + i" :navbar-height="0"></u-top-tips>
 		
-		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem" type="normaltype" @showSameStoreWish="showSameStoreWish"></wishlistitem>
-		
-		<!-- 底部弹框 -->
-		<u-popup v-model="ifshowpopup" mode="bottom" border-radius="20" height="80%">
-			
-			<view class="contentview height100">
-				
-				<view class="titleview padding text-center text-pink" style="height: 50px;">
-					<text class="cuIcon cuIcon-shopfill text-lg margin-right"></text>
-					<text class="text-bold text-black">还有相同商店的其他心愿哦！</text>
-					<text class="cuIcon cuIcon-shopfill text-lg margin-left"></text>
-				</view>
-				
-				<scroll-view class="extrascrollview" scroll-y :style="{ height: 'calc(100% - 50px - 100rpx)' }">
-					<wishlistitem v-for="(wishitem, wishindex) in sameStoreDataList" :key="wishitem._id" :wishitem="wishitem" type="samestoretype"></wishlistitem>
-				</scroll-view>
-				
-				<button class="bottombtn cu-btn block width100 bg-pink" :style="{height: '100rpx'}" @tap.stop="bindallwish">
-					{{ i18n.wishlist.common.agentbindallwish }}
-				</button>
-				
-			</view>
-			
-		</u-popup>
+		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
 		
 	</mescroll-uni>
 	
@@ -64,31 +41,11 @@
 					}
 				},
 				
-				// agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
-				// agentStatusOption: [], // 代理状态筛选项
-				
-				// payStatus: -1, // 支付状态 -1全部 0未支付 1已支付
-				// payStatusOption: [], // 支付状态筛选项
-				
-				ifshowpopup: false, // 是否显示底部弹框
 				dataList: [], //列表数据
-				sameStoreDataList: [], // 同店铺的未关联心愿列表
 			}
 		},
 		props:{
 			searchText: '', // 搜索文本
-			agentStatus: {
-				type: Number,
-				default: -1
-			},// 代理状态 -1全部 0未代理 1已代理
-			payStatus: {
-				type: Number,
-				default: -1
-			},// 支付状态 -1全部 0未支付 1已支付
-			purchaseStatus: {
-				type: Number,
-				default: -1
-			},// 订货状态 -1全部 0未订货 1已订货
 			i: Number, // 每个tab页的专属下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 			index: { // 当前tab的下标 (除了支付宝小程序必须在这里定义, 其他平台都可不用写, 因为已在MescrollMoreItemMixin定义)
 				type: Number,
@@ -128,7 +85,7 @@
 				let dataList = this.dataList
 				
 				// 获取当前要请求的心愿状态
-				let achieveFlag = currenttabitem.status
+				let status = currenttabitem.status
 				// 当前搜索文本
 				let searchText = this.searchText
 				
@@ -139,88 +96,55 @@
 				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
-				let orderbystr = `optionTime desc, creatTime desc` // 默认按照提醒标识 按照创建时间倒序显示
+				let orderbystr = `optionTime desc, creatTime desc` // 默认按照操作时间 、创建时间倒序显示
 				let getCountFlag = false // 是否获取查询列表数据的所有数据库数量  默认为否
 				
-				console.log(`组件内部查询的agentStatus为:${this.agentStatus}--payStatus为:${this.payStatus}`);
 				// 代理员
 				if(this.user && this.user.role == 'PRODUCT_AGENT') {
 					
-					// 如果status=-2则代表查所有未关联代理员的心愿
-					if(achieveFlag == -2) {
-						wherestr = `agentFlag == 0`
-						getCountFlag = true // 代理查询所有未关联的心愿单的总数量
-					}
-					// 如果statsu =-1则代表查自己关联过的所有心愿单
-					else if(achieveFlag == -1) {
+					// 如果status =-1则代表查自己代理的所有心愿单
+					if(status == -1) {
 						wherestr = `agentUser._id == $cloudEnv_uid`
 					}
-					// 如果status = 2则代表查关联过的待下单的心愿单 此时排序字段增加按照wishOrderId.status来进行正序排序
-					else if(achieveFlag == 2) {
-						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
-						orderbystr = `wishOrderId.status asc, creatTime desc`
+					
+					// 如果status=0则代表查所有未被代理的心愿
+					else if(status == 0) {
+						wherestr = `agentUser == null`
+						getCountFlag = true // 代理查询所有未关联的心愿单的总数量
 					}
 					
 					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
 					else {
-						wherestr = `achieveFlag == ${achieveFlag} && agentUser._id == $cloudEnv_uid`
+						wherestr = `status == ${status} && agentUser._id == $cloudEnv_uid`
 					}
 					
-					// 增加筛选状态的查询条件
-					// 代理状态
-					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
-					// 支付状态
-					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
-					// 订货状态
-					wherestr += `${ this.purchaseStatus == 1 ? ' && (wishOrderId.thirdOrderNum != "") ' : this.purchaseStatus == 0 ? ' && wishOrderId.thirdOrderNum == "" ' : '' } `
-					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productList.title) || ${new RegExp(searchText, 'i')}.test(productList.aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) )`
 					
 				}
 				// 普通供应商
 				else if(this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
 					
-					// 如果statsu =-1则代表查自己发布过的所有心愿单
-					if(achieveFlag == -1) {
-						wherestr = `creatUser._id == $cloudEnv_uid`
+					wherestr = `creatUid._id == $cloudEnv_uid`
+					
+					// 如果statsu =-1则代表查自己所有发布过的所有心愿单
+					if(status == -1) {
 						getCountFlag = true // 查询所有自己发布过的心愿单数量
 					}
-					
-					// 正在进行中
-					else if(achieveFlag == 0) {
-						wherestr = `achieveFlag == 0 && creatUser._id == $cloudEnv_uid`
-					}
-					
-					// 如果status = 2则代表查自己发布过的待下单的心愿单
-					else if(achieveFlag == 2) {
-						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
-						// 此时排序字段增加按照wishOrderId.status来进行正序排序 status=0未支付 status=1已支付
-						orderbystr = `wishOrderId.status asc, optionTime desc, creatTime desc`
-					}
-					
 					// 如果是其他类别则查对应的自己发布过的不同类别的心愿
 					else {
-						wherestr = `achieveFlag == ${achieveFlag} && creatUser._id == $cloudEnv_uid`
+						wherestr += ` && status == ${status}`
 					}
 					
-					// 增加筛选状态的查询条件
-					// 代理状态
-					wherestr += `${this.agentStatus == -1 ? '' : ` && agentFlag == ${this.agentStatus}`}`
-					// 支付状态
-					wherestr += `${ this.payStatus == 0 ? ' && (wishOrderId.status == 0)' : this.payStatus == 1 ? ' && wishOrderId.status > 0' : '' } `
-					// 订货状态
-					wherestr += `${ this.purchaseStatus == 1 ? ' && (wishOrderId.thirdOrderNum != "")' : this.purchaseStatus == 0 ? ' && wishOrderId.thirdOrderNum == "" ' : '' } `
-					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
-					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productTitle) || ${new RegExp(searchText, 'i')}.test(aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(wishOrderId.thirdOrderNum) )`
+					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productList.title) || ${new RegExp(searchText, 'i')}.test(productList.aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) )`
 					
 				}
 				
 				console.log(`查询语句为:\n${wherestr}`);
-				db.collection('wishlist,uni-id-users,order')
+				db.collection('wish,uni-id-users')
 					.where(wherestr)
-					.field('creatUser{avatar, nickname},agentUser{avatar, nickname},agentFlag,achieveFlag,remindFlag,productTitle,sellerInfo,aliasName,imgs,targetAmount,targetPrice,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,creatTime,optionTime,hurryLevel, wishOrderId as wishOrderInfo')
+					.field( `creatUid{avatar, nickname} as creatUser, agentUid{avatar, nickname} as agentUser, optionTime, status, productList, creatTime` )
 					.orderBy(orderbystr)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
@@ -236,9 +160,8 @@
 							
 							// 手动将creatUser的数据从数组转换为对象
 							list.forEach(item => {
-								item.creatUser = item.creatUser[0]
+								item.creatUser = item.creatUser && item.creatUser.length > 0 ? item.creatUser[0] : null
 								item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
-								item.wishOrderInfo = item.wishOrderInfo ? item.wishOrderInfo[0] : null
 							})
 							console.log(`本次共获取${list.length}个数据,具体数据为:`);
 							console.log(list);
@@ -276,24 +199,6 @@
 						
 					})
 					.catch(error => {
-						if(error && error.message && error.message.indexOf('30203') > -1) {
-							console.log(`重新登录`);
-							_this.$store.dispatch('user/resettoken').then(() => {
-								
-								uni.redirectTo({
-									url: '/pages/base/login'
-								});
-								setTimeout(function() {
-									
-									uni.showToast({
-										title: _this.i18n.tip.pleaselogin,
-										icon: 'none'
-									});
-									
-								}, 1000);
-								
-							})
-						}
 						// 失败隐藏下拉加载状态
 						mescroll.endErr()
 					})

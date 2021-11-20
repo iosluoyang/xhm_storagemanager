@@ -1,7 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
-	"description":"心愿表",
+	"description":"心愿单表   当用户支付完成之后心愿单完成，转换为订单",
 	"required": [],
 	"permission": {
 		"read": true,
@@ -27,11 +27,6 @@
 				"$env": "uid"
 			} // 强制设置creatUid的值为当前登录用户的id
 		},
-		"agentFlag": {
-			"bsonType": "int",
-			"description": "是否已经关联代理人的标识",
-			"defaultValue": 0 // 默认没有关联
-		},
 		"agentUid": {
 			"bsonType": "string",
 			"description": "代理员的uid",
@@ -51,18 +46,13 @@
 				1, // 已代理待报价
 				2, // 已报价待确认
 				3, // 已确认待支付
-				4, // 已支付待下单
-				5, // 已下单待发货
-				6, // 已发货待收货
-				7, // 已收货待评价
-				8, // 已评价已完成
-				98, // 已退款
-				99 // 已关闭
+				4, // 已支付已完成
+				90 // 已关闭
 			]
 		},
 		"productList": {
 			"bsonType":"array",
-			"description":"心愿单对应的商品列表,其中每条数据都为心愿草稿箱中的数据格式"
+			"description":"心愿单对应的商品列表快照数据,其中每条数据都为心愿草稿箱中的数据格式"
 		},
 		"warehouse": {
 			"bsonType":"object",

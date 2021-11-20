@@ -9,15 +9,19 @@
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
 				
-				<image :src="ownwishitem.imgs.split(',')[0]" mode="aspectFill" style="height: 300rpx;"></image>
+				<view class="grid grid-square" :class="[ `col-${ownwishitem.productList.length}` ]">
+					<view class="bg-img" v-for="(product, index) in ownwishitem.productList" :key="product.pid" :style="[{ backgroundImage:'url(' + product.imgs.split(',')[0] + ')' }]"></view>
+					</view>
+				</view>
+				
 				
 				<!-- 卖家信息 代理显示店铺名称 -->
-				<view v-if="user.role == 'PRODUCT_AGENT' && ownwishitem.sellerInfo" class="sellerInfoView pos-absolute flex align-center padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
+				<view v-if=" false && user.role == 'PRODUCT_AGENT' && ownwishitem.sellerInfo" class="sellerInfoView pos-absolute flex align-center padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
 					<text class="cuIcon cuIcon-shopfill text-white"></text>
 					<text class="text-sm u-line-1 margin-left-sm">{{ ownwishitem.sellerInfo.title }}</text>
 				</view>
-				<view class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
-				<view class="cu-bar bg-shadeBottom flex-direction align-start">
+				<view v-if="false" class="cu-tag text-white" :class="wishbgcolor">{{ wishtagtext }}</view>
+				<view v-if="false" class="cu-bar bg-shadeBottom flex-direction align-start">
 					
 					<!-- 商品标题 -->
 					<view class="text-bold text-xl margin-top-sm text-cut width100">{{ownwishitem.productTitle}}</view>
@@ -42,8 +46,8 @@
 			
 			</view>
 			
-			<!-- 卡片下方-内容区域  同商店类型不展示 -->
-			<view v-if=" type != 'samestoretype' " class="cu-list menu-avatar">
+			<!-- 卡片下方-内容区域 -->
+			<view v-if="false" class="cu-list menu-avatar">
 				<view class="cu-item">
 					
 					<!-- 头像 -->

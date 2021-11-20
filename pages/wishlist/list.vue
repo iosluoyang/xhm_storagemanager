@@ -8,13 +8,6 @@
 				<u-field v-model="searchText" type="text" icon="search" :label-width="0" :border-bottom="false" :placeholder="i18n.placeholder.wishlistlist.search" confirm-type="search" @confirm="searchwishlist"></u-field>
 			</view>
 			
-			<!-- 小程序中没有右侧搜索按钮 -->
-			<!-- #ifndef MP -->
-			<view slot="right" class="action">
-				<button class="cu-btn bg-pink shadow-blur round" @tap.stop="searchwishlist">{{i18n.base.search}}</button>
-			</view>
-			<!-- #endif -->
-			
 		</cu-custom>
 
 		<!-- 选项卡 -->
@@ -22,48 +15,10 @@
 			<u-tabs-swiper active-color="#e03997" ref="tabs" :list="tabArr" :current="current" bar-width="100" :bold="false" @change="tabsChange" :is-scroll="true" swiperWidth="750"></u-tabs-swiper>
 		</view>
 		
-		<!-- 顶部筛选区域 -->
-		<u-dropdown v-if="filterFlag" class="u-dropdown" active-color="#e03997" height="80rpx">
-			
-			<!-- 普通供应商视角下 -->
-			<template v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') ">
-				
-				<!-- 心愿单全部分类 -->
-				<template v-if="computedCurrentStatus == -1">
-					<u-dropdown-item v-model="agentStatus" :title=" i18n.wishlist.list.agentstatus.title " :options="agentStatusOption" @change="changeAgentStatus"></u-dropdown-item>
-				</template>
-				
-				<!-- 全部或者待下单分类 -->
-				<u-dropdown-item v-if="computedCurrentStatus == -1 || computedCurrentStatus == 2" v-model="payStatus" :title=" i18n.wishlist.list.paystatus.title " :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
-				
-				<!-- 待下单分类 -->
-				<template v-if="computedCurrentStatus == 2">
-					<!-- 订货筛选项 当心愿单为待购买status == 2时出现 -->
-					<u-dropdown-item v-model="purchaseStatus" :title=" i18n.wishlist.list.purchasestatus.title " :options="purchaseStatusOption" @change="changePurchaseStatus"></u-dropdown-item>
-				</template>
-				
-			</template>
-			
-			<!-- 代理员视角下 -->
-			<template v-else-if="user && user.role == 'PRODUCT_AGENT' ">
-				
-				<!-- 待下单分类 -->
-				<u-dropdown-item v-if="computedCurrentStatus == 2" v-model="payStatus" :title=" i18n.wishlist.list.paystatus.title " :options="payStatusOption" @change="changePayStatus"></u-dropdown-item>
-				
-				<!-- 待下单分类 -->
-				<template v-if="computedCurrentStatus == 2">
-					<!-- 订货筛选项 当心愿单为待购买status == 2时出现 -->
-					<u-dropdown-item v-model="purchaseStatus" :title=" i18n.wishlist.list.purchasestatus.title " :options="purchaseStatusOption" @change="changePurchaseStatus"></u-dropdown-item>
-				</template>
-				
-			</template>
-			
-		</u-dropdown>
-		
 		<!-- swiper区域 -->
-		<swiper :style="{height: filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
+		<swiper :style="{height: swiperHeight }" :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish">
 			<swiper-item v-for="(tabitem,index) in tabArr" :key="index">
-				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height=" filterFlag ? 'calc(100% - '+CustomBar+'px - 80rpx - 80rpx )' : 'calc(100% - '+CustomBar+'px - 80rpx)' " :agentStatus="agentStatus" :payStatus="payStatus" :purchaseStatus="purchaseStatus"></wishlistMescrollSwiperItem>
+				<wishlistMescrollSwiperItem ref="mescrollItem" :searchText="searchText" :i="index" :index="current" :tabs="tabArr" :height="swiperHeight"></wishlistMescrollSwiperItem>
 			</swiper-item>
 		</swiper>
 		
@@ -83,21 +38,12 @@
 				
 				needtochecktoken: true, // 是否检测用户token信息
 				
-				currentStatus: -1, // 默认选中的状态为进行中的状态
+				currentStatus: 0, // 默认选中的状态为进行中的状态
 				searchText: '', // 搜索文本
-				
-				
-				agentStatus: -1, // 代理状态 -1全部 0未代理 1已代理
-				agentStatusOption: [], // 代理状态筛选项
-				
-				payStatus: -1, // 支付状态 -1全部 0未支付 1已支付
-				payStatusOption: [], // 支付状态筛选项
-				
-				purchaseStatus: -1, // 订货状态  0未订货 1已订货
-				purchaseStatusOption: [], // 订货状态筛选项
 				
 				current: 0, // 当前选项卡的索引 默认为0
 				swiperCurrent: 0, // swiper组件的current值，表示当前那个swiper-item是活动的
+				swiperHeight: ` calc(100% - ${this.CustomBar}px - 80rpx) `,
 				scrollLeft: 0, // 选项卡左侧滑动的距离
 				tabArr:[], // 选项卡数组
 				
@@ -122,7 +68,7 @@
 			this.initTabArr()
 			
 			// 初始化筛选项
-			this.setFilterOptionData()
+			// this.setFilterOptionData()
 			
 			// 监听更新事件
 			uni.$on('updatewishlist', function(data) {
@@ -140,57 +86,19 @@
 			uni.$off('updatebadgenum')
 		},
 		
-		computed: {
-			
-			// 当前计算的心愿状态
-			computedCurrentStatus() {
-				
-				if(this.tabArr && this.tabArr.length > 0) {
-					let currentItem = this.tabArr[this.current]
-					let currentStatus = currentItem.status
-					return currentStatus
-				}
-				return this.currentStatus || -1
-				
-			},
-			
-			// 筛选面板标识 false为没有筛选面板  true为有筛选面板  默认没有
-			filterFlag() {
-				
-				let computedCurrentStatus = this.computedCurrentStatus
-				
-				// 普通供应商
-				if(this.user && (this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE')) {
-					// 根据当前选择的心愿状态区分筛选面板内容
-					if(computedCurrentStatus == -1 || computedCurrentStatus == 2) {
-						// 设置筛选面板数据
-						return true
-					}
-				}
-				// 商品代理员
-				else if(this.user && this.user.role == 'PRODUCT_AGENT') {
-					// 根据当前选择的心愿状态区分筛选面板内容
-					if(computedCurrentStatus == 2) {
-						// 设置筛选面板数据
-						return true
-					}
-				}
-				
-				return false
-			}
-		},
-		
 		methods: {
-			
-			// 搜索心愿 开始刷新数据
-			searchwishlist() {
-				this.starttorefresh()
-			},
 			
 			// 初始化选项卡数据
 			initTabArr() {
-				// 心愿单标识 -1全部 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
+				
+				// 心愿单标识 0 未代理	1 已代理待报价	2 已报价待确认	3 已确认待支付	4 已支付已完成	90 已关闭
+				// -1代表查询所有 为虚拟的一个status 放在未代理心愿tab的后面展示
 				let tabArr = [
+					{
+						name: this.i18n.wishlist.common.achieveflagdata.unbindwish,
+						status: 0,
+						count: 0,
+					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.all,
 						status: -1,
@@ -198,21 +106,16 @@
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.ing,
-						status: 0,
-						count: 0,
-					},
-					{
-						name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
 						status: 1,
 						count: 0,
 					},
 					{
-						name: this.i18n.wishlist.common.achieveflagdata.makeorder,
+						name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
 						status: 2,
 						count: 0,
 					},
 					{
-						name: this.i18n.wishlist.common.achieveflagdata.waitreceive,
+						name: this.i18n.wishlist.common.achieveflagdata.makeorder,
 						status: 3,
 						count: 0,
 					},
@@ -223,20 +126,10 @@
 					},
 					{
 						name: this.i18n.wishlist.common.achieveflagdata.closed,
-						status: 99,
+						status: 90,
 						count: 0
 					}
 				]
-				
-				// 如果是代理员则前面添加心愿池选项 -2未关联心愿
-				if(this.user && this.user.role == 'PRODUCT_AGENT') {
-					let unbindwishitem = {
-						name: this.i18n.wishlist.common.achieveflagdata.unbindwish,
-						status: -2,
-						count: 0,
-					}
-					tabArr.unshift(unbindwishitem)
-				}
 				
 				// 设置选中索引
 				let selectIndex = tabArr.findIndex(item => ( _this.currentStatus == item.status ))
@@ -248,106 +141,23 @@
 			
 			},
 			
-			// 设置初始化筛选项
-			setFilterOptionData() {
-				
-				let agentStatusOption = [
-					{
-						label: this.i18n.wishlist.list.all,
-						value: -1
-					},
-					{
-						label: this.i18n.wishlist.list.agentstatus.unbind,
-						value: 0
-					},
-					{
-						label: this.i18n.wishlist.list.agentstatus.bind,
-						value: 1
-					}
-				]
-				this.agentStatusOption = agentStatusOption
-				
-				let payStatsuOption = [
-					{
-						label: this.i18n.wishlist.list.all,
-						value: -1
-					},
-					{
-						label: this.i18n.wishlist.list.paystatus.unpay,
-						value: 0
-					},
-					{
-						label: this.i18n.wishlist.list.paystatus.pay,
-						value: 1
-					}
-				]
-				this.payStatusOption = payStatsuOption
-				
-				let purchaseStatusOption = [
-					{
-						label: this.i18n.wishlist.list.all,
-						value: -1,
-					},
-					{
-						label: this.i18n.wishlist.list.purchasestatus.unpurchase,
-						value: 0,
-					},
-					{
-						label: this.i18n.wishlist.list.purchasestatus.purchase,
-						value: 1,
-					}
-				]
-				this.purchaseStatusOption = purchaseStatusOption
-				
-			},
-			
-			changeAgentStatus(value) {
-				this.agentStatus = value
-				this.starttorefresh()
-			},
-			
-			changePayStatus(value) {
-				this.payStatus = value
-				this.starttorefresh()
-			},
-			
-			changePurchaseStatus(value) {
-				this.purchaseStatus = value
-				this.starttorefresh()
-			},
-			
-			// 重置筛选项
-			resetFilterData() {
-				this.agentStatus = -1
-				this.payStatus = -1
-				this.purchaseStatus = -1
-			},
-			
 			// 获取操作条上的角标数量
 			getbadgenum() {
 				
-				if(!this.user) {return}
 				const db = uniCloud.database();
-				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUser == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? `agentUser == $cloudEnv_uid` : ''
-				db.collection('wishlist')
+				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUid == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? `agentUid == $cloudEnv_uid` : ''
+				db.collection('wish')
 					.where(wherestr)
-					.groupBy('achieveFlag')
+					.groupBy('status')
 					.groupField('count(*) as count')
 					.get()
 					.then(res => {
 						
 						let countdata = res.result.data
-						// 设置achieveFlag = 0,1,2,3时的角标数量  没有的设置为0(防止更新为0时数据不更新的问题)
-						// console.log(countdata);
-						_this.tabArr.map((item) => {
-							if(item.status == 0 || item.status == 1 || item.status == 2 || item.status == 3 ) {
-								let selectitem = countdata.find(dataitem => (dataitem.achieveFlag == item.status))
-								if(selectitem) {
-									item.count = selectitem.count
-								}
-								else {
-									item.count = 0
-								}
+						countdata.forEach(item => {
+							let selectitem = _this.tabArr.find(dataitem => (dataitem.status == item.status))
+							if(selectitem) {
+								selectitem.count = item.count
 							}
 						})
 						
@@ -355,8 +165,90 @@
 					.catch(err => {
 						console.log(err.message);
 					})
+				console.log(`获取成功`);
 				
 			},
+			
+			// 搜索心愿 开始刷新数据
+			searchwishlist() {
+				this.starttorefresh()
+			},
+			
+			// 设置初始化筛选项
+			// setFilterOptionData() {
+				
+			// 	let agentStatusOption = [
+			// 		{
+			// 			label: this.i18n.wishlist.list.all,
+			// 			value: -1
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.agentstatus.unbind,
+			// 			value: 0
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.agentstatus.bind,
+			// 			value: 1
+			// 		}
+			// 	]
+			// 	this.agentStatusOption = agentStatusOption
+				
+			// 	let payStatsuOption = [
+			// 		{
+			// 			label: this.i18n.wishlist.list.all,
+			// 			value: -1
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.paystatus.unpay,
+			// 			value: 0
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.paystatus.pay,
+			// 			value: 1
+			// 		}
+			// 	]
+			// 	this.payStatusOption = payStatsuOption
+				
+			// 	let purchaseStatusOption = [
+			// 		{
+			// 			label: this.i18n.wishlist.list.all,
+			// 			value: -1,
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.purchasestatus.unpurchase,
+			// 			value: 0,
+			// 		},
+			// 		{
+			// 			label: this.i18n.wishlist.list.purchasestatus.purchase,
+			// 			value: 1,
+			// 		}
+			// 	]
+			// 	this.purchaseStatusOption = purchaseStatusOption
+				
+			// },
+			
+			// changeAgentStatus(value) {
+			// 	this.agentStatus = value
+			// 	this.starttorefresh()
+			// },
+			
+			// changePayStatus(value) {
+			// 	this.payStatus = value
+			// 	this.starttorefresh()
+			// },
+			
+			// changePurchaseStatus(value) {
+			// 	this.purchaseStatus = value
+			// 	this.starttorefresh()
+			// },
+			
+			// // 重置筛选项
+			// resetFilterData() {
+			// 	this.agentStatus = -1
+			// 	this.payStatus = -1
+			// 	this.purchaseStatus = -1
+			// },
+			
 			
 			// tabs通知swiper切换
 			tabsChange(index) {
@@ -376,8 +268,6 @@
 				this.$refs.tabs.setFinishCurrent(current);
 				this.swiperCurrent = current;
 				this.current = current;
-				// 重置筛选条件
-				this.resetFilterData()
 			},
 			
 			// 获取指定下标的mescroll对象
@@ -397,7 +287,6 @@
 				this.$nextTick(function(){
 					// 刷新当前数据
 					let mescroll =this.getMescroll(this.current)
-					console.log(mescroll);
 					if(mescroll) {
 						mescroll.resetUpScroll(true)
 					}
