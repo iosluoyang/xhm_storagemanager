@@ -10,7 +10,7 @@
 			<view class="image">
 				
 				<view class="grid grid-square" :class="[ `col-${ownwishitem.productList.length}` ]">
-					<view class="bg-img" v-for="(product, index) in ownwishitem.productList" :key="product.pid" :style="[{ backgroundImage:'url(' + product.imgs.split(',')[0] + ')' }]"></view>
+					<view class="bg-img" v-for="(product, index) in ownwishitem.productList" :key="index" :style="[{ backgroundImage:'url(' + product.imgs.split(',')[0] + ')'}]"></view>
 					</view>
 				</view>
 				
@@ -208,7 +208,10 @@
 			},
 			
 			created() {
-				
+				let productList = this.ownwishitem.productList
+				productList = productList.concat(productList)
+				productList = productList.concat(productList)
+				this.ownwishitem.productList = productList
 			},
 			
 			mounted() {
