@@ -207,9 +207,10 @@ const zh = {
 			},
 			achieveflagdata: {
 				all: "全部",
-				unbindwish: "心愿池",
+				unbindwish: "未代理",
 				ing: "进行中",
 				waittoconfirm: "待确认",
+				waittopay: "待支付",
 				makeorder: "待下单",
 				waitreceive: "待收货",
 				finish: "已完成",

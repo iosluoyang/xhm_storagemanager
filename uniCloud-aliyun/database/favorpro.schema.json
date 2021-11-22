@@ -19,7 +19,7 @@
 				"$env": "now"
 			}
 		},
-		"creatUser": {
+		"creatUid": {
 			"bsonType": "string",
 			"description": "收藏者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id

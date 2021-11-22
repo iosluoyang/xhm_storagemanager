@@ -39,7 +39,7 @@
 		},
 		"status": {
 			"bsonType": "int",
-			"description": "心愿单状态",
+			"description": "心愿单状态", // 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
 			"defaultValue": 0,
 			"enum": [
 				0, // 未代理

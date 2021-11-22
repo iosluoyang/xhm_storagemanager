@@ -146,11 +146,10 @@
 				
 				ifloading: false, // 是否正在加载
 				
-				searchrecordmaxnum: 5, // 搜索历史最大数量
+				searchrecordmaxnum: 10, // 搜索历史最大数量
 				
 				searchText: '', // 搜索文本
 				platform: '', // 第三方平台名称
-				platformPid: '', // 第三方pid
 				pid: '', // 商品pid
 				
 				linkProduct: null, // 外链商品详情
@@ -220,10 +219,6 @@
 				this.platform = option.platform
 			}
 			
-			if(option.platformPid) {
-				this.platformPid = option.platformPid
-			}
-			
 			if(option.pid) {
 				this.pid = option.pid
 			}
@@ -288,8 +283,6 @@
 				_this.ifloading = true
 				let data = {
 					text: this.searchText,
-					platform: this.platform, // 平台来源
-					platformPid: this.platformPid, // 第三方平台pid
 					pid: this.pid
 				}
 				// 开始加载规格信息
@@ -370,7 +363,6 @@
 				let searchRecordArr = uni.getStorageSync('searchrecordarr') || []
 				
 				let ifExist = searchRecordArr.findIndex((record) => (record.pid == _this.linkProduct.pid)) > -1
-				
 				// 不存在则进行记录
 				if(!ifExist) {
 					
@@ -435,7 +427,7 @@
 				this.tabArr = tabs
 				
 				// 设置交易须知内容
-				let tradeprotocolcontent = this.$store.getters.configData.tradeprotolrichtext || ''
+				let tradeprotocolcontent = this.$store.getters?.configData?.tradeprotolrichtext || ''
 				this.tradeprotocolcontent = tradeprotocolcontent
 			},
 			

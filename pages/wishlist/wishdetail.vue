@@ -7,7 +7,7 @@
 		</cu-custom>
 		
 		<!-- 付款倒计时 -->
-		<view v-if="wishinfo && wishOrderInfo && wishOrderInfo.status == 0 && wishinfo.creatUser._id == user._id" 
+		<view v-if="false && wishinfo && wishOrderInfo && wishOrderInfo.status == 0 && wishinfo.creatUser._id == user._id" 
 			class="paymentcountdownview flex align-center justify-between bg-cyan padding-sm" :style="{top: CustomBar + 'px'}">
 			
 			<view class="leftview flex align-center">

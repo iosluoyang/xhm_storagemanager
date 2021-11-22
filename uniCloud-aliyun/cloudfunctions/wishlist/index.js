@@ -123,7 +123,8 @@ exports.main = async (event, context) => {
 		let datainfo = {
 			text: text,
 			pid: pid,
-			thirdPid: platformPid
+			platform: platform,
+			platformPid: platformPid
 		}
 		console.log(`参数为:text->${text}  platform=>${info.platform}  platformPid=>${info.platformPid}  pid=>${info.pid}`);
 		const res = await uniCloud.httpclient.request(linkApi, {
@@ -182,7 +183,7 @@ exports.main = async (event, context) => {
 			// 如果用户登录则开始查询
 			if(uid) {
 				let favorcollection = db.collection('favorpro')
-				let favorres =  await favorcollection.where({creatUser: uid, pid: product.pid}).count()
+				let favorres =  await favorcollection.where({creatUid: uid, pid: product.pid}).count()
 				if(favorres.total > 0) {
 					// 找到了收藏表中的数据 则为已收藏状态
 					favorFlag = 1

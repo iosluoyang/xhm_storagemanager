@@ -1,0 +1,66 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description": "心愿单时间轴表",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"wishId": {
+			"bsonType": "string",
+			"description": "该时间轴对应的心愿id",
+			"foreignKey": "wish._id" // 使用foreignKey表示，此字段关联wish表的_id
+		},
+		"creatUid": {
+			"bsonType": "string",
+			"description": "创建者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue": {
+				"$env": "uid"
+			} // 强制设置该字段为当前创建者用户的uid
+		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			} // 强制设置创建时间为服务器当前时间
+		},
+		"optionUid": {
+			"bsonType": "string",
+			"description": "操作者的uid",
+			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+		},
+		"optionTime": {
+			"bsonType": "timestamp",
+			"description": "操作时间"
+		},
+		"type": {
+			"bsonType": "int",
+			"description": "时间轴类型  0心愿单创建时间轴  1普通内容时间轴  2心愿单编辑时间轴  3待确认时间轴  4心愿单同意时间轴  5心愿单拒绝时间轴  6心愿单确认完成时间轴 7心愿单支付完成时间轴  90代理人代理心愿时间轴"
+		},
+		"content": {
+			"bsonType": "string",
+			"description": "时间轴内容"
+		},
+		"imgs": {
+			"bsonType": "string",
+			"description": "时间轴图片"
+		},
+		"link": {
+			"bsonType": "string",
+			"description": "时间轴的链接"
+		},
+		"price": {
+			"bsonType": "string",
+			"description": "时间轴价格"
+		}
+
+	}
+}

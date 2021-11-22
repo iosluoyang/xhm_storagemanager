@@ -187,7 +187,7 @@
 			// 点击记录进行搜索
 			searchRecord(item) {
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?pid=${item.pid}&platformPid=${item.platformPid}`
+					url: `/pages/wishlist/linkprodetail?pid=${item.pid}`
 				});
 			},
 			

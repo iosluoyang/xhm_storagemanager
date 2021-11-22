@@ -145,7 +145,7 @@
 			getbadgenum() {
 				
 				const db = uniCloud.database();
-				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUid == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? `agentUid == $cloudEnv_uid` : ''
+				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUid == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? ` agentUid == $cloudEnv_uid` : ''
 				db.collection('wish')
 					.where(wherestr)
 					.groupBy('status')

@@ -104,18 +104,18 @@
 					
 					// 如果status =-1则代表查自己代理的所有心愿单
 					if(status == -1) {
-						wherestr = `agentUser._id == $cloudEnv_uid`
+						wherestr = `agentUid._id == $cloudEnv_uid`
 					}
 					
 					// 如果status=0则代表查所有未被代理的心愿
 					else if(status == 0) {
-						wherestr = `agentUser == null`
+						wherestr = `status == 0`
 						getCountFlag = true // 代理查询所有未关联的心愿单的总数量
 					}
 					
 					// 如果是其他类别则查对应的自己关联过的不同类别的心愿
 					else {
-						wherestr = `status == ${status} && agentUser._id == $cloudEnv_uid`
+						wherestr = `status == ${status} && agentUid._id == $cloudEnv_uid`
 					}
 					
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件

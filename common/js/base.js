@@ -442,35 +442,32 @@ export function getrolenameandcolor(roleId) {
 	}
 }
 
-/*
-0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
-*/
-
 // 根据当前心愿单标识返回心愿单的背景颜色类名
-export function getwishtagbgcolorclassname(achieveFlag) {
-	switch (achieveFlag){
-		// 进行中
+// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+export function getwishtagbgcolorclassname(status) {
+	switch (status){
+		// 0 未代理
 		case 0:
-			return 'bg-pink'
-			break;
-		// 待确认
-		case 1:
-			return 'bg-orange'
-			break;
-		// 待下单
-		case 2:
 			return 'bg-blue'
 			break;
-		// 待收货
-		case 3:
-			return 'bg-cyan'
+		// 1已代理待报价
+		case 1:
+			return 'bg-pink'
 			break;
-		// 已完成
+		// 2 已报价待确认
+		case 2:
+			return 'bg-orange'
+			break;
+		// 3 已确认待支付
+		case 3:
+			return 'bg-red'
+			break;
+		// 4 已支付已完成
 		case 4:
 			return 'bg-green'
 			break;
-		// 已关闭
-		case 99:
+		// 90 已关闭
+		case 90:
 			return 'bg-grey'
 			break;
 		default:
@@ -480,24 +477,32 @@ export function getwishtagbgcolorclassname(achieveFlag) {
 }
 
 // 根据当前心愿单标识返回心愿单的tag名字
-export function getwishtagname(achieveFlag) {
-	switch (achieveFlag){
+// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+export function getwishtagname(status) {
+	
+	switch (status){
+		// 0 未代理
 		case 0:
+			return i18n.wishlist.common.achieveflagdata.unbindwish
+			break;
+		// 1已代理待报价
+		case 1:
 			return i18n.wishlist.common.achieveflagdata.ing
 			break;
-		case 1:
+		// 2 已报价待确认
+		case 2:
 			return i18n.wishlist.common.achieveflagdata.waittoconfirm
 			break;
-		case 2:
-			return i18n.wishlist.common.achieveflagdata.makeorder
-			break;
+		// 3 已确认待支付
 		case 3:
-			return i18n.wishlist.common.achieveflagdata.waitreceive
+			return i18n.wishlist.common.achieveflagdata.waittopay
 			break;
+		// 4 已支付已完成
 		case 4:
 			return i18n.wishlist.common.achieveflagdata.finish
 			break;
-		case 99:
+		// 90 已关闭
+		case 90:
 			return i18n.wishlist.common.achieveflagdata.closed
 			break;
 		default:

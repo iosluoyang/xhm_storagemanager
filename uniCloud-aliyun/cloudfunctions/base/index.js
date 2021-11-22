@@ -57,19 +57,19 @@ exports.main = async (event, context) => {
 		//获取心愿集合对象(如果有wishId)
 		if(wishId) {
 			
-			const wishcollection = db.collection('wishlist')
+			const wishcollection = db.collection('wish')
 			
 			let wishres = await wishcollection
 				.doc(wishId)
 				.get()
 			wishInfo = wishres.data[0]
-			productTitle = wishInfo.productTitle.substr(0,10) + '...'
+			productTitle = wishInfo.productList[0].title.substr(0,10) + '...' // 取心愿单首个商品的标题
 			
 			console.log(`获取的心愿详情`);
 			console.log(wishInfo);
 			
-			creatUserId = wishInfo.creatUser
-			agentUserId = wishInfo.agentUser
+			creatUserId = wishInfo.creatUid
+			agentUserId = wishInfo.agentUid
 
 		}
 		
@@ -100,7 +100,7 @@ exports.main = async (event, context) => {
 			creatUserWxOpenId = creatUserInfo.wx_openid['mp-weixin']
 		}
 		
-		console.log(`获取的心愿客户信息`);
+		console.log(`获取的心愿的客户信息`);
 		console.log(creatUserInfo);
 		
 		let agentUserInfo = {nickname: 'LAL'}
@@ -115,7 +115,7 @@ exports.main = async (event, context) => {
 			
 		}
 		
-		console.log(`获取的心愿代理信息`);
+		console.log(`获取的心愿的代理员信息`);
 		console.log(agentUserInfo);
 		
 		
