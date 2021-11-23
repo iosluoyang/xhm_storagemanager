@@ -108,7 +108,7 @@
 				
 				},
 				{
-				    "path" : "makewishorder/makewishorder",
+				    "path" : "makewishorder",
 				    "style" :	{
 						"navigationBarTitleText": "心愿单下单"
 					}

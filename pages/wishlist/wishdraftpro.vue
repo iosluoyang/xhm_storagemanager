@@ -379,7 +379,7 @@
 				// 跳转至下单页 将选择的draftId数组传递至下单页进行请求
 				uni.setStorageSync('makeorderdraftidarr', selectSpecProIdArr)
 				uni.navigateTo({
-					url: '/pages/wishlist/makewishorder/makewishorder?sourceFrom=draftpro'
+					url: '/pages/wishlist/makewishorder?sourceFrom=draftpro'
 				});
 			},
 			

@@ -12,3 +12,5 @@ const db = uniCloud.database();
 const dbCmd = db.command;
 
 db.collection('wish').where(`agentUid == ''`).get()
+
+db.collection('favorpro').remove()
