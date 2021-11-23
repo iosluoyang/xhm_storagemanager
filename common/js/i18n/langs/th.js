@@ -430,20 +430,12 @@ const th = {
 			title: 'Merchant Admin',
 			des: 'Own store , can manage store and buy product'
 		},
-		MERCHANT_EMPLOYEE: {
-			title: 'Merchant Employee',
-			des: 'Can buy product'
-		},
 		PRODUCT_AGENT: {
 			title: 'Product Agent',
 			des: 'Everyone can make the money'
 		},
 		SHIPPING_ADMIN: {
 			title: 'Shipping Admin',
-			des: 'Manage the shipping stuff'
-		},
-		SHIPPING_EMPLOYEE: {
-			title: 'Shipping Employee',
 			des: 'Manage the shipping stuff'
 		},
 		

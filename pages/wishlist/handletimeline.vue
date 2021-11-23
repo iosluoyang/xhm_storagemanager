@@ -41,7 +41,7 @@
 		<view v-if="wishinfo" class="timelinecontentview bg-white padding-sm">
 			
 			<!-- 选择更新时间轴的类型 -->
-			<view v-if="user.role == 'PRODUCT_AGENT' && wishinfo.agentUser == user._id" class="cu-bar btn-group">
+			<view v-if="user.role == $basejs.roleEnum.productAgent && wishinfo.agentUser == user._id" class="cu-bar btn-group">
 				
 				<!-- 普通时间轴 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>

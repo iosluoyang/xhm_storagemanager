@@ -129,7 +129,7 @@
 			<!-- 心愿详情来源中如果心愿为进行中则不显示  其他情况下均显示 -->
 			<!-- 时间轴编辑来源均显示 -->
 			<!-- 心愿订单不显示 -->
-			<template v-if=" (sourcefrom == 'wishdetail' && wishinfo.achieveFlag != 0) || sourcefrom == 'handletimeline' ">
+			<template v-if=" (sourcefrom == 'wishdetail' && wishInfo.achieveFlag != 0) || sourcefrom == 'handletimeline' ">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
@@ -167,7 +167,7 @@
 			
 			<!-- 补充信息区域 -->
 			<!-- 心愿详情一直显示  编辑时间轴不显示  心愿订单不显示-->
-			<template v-if=" sourcefrom == 'wishdetail' && wishinfo && wishinfo.productExt">
+			<template v-if=" sourcefrom == 'wishdetail' && wishInfo && wishInfo.productExt">
 				
 				<!-- 分隔栏 -->
 				<u-tr class="u-tr tableeachsummaryrow">
@@ -186,10 +186,10 @@
 				
 				<!-- 总结区域内容 -->
 				<u-tr class="u-tr">
-					<u-td class="u-td">{{ wishinfo.productExt.boxContainerNum || '/' }}</u-td>
-					<u-td class="u-td">{{ wishinfo.productExt.boxLength ? `${wishinfo.productExt.boxLength} * ${wishinfo.productExt.boxWidth} * ${wishinfo.productExt.boxHeight}` : '/' }}</u-td>
-					<u-td class="u-td">{{ wishinfo.productExt.boxVolume || '/' }}</u-td>
-					<u-td class="u-td">{{ wishinfo.productExt.boxWeight || '/' }}</u-td>
+					<u-td class="u-td">{{ wishInfo.productExt.boxContainerNum || '/' }}</u-td>
+					<u-td class="u-td">{{ wishInfo.productExt.boxLength ? `${wishInfo.productExt.boxLength} * ${wishInfo.productExt.boxWidth} * ${wishInfo.productExt.boxHeight}` : '/' }}</u-td>
+					<u-td class="u-td">{{ wishInfo.productExt.boxVolume || '/' }}</u-td>
+					<u-td class="u-td">{{ wishInfo.productExt.boxWeight || '/' }}</u-td>
 				</u-tr>
 				
 			</template>
@@ -210,7 +210,7 @@
 		props: {
 			
 			// 规格对应的心愿信息
-			wishinfo: {
+			wishInfo: {
 				type: Object,
 				default: null
 			},
@@ -224,7 +224,7 @@
 		},
 		
 		watch: {
-			wishinfo: {
+			wishInfo: {
 				handler(newValue, oldValue) {
 					this.setTableData()
 				},
@@ -273,15 +273,15 @@
 			
 			setTableData() {
 				
-				// 将商品已选数量映射为表格展示
+				// 将心愿商品已选数量映射为表格展示
 				let specList = []
 				
 				// 映射数据
-				if(_this.wishinfo && _this.wishinfo.specPropInfo) {
+				if(_this.wishInfo && _this.wishInfo.specPropInfo) {
 					
-					let proMainImg = this.wishinfo.imgs.split(',')[0]
+					let proMainImg = this.wishInfo.imgs.split(',')[0]
 					
-					let firstList = _this.wishinfo.specPropInfo.propValList
+					let firstList = _this.wishInfo.specPropInfo.propValList
 					firstList.forEach(firstitem => {
 						let totalAmount = 0
 						let totalProPrice = 0
@@ -453,14 +453,14 @@
 				let totalProPrice = 0
 				let totalSpecAmount = specList.length
 				// console.log(`共有${totalSpecAmount}种类型`);
-				let totalDomesticShippingFee = _this.wishinfo.productExt.domesticShippingFee ? parseFloat(_this.wishinfo.productExt.domesticShippingFee).toFixed(2) : ''
-				let totalCommissionFee = _this.wishinfo.productExt.commissionFee ? parseFloat( _this.wishinfo.productExt.commissionFee).toFixed(2) : ''
+				let totalDomesticShippingFee = _this.wishInfo.productExt.domesticShippingFee ? parseFloat(_this.wishInfo.productExt.domesticShippingFee).toFixed(2) : ''
+				let totalCommissionFee = _this.wishInfo.productExt.commissionFee ? parseFloat( _this.wishInfo.productExt.commissionFee).toFixed(2) : ''
 				specList.forEach(eachitem => {
 					totalAmount += Number(eachitem.totalAmount)
 					totalProPrice += +parseFloat(eachitem.totalProPrice).toFixed(2)
 				})
 				totalProPrice = parseFloat(totalProPrice).toFixed(2) // 计算出来的商品总价
-				let agentEditProPrice = _this.wishinfo.productExt.proPrice ? parseFloat(_this.wishinfo.productExt.proPrice).toFixed(2) : '' // 代理编辑的商品总价
+				let agentEditProPrice = _this.wishInfo.productExt.proPrice ? parseFloat(_this.wishInfo.productExt.proPrice).toFixed(2) : '' // 代理编辑的商品总价
 				
 				// 表格内容初始化数据
 				let priceData = {
@@ -471,7 +471,7 @@
 				}
 				tableData = Object.assign(tableData, priceData) 
 				
-				let productData = {..._this.wishinfo, ...{specList: specList}, ...{totalAmount: totalAmount}}
+				let productData = {..._this.wishInfo, ...{specList: specList}, ...{totalAmount: totalAmount}}
 				
 				// 根据表头内容进行数据填充
 				tableHeaderArr.forEach(headeritem => {

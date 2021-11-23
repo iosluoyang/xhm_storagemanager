@@ -15,10 +15,8 @@ var plugin = requirePlugin("WechatSI")
 const roleEnum = {
 	admin: 'admin',
 	merchantAdmin: 'MERCHANT_ADMIN',
-	merchantEmployee: 'MERCHANT_EMPLOYEE',
 	productAgent: 'PRODUCT_AGENT',
 	shippingAdmin: 'SHIPPING_ADMIN',
-	shippingEmployee: 'SHIPPING_EMPLOYEE'
 }
 
 // 返回供应商名称  用于生成二维码的前缀
@@ -390,50 +388,29 @@ export function copytoclipboard(data) {
 // 根据当前用户角色返回角色名称和背景颜色
 export function getrolenameandcolor(roleId) {
 	
-	/*
-	角色ID:
-	1.超级管理员 admin
-	2.商家管理员 MERCHANT_ADMIN
-	3.商家雇员 MERCHANT_EMPLOYEE
-	4.商品代理员 PRODUCT_AGENT
-	5.物流公司管理员 SHIPPING_ADMIN
-	6.物流公司雇员 SHIPPING_EMPLOYEE
-	*/
 	switch (roleId){
-		case 'admin':
+		case roleEnum.admin:
 			return {
 				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-red'
 			}
 			break;
-		case 'MERCHANT_ADMIN':
+		case roleEnum.merchantAdmin:
 			return {
 				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-purple'
 			}
 			break;
-		case 'MERCHANT_EMPLOYEE':
-			return {
-				title: i18n.role[roleId].title,
-				bgColor: 'bg-purple'
-			}
-			break;
-		case 'PRODUCT_AGENT':
+		case roleEnum.productAgent:
 			return {
 				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-green'
 			}
 			break;
-		case 'SHIPPING_ADMIN':
+		case roleEnum.shippingAdmin:
 			return {
 				title: i18n.role[roleId].title,
 				bgColor: 'bg-gradual-blue'
-			}
-			break;
-		case 'SHIPPING_EMPLOYEE':
-			return {
-				title: i18n.role[roleId].title,
-				bgColor: 'bg-blue'
 			}
 			break;
 		default:

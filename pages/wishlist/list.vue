@@ -131,6 +131,13 @@
 					}
 				]
 				
+				// 如果是管理员角色则调换数组第一和第二的顺序
+				if(this.user.role == this.$basejs.roleEnum.admin) {
+					let temp = tabArr[0]
+					tabArr[0] = tabArr[1]
+					tabArr[1] = temp
+				}
+				
 				// 设置选中索引
 				let selectIndex = tabArr.findIndex(item => ( _this.currentStatus == item.status ))
 				if(selectIndex > -1) { this.current = this.swiperCurrent = selectIndex }
@@ -145,7 +152,7 @@
 			getbadgenum() {
 				
 				const db = uniCloud.database();
-				let wherestr = this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE' ? `creatUid == $cloudEnv_uid` : this.user.role == 'PRODUCT_AGENT' ? ` agentUid == $cloudEnv_uid` : ''
+				let wherestr = this.user.role == this.$basejs.roleEnum.merchantAdmin ? `creatUid == $cloudEnv_uid` : this.user.role == this.$basejs.roleEnum.productAgent ? ` agentUid == $cloudEnv_uid` : ''
 				db.collection('wish')
 					.where(wherestr)
 					.groupBy('status')

@@ -430,11 +430,7 @@ const zh = {
 		},
 		MERCHANT_ADMIN: {
 			title: '商家管理员',
-			des: '商家店铺管理者,可管理店铺及下属员工'
-		},
-		MERCHANT_EMPLOYEE: {
-			title: '商家雇员',
-			des: '可处理商家店铺事宜'
+			des: '商家店铺管理者,可管理店铺'
 		},
 		PRODUCT_AGENT: {
 			title: '商品代理员',
@@ -443,10 +439,6 @@ const zh = {
 		SHIPPING_ADMIN: {
 			title: '物流管理员',
 			des: '管理所属物流公司相关订单数据等'
-		},
-		SHIPPING_EMPLOYEE: {
-			title: '物流雇员',
-			des: '可处理所属物流公司事宜'
 		},
 		
 	}

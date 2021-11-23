@@ -2,211 +2,221 @@
 	<view class="pagecontent wishdetailview">
 		
 		<!-- 导航栏 -->
-		<cu-custom :bgColor=" wishinfo ? wishbgcolor : 'bg-pink' ">
+		<cu-custom :bgColor=" wishInfo ? wishbgcolor : 'bg-pink' ">
 			<block slot="content">{{i18n.nav.wishdetail}}</block>
 		</cu-custom>
 		
-		<!-- 付款倒计时 -->
-		<view v-if="false && wishinfo && wishOrderInfo && wishOrderInfo.status == 0 && wishinfo.creatUser._id == user._id" 
-			class="paymentcountdownview flex align-center justify-between bg-cyan padding-sm" :style="{top: CustomBar + 'px'}">
+		<template v-if="wishInfo">
 			
-			<view class="leftview flex align-center">
-				<text class="cuIcon-titles text-white"></text>
-				<text class="text-white text-df margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
-				<u-count-down :timestamp="paymenttimediff" autoplay font-size="30" :show-days="false" @end="timecountend"></u-count-down>
-			</view>
-			
-			<view class="rightview margin-left">
-				<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
-			</view>
-			
-		</view>
-		
-		<!-- 商品信息区域 -->
-		<view v-if="wishinfo" class="wishinfoview">
-			
-			<!-- 详情区域 -->
-			<view class="detailview cu-card">
+			<!-- 付款倒计时 -->
+			<view v-if="false && wishInfo && wishOrderInfo && wishOrderInfo.status == 0 && wishInfo.creatUser._id == user._id" 
+				class="paymentcountdownview flex align-center justify-between bg-cyan padding-sm" :style="{top: CustomBar + 'px'}">
 				
-				<!-- 基本信息区域 -->
-				<view class="cu-item shadow-warp bg-white">
+				<view class="leftview flex align-center">
+					<text class="cuIcon-titles text-white"></text>
+					<text class="text-white text-df margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
+					<u-count-down :timestamp="paymenttimediff" autoplay font-size="30" :show-days="false" @end="timecountend"></u-count-down>
+				</view>
+				
+				<view class="rightview margin-left">
+					<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
+				</view>
+				
+			</view>
+			
+			<!-- 商品信息区域 -->
+			<view class="wishInfoview">
+				
+				<!-- 详情区域 -->
+				<view class="detailview cu-card">
 					
-					<!-- 图片区域 -->
-					<view class="picview pos-relative">
+					<!-- 基本信息区域 -->
+					<view class="cu-item shadow-warp bg-white">
 						
-						<!-- 卖家信息 -->
-						<view v-if="wishinfo.agentUser && wishinfo.agentUser._id == user._id && wishinfo.sellerInfo" class="sellerInfoView pos-absolute flex padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx', zIndex: 10}">
-							<text class="cuIcon cuIcon-shopfill text-white"></text>
-							<text class="text-sm u-line-2 margin-left-sm">{{ wishinfo.sellerInfo.title }}</text>
+						<!-- 图片区域 -->
+						<view class="picview pos-relative">
+						
+							<!-- 状态标签 -->
+							<view class="cu-tag pos-absolute radius" style="right: 0;top: 0;z-index: 10;" :class="wishbgcolor">{{ wishtagtext }}</view>
+							
+							<!-- 轮播图 -->
+							<u-swiper :list="swiperList" :title="true" mode="number" :autoplay="false"
+									height="250" name="image" indicator-pos="topLeft" :interval="5000" 
+									:current="swiperCur" :effect3d=" wishInfo.productList.length > 2 " 
+									@click="clickSwiper" @change="changeSwiper"
+							></u-swiper>
+							
 						</view>
 						
-						<!-- 状态标签 -->
-						<view class="cu-tag pos-absolute radius" style="right: 0;top: 0;z-index: 10;" :class="wishbgcolor">{{ wishtagtext }}</view>
-						
-						<!-- 轮播图 -->
-						<swiper class="screen-swiper round-dot radius" indicator-dots circular
-						 :autoplay="swiperautoplay" :duration="500" :interval="3000" :current="swiperCur" @change="changeSwiper" indicator-color="#8799a3"
-						 indicator-active-color="#0081ff">
-							<swiper-item v-for="(img,index) in wishinfo.imgs.split(',')" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="previewImgs(wishinfo.imgs, index)">
-								<image :src="img" mode="aspectFill"></image>
-							</swiper-item>
-						</swiper>
-						
-					</view>
-					
-					<!-- 创建者信息及留言 -->
-					<view class="headerview flex align-center justify-between padding-sm">
-						
-						<view class="publisherandremarkview flex align-center width100">
+						<!-- 当前轮播到的商品信息 -->
+						<view v-if="currentProduct" class="currentproductview padding-sm">
 							
-							<!-- 头像 -->
-							<image v-if="wishinfo.creatUser && wishinfo.creatUser.avatar" class="cu-avatar round" :src="wishinfo.creatUser.avatar"></image>
-							
-							<!-- 右侧区域 -->
-							<template>
-							
-								<!-- 显示备注 -->
-								<view v-if="wishinfo.remark" class="margin-left bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{ wishinfo.remark }}</view>
+							<!-- 标题 -->
+							<view class="tilteview padding-sm">
 								
-								<!-- 没有备注时显示昵称和时间 -->
-								<view v-else class="publishcontent flex-sub margin-left">
-									<view>{{wishinfo.creatUser.nickname || 'XXX'}}</view>
-									<view class="text-gray text-sm flex justify-between">
-										<uni-dateformat :date="wishinfo.creatTime" />
+								<!-- 商品外链二维码 -->
+								<text v-if="currentProduct.platformLink" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="ifshowqrcode = true"></text>
+								<!-- 商品标题 -->
+								<text class="protitle text-bold text-xl">{{ `${currentProduct.title}`}}</text>
+								
+							</view>
+							
+							<!-- 商品价格和数量 -->
+							<view class="priceandamountview margin-top-sm flex align-center justify-between">
+								
+								<text class="text-price text-red text-xl margin-right">{{ currentProduct.price }}</text>
+								
+								<view class="margin-left flex0 flex align-center">
+									<text class="cuIcon cuIcon-goods text-orange margin-right-sm"></text>
+									<text class="text-grey">{{ `${getamountbyspecInfo(currentProduct.selectSpecPropInfo)}` }}</text>
+								</view>
+							</view>
+							
+							<!-- 创建者代理员及留言 -->
+							<view class="creatuserview margin-top-sm flex align-center justify-between">
+								
+								<!-- 创建者 -->
+								<view class="creatuserview flex align-center">
+									
+									<u-avatar class="flex0" :src="wishInfo.creatUser.avatar" size="mini"></u-avatar>
+									
+									<!-- 没有备注时 -->
+									<view v-if="!currentProduct.remark" class="margin-left-sm flex flex-direction">
+										<view>{{wishInfo.creatUser.nickname || wishInfo.creatUser.username}}</view>
+										<view class="text-gray text-sm">
+											<uni-dateformat :date="wishInfo.creatTime" />
+										</view>
 									</view>
+									
+									<!-- 有备注时 显示备注 -->
+									<view v-if="currentProduct.remark" class="flex1 margin-left margin-right bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longpress="$basejs.copytoclipboard(currentProduct.remark)">{{ currentProduct.remark }}</view>
+									
 								</view>
 								
-							</template>
-							
-						</view>
-						
-					</view>
-					
-					<!-- 商品标题和价格区域 -->
-					<view class="text-content padding-left-sm padding-right-sm padding-bottom-sm">
-						
-						<view class="tilteview">
-							
-							<!-- 紧急程度 -->
-							<!-- <text class="hurryleveltext margin-right-sm">
-								<text v-for="item in wishinfo.hurryLevel" :key="item" class="cuIcon cuIcon-lightfill text-red"></text>
-							</text> -->
-							
-							<!-- 商品外链二维码 有纯链接时有二维码 -->
-							<text v-if="productExt && productExt.pureUrl" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="ifshowqrcode = true"></text>
-							<!-- 商品标题 -->
-							<text class="protitle text-bold text-xl">{{ `${wishinfo.productTitle}`}}</text>
-							<view v-if="wishinfo.aliasName" class="margin-left cu-tag radius bg-pink" @longpress="$basejs.copytoclipboard(wishinfo.aliasName)">
-								{{ wishinfo.aliasName }}
-							</view>
-			
-						</view>
-						
-						<!-- 商品价格和数量 -->
-						<view class="priceandamountview margin-top-sm flex align-center justify-between">
-							
-							<view class="priceview">
-								<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-								<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
-							</view>
-
-							<view class="cu-tag radius bg-cyan">
-								{{ i18n.wishlist.common.amount }}:
-								{{ wishinfo.targetAmount }}
+								<!-- 右侧区域 -->
+								<view class="agentuserview">
+								
+									<!-- 右侧代理人头像 -->
+									<template v-if="wishInfo.agentUser">
+										<u-avatar class="flex0" :src="wishInfo.agentUser.avatar" size="mini" show-level level-icon="kefu-ermai" level-bg-color="#0081ff"></u-avatar>
+									</template>
+									
+								</view>
+								
 							</view>
 							
 						</view>
 						
+						<!-- 操作区域 -->
+						<view v-if="false" class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
+							
+							<!-- 分享按钮 小程序平台有 -->
+							<!-- #ifdef MP -->
+							<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
+							<!-- #endif -->
+							
+							<!-- 复制源网站链接按钮 有源网站链接时出现-->
+							<button v-if="wishInfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
+							
+							<!-- 编辑按钮 仅自己可编辑 且在该心愿单为进行中时显示 -->
+							<button v-if="wishInfo.achieveFlag == 0 && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+							
+							<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
+							<button v-if="(wishInfo.achieveFlag == 0 || wishInfo.achieveFlag == 1) && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+							
+							<!-- 计算国际运费按钮 -->
+							<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
+							
+							<!-- 再次购买按钮 -->
+							<button v-if="user && (user.role == $basejs.roleEnum.merchantAdmin)" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
+							
+							<!-- 查看订单按钮 -->
+							<button v-if="wishOrderInfo && user && (wishInfo.creatUser._id == user._id || wishInfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
+							
+							<!-- 查看1688详情按钮 -->
+							<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
+							
+						</view>
+						
+					</view>
+				
+				</view>
+				
+				<!-- 其他信息区域-->
+				<view class="detaildataview margin">
+					
+					<!-- 订购规格table -->
+					<view v-if="wishInfo && wishInfo.specPropInfo" class="wishspectable">
+						<wishTableSpec ref="wishtablespec" v-if="wishInfo" :wishInfo="wishInfo" sourcefrom="wishdetail" ></wishTableSpec>
 					</view>
 					
-					<!-- 操作区域 -->
-					<view class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
-						
-						<!-- 分享按钮 小程序平台有 -->
-						<!-- #ifdef MP -->
-						<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
-						<!-- #endif -->
-						
-						<!-- 复制源网站链接按钮 有源网站链接时出现-->
-						<button v-if="wishinfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
-						
-						<!-- 编辑按钮 仅自己可编辑 且在该心愿单为进行中时显示 -->
-						<button v-if="wishinfo.achieveFlag == 0 && wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
-						
-						<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
-						<button v-if="(wishinfo.achieveFlag == 0 || wishinfo.achieveFlag == 1) && wishinfo.creatUser && wishinfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
-						
-						<!-- 计算国际运费按钮 -->
-						<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
-						
-						<!-- 再次购买按钮 -->
-						<button v-if="user && (user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE')" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
-						
-						<!-- 查看订单按钮 -->
-						<button v-if="wishOrderInfo && user && (wishinfo.creatUser._id == user._id || wishinfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
-						
-						<!-- 查看1688详情按钮 -->
-						<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
-						
+				</view>
+				
+			</view>
+			
+			<!-- 时间轴 -->
+			<view v-if="timelinearrdic && Object.keys(timelinearrdic).length > 0 " id="timelineview" class="timelineview solid-top">
+				
+				<view class="cu-bar bg-white">
+					<view class="action">
+						<text class="cuIcon-titles text-green"></text>
+						<text class="text-xl text-bold">{{ i18n.wishlist.timeline.title }}</text>
 					</view>
+				</view>
+				
+				<view class="cu-timeline" v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
+					
+					<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
+					
+					<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" :wishInfo="wishInfo" @sharetimeline="sharetimeline"></wishTimeLineItem>
 					
 				</view>
-			
-			</view>
-			
-			<!-- 其他信息区域-->
-			<view class="detaildataview margin">
-				
-				<!-- 订购规格table -->
-				<view v-if="wishinfo && wishinfo.specPropInfo" class="wishspectable">
-					<wishTableSpec ref="wishtablespec" v-if="wishinfo" :wishinfo="wishinfo" sourcefrom="wishdetail" ></wishTableSpec>
-				</view>
 				
 			</view>
 			
-		</view>
-		
-		<!-- 时间轴 -->
-		<view v-if="wishinfo && timelinearrdic && Object.keys(timelinearrdic).length > 0 " id="timelineview" class="timelineview solid-top">
-			
-			<view class="cu-bar bg-white">
-				<view class="action">
-					<text class="cuIcon-titles text-green"></text>
-					<text class="text-xl text-bold">{{ i18n.wishlist.timeline.title }}</text>
-				</view>
-			</view>
-			
-			<view class="cu-timeline" v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
+			<!-- 悬浮按钮区域 -->
+			<view v-if="user" class="floatview">
 				
-				<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
-				
-				<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" :wishInfo="wishinfo" @sharetimeline="sharetimeline"></wishTimeLineItem>
-				
-			</view>
-			
-		</view>
-		
-		<!-- 悬浮按钮区域 -->
-		<view v-if="wishinfo && user" class="floatview">
-			
-			<!-- 如果是代理员 -->
-			<template v-if=" user.role == 'PRODUCT_AGENT' ">
-				
-				<!-- 心愿没有被关联时 -->
-				<template v-if="wishinfo.agentFlag == 0">
+				<!-- 如果是代理员 -->
+				<template v-if=" user.role == $basejs.roleEnum.productAgent ">
 					
-					<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
-						<text class="cuIcon-servicefill"></text>
-					</button>
+					<!-- 心愿没有被关联时 -->
+					<template v-if="wishInfo.agentFlag == 0">
+						
+						<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+							<text class="cuIcon-servicefill"></text>
+						</button>
+						
+					</template>
+					
+					<!-- 自身代理的心愿 -->
+					<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
+						
+						<!-- 显示添加按钮 -->
+						<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+							<text class="cuIcon-add"></text>
+						</button>
+						
+						<!-- 如果有订单信息则显示订单按钮 -->
+						<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
+							<text class="cuIcon-formfill"></text>
+						</button> -->
+						
+					</template>
 					
 				</template>
 				
-				<!-- 自身代理的心愿 -->
-				<template v-else=" wishinfo.agentUser && wishinfo.agentUser._id == user._id ">
+				<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
+				<template v-else-if="user._id == wishInfo.creatUser._id">
 					
-					<!-- 显示添加按钮 -->
-					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<!-- 心愿单进行中显示更新时间轴按钮 -->
+					<button v-if="wishInfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 						<text class="cuIcon-add"></text>
+					</button>
+					
+					<!-- 待确认时显示滑动到时间轴按钮 -->
+					<button v-if="wishInfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
+						<text class="cuIcon-magic"></text>
 					</button>
 					
 					<!-- 如果有订单信息则显示订单按钮 -->
@@ -216,29 +226,9 @@
 					
 				</template>
 				
-			</template>
+			</view>
 			
-			<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
-			<template v-else-if="(user.role == 'MERCHANT_ADMIN' || user.role == 'MERCHANT_EMPLOYEE') && user._id == wishinfo.creatUser._id">
-				
-				<!-- 心愿单进行中显示更新时间轴按钮 -->
-				<button v-if="wishinfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-					<text class="cuIcon-add"></text>
-				</button>
-				
-				<!-- 待确认时显示滑动到时间轴按钮 -->
-				<button v-if="wishinfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
-					<text class="cuIcon-magic"></text>
-				</button>
-				
-				<!-- 如果有订单信息则显示订单按钮 -->
-				<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-					<text class="cuIcon-formfill"></text>
-				</button> -->
-				
-			</template>
-			
-		</view>
+		</template>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
@@ -364,7 +354,7 @@
 		
 		<!-- 弹出二维码组件 -->
 		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="180" :ifshow.sync="ifshowqrcode"></alertqrcode>
-				
+		
 	</view>
 </template>
 
@@ -383,7 +373,12 @@
 				needtochecktoken: true, // 是否检测用户token信息
 				id: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
-				wishinfo: null, // 当前心愿详情
+				wishInfo: null, // 当前心愿详情
+				
+				swiperCur: 0, // 当前轮播图索引
+				swiperautoplay: false, // 轮播图是否自动播放  默认为否
+				swiperList: null, // 轮播图数据
+				
 				wishOrderInfo: null, // 心愿订单数据
 				paymenttimediff: 0, // 待付款订单倒计时
 				productExt: null, // 心愿拓展字段
@@ -391,8 +386,7 @@
 				timelinearrdic: {}, // 心愿时间轴数据
 				timelineScrollTop: 0, // 时间轴的顶部坐标
 				
-				swiperCur: 0, // 当前轮播图索引
-				swiperautoplay: false, // 轮播图是否自动播放  默认为否
+
 				imgsArr: [], // 轮播图的图片数组索引
 				
 				collapseOpen: false, // 是否展开规格订购信息  默认不展开
@@ -432,10 +426,10 @@
 			
 			// 心愿单的背景颜色  根据不同的状态返回不同的颜色
 			wishbgcolor() {
-				if(this.wishinfo) {
+				if(this.wishInfo) {
 					
-					let achieveFlag = this.wishinfo.achieveFlag
-					let bgColor = this.$basejs.getwishtagbgcolorclassname(achieveFlag)
+					let status = this.wishInfo.status
+					let bgColor = this.$basejs.getwishtagbgcolorclassname(status)
 					return bgColor
 				}
 				else {
@@ -446,15 +440,24 @@
 			// 心愿单的tag名称
 			wishtagtext() {
 				
-				if(this.wishinfo) {
-					let achieveFlag = this.wishinfo.achieveFlag
-					let tagName = this.$basejs.getwishtagname(achieveFlag)
+				if(this.wishInfo) {
+					let status = this.wishInfo.status
+					let tagName = this.$basejs.getwishtagname(status)
 					return tagName
 				}
 				else {
 					return ''
 				}
 				
+			},
+			
+			// 当前轮播的商品
+			currentProduct() {
+				if(this.swiperList && this.swiperList.length > 0) {
+					let currentProduct = this.swiperList[this.swiperCur].currentProduct
+					return currentProduct
+				}
+				return null
 			},
 			
 			// 国际运费总价
@@ -538,9 +541,9 @@
 			// 当前要分享出去的时间轴数据
 			let sharetimelineitem = this.temptimelineitem
 			// 设置分享的内容
-			let title = this.sharecontent ? this.sharecontent : `${this.wishinfo.productTitle}`
-			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishinfo._id}&ifShare=true`
-			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? sharetimelineitem.imgs.split(',')[0] : this.wishinfo.imgs.split(',')[0]
+			let title = this.sharecontent ? this.sharecontent : `${this.wishInfo.productTitle}`
+			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&ifShare=true`
+			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? sharetimelineitem.imgs.split(',')[0] : this.wishInfo.imgs.split(',')[0]
 			let shareobj = {
 				title: title,
 				path: path,
@@ -563,12 +566,10 @@
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
-				db.collection('wishlist,uni-id-users')
+				db.collection('wish,uni-id-users')
 					.doc(_this.id)
-					.field('creatUser{nickname,avatar},agentUser{avatar,nickname},agentFlag,productTitle,aliasName,imgs,targetPrice,targetAmount,targetMoneyType,sourcePrice,sourceMoneyType,sourceLink,sellerInfo,achieveFlag,hurryLevel,remark,creatTime,productExt,specPropInfo,thirdPidType,thirdPid,wishOrderId')
-					.get({
-						getOne:true
-					})
+					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,optionTime,status,productList')
+					.get({getOne:true})
 					.then(res => {
 						
 						_this.ifloading = false // 结束缓冲动画
@@ -577,19 +578,34 @@
 							let detaildata = res.result.data
 							detaildata.creatUser = detaildata.creatUser[0]
 							detaildata.agentUser = detaildata.agentUser && detaildata.agentUser.length > 0 ? detaildata.agentUser[0] : null
-							_this.wishinfo = detaildata
+							if(detaildata.productList.length > 0) {
+								let sellerInfo = detaildata.productList[0].sellerInfo
+								detaildata['sellerInfo'] = sellerInfo
+							}
+							
+							// 设置轮播图数据
+							let swiperList = detaildata.productList.map(eachproduct => {
+								let item = {
+									currentProduct: eachproduct,
+									title: eachproduct.aliasName,
+									image: eachproduct.imgs.split(',')[0],
+								}
+								return item
+							})
+							_this.swiperList = swiperList
+							
+							_this.wishInfo = detaildata
+							console.log(_this.wishInfo);
 							
 							// 解析心愿商品拓展字段
 							let productExt = detaildata.productExt
 							_this.productExt = productExt
 							
-							// 设置悬浮按钮的展示内容
-							// _this.setFabContentArr()
 							
 							// 获取关联的心愿订单数据
-							if(_this.wishinfo && _this.wishinfo.wishOrderId) {
+							if(_this.wishInfo && _this.wishInfo.wishOrderId) {
 								db.collection('order')
-								.doc(_this.wishinfo.wishOrderId)
+								.doc(_this.wishInfo.wishOrderId)
 								.get({getOne: true})
 								.then(response => {
 									if(response.result.code == 0) {
@@ -618,6 +634,28 @@
 						_this.ifloading = false // 结束缓冲动画
 					})
 				
+			},
+			
+			// 点击轮播图  查看该商品的主图
+			clickSwiper(index) {
+				let selectproduct = this.currentProduct
+				uni.previewImage({
+					current: 0,
+					urls: selectproduct.imgs.split(',')
+				})
+			},
+			
+			// 计算某个商品的选中数量
+			getamountbyspecInfo(selectSpecPropInfo) {
+				if(!selectSpecPropInfo) { return 0 }
+				let totalAmount = 0
+				selectSpecPropInfo.propValList.forEach((firstspec, firstindex) => {
+					firstspec.specStockList.forEach((secondspec, secondindex) => {
+						totalAmount += secondspec.amount
+					})
+				})
+				
+				return totalAmount
 			},
 			
 			// 计算付款倒计时时长
@@ -656,7 +694,7 @@
 							.then(response => {
 								// 更改心愿单状态
 								db.collection('wishlist')
-								.doc(_this.wishinfo._id)
+								.doc(_this.wishInfo._id)
 								.update({
 									achieveFlag: 99
 								})
@@ -699,7 +737,7 @@
 			
 			// 开启运费小工具
 			openshippingtool() {
-				let productExt = this.wishinfo.productExt
+				let productExt = this.wishInfo.productExt
 				if(productExt && productExt.boxVolume) {
 					this.popuptype = 'shippingtool'
 					this.showpopup = true
@@ -842,8 +880,8 @@
 			},
 			
 			// 切换轮播图
-			changeSwiper(e) {
-				this.swiperCur = e.detail.current
+			changeSwiper(index) {
+				this.swiperCur = index
 			},
 			
 			previewImgs(imgsStr,index) {
@@ -880,7 +918,7 @@
 			buyagain() {
 				// replace到新增心愿页面
 				uni.navigateTo({
-					url: `/pages/wishlist/handlewish?type=copy&id=${this.wishinfo._id}`
+					url: `/pages/wishlist/handlewish?type=copy&id=${this.wishInfo._id}`
 				});
 			}, 
 			
@@ -896,9 +934,9 @@
 						if(res.confirm) {
 							
 							// 开始关联商品
-							let wishinfo = _this.wishinfo
+							let wishInfo = _this.wishInfo
 							const db = uniCloud.database();
-							db.collection('wishlist').doc(wishinfo._id)
+							db.collection('wishlist').doc(wishInfo._id)
 							.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
 							.then(response => {
 								// 关联成功
@@ -909,7 +947,7 @@
 								
 								// 添加一个代理人关联心愿时间轴记录
 								db.collection('wishlisttimeline')
-								.add({type: 90,wishId: wishinfo._id})
+								.add({type: 90,wishId: wishInfo._id})
 								.then(response => {
 									// 创建时间轴成功
 									console.log(`创建关联时间轴成功`);
@@ -988,11 +1026,11 @@
 			// 查看1688商品详情数据
 			check1688prodetail() {
 				
-				console.log(this.wishinfo);
-				let thirdPid = this.wishinfo.thirdPid
+				console.log(this.wishInfo);
+				let thirdPid = this.wishInfo.thirdPid
 				
 				// 将原链接存储在本地
-				uni.setStorageSync('linkprosearchtext',this.wishinfo.sourceLink)
+				uni.setStorageSync('linkprosearchtext',this.wishInfo.sourceLink)
 				uni.navigateTo({
 					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
 				});
@@ -1014,7 +1052,7 @@
 				if(msgtype == 'agentbindwish') {
 					info = {
 						msgtype: msgtype,
-						wishId: _this.wishinfo._id
+						wishId: _this.wishInfo._id
 					}
 				}
 				

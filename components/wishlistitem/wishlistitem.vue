@@ -4,7 +4,7 @@
 	<!-- 每一个心愿单卡片的内容 -->
 	<view v-if="ownwishitem" class="contentview cu-card case">
 		
-		<view class="cu-item shadow" @tap.stop="clickwishitem" @longpress.stop="changewishliststatus">
+		<view class="cu-item shadow-warp" @tap.stop="clickwishitem">
 			
 			<!-- 卡片上方-图片区域 -->
 			<view class="image">
@@ -45,23 +45,16 @@
 					</block>
 				</view>
 				
-				<!-- 卖家信息 代理显示店铺名称 user.role == 'PRODUCT_AGENT' &&  -->
-				<view v-if=" ownwishitem.productList[0].sellerInfo" class="sellerInfoView pos-absolute flex align-center padding-sm radius bg-gradual-blue" :style="{left: 0, top: 0, maxWidth: '400rpx', maxHeight: '100rpx'}">
-					<text class="cuIcon cuIcon-shopfill text-white"></text>
-					<text class="text-sm u-line-1 margin-left-sm">{{ ownwishitem.productList[0].sellerInfo.shopName }}</text>
-				</view>
-				
 				<view class="cu-tag text-white radius" :class="wishbgcolor">{{ wishtagtext }}</view>
 				
-				<view class="cu-bar bg-shadeBottom flex-direction align-start">
+				<view class="cu-bar bg-shadeBottom">
 					
 					<!-- 心愿标题 -->
-					<view class="text-bold margin-top-sm u-line-2 width100" :class="[ ownwishitem.productList.length == 1 ? 'text-xl' : 'text-df' ]">
+					<view class="text-bold u-line-2 width100" :class="[ ownwishitem.productList.length == 1 ? 'text-xl' : 'text-df' ]">
 						<text v-for="(eachproduct, index) in ownwishitem.productList" :key="index"
 								class="margin-right-sm"
 						>
 							{{ eachproduct.aliasName || eachproduct.title }}
-							
 							<text v-if="index != ownwishitem.productList.length - 1" class="cuIcon cuIcon-titles margin-left-sm margin-right-sm"></text>
 						</text>
 					</view>
@@ -70,67 +63,76 @@
 			
 			</view>
 			
-			<!-- 卡片下方-内容区域 -->
-			<view v-if="ownwishitem.creatUser" class="cu-list menu-avatar">
-				<view class="cu-item">
-					
-					<!-- 头像 -->
-					<u-avatar class="cu-avatar" :src="ownwishitem.creatUser.avatar" size="default"></u-avatar>
-					
-					<!-- 内容 -->
-					<view class="content">
-						
-						<!-- 上方发布人昵称 -->
-						<view class="text-black">{{ ownwishitem.creatUser.nickname || 'Default User'}}</view>
-						
-						<!-- 发布时间 -->
-						<view class="text-gray text-sm">
-							<uni-dateformat :date="ownwishitem.creatTime" />
-						</view>
-						
+			<!-- 信息区域 -->
+			<view class="contentview flex flex-direction padding-sm">
+				
+				<!-- 商店和商品信息 -->
+				<view class="flex align-center justify-between">
+					<view v-if="ownwishitem.sellerInfo" class="flex1 flex align-center">
+						<text class="cuIcon cuIcon-shopfill text-blue margin-right-sm"></text>
+						<text class="text-df"> {{ `${ownwishitem.sellerInfo.shopName}` }} </text>
 					</view>
 					
-					<!-- 操作 -->
-					<view class="action">
-						<template>
-							
-							<!-- 付款按钮  商家角色且为待付款 -->
-							<view v-if="ownwishitem.achieveFlag == 2 && ownwishitem.wishOrderInfo.status == 0" class="payview flex align-center">
-								
-								<!-- 商家自身 -->
-								<template v-if="user && user._id == ownwishitem.creatUser._id">
-									<button class="cu-btn round bg-gradual-red u-font-20" @tap.stop="paynow">
-										<view class="flex flex-direction align-center">
-											<text class="u-font-20">{{ i18n.base.paynow }}</text>
-											<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
-										</view>
-									</button>
-								</template>
-								
-								<!-- 代理员自身 -->
-								<template v-if="user && user._id == ownwishitem.agentUser._id">
-									<!-- <text class="cuIcon cuIcon-pay text-red u-font-40"></text> -->
-									<text class="u-font-20 bg-gradual-red cu-btn round">{{ i18n.base.paynow }}</text>
-								</template>
-								
-							</view>
-							
+					<view class="margin-left flex0 flex align-center">
+						<text class="cuIcon cuIcon-goodsfill text-orange margin-right-sm"></text>
+						<text class="text-grey">{{ `共${ownwishitem.productList.length}种商品` }}</text>
+					</view>
+				</view>
+				
+				<!-- 发布人信息 -->
+				<view class="flex align-center justify-between margin-top-sm">
+					
+					<!-- 发布人信息 -->
+					<view class="flex align-center flex0">
+						<u-avatar :src="ownwishitem.creatUser.avatar" size="mini"></u-avatar>
+						<view class="flex flex-direction margin-left-sm">
+							<text class="text-df text-black">{{ ownwishitem.creatUser.nickname }}</text>
+							<text class="text-sm text-grey"><uni-dateformat :date="ownwishitem.creatTime" /></text>
+						</view>
+					</view>
+					
+					<!-- 代理人信息 -->
+					<view class="flex justify-end flex1">
+						
+						<!-- 有代理人时 -->
+						<template v-if="ownwishitem.agentUser">
+							<u-avatar :src="ownwishitem.agentUser.avatar" size="mini" show-level level-icon="kefu-ermai" level-bg-color="#0081ff"></u-avatar>
+						</template>
+						
+						<!-- 没有代理人时显示代理按钮 -->
+						<template v-else>
 							<!-- 代理心愿按钮  代理人角色且心愿未被代理 -->
-							<button v-if=" ownwishitem.status == 0 && user && user.role == 'PRODUCT_AGENT'" 
+							<button v-if=" ownwishitem.status == 0 && user && user.role == $basejs.roleEnum.productAgent" 
 									class="cu-btn round bg-blue animation-reverse"
 									:class="[bindAnimation ? 'animation-scale-down' : '']"
 									@tap.stop="agentBindWish">
 								<text class="cuIcon cuIcon-servicefill"></text>
 							</button>
-							
-							<!-- 跳转订单按钮 -->
-							<button v-if="user && ownwishitem.wishOrderInfo" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
-							
 						</template>
+						
 					</view>
 					
-					
 				</view>
+				
+			</view>
+			
+			<!-- 操作区域 当心愿状态为0时不显示 -->
+			<view v-if="ownwishitem.status != 0" class="actionview shadow-warp padding-sm flex align-center">
+				
+				<!-- 跳转订单按钮  当心愿变成已支付已完成且为自己或代理员代理的心愿时有此按钮 -->
+				<button v-if="user && (user._id == ownwishitem.creatUser._id || user._id == ownwishitem.agentUser._id) && ownwishitem.status == 4" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
+				
+				<!-- 付款按钮  商家自身角色且为待付款 -->
+				<button v-if="user && user._id == ownwishitem.creatUser._id && ownwishitem.status == 3" class="cu-btn margin-left-sm round bg-gradual-red u-font-20" @tap.stop="paynow">
+					<view class="flex flex-direction align-center">
+						<text class="u-font-20">{{ i18n.base.paynow }}</text>
+						<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
+					</view>
+				</button>
+				
+				<!-- 切换心愿状态 超级管理员有此功能 -->
+				<button v-if="user && user.role == $basejs.roleEnum.admin " class="cu-btn margin-left-sm round bg-grey cuIcon cuIcon-order" @tap.stop="changewishliststatus"></button>
+				
 			</view>
 			
 		</view>
@@ -155,12 +157,6 @@
 					default: null,
 				},
 				
-				// 心愿单类型 normaltype  为正常类型  samestoretype为同商店类型
-				type: {
-					type: String,
-					default: 'normal'
-				},
-
 			},
 			
 			data() {
@@ -217,8 +213,7 @@
 			
 			created() {
 				let productList = this.ownwishitem.productList
-				// productList = productList.concat(productList)
-				// productList = [productList[0], productList[0], productList[0]]
+				this.ownwishitem.sellerInfo = productList[0].sellerInfo
 				this.ownwishitem.productList = productList
 			},
 			
@@ -231,26 +226,11 @@
 			
 			methods: {
 	
-				// 点击心愿列表
+				// 点击跳转心愿详情
 				clickwishitem() {
 					uni.navigateTo({
 						url: `/pages/wishlist/wishdetail?id=${this.ownwishitem._id}`
 					});
-				},
-				
-				// 计算付款倒计时时长
-				gettimecountstamp() {
-					
-					let nowtimestamp = new Date().getTime()
-					let ordercreattimestamp = this.ownwishitem.wishOrderInfo.creatTime
-					let wishorderpaymenttimestamp = this.$store.getters.configData.wishorderPaymentTime || 1000 * 60 * 60 * 24
-					let timediff = (ordercreattimestamp + wishorderpaymenttimestamp - nowtimestamp)  / 1000
-					this.paymenttimediff = timediff
-					
-					if(this.paymenttimediff <= 0) {
-						this.paymenttimediff = 0
-					}
-					
 				},
 				
 				// 付款操作
@@ -319,8 +299,13 @@
 						});
 						_this.bindAnimation = true // 显示动画
 						
+						// 手动更新心愿信息
+						_this.$set(_this.ownwishitem, 'status', 1)
+						let agentUser = _this.user
+						_this.$set(_this.ownwishitem, 'agentUser', agentUser)
+						
 						// 更新当前数据
-						uni.$emit('updatewishlist')
+						// uni.$emit('updatewishlist')
 						
 						// 添加一个代理人关联心愿时间轴记录
 						db.collection('wishlisttimeline')
@@ -391,73 +376,52 @@
 					
 				},
 				
-				// 长按更改心愿单状态
+				// 管理员更改心愿单状态
 				changewishliststatus() {
-					const _this = this
-
-					// 只有超级管理员有变更心愿状态的功能
-					// if(_this.user.role !== 'ADMIN') {
-					// 	return
-					// }
 					
-				   // 心愿单完成标识 0心愿进行中 1心愿待确认 2心愿已确认代理待下单 3代理已下单客户待收货 4客户已收货心愿已完成 99心愿已关闭
-				   let optionList = [
+					const _this = this
+					
+					// 心愿单完成标识 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+					let optionList = [
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.ing,
-							type: 'changetag',
-							achieveFlag: 0
+							status: 1
 						},
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.waittoconfirm,
-							type: 'changetag',
-							achieveFlag: 1
+							status: 2
 						},
 						{
-							name: this.i18n.wishlist.common.achieveflagdata.makeorder,
-							type: 'changetag',
-							achieveFlag: 2
-						},
-						{
-							name: this.i18n.wishlist.common.achieveflagdata.waitreceive,
-							type: 'changetag',
-							achieveFlag: 3
+							name: this.i18n.wishlist.common.achieveflagdata.waittopay,
+							status: 3
 						},
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.finish,
-							type: 'changetag',
-							achieveFlag: 4
+							status: 4
 						},
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.closed,
-							type: 'changetag',
-							achieveFlag: 99
+							status: 90
 						}
 					]
 					
-					let itemList = []
-					let finalOptionList= []
-					
-					optionList.forEach((eachitem,index) => {
-						if(eachitem.achieveFlag !== _this.ownwishitem.achieveFlag) {
-							itemList.push(eachitem.name)
-							finalOptionList.push(eachitem)
-						}
-					})
+					let finalOptionList= optionList.filter(item => (item.status != _this.ownwishitem.status))
+					let finalNameList = finalOptionList.map(item => (item.name))
 					
 					uni.showActionSheet({
-						itemList: itemList,
+						itemList: finalNameList,
 						itemColor: '#000000',
 						success(res) {
 							let tapindex = res.tapIndex
 							let tapItem = finalOptionList[tapindex]
-							let achieveFlag = tapItem.achieveFlag
+							let status = tapItem.status
 							
 							// 设置该心愿单的状态为切换状态
 							
 							const db = uniCloud.database();
-							db.collection('wishlist')
+							db.collection('wish')
 							.doc(_this.ownwishitem._id)
-							.update({achieveFlag})
+							.update({status})
 							.then(res => {
 								console.log(`更新状态成功`);
 								// 将心愿单列表数据置空(消失) 然后发送响应事件

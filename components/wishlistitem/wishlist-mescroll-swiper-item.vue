@@ -100,7 +100,7 @@
 				let getCountFlag = false // 是否获取查询列表数据的所有数据库数量  默认为否
 				
 				// 代理员
-				if(this.user && this.user.role == 'PRODUCT_AGENT') {
+				if(this.user && this.user.role == this.$basejs.roleEnum.productAgent) {
 					
 					// 如果status =-1则代表查自己代理的所有心愿单
 					if(status == -1) {
@@ -123,7 +123,7 @@
 					
 				}
 				// 普通供应商
-				else if(this.user.role == 'MERCHANT_ADMIN' || this.user.role == 'MERCHANT_EMPLOYEE') {
+				else if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
 					
 					wherestr = `creatUid._id == $cloudEnv_uid`
 					
@@ -139,6 +139,23 @@
 					// 增加搜索关键字和供应商昵称和对应的订单编码的查询条件
 					wherestr += ` && (${new RegExp(searchText, 'i')}.test(productList.title) || ${new RegExp(searchText, 'i')}.test(productList.aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) )`
 					
+				}
+				// 管理员
+				else if(this.user.role == this.$basejs.roleEnum.admin) {
+					// 如果statsu =-1则代表查所有发布过的所有心愿单
+					if(status == -1) {
+						getCountFlag = true // 查询所有发布过的心愿单数量
+					}
+					// 如果是其他类别则查对应的不同类别的心愿
+					else {
+						wherestr += `status == ${status} && `
+						if(status == 0) {
+							getCountFlag = true
+						}
+					}
+					
+					// 增加搜索关键字
+					wherestr += `(${new RegExp(searchText, 'i')}.test(productList.title) || ${new RegExp(searchText, 'i')}.test(productList.aliasName) || ${new RegExp(searchText, 'i')}.test(creatUser.username) || ${new RegExp(searchText, 'i')}.test(creatUser.nickname) || ${new RegExp(searchText, 'i')}.test(agentUser.username) || ${new RegExp(searchText, 'i')}.test(agentUser.nickname) )`
 				}
 				
 				console.log(`查询语句为:\n${wherestr}`);

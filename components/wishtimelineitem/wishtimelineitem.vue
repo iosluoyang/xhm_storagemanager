@@ -87,7 +87,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{ user.role == 'PRODUCT_AGENT' ? i18n.wishlist.timeline.wishconfirmquotationagenttip : i18n.wishlist.timeline.wishconfirmquotationcustomertip }}
+				{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishconfirmquotationagenttip : i18n.wishlist.timeline.wishconfirmquotationcustomertip }}
 			</view>
 			
 			<!-- 总价 -->
@@ -134,7 +134,7 @@
 			
 			<!-- 文本内容 -->
 			<view class="margin-top-sm t_wrap">
-				{{ user.role == 'PRODUCT_AGENT' ? i18n.wishlist.timeline.wishrefusequotationagenttip : i18n.wishlist.timeline.wishrefusequotationcustomertip }}
+				{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishrefusequotationagenttip : i18n.wishlist.timeline.wishrefusequotationcustomertip }}
 			</view>
 			
 			<!-- 总价 -->
