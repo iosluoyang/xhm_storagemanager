@@ -1,7 +1,49 @@
 <template>
-	<view class="wishtablespec comcontent">
+	<view v-if="wishInfo" class="wishtablespec comcontent">
 		
-		<u-table v-if="tableData" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
+		<!-- 分割线 -->
+		<view class="flex align-center padding-sm solid-bottom">
+			<text class="cuIcon cuIcon-titles text-orange"></text>
+			<text class="margin-left cuIcon cuIcon-goodsfill text-orange"></text>
+		</view>
+		
+		<!-- 商品表格内容 -->
+		<template>
+			
+			<u-collapse v-if="ifCollapse" :item-style="{ marginTop: '20rpx' }">
+				<u-collapse-item v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid" 
+					:title="eachproduct.title"
+				>
+					
+					<view slot="title" class="titleview flex align-center">
+						<u-image class="flex0" :src="eachproduct.imgs.split(',')[0]" width="60rpx" height="60rpx" mode="aspectFill"></u-image>
+						<text class="margin-left-sm text-bold text-sm">{{ `${eachproduct.title}${eachproduct.aliasName ? `——(${eachproduct.aliasName})` : '' }` }}</text>
+					</view>
+					
+					<view class="eachproducttableview">
+						<wishproducttable :productInfo="eachproduct"></wishproducttable>
+					</view>
+					
+				</u-collapse-item>
+			</u-collapse>
+			
+			<!-- 多个商品表格 -->
+			<view v-else class="eachproducttableview margin-bottom" v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
+				<wishproducttable :productInfo="eachproduct"></wishproducttable>
+			</view>
+			
+		</template>
+		
+		<!-- 汇总表格内容 -->
+		<u-table class="u-table">
+			<u-tr class="u-tr">
+				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.proprice }}</u-th>
+				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</u-th>
+				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.totalsummary }}</u-th>
+			</u-tr>
+		</u-table>
+		
+		<u-table v-if="false && tableData" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
 			
 			<!-- 订购规格区域 均显示 -->
 			<template>
@@ -49,7 +91,7 @@
 				</u-tr>
 				
 				<!-- 填充表格规格内容数据 -->
-				<u-tr class="u-tr tableeachrow">
+				<u-tr v-if="false" class="u-tr tableeachrow">
 									
 					<!-- 每一列的数据要和header保持一致 -->
 					<u-td class="u-td" v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
@@ -201,6 +243,8 @@
 
 <script>
 	
+	import wishproducttable from '@/components/wishtablespec/wishproducttable.vue'
+	
 	var _this
 	
 	export default {
@@ -219,38 +263,19 @@
 			sourcefrom: {
 				type: String,
 				default: 'wishdetail'
-			}
+			},
+			
+			// 是否为折叠模式 默认为是
+			ifCollapse: {
+				type: Boolean,
+				default: true
+			},
+			
 			
 		},
 		
-		watch: {
-			wishInfo: {
-				handler(newValue, oldValue) {
-					this.setTableData()
-				},
-				deep: true,
-				immedicate: true
-			}
-		},
-		
-		computed: {
-			
-			// 显示总价格
-			totalPrice() {
-				
-				if(this.tableData) {
-					if(this.tableData.totalProPrice && this.tableData.totalDomesticShippingFee && this.tableData.totalCommissionFee) {
-						let totalProPrice = parseFloat(this.tableData.totalProPrice).toFixed(2)
-						let totalDomesticShippingFee = parseFloat(this.tableData.totalDomesticShippingFee).toFixed(2)
-						let totalCommissionFee = parseFloat(this.tableData.totalCommissionFee).toFixed(2)
-						let totalPrice = +totalProPrice + +totalDomesticShippingFee + +totalCommissionFee
-						totalPrice = parseFloat(totalPrice).toFixed(2)
-						return totalPrice
-					}
-				}
-				return '/'
-			}
-		
+		components: {
+			wishproducttable, // 商品规格展示table
 		},
 		
 		data() {
@@ -259,17 +284,144 @@
 				tableHeaderArr: null, // 表头数组
 				tableData: null, // 表格内容数据
 				
+				
 			};
 		},
 		
 		created() {
 			_this = this
 			
-			_this.setTableData()
-			
+			// _this.setTableData()
+			_this.setTableHeaderData()
 		},
 		
 		methods: {
+			
+			// 设置表头数据
+			setTableHeaderData() {
+				
+				//设置三级表头
+				let tableHeader3Arr = [
+					
+					{
+						title: _this.i18n.wishlist.common.tabledata.attribute2,
+						key: 'attributeName',
+						type: 'text',
+						// width: '15%',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.price,
+						key: 'price',
+						type: 'text',
+						// width:'10%',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.amount,
+						key: 'amount',
+						type: 'text',
+						// width:'10%',
+						ifShow: true
+					},
+				]
+				
+				tableHeader3Arr = tableHeader3Arr.filter(item => (item.ifShow))
+				
+				// 设置二级表头
+				let tableHeader2Arr = [
+					
+					{
+						title: _this.i18n.wishlist.common.tabledata.index,
+						key: 'index',
+						type: 'text',
+						width: '5%',
+						ifShow: false
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.attribute1,
+						key: 'attributeName',
+						type: 'text',
+						width: '15%',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.image,
+						key: 'img',
+						type: 'img',
+						width: '20%',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.spec,
+						key: 'childList',
+						type: 'arr',
+						childList: tableHeader3Arr,
+						// width:'auto',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.summary,
+						key: 'totalAmount',
+						type: 'text',
+						width:'10%',
+						ifShow: true
+					},
+					
+				]
+				
+				tableHeader2Arr = tableHeader2Arr.filter(item => (item.ifShow))
+				
+				// 设置一级表头
+				let tableHeaderArr = [
+					{
+						title: _this.i18n.wishlist.common.tabledata.index,
+						key: 'index',
+						type: 'text',
+						width: '10%',
+						ifShow: false
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.image,
+						key: 'mainImg',
+						type: 'img',
+						width: '10%',
+						ifShow: false
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.title,
+						key: 'productTitle',
+						type: 'text',
+						width: '15%',
+						ifShow: false
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.spec,
+						key: 'specList',
+						type: 'arr',
+						childList: tableHeader2Arr, // 规格对应的子列表
+						// width: 'auto',
+						ifShow: true
+					},
+					{
+						title: _this.i18n.wishlist.common.tabledata.totalsummary,
+						key: 'totalAmount',
+						type: 'text',
+						width: '10%',
+						// #ifdef MP-WEIXIN
+						ifShow: false,
+						// #endif
+						
+						// #ifndef MP-WEIXIN
+						ifShow: true,
+						// #endif
+					},
+				]
+				
+				tableHeaderArr = tableHeaderArr.filter(item => (item.ifShow))
+				_this.tableHeaderArr = tableHeaderArr
+				
+			},
 			
 			setTableData() {
 				
@@ -277,48 +429,56 @@
 				let specList = []
 				
 				// 映射数据
-				if(_this.wishInfo && _this.wishInfo.specPropInfo) {
+				if(_this.wishInfo) {
 					
-					let proMainImg = this.wishInfo.imgs.split(',')[0]
-					
-					let firstList = _this.wishInfo.specPropInfo.propValList
-					firstList.forEach(firstitem => {
-						let totalAmount = 0
-						let totalProPrice = 0
+					// 遍历心愿单下的商品列表
+					_this.wishInfo.productList.forEach(eachproduct => {
 						
-						let childList = []
-						// 遍历二级属性
-						firstitem.specStockList.forEach(seconditem => {
+						let proMainImg = eachproduct.imgs.split(',')[0]
+						
+						let firstList = eachproduct.selectSpecPropInfo.propValList
+						firstList.forEach(firstitem => {
+							let totalAmount = 0
+							let totalProPrice = 0
 							
-							if(seconditem.amount && seconditem.amount > 0) {
-								let childListItem = {
-									attributeName: seconditem.propVal,
-									amount: seconditem.amount,
-									price: seconditem.price,
-									specId: seconditem.specId,
+							let childList = []
+							// 遍历二级属性
+							firstitem.specStockList.forEach(seconditem => {
+								
+								if(seconditem.amount && seconditem.amount > 0) {
+									let childListItem = {
+										attributeName: seconditem.propVal,
+										amount: seconditem.amount,
+										price: seconditem.price,
+										specId: seconditem.specId,
+									}
+									totalAmount += Number(seconditem.amount)
+									totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
+									childList.push(childListItem)
 								}
-								totalAmount += Number(seconditem.amount)
-								totalProPrice += (Number(seconditem.amount) * parseFloat(seconditem.price).toFixed(2))
-								childList.push(childListItem)
+								
+							})
+							
+							let firstImg = firstitem.img || proMainImg // 默认一级分类图片
+							if(Array.isArray(firstitem.img)) {
+								firstImg = firstitem.img.length > 0 && firstitem.img[0] ? firstitem.img[0] : proMainImg
+							}
+							let specListItem = {
+								attributeName: firstitem.propVal,
+								img: firstImg,
+								childList: childList,
+								totalAmount: totalAmount,
+								totalProPrice: totalProPrice
+							}
+							
+							if(totalAmount > 0) {
+								specList.push(specListItem)
 							}
 							
 						})
 						
-						let firstImg = Array.isArray(firstitem.img) && firstitem.img.length > 0 ? firstitem.img[0] : firstitem.img
-						let specListItem = {
-							attributeName: firstitem.propVal,
-							img: firstImg || proMainImg,
-							childList: childList,
-							totalAmount: totalAmount,
-							totalProPrice: totalProPrice
-						}
-						
-						if(totalAmount > 0) {
-							specList.push(specListItem)
-						}
-						
 					})
-					
+
 				}
 				
 				if(specList.length == 0) {
@@ -453,18 +613,18 @@
 				let totalProPrice = 0
 				let totalSpecAmount = specList.length
 				// console.log(`共有${totalSpecAmount}种类型`);
-				let totalDomesticShippingFee = _this.wishInfo.productExt.domesticShippingFee ? parseFloat(_this.wishInfo.productExt.domesticShippingFee).toFixed(2) : ''
-				let totalCommissionFee = _this.wishInfo.productExt.commissionFee ? parseFloat( _this.wishInfo.productExt.commissionFee).toFixed(2) : ''
+				let totalDomesticShippingFee = _this.wishInfo.domesticShippingFee ? parseFloat(_this.wishInfo.domesticShippingFee).toFixed(2) : ''
+				let totalCommissionFee = _this.wishInfo.commissionFee ? parseFloat( _this.wishInfo.commissionFee).toFixed(2) : ''
 				specList.forEach(eachitem => {
 					totalAmount += Number(eachitem.totalAmount)
 					totalProPrice += +parseFloat(eachitem.totalProPrice).toFixed(2)
 				})
 				totalProPrice = parseFloat(totalProPrice).toFixed(2) // 计算出来的商品总价
-				let agentEditProPrice = _this.wishInfo.productExt.proPrice ? parseFloat(_this.wishInfo.productExt.proPrice).toFixed(2) : '' // 代理编辑的商品总价
+				// let agentEditProPrice = _this.wishInfo.productExt.proPrice ? parseFloat(_this.wishInfo.productExt.proPrice).toFixed(2) : '' // 代理编辑的商品总价
 				
 				// 表格内容初始化数据
 				let priceData = {
-					totalProPrice: agentEditProPrice ? agentEditProPrice : totalProPrice, // 若存在代理编辑商品价格则取代理编辑价格显示
+					totalProPrice: totalProPrice, // 若存在代理编辑商品价格则取代理编辑价格显示
 					totalProPriceOld: totalProPrice, // 计算出来的商品总价
 					totalDomesticShippingFee: totalDomesticShippingFee,
 					totalCommissionFee: totalCommissionFee

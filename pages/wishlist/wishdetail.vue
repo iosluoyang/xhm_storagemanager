@@ -142,14 +142,9 @@
 				
 				</view>
 				
-				<!-- 其他信息区域-->
-				<view class="detaildataview margin">
-					
-					<!-- 订购规格table -->
-					<view v-if="wishInfo && wishInfo.specPropInfo" class="wishspectable">
-						<wishTableSpec ref="wishtablespec" v-if="wishInfo" :wishInfo="wishInfo" sourcefrom="wishdetail" ></wishTableSpec>
-					</view>
-					
+				<!-- 订购规格table -->
+				<view class="wishspectable margin shadow-warp padding-sm">
+					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" sourcefrom="wishdetail" ></wishTableSpec>
 				</view>
 				
 			</view>
