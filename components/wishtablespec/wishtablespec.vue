@@ -3,8 +3,8 @@
 		
 		<!-- 分割线 -->
 		<view class="flex align-center padding-sm solid-bottom">
-			<text class="cuIcon cuIcon-titles text-orange"></text>
-			<text class="margin-left cuIcon cuIcon-goodsfill text-orange"></text>
+			<text class="cuIcon cuIcon-cascades text-orange"></text>
+			<text class="text-orange margin-left-sm text-bold">{{ wishInfo.productList.length }}</text>
 		</view>
 		
 		<!-- 商品表格内容 -->
@@ -21,7 +21,7 @@
 					</view>
 					
 					<view class="eachproducttableview">
-						<wishproducttable :productInfo="eachproduct"></wishproducttable>
+						<wishproducttable :productInfo="eachproduct" :ifShowTitle="false"></wishproducttable>
 					</view>
 					
 				</u-collapse-item>
@@ -35,13 +35,28 @@
 		</template>
 		
 		<!-- 汇总表格内容 -->
-		<u-table class="u-table">
-			<u-tr class="u-tr">
-				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.proprice }}</u-th>
-				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</u-th>
-				<u-th class="u-th">{{ i18n.wishlist.common.tabledata.totalsummary }}</u-th>
-			</u-tr>
-		</u-table>
+		<view class="margin-top-sm summaryview">
+			<u-table class="u-table">
+				<u-tr class="u-tr">
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.proprice }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.commissionfee }}</u-th>
+					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.totalsummary }}</u-th>
+				</u-tr>
+				<u-tr class="u-tr">
+					<u-td class="u-td">
+						<view class="flex flex-direction align-center">
+							<text v-if="wishInfo.quotationInfo && wishInfo.quotationInfo.totalProPrice" class="text-price text-red">{{ wishInfo.quotationInfo.totalProPrice }}</text>
+							<text class="text-price text-bold text-black">{{ getTotalProPriceByWish(wishInfo) }}</text>
+						</view>
+					</u-td>
+					
+					<u-td class="u-td">{{ wishInfo.quotationInfo.totalShippingFee || '/' }}</u-td>
+					<u-td class="u-td">{{ wishInfo.quotationInfo.totalCommissionFee || '/' }}</u-td>
+					<u-td class="u-td">{{ getWishInfoTotalMoney(wishInfo) }}</u-td>
+				</u-tr>
+			</u-table>
+		</view>
 		
 		<u-table v-if="false && tableData" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
 			
@@ -284,7 +299,6 @@
 				tableHeaderArr: null, // 表头数组
 				tableData: null, // 表格内容数据
 				
-				
 			};
 		},
 		
@@ -296,6 +310,47 @@
 		},
 		
 		methods: {
+			
+			// 根据心愿单商品计算所有的商品总价
+			getTotalProPriceByWish(wishInfo) {
+				
+				let productList = wishInfo.productList
+				
+				let totalProPrice = 0
+				
+				productList.forEach(eachproduct => {
+					eachproduct.selectSpecPropInfo.propValList.forEach(firstSpec => {
+						firstSpec.specStockList.forEach(secondSpec => {
+							if(secondSpec.amount > 0) {
+								let secondSpecPrice = Number(secondSpec.amount) * Number(this.$basejs.keepTwoDecimalFull(secondSpec.price))
+								totalProPrice += Number(secondSpecPrice)
+							}
+						})
+					})
+				})
+				
+				totalProPrice = this.$basejs.keepTwoDecimalFull(totalProPrice)
+				
+				return totalProPrice
+			},
+			
+			// 计算心愿的总费用
+			getWishInfoTotalMoney(wishInfo) {
+				
+				// 首先计算商品总价
+				let totalProPrice = this.getTotalProPriceByWish(wishInfo) || 0
+				let totalShippingFee = wishInfo.totalShippingFee
+				let totalCommissionFee = wishInfo.totalCommissionFee
+				
+				//三者缺其一
+				if(!totalProPrice || !totalShippingFee || !totalCommissionFee) {
+					return '/'
+				}
+				else {
+					let totalMoney = parseFloat(totalProPrice) + parseFloat(totalShippingFee)
+				}
+				
+			},
 			
 			// 设置表头数据
 			setTableHeaderData() {

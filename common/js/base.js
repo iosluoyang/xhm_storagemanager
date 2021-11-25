@@ -530,6 +530,26 @@ export function translatecontent(sourcecontent, ENToCN=false) {
 
 }
 
+//四舍五入保留2位小数（不够位数，则用0替补）
+export function keepTwoDecimalFull(num) {
+ var result = parseFloat(num);
+ if (isNaN(result)) {
+ alert('传递参数错误，请检查！');
+ return false;
+ }
+ result = Math.round(num * 100) / 100;
+ var s_x = result.toString();
+ var pos_decimal = s_x.indexOf('.');
+ if (pos_decimal < 0) {
+ pos_decimal = s_x.length;
+ s_x += '.';
+ }
+ while (s_x.length <= pos_decimal + 2) {
+ s_x += '0';
+ }
+ return s_x;
+}
+
 export default {
 	roleEnum, // 角色枚举类型
 	storeName, // 返回供应商名称  用于生成二维码的前缀
@@ -549,4 +569,5 @@ export default {
 	getwishtagbgcolorclassname, // 获取心愿背景颜色
 	getwishtagname, // 获取心愿tag名称
 	translatecontent, // 翻译内容
+	keepTwoDecimalFull, // 四舍五入保留2位小数（不够位数，则用0替补）
 }

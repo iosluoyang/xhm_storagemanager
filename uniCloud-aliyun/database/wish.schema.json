@@ -54,6 +54,31 @@
 			"bsonType":"array",
 			"description":"心愿单对应的商品列表快照数据,其中每条数据都为心愿草稿箱中的数据格式"
 		},
+		"quotationInfo": {
+			"bsonType":"object",
+			"description":"心愿单报价内容",
+			"properties": {
+				"totalProPrice": {
+					"bsonType":"string",
+					"description":"总商品价格",
+					"defaultValue":""
+				},
+				"totalShippingFee": {
+					"bsonType":"string",
+					"description":"总运费",
+					"defaultValue":""
+				},
+				"totalCommissionFee": {
+					"bsonType":"string",
+					"description":"总服务费",
+					"defaultValue":""
+				}
+				
+			}
+		}
+		
+		
+		
 		"warehouse": {
 			"bsonType":"object",
 			"description":"该心愿对应的仓库信息",

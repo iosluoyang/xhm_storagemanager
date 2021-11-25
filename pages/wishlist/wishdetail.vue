@@ -563,7 +563,7 @@
 				const db = uniCloud.database();
 				db.collection('wish,uni-id-users')
 					.doc(_this.id)
-					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,optionTime,status,productList')
+					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,optionTime,status,productList,quotationInfo')
 					.get({getOne:true})
 					.then(res => {
 						
