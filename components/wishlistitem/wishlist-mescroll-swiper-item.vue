@@ -96,7 +96,7 @@
 				// 查询 商户角色下查询搜索关键字 完成标识 和仅自己发布的可看的合集
 				// 代理员角色下查询搜索关键字 完成标识 和 代理人id自身id相等时的合集
 				let wherestr = ''
-				let orderbystr = `optionTime desc, creatTime desc` // 默认按照操作时间 、创建时间倒序显示
+				let orderbystr = `updateTime desc, creatTime desc` // 默认按照操作时间 、创建时间倒序显示
 				let getCountFlag = false // 是否获取查询列表数据的所有数据库数量  默认为否
 				
 				// 代理员

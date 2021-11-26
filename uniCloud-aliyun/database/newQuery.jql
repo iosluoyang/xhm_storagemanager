@@ -14,3 +14,25 @@ const dbCmd = db.command;
 db.collection('wish').where(`agentUid == ''`).get()
 
 db.collection('favorpro').remove()
+
+db.collection('wish').where(`_id != '' `).update({
+	quotationInfo: {
+		totalProPrice: "",
+		totalShippingFee: "",
+		totalCommissionFee: ""
+	}
+})
+
+db.collection('wish-timeline').update({
+	content: "",
+	imgs: "",
+	link: "",
+	price: ""
+})
+
+db.collection('wish').update({
+	updateTime: ""
+}).get()
+
+db.collection('wish').remove()
+db.collection('wish-timeline').remove()

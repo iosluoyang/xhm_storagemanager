@@ -162,7 +162,7 @@ const en = {
 	wishlist: {
 		
 		common: {
-			
+			product: "Product",
 			link: "Link",
 			title: "Title",
 			aliasname: "Alias Name",

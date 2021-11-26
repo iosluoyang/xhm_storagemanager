@@ -257,12 +257,13 @@
 				
 				// 根据每一个商店生成一个心愿单
 				let addWishArr = []
+				
 				dataList.forEach(eachstore => {
 					
 					let samestoreproductlist = eachstore.productList
 					// 生成心愿单数据
 					let wishdata = {
-						productList: samestoreproductlist
+						productList: samestoreproductlist,
 					}
 					// 草稿箱id数据
 					let addIds = samestoreproductlist.map(eachproduct => (eachproduct.draftproId))
@@ -279,8 +280,30 @@
 				.then(response => {
 					// 添加成功
 					if(response.result.code == 0) {
+						
+						// 无关联操作
+						// 新增对应的时间轴数据
+						let wishIdsArr = response.result.ids
+						let addTimeLineArr = wishIdsArr.map(eachwishid => {
+							let timelineinfo = {
+								wishId: eachwishid,
+								type: 0, // 新增时间轴类型
+							}
+							return timelineinfo
+						})
+						db.collection('wish-timeline').add(addTimeLineArr)
+						.then(response => {
+							if(response.result.code == 0) {
+								console.log(`批量添加时间轴数据成功`);
+							}
+						})
+						.catch(error => {
+							console.log(`批量添加时间轴数据发生错误`);
+						})
+						
 						// 添加成功后将草稿箱中的数据状态变更为已加入心愿单
-						db.collection('wish-draft-product').where( `_id in ${JSON.stringify(draftIds)}` )
+						db.collection('wish-draft-product')
+						.where( `_id in ${JSON.stringify(draftIds)}` )
 						.update({status: 1})
 						.then(response => {
 							
@@ -303,6 +326,7 @@
 								icon: 'none'
 							});
 						})
+					
 					}
 					else {
 						_this.ifloading = false

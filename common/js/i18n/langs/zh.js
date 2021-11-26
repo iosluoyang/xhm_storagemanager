@@ -163,7 +163,7 @@ const zh = {
 	wishlist: {
 		
 		common: {
-			
+			product: "商品",
 			link: "链接",
 			title: "标题",
 			aliasname: "别名",

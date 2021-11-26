@@ -32,12 +32,12 @@
 				"$env": "now"
 			} // 强制设置创建时间为服务器当前时间
 		},
-		"optionUid": {
+		"updateUid": {
 			"bsonType": "string",
-			"description": "操作者的uid",
+			"description": "操作更新者的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
-		"optionTime": {
+		"updateTime": {
 			"bsonType": "timestamp",
 			"description": "操作时间"
 		},
@@ -47,19 +47,23 @@
 		},
 		"content": {
 			"bsonType": "string",
-			"description": "时间轴内容"
+			"description": "时间轴内容",
+			"defaultValue":""
 		},
 		"imgs": {
 			"bsonType": "string",
-			"description": "时间轴图片"
+			"description": "时间轴图片",
+			"defaultValue":""
 		},
 		"link": {
 			"bsonType": "string",
-			"description": "时间轴的链接"
+			"description": "时间轴的链接",
+			"defaultValue":""
 		},
 		"price": {
 			"bsonType": "string",
-			"description": "时间轴价格"
+			"description": "时间轴价格",
+			"defaultValue":""
 		}
 
 	}

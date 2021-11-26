@@ -4,7 +4,7 @@
 		<!-- 分割线 -->
 		<view class="flex align-center padding-sm solid-bottom">
 			<text class="cuIcon cuIcon-cascades text-orange"></text>
-			<text class="text-orange margin-left-sm text-bold">{{ wishInfo.productList.length }}</text>
+			<text class="text-orange margin-left-sm text-bold">{{ i18n.wishlist.common.product }}</text>
 		</view>
 		
 		<!-- 商品表格内容 -->
@@ -33,6 +33,12 @@
 			</view>
 			
 		</template>
+		
+		<!-- 分割线 -->
+		<view class="flex align-center padding-sm solid-bottom">
+			<text class="cuIcon cuIcon-rechargefill text-red"></text>
+			<text class="text-red margin-left-sm text-bold">{{ i18n.wishlist.common.pricesummary }}</text>
+		</view>
 		
 		<!-- 汇总表格内容 -->
 		<view class="margin-top-sm summaryview">

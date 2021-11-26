@@ -32,7 +32,7 @@
 			"description": "代理员的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
-		"optionTime": {
+		"updateTime": {
 			"description":"操作时间",
 			"bsonType":"timestamp",
 			"defaultValue":""
@@ -73,9 +73,9 @@
 					"description":"总服务费",
 					"defaultValue":""
 				}
-				
-			}
-		}
+			},
+			"defaultValue": ""
+		},
 		
 		
 		
