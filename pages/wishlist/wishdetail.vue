@@ -12,22 +12,6 @@
 			
 			<template v-if="wishInfo">
 				
-				<!-- 付款倒计时 -->
-				<view v-if="false && wishInfo && wishOrderInfo && wishOrderInfo.status == 0 && wishInfo.creatUser._id == user._id" 
-					class="paymentcountdownview flex align-center justify-between bg-cyan padding-sm" :style="{top: CustomBar + 'px'}">
-					
-					<view class="leftview flex align-center">
-						<text class="cuIcon-titles text-white"></text>
-						<text class="text-white text-df margin-right">{{ i18n.wishlist.timeline.paytime }}:</text>
-						<u-count-down :timestamp="paymenttimediff" autoplay font-size="30" :show-days="false" @end="timecountend"></u-count-down>
-					</view>
-					
-					<view class="rightview margin-left">
-						<button class="cu-btn round bg-red" @tap.stop="paynow">{{ i18n.base.paynow }}</button>
-					</view>
-					
-				</view>
-				
 				<!-- 商品信息区域 -->
 				<view class="wishInfoview padding-bottom">
 					
@@ -58,8 +42,8 @@
 								<!-- 标题 -->
 								<view class="tilteview padding-sm">
 									
-									<!-- 商品外链二维码 -->
-									<text v-if="currentProduct.platformLink" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="ifshowqrcode = true"></text>
+									<!-- 商品外链 -->
+									<text v-if="currentProduct.platformLink" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="clickShowQR"></text>
 									<!-- 商品标题 -->
 									<text class="protitle text-bold text-xl">{{ `${currentProduct.title}`}}</text>
 									
@@ -119,10 +103,7 @@
 								<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
 								<!-- #endif -->
 								
-								<!-- 复制源网站链接按钮 有源网站链接时出现-->
-								<button v-if="wishInfo.sourceLink" class="cu-btn round bg-gradual-green cuIcon-link margin-right-sm" @tap.stop=" popuptype = 'wishlink'; popmode='bottom'; showpopup=true; "></button>
-								
-								<!-- 编辑按钮 仅自己可编辑 且在该心愿单为进行中时显示 -->
+								<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为进行中时显示 -->
 								<button v-if="wishInfo.achieveFlag == 0 && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 								
 								<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
@@ -154,26 +135,6 @@
 					<!-- 心愿规格table -->
 					<view class="wishspecview margin padding-sm solid">
 						<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" sourcefrom="wishdetail" ></wishTableSpec>
-					</view>
-					
-				</view>
-				
-				<!-- 时间轴 -->
-				<view v-if="timelinearrdic && Object.keys(timelinearrdic).length > 0 " id="timelineview" class="timelineview solid-top">
-					
-					<view class="cu-bar bg-white">
-						<view class="action">
-							<text class="cuIcon-titles text-green"></text>
-							<text class="text-xl text-bold">{{ i18n.wishlist.timeline.title }}</text>
-						</view>
-					</view>
-					
-					<view class="cu-timeline" v-for="(timelinearr, timelinekey) in timelinearrdic" :key="timelinekey">
-						
-						<uni-dateformat class="cu-time" :date="timelinekey" format="MM/dd" />
-						
-						<wishTimeLineItem class="cu-item" v-for="(timelineitem, timelineindex) in timelinearr" :key="timelineitem._id" :timelineInfo="timelineitem" :wishInfo="wishInfo" @sharetimeline="sharetimeline"></wishTimeLineItem>
-						
 					</view>
 					
 				</view>
@@ -214,19 +175,9 @@
 					<template v-else-if="user._id == wishInfo.creatUser._id">
 						
 						<!-- 心愿单进行中显示更新时间轴按钮 -->
-						<button v-if="wishInfo.achieveFlag == 0" class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+						<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
 							<text class="cuIcon-add"></text>
 						</button>
-						
-						<!-- 待确认时显示滑动到时间轴按钮 -->
-						<button v-if="wishInfo.achieveFlag == 1" class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="gotoagreeorrefuse">
-							<text class="cuIcon-magic"></text>
-						</button>
-						
-						<!-- 如果有订单信息则显示订单按钮 -->
-						<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-							<text class="cuIcon-formfill"></text>
-						</button> -->
 						
 					</template>
 					
@@ -370,18 +321,6 @@
 				
 			</view>
 			
-			<view class="cu-bar foot input" :style="[{bottom:InputBottom+'px'}]">
-				<view class="action">
-					<text class="cuIcon-sound text-grey"></text>
-				</view>
-				<input class="solid-bottom" :adjust-position="false" :focus="false" maxlength="300" cursor-spacing="10"
-				 @focus="InputFocus" @blur="InputBlur"></input>
-				<view class="action">
-					<text class="cuIcon-emojifill text-grey"></text>
-				</view>
-				<button class="cu-btn bg-green shadow">发送</button>
-			</view>
-			
 		</scroll-view>
 		
 		<!-- 加载条 -->
@@ -507,7 +446,7 @@
 		</u-popup>
 		
 		<!-- 弹出二维码组件 -->
-		<alertqrcode ref="qrcodealert" :qrCodeContent="productExt && productExt.pureUrl ? productExt.pureUrl : '' " :qrcodeSize="180" :ifshow.sync="ifshowqrcode"></alertqrcode>
+		<alertqrcode v-if="qrCodeContent" ref="qrcodealert" :qrCodeContent="qrCodeContent" :qrcodeSize="180" :ifshow.sync="ifshowqrcode"></alertqrcode>
 		
 	</view>
 </template>
@@ -574,6 +513,7 @@
 				paybtnanimation: false, // 是否显示支付按钮的动画  默认为否
 				
 				ifshowqrcode: false, // 是否显示弹出二维码  默认否
+				qrCodeContent: "", // 二维码显示内容
 				
 			};
 		},
@@ -802,6 +742,7 @@
 				db.collection('wish-timeline, uni-id-users')
 				.where(`wishId == '${_this.id}' `)
 				.field(`creatUid{username,nickname,avatar,role} as creatUser, agentUid{username,nickname,avatar,role} as agentUser, type, content, imgs, link, price`)
+				.orderBy(`creatTime desc`)
 				.get()
 				.then(response => {
 					
@@ -840,13 +781,6 @@
 				
 			},
 			
-			InputFocus(e) {
-				this.InputBottom = e.detail.height
-			},
-			InputBlur(e) {
-				this.InputBottom = 0
-			},
-			
 			// 点击轮播图  查看该商品的主图
 			clickSwiper(index) {
 				let selectproduct = this.currentProduct
@@ -867,6 +801,15 @@
 				})
 				
 				return totalAmount
+			},
+			
+			// 点击二维码图标
+			clickShowQR() {
+				let qrcode = this.$basejs.getlinkbycode(this.currentProduct.platformLink).link
+				if(qrcode) {
+					this.qrCodeContent = qrcode
+					this.ifshowqrcode = true
+				}
 			},
 			
 			// 计算付款倒计时时长
@@ -1315,6 +1258,10 @@
 		// 	}
 		// }
 		
+		.wishInfoview{
+			padding-bottom: 120rpx;
+		}
+		
 		.paymentcountdownview{
 			position: fixed;
 			left: 0;
@@ -1337,7 +1284,6 @@
 		}
 		
 	}
-	
 	
 	.DrawerPage {
 		position: fixed;

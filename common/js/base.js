@@ -550,6 +550,40 @@ export function keepTwoDecimalFull(num) {
  return s_x;
 }
 
+// 根据口令获取链接
+export function getlinkbycode(codecontent) {
+	
+	let content = codecontent
+	let resultInfo = {
+		code: "",
+		link: ""
+	}
+	
+	// 首先尝试匹配口令和链接
+	let codeandlinkpatt = new RegExp(`(￥\\S+￥)\\S+(https?:\\S+)`)
+	let resultArr = codeandlinkpatt.exec(content)
+	if(resultArr && resultArr.length > 1) {
+		let productSecretCode = RegExp.$1
+		let productPureUrl = RegExp.$2
+		if(productSecretCode) {
+			resultInfo.code = productSecretCode
+		}
+		if(productPureUrl) {
+			resultInfo.link = productPureUrl
+		}
+		
+	}
+	
+	// 再匹配纯链接
+	let linkpatt = new RegExp(`https?:\\S+`)
+	if(linkpatt.test(content)) {
+		resultInfo.link = content
+	}
+	
+	return resultInfo
+	
+}
+
 export default {
 	roleEnum, // 角色枚举类型
 	storeName, // 返回供应商名称  用于生成二维码的前缀
@@ -570,4 +604,5 @@ export default {
 	getwishtagname, // 获取心愿tag名称
 	translatecontent, // 翻译内容
 	keepTwoDecimalFull, // 四舍五入保留2位小数（不够位数，则用0替补）
+	getlinkbycode, // 根据心愿商品的搜索文本提取口令和链接
 }
