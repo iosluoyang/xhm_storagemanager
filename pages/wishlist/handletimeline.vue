@@ -6,7 +6,7 @@
 		</cu-custom>
 		
 		<!-- 心愿详情信息 -->
-		<view v-if="wishinfo" class="wishdetailview bg-white padding-sm solid-bottom">
+		<view v-if="false && wishInfo" class="wishdetailview bg-white padding-sm solid-bottom">
 			
 			<!-- 心愿商品基本信息 -->
 			<view class="prodetailview padding-sm flex align-center">
@@ -14,20 +14,20 @@
 				<!-- 商品轮播图 -->
 				<swiper class="screen-swiper square-dot" indicator-dots circular
 				 autoplay interval="3000" duration="500" style="width: 40%;height: 200rpx;min-height: auto;flex-shrink: 0;">
-					<swiper-item class="radius" v-for="(img,index) in wishinfo.imgs.split(',')" :key="index">
+					<swiper-item class="radius" v-for="(img,index) in wishInfo.imgs.split(',')" :key="index">
 						<image :src="img" mode="aspectFill"></image>
 					</swiper-item>
 				</swiper>
 				
 				<!-- 商品标题和备注 链接 -->
 				<view class="procontentview flex-sub margin-left-sm" style="flex-shrink: 1;">
-					<view class="text-bold margin-bottom-sm t_twoline">{{ wishinfo.productTitle }}</view>
-					<view v-if="wishinfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishinfo.remark)">{{wishinfo.remark}}</view>
+					<view class="text-bold margin-bottom-sm t_twoline">{{ wishInfo.productTitle }}</view>
+					<view v-if="wishInfo.remark" class="tipsview radius bg-gray padding-sm text-sm text-light" style="word-break: break-all;" @longpress="$basejs.copytoclipboard(wishInfo.remark)">{{wishInfo.remark}}</view>
 					<view class="bottomview margin-top-sm flex justify-between align-center">
 						<view class="priceview flex align-center">
-							<text class="text-red text-xl margin-right">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text>
-							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishinfo.sourceMoneyType === 'RMB' ? '¥' : wishinfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishinfo.sourcePrice}` }}</text> -->
-							<view class="cu-tag radius bg-cyan">{{ wishinfo.targetAmount }}</view>
+							<text class="text-red text-xl margin-right">{{ `${wishInfo.sourceMoneyType === 'RMB' ? '¥' : wishInfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishInfo.sourcePrice}` }}</text>
+							<!-- <text class="text-gray text-df" style="text-decoration: line-through;">{{ `${wishInfo.sourceMoneyType === 'RMB' ? '¥' : wishInfo.sourceMoneyType === 'THB' ? '฿' : ''}${wishInfo.sourcePrice}` }}</text> -->
+							<view class="cu-tag radius bg-cyan">{{ wishInfo.targetAmount }}</view>
 						</view>
 						
 					</view>
@@ -38,10 +38,10 @@
 		</view>
 		
 		<!-- 时间轴更新内容 -->
-		<view v-if="wishinfo" class="timelinecontentview bg-white padding-sm">
+		<view v-if="false && wishInfo" class="timelinecontentview bg-white padding-sm">
 			
 			<!-- 选择更新时间轴的类型 -->
-			<view v-if="user.role == $basejs.roleEnum.productAgent && wishinfo.agentUser == user._id" class="cu-bar btn-group">
+			<view v-if="user.role == $basejs.roleEnum.productAgent && wishInfo.agentUser == user._id" class="cu-bar btn-group">
 				
 				<!-- 普通时间轴 -->
 				<button class="cu-btn shadow-blur round" :class="[type === 'addcomment' ? 'bg-blue' : 'line-blue sm' ]" @tap.stop="type='addcomment'">{{ i18n.wishlist.timeline.addcomment }}</button>
@@ -124,7 +124,7 @@
 				<!-- 确认报价区域 -->
 				<view v-show=" type == 'confirmquotation' ">
 					
-					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishinfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" v-if="tmpWishInfo" :wishInfo="tmpWishInfo" sourcefrom="handletimeline"></wishTableSpec>
 					
 					<!-- 编辑价格区域 -->
 					<view class="editpriceview padding-sm">
@@ -185,8 +185,76 @@
 			
 		</view>
 		
+		<!-- 心愿单更新区域 -->
+		<view v-if="wishInfo" class="updateview">
+			
+			<!-- 心愿基本信息 -->
+			<view class="wishbaseinfoview margin-top">
+				
+				<!-- 标题栏 -->
+				<view class="cu-bar bg-white solid-bottom">
+					<view class="action">
+						<text class="cuIcon-likefill text-pink"></text>
+						<text>{{ `心愿详情` }}</text>
+					</view>
+				</view>
+				
+				<!-- 列表信息展示 -->
+				<view class="cu-list menu">
+					
+					<view class="cu-item">
+						<view class="content">
+							<text class="cuIcon cuIcon-timefill text-grey"></text>
+							<uni-dateformat class="text-grey" :date="wishInfo.creatTime" />
+						</view>
+					</view>
+					
+					<view class="cu-item">
+						<view class="content">
+							<text class="cuIcon cuIcon-shopfill text-grey"></text>
+							<text class="text-grey">{{ wishInfo.sellerInfo.nickName }}</text>
+						</view>
+					</view>
+					
+					<view class="cu-item">
+						<view class="content">
+							<text class="cuIcon cuIcon-peoplefill text-grey"></text>
+							<u-avatar :src="wishInfo.creatUser.avatar" size="mini"></u-avatar>
+						</view>
+						
+						<view v-if="wishInfo.agentUser" class="action">
+							<u-avatar :src="wishInfo.agentUser.avatar" size="mini" show-level level-icon="kefu-ermai" level-bg-color="#0081ff"></u-avatar>
+						</view>
+					</view>
+					
+				</view>
+				
+			</view>
+			
+			<!-- 商品信息 -->
+			<view class="productsview margin-top">
+				
+				<view class="cu-bar bg-white solid-bottom">
+					<view class="action">
+						<text class="cuIcon cuIcon-goods text-orange"></text>
+						<text>{{ `商品信息` }}</text>
+					</view>
+				</view>
+				
+				<!-- 心愿规格table -->
+				<view class="wishspecview margin padding-sm solid">
+					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" :ifCollapse="false"></wishTableSpec>
+				</view>
+				
+			</view>
+			
+			
+			
+			
+		</view>
+		
 		<!-- 确定按钮 -->
-		<view v-if="wishinfo && !iseditprice" class="cu-bar btn-group margin">
+		<view v-if="wishInfo && !iseditprice" class="cu-bar btn-group margin">
 			<button class="cu-btn round bg-pink lg" @tap.stop="uploaddata">{{i18n.base.confirm}}</button>
 		</view>
 		
@@ -227,7 +295,7 @@
 				type: "addcomment", // 页面类型  addcomment 添加普通评论	addext为补充商品资料信息	confirmquotation为确认报价单
 				pagetype: 'add', // 页面自身的类型  add为新增 edit为编辑  默认为add 为普通时间轴时使用
 				wishId: null, // 当前时间轴的心愿id
-				wishinfo: null, // 当前心愿详情
+				wishInfo: null, // 当前心愿详情
 				tmpWishInfo: null, // 临时心愿变量
 				productExt: {
 					boxContainerNum: '',
@@ -291,23 +359,28 @@
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
-				db.collection('wishlist')
+				db.collection('wish,uni-id-users')
 					.doc(_this.wishId)
+					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,updateTime,status,productList,quotationInfo')
 					.get({
 						getOne:true
 					})
 					.then(res => {
 						
 						if(res.result.code == 0) {
+							
 							let detaildata = res.result.data
 							
-							_this.wishinfo = detaildata
-							_this.tmpWishInfo = _this.wishinfo
-							
-							if(_this.wishinfo.productExt) {
-								_this.productExt = _this.wishinfo.productExt
+							detaildata.creatUser = detaildata.creatUser[0]
+							detaildata.agentUser = detaildata.agentUser && detaildata.agentUser.length > 0 ? detaildata.agentUser[0] : null
+							if(detaildata.productList.length > 0) {
+								let sellerInfo = detaildata.productList[0].sellerInfo
+								detaildata['sellerInfo'] = sellerInfo
 							}
-					
+							
+							_this.wishInfo = detaildata
+							_this.tmpWishInfo = {..._this.wishInfo}
+							
 						}
 						else {
 							uni.showToast({

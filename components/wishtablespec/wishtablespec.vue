@@ -29,7 +29,7 @@
 			
 			<!-- 多个商品表格 -->
 			<view v-else class="eachproducttableview margin-bottom" v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
-				<wishproducttable :productInfo="eachproduct"></wishproducttable>
+				<wishproducttable :productInfo="eachproduct" type="edit"></wishproducttable>
 			</view>
 			
 		</template>
@@ -64,201 +64,6 @@
 			</u-table>
 		</view>
 		
-		<u-table v-if="false && tableData" class="u-table multiprotable" fontSize="20" padding="10rpx 0">
-			
-			<!-- 订购规格区域 均显示 -->
-			<template>
-				
-				<!-- 分隔栏 -->
-				<u-tr class="u-tr tableeachsummaryrow">
-					<u-td class="u-td">
-						<text class="text-bold text-white bg-gradual-pink">{{ i18n.wishlist.common.spec }}</text>
-					</u-td>
-				</u-tr>
-				
-				<!-- 表头 -->
-				<u-tr v-if="tableHeaderArr" class="u-tr tableheader bg-gray">
-					<u-td class='u-td eachheaderitem' v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
-						
-						<!-- 数组类型的表头 -->
-						<template v-if="headeritem.type == 'arr'">
-							<u-tr class="u-tr">
-								<u-td class="u-td subth" v-for="(subhead, subheadindex) in headeritem.childList" :key="subheadindex" :width="subhead.width">
-									
-									<!-- 如果是数组类型 -->
-									<template v-if="subhead.type == 'arr'">
-										<u-tr class="u-tr">
-											<u-td class="u-td subth" v-for="(thirdsubhead, thirdsubheadindex) in subhead.childList" :key="thirdsubheadindex" :width="thirdsubhead.width">
-												<text class="text-center text-bold u-line-3">{{ thirdsubhead.title }}</text>
-											</u-td>
-										</u-tr>
-									</template>
-									
-									<!-- 普通类型 -->
-									<template v-else>
-										<text class="text-center text-bold u-line-3">{{ subhead.title }}</text>
-									</template>
-									
-								</u-td>
-							</u-tr>
-						</template>
-						
-						<!-- 其他类型的表头 -->
-						<template v-else>
-							<text class="text-center text-black text-bold u-line-3">{{ headeritem.title }}</text>
-						</template>
-						
-					</u-td>
-				</u-tr>
-				
-				<!-- 填充表格规格内容数据 -->
-				<u-tr v-if="false" class="u-tr tableeachrow">
-									
-					<!-- 每一列的数据要和header保持一致 -->
-					<u-td class="u-td" v-for="(headeritem, headerindex) in tableHeaderArr" :key="headerindex" :width="headeritem.width">
-						
-						<!-- 如果类型为正常文本展示则直接展示 -->
-						<template v-if="headeritem.type == 'text'">
-							<text class="text-wrap" :class=" [ headeritem.key == 'totalAmount' ? 'text-bold text-pink text-lg' : '' ] ">{{ tableData[headeritem.key] }}</text>
-						</template>
-						
-						<!-- 如果类型为图片则渲染图片组件 -->
-						<template v-else-if="headeritem.type == 'img'">
-							<u-image  width="100%" height="60" mode="aspectFit" :src="tableData[headeritem.key]" @click="previewImg(tableData[headeritem.key])"></u-image>
-						</template>
-						
-						<!-- 如果类型为数组则该列渲染多个行数据 -->
-						<template v-else-if="headeritem.type == 'arr'">
-							
-							<!-- 如果对应表头为多规格则渲染多规格数据 -->
-							<template v-if="headeritem.key == 'specList'">
-								
-								<!-- 商品的每一个一级规格行数据 -->
-								<u-tr class="u-tr subtr" v-for="(subitem, subitemindex) in tableData[headeritem.key]" :key="subitemindex">
-									
-									<!-- 二级表头与数据一一对应 -->
-									<u-td class="u-td subtd" v-for="(subheaditem, subheaditemindex) in headeritem.childList" :key="subheaditemindex" :width="subheaditem.width">
-										
-										<!-- 索引类型 -->
-										<text v-if="subheaditem.key == 'index'" :class=" subitemindex%2 == 0 ? 'bg-cyan light' : 'bg-pink light' ">
-											{{ (subitemindex+1).toString() }}
-										</text>
-										
-										<!-- 文本类型 -->
-										<template v-if="subheaditem.type == 'text'">
-											<text class="text-wrap" :class=" [ subheaditem.key == 'totalAmount' ? 'text-bold text-blue text-lg' : '' ] ">{{ subitem[subheaditem.key] }}</text>
-										</template>
-										
-										<!-- 图片类型 -->
-										<template v-if="subheaditem.type == 'img'">
-											<u-image width="100%" height="60" mode="aspectFit" :src="subitem[subheaditem.key]" @click="previewImg(subitem[subheaditem.key])"></u-image>
-											<!-- <u-image style="margin: 0 auto;width: 100%;" width="100%" mode="widthFix" :src="subitem[subheaditem.key]" @click="previewImg(subitem[subheaditem.key])"></u-image> -->
-										</template>
-										
-										<!-- 对应的二级规格 此处默认一定会有二级规格(没有则为默认规格) -->
-										<template v-if="subheaditem.type == 'arr'">
-											<!-- 根据二级规格的多少选择渲染多少行 -->
-											<u-tr class="u-tr spec2utr" v-for="(sub2item, sub2itemindex) in subitem[subheaditem.key]" :key="sub2itemindex">
-												
-												<!-- 三级表头与数据一一对应 -->
-												<u-td class="u-td thirdsubtd" v-for="(sub3item, sub3itemindex) in subheaditem.childList" :key="sub3itemindex" :width="sub3item.width">
-													
-													<!-- 文本类型 -->
-													<template v-if="sub3item.type == 'text'">
-														<text class="text-wrap text-df">{{ sub2item[sub3item.key] }}</text>
-													</template>
-				
-												</u-td>
-												
-											</u-tr>
-											
-										</template>
-										
-									</u-td>
-									
-								</u-tr>
-							
-							</template>
-							
-						</template>
-						
-					</u-td>
-					
-				</u-tr>
-				
-			</template>
-			
-			<!-- 心愿单金额汇总区域 -->
-			<!-- 心愿详情来源中如果心愿为进行中则不显示  其他情况下均显示 -->
-			<!-- 时间轴编辑来源均显示 -->
-			<!-- 心愿订单不显示 -->
-			<template v-if=" (sourcefrom == 'wishdetail' && wishInfo.achieveFlag != 0) || sourcefrom == 'handletimeline' ">
-				
-				<!-- 分隔栏 -->
-				<u-tr class="u-tr tableeachsummaryrow">
-					<u-td class="u-td">
-						<text class="text-bold text-white bg-gradual-red">{{ i18n.wishlist.common.pricesummary }}</text>
-					</u-td>
-				</u-tr>
-				
-				<!-- 总结区域表头 -->
-				<u-tr class="u-tr">
-					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.proprice }}</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.commissionfee }}</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.tabledata.accrudeexpense }}</u-th>
-				</u-tr>
-				
-				<!-- 总结区域内容 -->
-				<u-tr class="u-tr">
-					<u-td class="u-td">
-						
-						<view class="flex flex-direction align-center justify-center">
-							<text class="">{{ tableData.totalProPrice }}</text>
-							<text v-if=" tableData.totalProPriceOld && tableData.totalProPriceOld != tableData.totalProPrice " :style="{ textDecoration: 'line-through' }" class="">{{ `(${tableData.totalProPriceOld})` }}</text>
-						</view>
-						
-					</u-td>
-					<u-td class="u-td">{{ tableData.totalDomesticShippingFee }}</u-td>
-					<u-td class="u-td">{{ tableData.totalCommissionFee }}</u-td>
-					<u-td class="u-td">
-						<text class="text-red text-bold text-lg">{{ totalPrice }}</text>
-					</u-td>
-				</u-tr>
-				
-			</template>
-			
-			<!-- 补充信息区域 -->
-			<!-- 心愿详情一直显示  编辑时间轴不显示  心愿订单不显示-->
-			<template v-if=" sourcefrom == 'wishdetail' && wishInfo && wishInfo.productExt">
-				
-				<!-- 分隔栏 -->
-				<u-tr class="u-tr tableeachsummaryrow">
-					<u-td class="u-td">
-						<text class="text-bold text-white bg-gradual-blue">{{ i18n.wishlist.common.params }}</text>
-					</u-td>
-				</u-tr>
-				
-				<!-- 总结区域表头 -->
-				<u-tr class="u-tr">
-					<u-th class="u-th">{{ i18n.wishlist.common.boxcontainernum }} (pcs/box)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.boxsize }} (cm)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.boxvolume }} (m³)</u-th>
-					<u-th class="u-th">{{ i18n.wishlist.common.boxweight }} (kg)</u-th>
-				</u-tr>
-				
-				<!-- 总结区域内容 -->
-				<u-tr class="u-tr">
-					<u-td class="u-td">{{ wishInfo.productExt.boxContainerNum || '/' }}</u-td>
-					<u-td class="u-td">{{ wishInfo.productExt.boxLength ? `${wishInfo.productExt.boxLength} * ${wishInfo.productExt.boxWidth} * ${wishInfo.productExt.boxHeight}` : '/' }}</u-td>
-					<u-td class="u-td">{{ wishInfo.productExt.boxVolume || '/' }}</u-td>
-					<u-td class="u-td">{{ wishInfo.productExt.boxWeight || '/' }}</u-td>
-				</u-tr>
-				
-			</template>
-			
-		</u-table>
-		
 	</view>
 </template>
 
@@ -280,7 +85,7 @@
 				default: null
 			},
 			
-			// 表格展示来源  sourcefrom:  wishdetail 心愿详情	handletimeline 时间轴编辑  wishorder 心愿订单
+			// 表格展示来源  sourcefrom:  wishdetail 心愿详情	 handlewish 商户编辑心愿单或者代理报价
 			sourcefrom: {
 				type: String,
 				default: 'wishdetail'

@@ -139,50 +139,6 @@
 					
 				</view>
 				
-				<!-- 悬浮按钮区域 -->
-				<view v-if="user" class="floatview">
-					
-					<!-- 如果是代理员 -->
-					<template v-if=" user.role == $basejs.roleEnum.productAgent ">
-						
-						<!-- 心愿没有被关联时 -->
-						<template v-if="wishInfo.agentFlag == 0">
-							
-							<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
-								<text class="cuIcon-servicefill"></text>
-							</button>
-							
-						</template>
-						
-						<!-- 自身代理的心愿 -->
-						<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
-							
-							<!-- 显示添加按钮 -->
-							<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-								<text class="cuIcon-add"></text>
-							</button>
-							
-							<!-- 如果有订单信息则显示订单按钮 -->
-							<!-- <button v-if="wishOrderInfo" class="eachbtn margin-left cu-btn bg-gradual-red shadow-blur cuIcon" @tap.stop="gotoWishOrder">
-								<text class="cuIcon-formfill"></text>
-							</button> -->
-							
-						</template>
-						
-					</template>
-					
-					<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
-					<template v-else-if="user._id == wishInfo.creatUser._id">
-						
-						<!-- 心愿单进行中显示更新时间轴按钮 -->
-						<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-							<text class="cuIcon-add"></text>
-						</button>
-						
-					</template>
-					
-				</view>
-				
 			</template>
 			
 		</scroll-view>
@@ -322,6 +278,45 @@
 			</view>
 			
 		</scroll-view>
+		
+		<!-- 悬浮按钮区域 -->
+		<view v-if="wishInfo && user" class="floatview">
+			
+			<!-- 如果是代理员 -->
+			<template v-if=" user.role == $basejs.roleEnum.productAgent ">
+				
+				<!-- 心愿没有被关联时 -->
+				<template v-if="wishInfo.status == 0">
+					
+					<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+						<text class="cuIcon-servicefill"></text>
+					</button>
+					
+				</template>
+				
+				<!-- 自身代理的心愿 -->
+				<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
+					
+					<!-- 显示添加按钮 -->
+					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+						<text class="cuIcon-add"></text>
+					</button>
+					
+				</template>
+				
+			</template>
+			
+			<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
+			<template v-else-if="user._id == wishInfo.creatUser._id">
+				
+				<!-- 心愿单进行中显示更新时间轴按钮 -->
+				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<text class="cuIcon-add"></text>
+				</button>
+				
+			</template>
+			
+		</view>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
@@ -669,7 +664,7 @@
 				const db = uniCloud.database();
 				db.collection('wish,uni-id-users')
 					.doc(_this.id)
-					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,optionTime,status,productList,quotationInfo')
+					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,updateTime,status,productList,quotationInfo')
 					.get({getOne:true})
 					.then(res => {
 						

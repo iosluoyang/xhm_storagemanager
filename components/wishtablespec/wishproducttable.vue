@@ -10,6 +10,11 @@
 			<template v-if="ifShowTitle">
 				
 				<u-tr class="u-tr">
+					<!-- 编辑规格按钮  type=edit时存在 -->
+					<u-th v-if="type == 'edit'" class="u-th" width="200rpx">
+						<text class="cuIcon cuIcon-order" @tap.stop="startToChangeSpec"></text>
+					</u-th>
+					
 					<u-th class="u-th">
 						{{ `${eachproduct.title}${eachproduct.aliasName ? `——(${eachproduct.aliasName})` : '' }` }}
 					</u-th>
@@ -69,15 +74,24 @@
 					<u-td class="u-td">{{ eachproduct.remark }}</u-td>
 				</u-tr>
 			</template>
-		
+			
 		</u-table>
+		
+		<!-- 多规格弹框 编辑状态存在 -->
+		<wishSpecSelector v-if="eachproduct"
+							:specPropInfo="specPropInfo" 
+							:ifshow.sync="showSelector"
+							:defaultProTitle="eachproduct.title"
+							:defaultProPrice="eachproduct.price"
+							@finishSelect="specFinishSelect">
+		</wishSpecSelector>
 		
 	</view>
 	
 </template>
 
 <script>
-	
+	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
 	
 	
 	export default {
@@ -85,10 +99,16 @@
 			name:'wishproducttable',
 			
 			components:{
-				
+				wishSpecSelector,
 			},
 			
 			props: {
+				
+				// 商品表格类型  normal为正常展示样式  edit为编辑样式
+				type: {
+					type: String,
+					default: "normal",
+				},
 				
 				// 商品数据
 				productInfo: {
@@ -120,7 +140,7 @@
 				return {
 					
 					eachproduct: null, // 自身的商品数据
-					
+					showSelector: false, // 是否显示规格选择器
 				}
 			},
 			
@@ -177,6 +197,19 @@
 					}, 0)
 					return totalAmount
 				},
+				
+				// 开始修改规格
+				startToChangeSpec(eachproduct) {
+					this.showSelector = true
+				},
+				
+				// 选择完规格
+				specFinishSelect(selectSpecPropInfo) {
+					console.log(`当前选择完规格的数据为`);
+					console.log(selectSpecPropInfo);
+					
+				},
+				
 				
 			},
 		
