@@ -288,7 +288,7 @@
 					
 					uni.showLoading()
 					db.collection('wish').doc(wishinfo._id)
-					.update({agentUid:db.env.uid, status: 1, optionTime: db.env.now})
+					.update({agentUid:db.env.uid, status: 1, updateTime: db.env.now})
 					.then(response => {
 						console.log(response);
 						uni.hideLoading()

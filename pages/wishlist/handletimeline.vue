@@ -241,15 +241,12 @@
 					</view>
 				</view>
 				
-				<!-- 心愿规格table -->
-				<view class="wishspecview margin padding-sm solid">
-					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" :ifCollapse="false"></wishTableSpec>
+				<!-- 商品规格table -->
+				<view class="wishspecview margin">
+					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" type="quotation"></wishTableSpec>
 				</view>
 				
 			</view>
-			
-			
-			
 			
 		</view>
 		
@@ -261,25 +258,13 @@
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
 		
-		<!-- 多规格弹框 -->
-		<wishSpecSelector	v-if="tmpWishInfo"
-							:wishId="tmpWishInfo._id"
-							type="edit"
-							:specPropInfo="tmpWishInfo.specPropInfo" 
-							:ifshow.sync="showSelector"
-							:defaultProTitle="tmpWishInfo.productTitle"
-							:defaultProPrice="tmpWishInfo.sourcePrice"
-							@finishSelect="specFinishSelect">
-		</wishSpecSelector>
-		
 	</view>
 </template>
 
 <script>
 	
 	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
-	
+		
 	var _this
 	
 	
@@ -287,7 +272,6 @@
 		
 		components: {
 			wishTableSpec,
-			wishSpecSelector,
 		},
 		
 		data() {

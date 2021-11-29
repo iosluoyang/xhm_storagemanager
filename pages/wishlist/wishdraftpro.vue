@@ -5,7 +5,7 @@
 		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.wishdraft}}</block>
 			<template>
-				<text class="text-white margin-right" slot="right" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit' ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
+				<text class="text-white margin-right" slot="right" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit'; showSelector = false ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
 			</template>
 		</cu-custom>
 		
@@ -46,6 +46,7 @@
 									<text class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="eachproduct.ifSelect = !eachproduct.ifSelect"></text>
 									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
 									<view class="titleview flex1 u-line-2" style="max-width: 200px;">{{ eachproduct.title }}</view>
+									<text class="cuIcon cuIcon-order margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></text>
 								</view>
 								
 								<!-- 选中的规格数组 -->
@@ -114,18 +115,25 @@
 			
 		</view>
 		
+		<!-- 多规格弹框 -->
+		<proSpecSelector   :productInfo="selectProduct" 
+							specInfoName="selectSpecPropInfo"
+							:ifshow.sync="showSelector"
+							@finishSelect="specFinishSelect">
+		</proSpecSelector>
 		
 	</view>
 </template>
 
 <script>
+	import proSpecSelector from '@/components/base/prospecselector.vue'; // 多规格选择器
 	
 	var _this
 	
 	export default {
 		
 		components: {
-			
+			proSpecSelector,
 		},
 		
 		data() {
@@ -133,7 +141,8 @@
 				
 				type: 'normal', // 页面状态 normal正常模式 edit编辑模式
 				ownDataList: [], // 数据列表  同udb中的dataList
-				aliasName: '', // 别名
+				showSelector: false, // 是否显示规格选择器
+				selectProduct: null, // 当前选择的商品数据
 				
 			}
 		},
@@ -254,6 +263,23 @@
 				console.log(data);
 				this.ownDataList = data
 				
+			},
+			
+			// 切换某个商品的规格
+			specFinishSelect(selectSpecPropInfo) {
+				console.log(`当前选择完规格的数据为`);
+				console.log(selectSpecPropInfo);
+				// 修改当前商品的选中规格
+				let _id = this.selectProduct.draftproId
+				this.$refs.udb.update(_id,{selectSpecPropInfo}, {
+					showToast: _this.i18n.tip.optionsuccess,
+					needConfirm: false,
+					success: (res) => {
+						// 修改成功
+						// 改变当前dataList的数据
+						_this.$set(_this.selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
+					}
+				})
 			},
 			
 			// 计算某个店铺选中状态

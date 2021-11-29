@@ -116,13 +116,11 @@
 		<mescroll-top :value="ifshowtoTop" :option="toTopopt" @click="clicktoTop"></mescroll-top>
 		
 		<!-- 多规格弹框 -->
-		<wishSpecSelector v-if="linkProduct && specPropInfo"
-							:specPropInfo="specPropInfo" 
+		<proSpecSelector   :productInfo="linkProduct" 
+							specInfoName="specPropInfo"
 							:ifshow.sync="showSelector"
-							:defaultProTitle="linkProduct.title"
-							:defaultProPrice="linkProduct.price"
 							@finishSelect="specFinishSelect">
-		</wishSpecSelector>
+		</proSpecSelector>
 		
 	</view>
 </template>
@@ -132,13 +130,13 @@
 	var _this
 
 	import mescrollTop from '@/uni_modules/mescroll-uni/components/mescroll-uni/components/mescroll-top.vue'
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
+	import proSpecSelector from '@/components/base/prospecselector.vue'; // 多规格选择器
 	
 	export default {
 		
 		components: {
 			mescrollTop,
-			wishSpecSelector
+			proSpecSelector
 		},
 		
 		data() {

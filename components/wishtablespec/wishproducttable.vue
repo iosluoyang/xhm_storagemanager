@@ -10,8 +10,8 @@
 			<template v-if="ifShowTitle">
 				
 				<u-tr class="u-tr">
-					<!-- 编辑规格按钮  type=edit时存在 -->
-					<u-th v-if="type == 'edit'" class="u-th" width="200rpx">
+					<!-- 编辑规格按钮  type=quotation时存在 -->
+					<u-th v-if="type == 'quotation'" class="u-th" width="200rpx">
 						<text class="cuIcon cuIcon-order" @tap.stop="startToChangeSpec"></text>
 					</u-th>
 					
@@ -78,20 +78,19 @@
 		</u-table>
 		
 		<!-- 多规格弹框 编辑状态存在 -->
-		<wishSpecSelector v-if="eachproduct"
-							:specPropInfo="specPropInfo" 
+		<proSpecSelector v-if="eachproduct"
+							:productInfo="eachproduct" 
+							specInfoName="selectSpecPropInfo"
 							:ifshow.sync="showSelector"
-							:defaultProTitle="eachproduct.title"
-							:defaultProPrice="eachproduct.price"
 							@finishSelect="specFinishSelect">
-		</wishSpecSelector>
+		</proSpecSelector>
 		
 	</view>
 	
 </template>
 
 <script>
-	import wishSpecSelector from '@/components/base/wishspecselector.vue'; // 多规格选择器
+	import proSpecSelector from '@/components/base/prospecselector.vue'; // 多规格选择器
 	
 	
 	export default {
@@ -99,12 +98,12 @@
 			name:'wishproducttable',
 			
 			components:{
-				wishSpecSelector,
+				proSpecSelector,
 			},
 			
 			props: {
 				
-				// 商品表格类型  normal为正常展示样式  edit为编辑样式
+				// 商品表格类型  normal为正常展示样式  quotation为报价单样式
 				type: {
 					type: String,
 					default: "normal",
@@ -141,6 +140,7 @@
 					
 					eachproduct: null, // 自身的商品数据
 					showSelector: false, // 是否显示规格选择器
+					specPropInfo: null, // 规格选择器数据
 				}
 			},
 			
@@ -150,6 +150,7 @@
 			},
 			
 			created() {
+				// this.eachproduct = {...this.productInfo}
 				this.eachproduct = this.productInfo
 			},
 			
@@ -200,6 +201,9 @@
 				
 				// 开始修改规格
 				startToChangeSpec(eachproduct) {
+					// 设置规格选择器数据
+					let specPropInfo = eachproduct.selectSpecPropInfo
+					this.specPropInfo = specPropInfo
 					this.showSelector = true
 				},
 				
@@ -207,7 +211,7 @@
 				specFinishSelect(selectSpecPropInfo) {
 					console.log(`当前选择完规格的数据为`);
 					console.log(selectSpecPropInfo);
-					
+					this.$set(this.eachproduct, 'selectSpecPropInfo', selectSpecPropInfo)
 				},
 				
 				
@@ -218,7 +222,5 @@
 </script>
 
 <style lang="scss" scope>
-	
-	
 	
 </style>

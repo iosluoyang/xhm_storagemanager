@@ -134,7 +134,7 @@
 		
 					<!-- 心愿规格table -->
 					<view class="wishspecview margin padding-sm solid">
-						<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" sourcefrom="wishdetail" ></wishTableSpec>
+						<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo"></wishTableSpec>
 					</view>
 					
 				</view>

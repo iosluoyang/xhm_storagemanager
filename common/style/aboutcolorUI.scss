@@ -22,6 +22,19 @@
 	}
 }
 
+// 覆盖u-table的样式
+/deep/.u-table{
+	.u-tr{
+		.u-th{
+			
+		}
+		.u-td{
+			height: auto;
+			word-break: break-all;
+		}
+	}
+}
+
 // 动画相关
 @keyframes show {
 	0% {
