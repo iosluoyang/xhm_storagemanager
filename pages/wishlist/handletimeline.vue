@@ -232,6 +232,7 @@
 			</view>
 			
 			<!-- 商品信息 -->
+			
 			<view class="productsview margin-top">
 				
 				<view class="cu-bar bg-white solid-bottom">
