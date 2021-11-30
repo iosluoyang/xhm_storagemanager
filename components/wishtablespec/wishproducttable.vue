@@ -32,9 +32,12 @@
 					<u-td class="u-td" width="200rpx">
 						<view class="attribute1view flex flex-direction align-center">
 							
-							<u-image width="60" height="60" mode="aspectFill" :src="getFirstSpecImgSrc(ownProductInfo, firstSpec)"></u-image>
+							<view class="imgview pos-relative">
+								<u-image width="60" height="60" mode="aspectFill" :src="getFirstSpecImgSrc(ownProductInfo, firstSpec)" @click="previewImg(getFirstSpecImgSrc(ownProductInfo, firstSpec))"></u-image>
+								<text class="cu-tag badge">{{ `${getFirstSpecSelectAmount(firstSpec)}` }}</text>
+							</view>
+							
 							<text class="text-bold text-black">{{ firstSpec.propVal }}</text>
-							<text class="text-red margin-top-sm">{{ `共${getFirstSpecSelectAmount(firstSpec)}个` }}</text>
 							
 						</view>
 					</u-td>
@@ -121,7 +124,7 @@
 			
 			data() {
 				return {
-					
+					ownProductInfo: null, // 自身商品数据
 				}
 			},
 			
@@ -173,6 +176,16 @@
 					}, 0)
 					return totalAmount
 				},
+				
+				// 预览商品规格大图
+				previewImg(imgUrl) {
+					uni.previewImage({
+						urls: [imgUrl],
+						current:0
+					})
+				},
+				
+				//
 				
 			},
 		
