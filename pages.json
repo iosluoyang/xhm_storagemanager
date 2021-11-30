@@ -137,6 +137,13 @@
 						"navigationBarTitleText":"心愿详情"
 					}
                 },
+				{
+				    "path" : "wishquotation",
+					"style" : {
+						"navigationBarTitleText": "心愿报价单"
+					}
+				
+				},
                 {
                     "path" : "handletimeline",
                     "style" : {

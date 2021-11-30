@@ -232,7 +232,6 @@
 			</view>
 			
 			<!-- 商品信息 -->
-			
 			<view class="productsview margin-top">
 				
 				<view class="cu-bar bg-white solid-bottom">
@@ -244,7 +243,7 @@
 				
 				<!-- 商品规格table -->
 				<view class="wishspecview margin">
-					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" type="quotation"></wishTableSpec>
+					<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" type="quotation" @changeProSpec="changeProSpec"></wishTableSpec>
 				</view>
 				
 			</view>
@@ -384,6 +383,11 @@
 						_this.ifloading = false // 结束缓冲动画
 					})
 
+			},
+			
+			// 更改心愿单表格商品规格
+			changeProSpec(eachproduct) {
+				console.log(eachproduct)
 			},
 			
 			// 获取时间轴详情

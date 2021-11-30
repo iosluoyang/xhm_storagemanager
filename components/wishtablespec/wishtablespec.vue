@@ -10,7 +10,7 @@
 		<!-- 商品规格表格内容 -->
 		<template>
 			
-			<!-- 正常心愿单表格  折叠样式 -->
+			<!-- 商品折叠样式 -->
 			<u-collapse v-if="type == 'normal'" :item-style="{ marginTop: '20rpx' }">
 				<u-collapse-item v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid" 
 					:title="eachproduct.title"
@@ -28,10 +28,13 @@
 				</u-collapse-item>
 			</u-collapse>
 			
-			<!-- 报价单心愿单表格 -->
+			<!-- 商品展开样式 -->
 			<view v-if="type == 'quotation' " class="productListView">
 				<block v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
-					<wishproducttable :productInfo="eachproduct" type="quotation" :ifShowTitle="true"></wishproducttable>
+					<view class="operaarea flex align-center padding-left">
+						<button class="cu-btn round bg-grey cuIcon-order"></button>
+					</view>
+					<wishproducttable :productInfo="eachproduct" :ifShowTitle="true"></wishproducttable>
 				</block>
 			</view>
 			
@@ -155,6 +158,10 @@
 				
 			},
 			
+			// 切换商品规格
+			changeProSpec(eachproduct) {
+				this.$emit('changeProSpec', eachproduct)
+			}
 		},
 	}
 </script>
