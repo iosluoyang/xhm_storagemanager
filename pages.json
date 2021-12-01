@@ -162,6 +162,15 @@
 						"navigationBarTitleText":"收银台"
 					}
 				}
+                ,{
+                    "path" : "handlewish_new",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
             ]
 		}
 		

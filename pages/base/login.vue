@@ -54,7 +54,7 @@
 			</view>
 			
 			<!-- 登录按钮 -->
-			<button class="loginbtn cu-btn round lg margin-top-xl" :class="type=='login' ? 'bg-gradual-pink' : 'bg-gradual-orange'" :disabled="isLoading" :loading="isLoading" @click.native=" confirm ">
+			<button class="loginbtn cu-btn round lg margin-top-xl" :class="type=='login' ? 'bg-gradual-pink' : 'bg-gradual-orange'" :disabled="isLoading" :loading="isLoading" @tap.stop=" confirm ">
 				{{ type == 'login' ? i18n.base.login : i18n.base.register }}
 			</button>
 			

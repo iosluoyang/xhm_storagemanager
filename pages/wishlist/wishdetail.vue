@@ -13,7 +13,7 @@
 			<template v-if="wishInfo">
 				
 				<!-- 商品信息区域 -->
-				<view class="wishInfoview padding-bottom">
+				<view class="wishInfoview">
 					
 					<!-- 基本信息区域 -->
 					<view class="basedataview cu-card">
@@ -31,7 +31,7 @@
 								<u-swiper :list="swiperList" :title="true" mode="number" :autoplay="false"
 										height="250" name="image" indicator-pos="topLeft" :interval="5000" 
 										:current="swiperCur" :effect3d=" wishInfo.productList.length > 2 " 
-										@click="clickSwiper" @change="changeSwiper"
+										@click="clickSwiper" @change="(index) => { swiperCur = index }"
 								></u-swiper>
 								
 							</view>
@@ -96,15 +96,15 @@
 							</view>
 							
 							<!-- 操作区域 -->
-							<view v-if="false" class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
+							<view class="btnsview flex align-center padding-sm" :style="{overFlow: 'auto'}">
 								
 								<!-- 分享按钮 小程序平台有 -->
 								<!-- #ifdef MP -->
 								<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
 								<!-- #endif -->
 								
-								<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为进行中时显示 -->
-								<button v-if="wishInfo.achieveFlag == 0 && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+								<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为待确认前状态时显示 -->
+								<button v-if="wishInfo.status < 2 && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
 								
 								<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
 								<button v-if="(wishInfo.achieveFlag == 0 || wishInfo.achieveFlag == 1) && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
@@ -140,6 +140,45 @@
 				</view>
 				
 			</template>
+			
+			<!-- 悬浮按钮区域 -->
+			<view v-if="wishInfo && user" class="floatview">
+				
+				<!-- 如果是代理员 -->
+				<template v-if=" user.role == $basejs.roleEnum.productAgent ">
+					
+					<!-- 心愿没有被关联时 -->
+					<template v-if="wishInfo.status == 0">
+						
+						<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+							<text class="cuIcon-servicefill"></text>
+						</button>
+						
+					</template>
+					
+					<!-- 自身代理的心愿 -->
+					<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
+						
+						<!-- 显示添加按钮 -->
+						<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+							<text class="cuIcon-add"></text>
+						</button>
+						
+					</template>
+					
+				</template>
+				
+				<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
+				<template v-else-if="user._id == wishInfo.creatUser._id">
+					
+					<!-- 心愿单进行中显示更新时间轴按钮 -->
+					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+						<text class="cuIcon-add"></text>
+					</button>
+					
+				</template>
+				
+			</view>
 			
 		</scroll-view>
 		
@@ -277,46 +316,19 @@
 				
 			</view>
 			
+			<view class="cu-bar foot input" :style="[{bottom:InputBottom+'px'}]">
+				<view class="action">
+					<text class="cuIcon-sound text-grey"></text>
+				</view>
+				<input class="solid-bottom" :adjust-position="false" :focus="false" maxlength="300" cursor-spacing="10"
+				 @focus="(e) => {InputBottom = e.detail.height}" @blur="() => {InputBottom = 0}"></input>
+				<view class="action">
+					<text class="cuIcon-emojifill text-grey"></text>
+				</view>
+				<button class="cu-btn bg-green shadow">{{ i18n.base.confirm }}</button>
+			</view>
+			
 		</scroll-view>
-		
-		<!-- 悬浮按钮区域 -->
-		<view v-if="wishInfo && user" class="floatview">
-			
-			<!-- 如果是代理员 -->
-			<template v-if=" user.role == $basejs.roleEnum.productAgent ">
-				
-				<!-- 心愿没有被关联时 -->
-				<template v-if="wishInfo.status == 0">
-					
-					<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
-						<text class="cuIcon-servicefill"></text>
-					</button>
-					
-				</template>
-				
-				<!-- 自身代理的心愿 -->
-				<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
-					
-					<!-- 显示添加按钮 -->
-					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-						<text class="cuIcon-add"></text>
-					</button>
-					
-				</template>
-				
-			</template>
-			
-			<!-- 如果是供应商  当为本人心愿且该心愿为进行中时显示-->
-			<template v-else-if="user._id == wishInfo.creatUser._id">
-				
-				<!-- 心愿单进行中显示更新时间轴按钮 -->
-				<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
-					<text class="cuIcon-add"></text>
-				</button>
-				
-			</template>
-			
-		</view>
 		
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
@@ -912,101 +924,6 @@
 				}
 			},
 			
-			// 设置悬浮按钮的内容
-			setFabContentArr() {
-				
-				let content = [
-					{
-						iconPath: '',
-						selectedIconPath: '',
-						text: '发言',
-						active: false,
-					},
-					{
-						iconPath: '',
-						selectedIconPath: '',
-						text: '更新心愿',
-						active: false,
-					}
-				]
-				return content
-				
-			},
-			
-			// 加载心愿时间轴数据
-			loadtimelinedata() {
-				
-				_this.ifloading = true // 开始缓冲动画
-				
-				// 使用openDB获取心愿单对应的时间轴数据
-				let wherestr = `wishId == '${_this.id}' `
-				const db = uniCloud.database();
-				db.collection('wishlisttimeline,uni-id-users')
-				.where(wherestr)
-				.field('creatUser{avatar,nickname},editUser{avatar,nickname},optionUser{avatar,nickname},content,imgs,price,type,wishId,creatTime,editTime,optionTime')
-				.orderBy('creatTime desc')
-				.get()
-				.then(res => {
-					_this.ifloading = false
-					// 获取成功
-					if(res.result.code == 0) {
-						console.log(`时间轴数据获取成功`);
-						// console.log(res.result.data);
-						let timelinelist = res.result.data || []
-						
-						// 遍历时间轴数据将creatUser和editUser和refuseUser和agreeUser均转换为对象
-						timelinelist.forEach(item => {
-							if(item.creatUser) {
-								item.creatUser = item.creatUser[0] ? item.creatUser[0] : null
-							}
-							if(item.editUser) {
-								item.editUser = item.editUser[0] ? item.editUser[0] : null
-							}
-							if(item.optionUser) {
-								item.optionUser = item.optionUser[0] ? item.optionUser[0] : null
-							}
-						})
-						
-						// console.log(timelinelist);
-						
-						// 获取时间轴数据  将时间轴数据整理变更为按照日期来区分
-						let newtimelinearrdic = {}
-						timelinelist.forEach((timelineitem, index) => {
-							let creatTime = timelineitem.creatTime
-							// 获取日期
-							let creatDate = _this.$u.timeFormat(creatTime, 'yyyy-mm-dd')
-							if(newtimelinearrdic[creatDate]) {
-								let samedatearr = newtimelinearrdic[creatDate]
-								samedatearr.push(timelineitem)
-							}
-							else {
-								newtimelinearrdic[creatDate] = [timelineitem]
-							}
-						})
-						_this.timelinearrdic = newtimelinearrdic
-						// console.log(_this.timelinearrdic);
-						
-						_this.$nextTick(function(){
-							
-							// 获取时间轴的节点信息
-							const query = uni.createSelectorQuery();
-							query.select('#timelineview').boundingClientRect(data => {
-								// console.log("时间轴的顶部坐标为" + data.top);
-								if(data && data.top) {
-									_this.timelineScrollTop = data.top
-								}
-							}).exec();
-							
-						})
-						
-					}
-				})
-				.catch(error => {
-					_this.ifloading = false
-				})
-				
-			},
-			
 			// 弹出框点击取消
 			modalcancel() {
 				
@@ -1026,18 +943,6 @@
 				this.popuptype = 'share'
 				this.showpopup = true
 				
-			},
-			
-			// 切换轮播图
-			changeSwiper(index) {
-				this.swiperCur = index
-			},
-			
-			previewImgs(imgsStr,index) {
-				uni.previewImage({
-					current:index,
-					urls: imgsStr.split(',')
-				})
 			},
 			
 			// 点击滑动到确认报价时间轴
@@ -1128,7 +1033,7 @@
 			// 编辑心愿
 			editwish() {
 				uni.navigateTo({
-					url: `/pages/wishlist/handlewish?type=edit&id=${this.id}`
+					url: `/pages/wishlist/handlewish_new?wishId=${_this.id}`
 				});
 			},
 			
@@ -1239,19 +1144,6 @@
 	}
 	
 	.pagecontent{
-		
-		// padding-bottom: 120rpx;
-		
-		// /deep/.uni-collapse-cell{
-		// 	background-color: #FFFFFF !important;
-		// 	border-bottom: none !important;
-		// }
-		
-		// /deep/.tableview{
-		// 	.uni-table{
-		// 		width: 100%;
-		// 	}
-		// }
 		
 		.wishInfoview{
 			padding-bottom: 120rpx;

@@ -46,7 +46,8 @@
 									<text class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="eachproduct.ifSelect = !eachproduct.ifSelect"></text>
 									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
 									<view class="titleview flex1 u-line-2" style="max-width: 200px;">{{ eachproduct.title }}</view>
-									<text class="cuIcon cuIcon-order margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></text>
+									<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></button>
+									<!-- <text class="cuIcon cuIcon-order margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></text> -->
 								</view>
 								
 								<!-- 选中的规格数组 -->
@@ -69,7 +70,8 @@
 													
 												</view>
 												
-												<u-number-box class="flex0" v-model="secondspec.amount" :min="1" @change="changeSpecAmount(eachproduct)"></u-number-box>
+												<text class="flex0 text-bold text-black">{{ `x ${secondspec.amount}` }}</text>
+												<!-- <u-number-box class="flex0" v-model="secondspec.amount" :min="1" @change="changeSpecAmount(eachproduct)"></u-number-box> -->
 												
 											</view>
 											

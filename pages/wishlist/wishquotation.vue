@@ -38,6 +38,10 @@
 		methods: {
 			
 			// 获取心愿详情
+			loadWishDetail() {
+				let wishId = this.wishId
+
+			},
 			//
 			
 		}

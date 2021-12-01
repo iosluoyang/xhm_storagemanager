@@ -31,6 +31,7 @@
 						<view v-if="eachstore.sellerInfo" class="storeheaderview cu-bar bg-white solids-bottom">
 							<view class="action">
 								<text class="cuIcon cuIcon-shopfill text-pink"></text>
+								<text class="text-black">{{ storeindex + 1 }}.</text>
 								<text class="text-df text-black">{{ eachstore.sellerInfo.nickName }}</text>
 							</view>
 						</view>
@@ -60,7 +61,7 @@
 												<view class="leftview flex1">
 													
 													<!-- 规格参数 -->
-													<text class="text-df u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
+													<text class="text-sm u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
 													
 												</view>
 												
@@ -68,7 +69,7 @@
 													<!-- 价格 -->
 													<text class="text-red text-price text-sm">{{ secondspec.price }}</text>
 													<!-- 数量 -->
-													<text class="text-black text-xl margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
+													<text class="text-black text-bold margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
 												</view>
 												
 											</view>
