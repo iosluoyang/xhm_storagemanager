@@ -43,6 +43,11 @@
 				"$env": "now"
 			}
 		},
+		"updateTime": {
+			"bsonType":"timestamp",
+			"description": "更新时间",
+			"defaultValue":""
+		},
 		"selectSpecPropInfo": {
 			"bsonType":"object",
 			"description":"选中的商品规格对象",

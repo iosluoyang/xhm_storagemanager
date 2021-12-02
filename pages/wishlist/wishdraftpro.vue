@@ -13,9 +13,7 @@
 		<unicloud-db ref="udb" v-slot:default="{data, loading, error, options}" 
 					collection="wish-draft-product, product" 
 					where=" creatUid == $cloudEnv_uid && status == 0 " 
-					orderby=" creatTime desc "
-					groupby=" sellerId"
-					group-field=" addToSet( pid ) as productList, addToSet( selectSpecPropInfo ) as selectSpecPropInfoList, addToSet(_id) as ids "
+					orderby=" updateTime desc, creatTime desc "
 					@load="loadData"
 		>
 			<view v-if="error" class="cu-load erro">{{ error.message }}</view>
@@ -25,7 +23,7 @@
 				<!-- 根据不同商家进行划分 -->
 				<view class="storesview padding-sm">
 					
-					<view class="eachstoreview" v-for="(eachstore, storeindex) in data" :key="eachstore.sellerId">
+					<view class="eachstoreview" v-for="(eachstore, storeindex) in ownDataList" :key="eachstore.sellerId">
 						
 						<!-- 商店头部展示区域 -->
 						<view v-if="eachstore.sellerInfo" class="storeheaderview cu-bar bg-white solids-bottom">
@@ -142,7 +140,7 @@
 			return {
 				
 				type: 'normal', // 页面状态 normal正常模式 edit编辑模式
-				ownDataList: [], // 数据列表  同udb中的dataList
+				ownDataList: [], // 重组后的数据列表 注意此处udb的data和真实ownDataList不一致  以ownDataList为主
 				showSelector: false, // 是否显示规格选择器
 				selectProduct: null, // 当前选择的商品数据
 				
@@ -219,7 +217,6 @@
 		onLoad() {
 			_this = this
 			
-			//
 			uni.$on('updatecartdata', function() {
 				console.log(`更新购物车数据`);
 				_this.$refs.udb.refresh()
@@ -233,37 +230,41 @@
 		
 		methods: {
 			
-			// 加载数据 对数据进行加工
+			// 加载数据 对数据进行加工 按照同商铺进行分组
 			loadData(data, ended, pagination) {
 				
-				// 遍历数据进行数据重组
-				data.forEach(eachstore => {
+				let storeList = []
+				data.forEach(eachdraft => {
 					
-					// 商店商品列表
-					let productList = []
-					let selectSpecPropInfoList = eachstore.selectSpecPropInfoList
-					let ids = eachstore.ids
-					
-					eachstore.productList.forEach((eachproduct, productindex) => {
-						eachproduct = eachproduct[0] // 转数组为对象
-						// 给每一个商品增加选中标识
+					let eachproduct = eachdraft.pid && eachdraft.pid.length > 0 ? eachdraft.pid[0] : null
+					if(eachproduct) {
+						// 重组商品数据
 						eachproduct['ifSelect'] = true
-						eachproduct['selectSpecPropInfo'] = selectSpecPropInfoList[productindex]
-						eachproduct['draftproId'] = ids[productindex]
+						eachproduct['draftproId'] = eachdraft._id
+						eachproduct['selectSpecPropInfo'] = eachdraft.selectSpecPropInfo
 						delete eachproduct._id
+					}
+					
+					let existStoreItem = storeList.find(eachstore => (eachstore.sellerId == eachdraft.sellerId))
+					// 已存在有同店铺商品
+					if(existStoreItem) {
+						let productList = existStoreItem.productList
 						productList.push(eachproduct)
-						if(productindex == 0) {
-							eachstore['sellerInfo'] = eachproduct.sellerInfo
+					}
+					// 未存在同店铺商品 新增店铺数据
+					else {
+						
+						let eachstore = {
+							sellerId: eachproduct.sellerInfo.sellerId,
+							sellerInfo: eachproduct.sellerInfo,
+							productList: [eachproduct]
 						}
-					})
-					eachstore.productList = productList
-					
-					delete eachstore.selectSpecPropInfoList
-					delete eachstore.ids
-					
+						storeList.push(eachstore)
+					}
 				})
-				console.log(data);
-				this.ownDataList = data
+				
+				data = storeList
+				this.ownDataList = storeList
 				
 			},
 			
@@ -278,7 +279,7 @@
 					needConfirm: false,
 					success: (res) => {
 						// 修改成功
-						// 改变当前dataList的数据
+						// 改变当前ownDataList的数据
 						_this.$set(_this.selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
 					}
 				})
@@ -305,7 +306,7 @@
 			// 切换底部操作条的选中状态
 			toggleSelectFlag() {
 				
-				let dataList = this.$refs?.udb?.dataList || []
+				let dataList = this.ownDataList
 				let newSelectFlag = !this.allSelectFlag
 				
 				dataList.forEach(eachstore => {
@@ -330,7 +331,7 @@
 			// 删除选择规格商品
 			deleteSpecPro() {
 				
-				let dataList = this.$refs?.udb?.dataList || []
+				let dataList = this.ownDataList
 				
 				uni.showModal({
 					content: this.i18n.tip.deleteconfirm,
@@ -391,7 +392,7 @@
 			// 选择规格商品到下单页
 			gotoMakeWish() {
 				
-				let dataList = this.$refs?.udb?.dataList || []
+				let dataList = this.ownDataList
 				// 获取当前选择的规格商品id
 				let selectSpecProIdArr = []
 				dataList.forEach(eachstore => {

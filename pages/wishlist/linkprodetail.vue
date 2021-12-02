@@ -544,9 +544,12 @@
 								status: 0, //
 								pid: this.linkProduct.pid,
 								sellerId: this.linkProduct.sellerInfo.sellerId,
-								selectSpecPropInfo: selectSpecPropInfo
+								selectSpecPropInfo: selectSpecPropInfo,
+								updateTime: db.env.now, // 默认更新时间为创建时间
 							}
-							db.collection('wish-draft-product').add(draftprodata).then(response => {
+							db.collection('wish-draft-product')
+							.add(draftprodata)
+							.then(response => {
 								// 添加成功
 								uni.showToast({
 									title: this.i18n.tip.optionsuccess,
@@ -579,9 +582,9 @@
 								})
 							})
 							
-							console.log(selectSpecPropInfo);
-							
-							db.collection('wish-draft-product').doc(docId).update({selectSpecPropInfo: selectSpecPropInfo}).then(response => {
+							db.collection('wish-draft-product').doc(docId)
+							.update({selectSpecPropInfo: selectSpecPropInfo, updateTime: db.env.now})
+							.then(response => {
 								// 更新成功
 								if(response.result.code == 0) {
 									uni.showToast({

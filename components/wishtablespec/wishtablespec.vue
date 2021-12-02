@@ -1,7 +1,7 @@
 <template>
 	<view v-if="wishInfo" class="wishtablespec comcontent">
 		
-		<!-- 分割线 -->
+		<!-- 商品分割线 -->
 		<view class="flex align-center padding-sm solid-bottom">
 			<text class="cuIcon cuIcon-cascades text-orange"></text>
 			<text class="text-orange margin-left-sm text-bold">{{ i18n.wishlist.common.product }}</text>
@@ -11,7 +11,7 @@
 		<template>
 			
 			<!-- 商品折叠样式 -->
-			<u-collapse v-if="type == 'normal'" :item-style="{ marginTop: '20rpx' }">
+			<u-collapse v-if="ifCollapse" :item-style="{ marginTop: '20rpx' }" :accordion="false">
 				<u-collapse-item v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid" 
 					:title="eachproduct.title"
 				>
@@ -28,8 +28,8 @@
 				</u-collapse-item>
 			</u-collapse>
 			
-			<!-- 商品展开样式 -->
-			<view v-if="type == 'quotation' " class="productListView">
+			<!-- 展开样式 -->
+			<view v-else class="productListView">
 				<block v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
 					<view class="operaarea flex align-center padding-left">
 						<button class="cu-btn round bg-grey cuIcon-order"></button>
@@ -40,13 +40,13 @@
 			
 		</template>
 		
-		<!-- 分割线 -->
+		<!-- 价格汇总分割线 -->
 		<view class="flex align-center padding-sm solid-bottom">
 			<text class="cuIcon cuIcon-rechargefill text-red"></text>
 			<text class="text-red margin-left-sm text-bold">{{ i18n.wishlist.common.pricesummary }}</text>
 		</view>
 		
-		<!-- 汇总表格内容 -->
+		<!-- 价格汇总表格内容 -->
 		<view class="margin-top-sm summaryview">
 			<u-table class="u-table">
 				<u-tr class="u-tr">
@@ -91,10 +91,10 @@
 				default: null
 			},
 			
-			// 心愿表格类型 normal为正常心愿单表格  quotation为报价单心愿单表格
-			type: {
-				type: String,
-				default: 'normal',
+			// 是否折叠样式  默认为是
+			ifCollapse: {
+				type: Boolean,
+				default: true,
 			},
 			
 			

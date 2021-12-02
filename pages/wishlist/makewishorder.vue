@@ -1,5 +1,5 @@
 <template>
-	<view class="pagecontent">
+	<view class="pagecontent makeorderpage">
 		
 		<!-- 自定义导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
@@ -8,11 +8,11 @@
 		
 		<!-- 仓库地址区域 -->
 		
-		<!-- 订单信息区域 -->
-		<unicloud-db ref="udb" v-slot:default="{data, loading, error, options}" collection="wish-draft-product, product"
+		<!-- 订单信息区域  下单页根据分组展示 无需考虑顺序 -->
+		<unicloud-db v-if="false" ref="udb" v-slot:default="{data, loading, error, options}" collection="wish-draft-product, product"
 					:where=" `_id in ${JSON.stringify(draftIds)}` "
-					orderby=" creatTime desc "
-					groupby=" sellerId"
+					orderby=" updateTime desc, creatTime desc "
+					groupby="sellerId"
 					group-field=" addToSet( pid ) as productList, addToSet( selectSpecPropInfo ) as selectSpecPropInfoList, addToSet(_id) as ids "
 					loadtime="auto"
 					@load="loadData"
@@ -61,7 +61,7 @@
 												<view class="leftview flex1">
 													
 													<!-- 规格参数 -->
-													<text class="text-sm u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
+													<text class="text-df u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
 													
 												</view>
 												
@@ -69,7 +69,7 @@
 													<!-- 价格 -->
 													<text class="text-red text-price text-sm">{{ secondspec.price }}</text>
 													<!-- 数量 -->
-													<text class="text-black text-bold margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
+													<text class="text-black  margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
 												</view>
 												
 											</view>
@@ -110,6 +110,92 @@
 			</view>
 		</unicloud-db>
 		
+		<!-- 下单店铺区域  根据草稿箱顺序而定 -->
+		<view v-if="ownDataList" class="ordercontentview storesview padding-sm">
+			
+			<!-- 店铺 -->
+			<view class="eachstore u-margin-bottom-20 bg-white radius shadow-warp" v-for="(eachstore, storeindex) in ownDataList" :key="eachstore.sellerId">
+				
+				<!-- 商店头部展示区域 -->
+				<view v-if="eachstore.sellerInfo" class="storeheaderview cu-bar bg-white solids-bottom">
+					<view class="action">
+						<text class="cuIcon cuIcon-shopfill text-pink"></text>
+						<text class="text-black">{{ storeindex + 1 }}.</text>
+						<text class="text-df text-black">{{ eachstore.sellerInfo.nickName }}</text>
+					</view>
+				</view>
+				
+				<!-- 商店对应的商品列表 -->
+				<view class="storeproductlistview">
+					
+					<view class="eachproductview padding-sm solid-bottom" v-for="(eachproduct, productindex) in eachstore.productList" :key="eachproduct._id">
+						
+						<!-- 商品基本信息 -->
+						<view class="productcontent flex align-center padding-sm">
+							<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
+							<view class="titleview flex1 u-line-2">{{ eachproduct.title }}</view>
+						</view>
+						
+						<!-- 选中的规格数组 -->
+						<view v-if="eachproduct.selectSpecPropInfo" class="productspeclist padding-left-sm padding-right-sm">
+							
+							<!-- 一级属性 -->
+							<block v-for="(firstspec, firstspecindex) in eachproduct.selectSpecPropInfo.propValList" :key="firstspecindex">
+								
+								<!-- 二级属性 -->
+								<block v-if="secondspec.amount > 0" v-for="(secondspec , secondspecindex) in firstspec.specStockList" :key="secondspec.specId">
+									
+									<view class="eachspecview bg-gray flex align-center margin-top-sm padding-sm radius">
+										
+										<view class="leftview flex1">
+											
+											<!-- 规格参数 -->
+											<text class="text-df u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
+											
+										</view>
+										
+										<view class="rightview flex0 flex flex-direction align-center">
+											<!-- 价格 -->
+											<text class="text-red text-price text-sm">{{ secondspec.price }}</text>
+											<!-- 数量 -->
+											<text class="text-black  margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
+										</view>
+										
+									</view>
+									
+								</block>
+								
+							</block>
+							
+						</view>
+						
+						<view class="padding-sm radius solid margin-top-sm">
+							<!-- 该商品别名 -->
+							<view class="cu-form-group">
+								<view class="title text-sm">{{ i18n.wishlist.common.aliasname }}</view>
+								<input :style="{fontSize: '12px'}" v-model="eachproduct.aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" name="input"></input>
+							</view>
+							
+							<!-- 该商品的备注 -->
+							<view class="cu-form-group">
+								<textarea maxlength="-1" :style="{fontSize: '12px'}" v-model="eachproduct.remark" :placeholder=" i18n.placeholder.handlewish.remark "></textarea>
+							</view>
+						</view>
+						
+						<!-- 商品汇总信息 -->
+						<view v-if="getProSelectSpecInfo(eachproduct.selectSpecPropInfo)" class="flex align-center justify-end margin-top">
+							<text class="text-bold text-black">{{ `共${getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalNum}件` }}</text>
+							<text class="text-price text-red margin-left">{{ `${getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalPrice}` }}</text>
+						</view>
+						
+					</view>
+					
+				</view>
+				
+			</view>
+			
+		</view>
+		
 		<!-- 底部操作栏 -->
 		<view class="cu-bar bg-white bordertop bottombar flex align-center justify-between padding-left padding-right">
 			
@@ -145,22 +231,73 @@
 			return {
 				sourceFrom: 'draftpro', // 下单页来源  draftpro 为心愿草稿箱  directbuy 为直购下单
 				ifloading: false, // 是否加载中
-				draftIds: [], // 选中心愿草稿的id数组
-				summaryInfo: null, // 计算的汇总信息
+				ownDataList: null, // 重组后的数据列表
+				
+				draftIds: [], // 选中心愿草稿的id数组 sourceFrom = draftpro时使用
 			}
+		},
+		
+		computed: {
+			
+			// 计算的汇总信息
+			summaryInfo() {
+				if(!this.ownDataList) {
+					return null
+				}
+				else {
+					
+					let totalStoreNum = 0
+					let totalProNum = 0
+					let totalNum = 0
+					let totalPrice = 0
+					
+					// 计算商店数量和商品数量
+					this.ownDataList.forEach(eachstore => {
+						totalStoreNum ++
+						eachstore.productList.forEach(eachproduct => {
+							
+							totalProNum += 1
+							
+							let proSelectSpecPropInfo = this.getProSelectSpecInfo(eachproduct.selectSpecPropInfo)
+							let selectTotalNum = proSelectSpecPropInfo.selectTotalNum // 选择的总数量
+							let selectTotalPrice = proSelectSpecPropInfo.selectTotalPrice // 选择的总金额
+							
+							totalNum = Number(totalNum) + Number(selectTotalNum)
+							totalPrice = Number(totalPrice) + Number(Math.round(Number(selectTotalPrice) * 100) / 100)
+							
+						})
+					})
+					
+					totalPrice = this.$basejs.keepTwoDecimalFull(Number(totalPrice))
+					
+					let summaryInfo = {
+						totalStoreNum,
+						totalProNum,
+						totalNum,
+						totalPrice
+					}
+					return summaryInfo
+					
+				}
+			}
+		
 		},
 		
 		// 页面加载后
 		onLoad(option) {
+			
 			_this = this
 			
 			if(option.sourceFrom) {
 				this.sourceFrom = option.sourceFrom
 			}
-			let makeorderdraftidarr = uni.getStorageSync('makeorderdraftidarr')
-			if(makeorderdraftidarr) {
-				this.draftIds = makeorderdraftidarr
-
+			if(this.sourceFrom == 'draftpro') {
+				let makeorderdraftidarr = uni.getStorageSync('makeorderdraftidarr')
+				if(makeorderdraftidarr) {
+					this.draftIds = makeorderdraftidarr
+					// 获取下单数据
+					this.loadMakeOrderData()
+				}
 			}
 			
 			//
@@ -170,8 +307,6 @@
 			
 			// 加载数据 对数据进行加工
 			loadData(data, ended, pagination) {
-				
-				console.log(data);
 				
 				let totalStoreNum = 0
 				let totalProNum = 0
@@ -201,28 +336,27 @@
 						
 						// 计算每个商品的总数量和总金额
 						let selectNum = 0
-						let selectTotalPrice = 0.00
+						let selectTotalPrice = 0
 						eachproduct.selectSpecPropInfo.propValList.forEach(firstspec => {
 							firstspec.specStockList.forEach(secondspec => {
 								
 								if(secondspec.amount > 0) {
 									
-									let specTotalPrice = (parseFloat(secondspec.price) * parseFloat(secondspec.amount))
+									let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
 									
-									totalNum += Number(secondspec.amount)
-									totalPrice += Math.round(specTotalPrice * 100) / 100
+									selectNum = Number(selectNum) + Number(secondspec.amount)
+									selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
 									
-									selectNum += Number(secondspec.amount)
-									selectTotalPrice += Math.round(specTotalPrice * 100) / 100
+									totalNum = Number(totalNum) + Number(secondspec.amount)
+									totalPrice = Number(totalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
+									
 								}
 								
 							})
 						})
-						selectTotalPrice = parseFloat(selectTotalPrice).toFixed(2)
-						totalPrice = parseFloat(totalPrice).toFixed(2)
 						
 						eachproduct['selectNum'] = selectNum
-						eachproduct['selectTotalPrice'] = selectTotalPrice
+						eachproduct['selectTotalPrice'] = this.$basejs.keepTwoDecimalFull(Number(selectTotalPrice))
 						
 						delete eachproduct._id
 						productList.push(eachproduct)
@@ -236,6 +370,7 @@
 					delete eachstore.ids
 					
 				})
+				totalPrice = this.$basejs.keepTwoDecimalFull(Number(totalPrice))
 				console.log(data);
 				
 				let summaryInfo = {
@@ -248,11 +383,113 @@
 				
 			},
 			
+			// 计算某个商品选中规格的商品数量和总金额
+			getProSelectSpecInfo(selectSpecPropInfo) {
+				
+				// 计算每个商品的总数量和总金额
+				let selectTotalNum = 0
+				let selectTotalPrice = 0
+				
+				selectSpecPropInfo.propValList.forEach(firstspec => {
+					firstspec.specStockList.forEach(secondspec => {
+						
+						if(secondspec.amount > 0) {
+							
+							let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
+							
+							selectTotalNum = Number(selectTotalNum) + Number(secondspec.amount)
+							selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
+							
+						}
+						
+					})
+				})
+				
+				let proSelectSpecInfo = {
+					selectTotalNum: selectTotalNum,
+					selectTotalPrice: this.$basejs.keepTwoDecimalFull(Number(selectTotalPrice))
+				}
+				
+				return proSelectSpecInfo
+				
+			},
+			
+			// 加载预下单数据 对数据进行按同店铺重组
+			loadMakeOrderData() {
+				
+				_this.ifloading = true
+				
+				const db = uniCloud.database();
+				db.collection('wish-draft-product, product')
+				.where(`_id in ${JSON.stringify(_this.draftIds)}`)
+				.orderBy('updateTime desc, creatTime desc')
+				.get()
+				.then(response => {
+					// 获取成功
+					if(response.result.code == 0) {
+						
+						let storeList = []
+						
+						let dataList = response.result.data
+						dataList.forEach(eachdraft => {
+							
+							let eachproduct = eachdraft.pid && eachdraft.pid.length > 0 ? eachdraft.pid[0] : null
+							if(eachproduct) {
+								// 重组商品数据
+								eachproduct['draftproId'] = eachdraft._id
+								eachproduct['selectSpecPropInfo'] = eachdraft.selectSpecPropInfo
+								// 初始化别名和备注
+								eachproduct['aliasName'] = ''
+								eachproduct['remark'] = ''
+								delete eachproduct._id
+							}
+							
+							let existStoreItem = storeList.find(eachstore => (eachstore.sellerId == eachdraft.sellerId))
+							// 已存在有同店铺商品
+							if(existStoreItem) {
+								let productList = existStoreItem.productList
+								productList.push(eachproduct)
+							}
+							// 未存在同店铺商品 新增店铺
+							else {
+								
+								let eachstore = {
+									sellerId: eachproduct.sellerInfo.sellerId,
+									sellerInfo: eachproduct.sellerInfo,
+									productList: [eachproduct]
+								}
+								storeList.push(eachstore)
+							}
+						})
+						
+						this.ownDataList = storeList
+						
+					}
+					// 获取失败
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				.finally(() => {
+					_this.ifloading = false
+				})
+				
+			},
+			
 			// 生成心愿单
 			makeWish() {
 				console.log(`开始生成心愿单`);
-				let dataList = this.$refs.udb.dataList
-				console.log(dataList);
+				// let dataList = this.$refs.udb.dataList
+				let dataList = this.ownDataList
 				
 				let draftIds = []
 				

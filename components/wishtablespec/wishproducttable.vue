@@ -1,4 +1,4 @@
-<!-- 某个商品的选中规格表格展示 完全受控组件 -->
+<!-- 某个商品的选中规格表格展示 -->
 <template>
 	
 	<view v-if="ownProductInfo" class="wishproducttable comcontent">
