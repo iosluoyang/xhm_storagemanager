@@ -59,12 +59,12 @@
 						<!-- 价格编辑状态  显示取消和确认 -->
 						<template v-if="priceEditFlag">
 							<button class="cu-btn round bg-grey sm cuIcon cuIcon-close" @tap.stop="priceEditFlag = false"></button>
-							<button class="margin-left cu-btn round bg-red sm cuIcon cuIcon-check" @tap.stop="priceEditFlag = false"></button>
+							<button class="margin-left cu-btn round bg-red sm cuIcon cuIcon-check" @tap.stop="finishEditPrice"></button>
 						</template>
 						
 						<!-- 非价格编辑状态 显示编辑按钮 -->
 						<template v-else>
-							<button class="cu-btn round bg-grey sm cuIcon cuIcon-edit" @tap.stop="priceEditFlag = true"></button>
+							<button class="cu-btn round bg-grey sm cuIcon cuIcon-edit" @tap.stop="startEditPrice"></button>
 						</template>
 					
 					</view>
@@ -86,8 +86,28 @@
 					<u-tr class="u-tr">
 						<u-td class="u-td">
 							<view class="flex flex-direction align-center">
-								<text v-if="ownWishInfo.quotationInfo && ownWishInfo.quotationInfo.totalProPrice" class="text-price text-red">{{ ownWishInfo.quotationInfo.totalProPrice }}</text>
-								<text class="text-price text-bold text-black">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
+								
+								<!-- 有报价信息时 -->
+								<template v-if="ownWishInfo.quotationInfo && ownWishInfo.quotationInfo.totalProPrice">
+									
+									<!-- 报价和商品总价一致 则仅显示计算出来的价格 -->
+									<template v-if="Number(ownWishInfo.quotationInfo.totalProPrice) == Number(getTotalProPriceByWish(ownWishInfo))">
+										<text class="text-price text-bold text-black">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
+									</template>
+									
+									<!-- 不一致时 显示两个价格 -->
+									<template v-else>
+										<text class="text-price text-bold text-black">{{ ownWishInfo.quotationInfo.totalProPrice }}</text>
+										<text class="text-price text-bold text-grey text-del">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
+									</template>
+									
+								</template>
+								
+								<!-- 无报价信息时 -->
+								<template v-else>
+									<text class="text-price text-bold text-black">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
+								</template>
+								
 							</view>
 						</u-td>
 						
@@ -97,8 +117,28 @@
 					</u-tr>
 				</u-table>
 				
-				<!-- 报价类型 显示 -->
-				
+				<!-- 报价区域  报价类型且为编辑状态时显示 -->
+				<view v-if="type == 'quotation' && priceEditFlag" class="editpriceview">
+					
+					<!-- 商品总价 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.tabledata.proprice }}</view>
+						<input class="text-right" type="digit" v-model="tmpQuotationInfo.totalProPrice" />
+					</view>
+					
+					<!-- 国内运费 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.tabledata.domesticshippingfee }}</view>
+						<input class="text-right" type="digit" v-model="tmpQuotationInfo.totalShippingFee" />
+					</view>
+					
+					<!-- 服务费 -->
+					<view class="cu-form-group">
+						<view class="title">{{ i18n.wishlist.common.tabledata.commissionfee }}</view>
+						<input class="text-right" type="digit" v-model="tmpQuotationInfo.totalCommissionFee" />
+					</view>
+					
+				</view>
 				
 			</view>
 		
@@ -149,6 +189,7 @@
 				ownWishInfo: null , // 当前自身心愿数据
 				
 				priceEditFlag: false, // 心愿单价格编辑状态 默认为否
+				tmpQuotationInfo: null, // 临时报价对象
 			};
 		},
 		
@@ -216,6 +257,29 @@
 				
 			},
 			
+			
+			// 开始编辑价格
+			startEditPrice() {
+				let quotationInfo = _this.ownWishInfo.quotationInfo
+				
+				let originalProTotalPrice = this.getTotalProPriceByWish(this.ownWishInfo)
+				
+				let tmpQuotationInfo = {
+					totalProPrice: quotationInfo?.totalProPrice || originalProTotalPrice,
+					totalShippingFee: quotationInfo?.totalShippingFee || '',
+					totalCommissionFee: quotationInfo?.totalCommissionFee || ''
+				}
+				this.tmpQuotationInfo = tmpQuotationInfo
+				this.priceEditFlag = true
+				
+			},
+			
+			// 结束编辑价格
+			finishEditPrice() {
+				let tmpQuotationInfo = this.tmpQuotationInfo
+				this.$set(this.ownWishInfo, 'quotationInfo', tmpQuotationInfo)
+				this.priceEditFlag = false
+			},
 			//
 		},
 	}

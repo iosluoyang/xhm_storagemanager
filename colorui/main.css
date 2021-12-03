@@ -3886,6 +3886,10 @@ scroll-view.cu-steps .cu-item {
 	overflow: hidden;
 }
 
+.text-del {
+	text-decoration: line-through;
+}
+
 .text-bold {
 	font-weight: bold;
 }
