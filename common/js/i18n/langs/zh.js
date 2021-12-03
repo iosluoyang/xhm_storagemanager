@@ -174,6 +174,7 @@ const zh = {
 			sellnum: "销量",
 			spec: "规格",
 			params: "参数信息",
+			summary: "合计",
 			pricesummary: "金额合计",
 			remark: "备注",
 			hurrylevel: "紧急程度",

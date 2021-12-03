@@ -707,32 +707,6 @@
 							
 							_this.loadTimeLineData()
 							
-							// 获取关联的心愿订单数据
-							if(_this.wishInfo && _this.wishInfo.wishOrderId) {
-								db.collection('order')
-								.doc(_this.wishInfo.wishOrderId)
-								.get({getOne: true})
-								.then(response => {
-									if(response.result.code == 0) {
-										
-										let wishOrderInfo = response.result.data
-										_this.wishOrderInfo = wishOrderInfo
-										
-										// 如果心愿关联的心愿订单为待付款状态则进行计算倒计时
-										if(wishOrderInfo.status == 0) {
-											_this.gettimecountstamp()
-										}
-										
-									}
-								})
-								.catch(error => {
-									uni.showToast({
-										title: _this.i18n.error.loaderror,
-										icon: 'none'
-									});
-								})
-							}
-							
 						}
 					})
 					.catch(error => {
@@ -1033,7 +1007,7 @@
 			// 编辑心愿
 			editwish() {
 				uni.navigateTo({
-					url: `/pages/wishlist/handlewish_new?wishId=${_this.id}`
+					url: `/pages/wishlist/handlewish_new?wishId=${_this.id}&type=edit`
 				});
 			},
 			

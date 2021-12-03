@@ -1,39 +1,42 @@
-<!-- 某个商品的选中规格表格展示 -->
+<!-- 某个商品的选中规格表格展示 完全受控组件 -->
 <template>
 	
-	<view v-if="ownProductInfo" class="wishproducttable comcontent">
+	<view v-if="productInfo" class="wishproducttable comcontent">
 		
 		<!-- 表格组件 -->
 		<u-table class="u-table" fontSize="20" padding="10rpx 0rpx">
 			
 			<!-- 商品名称 -->
 			<template v-if="ifShowTitle">
-				
-				<u-tr class="u-tr">
-					<!-- 编辑规格按钮  type=quotation时存在 -->
-					<u-th v-if="type == 'quotation'" class="u-th" width="200rpx">
-						<text class="cuIcon cuIcon-order" @tap.stop="startToChangeSpec"></text>
-					</u-th>
-					
+				<u-tr v-if="productInfo.title" class="u-tr">
 					<u-th class="u-th">
-						{{ `${ownProductInfo.title}${ownProductInfo.aliasName ? `——(${ownProductInfo.aliasName})` : '' }` }}
+						{{ productInfo.title }}
 					</u-th>
 				</u-tr>
+			</template>
 			
+			<!-- 商品别名 -->
+			<template v-if="ifShowAliasName">
+				<u-tr v-if="productInfo.aliasName" class="u-tr">
+					<u-td class="u-td" :width="firstColumnWidth">
+						<text class="text-bold">{{ i18n.wishlist.common.aliasname }}</text>
+					</u-td>
+					<u-td class="u-td">{{ productInfo.aliasName }}</u-td>
+				</u-tr>
 			</template>
 			
 			<!-- 规格 -->
 			<template v-if="ifShowSpec">
 				
 				<!-- 表格数据 按照选中的一级属性列表 -->
-				<u-tr class="u-tr" v-for="(firstSpec,firstSpecIndex) in getFirstSpecRowData(ownProductInfo)" :key="firstSpecIndex">
+				<u-tr class="u-tr" v-for="(firstSpec,firstSpecIndex) in getFirstSpecRowData(productInfo)" :key="firstSpecIndex">
 					
 					<!-- 一级属性相关 -->
-					<u-td class="u-td" width="200rpx">
+					<u-td class="u-td" :width="firstColumnWidth">
 						<view class="attribute1view flex flex-direction align-center">
 							
 							<view class="imgview pos-relative">
-								<u-image width="60" height="60" mode="aspectFill" :src="getFirstSpecImgSrc(ownProductInfo, firstSpec)" @click="previewImg(getFirstSpecImgSrc(ownProductInfo, firstSpec))"></u-image>
+								<u-image width="60" height="60" mode="aspectFill" :src="getFirstSpecImgSrc(productInfo, firstSpec)" @click="previewImg(getFirstSpecImgSrc(productInfo, firstSpec))"></u-image>
 								<text class="cu-tag badge">{{ `${getFirstSpecSelectAmount(firstSpec)}` }}</text>
 							</view>
 							
@@ -68,13 +71,30 @@
 				
 			</template>
 			
+			<!-- 合计行 -->
+			<template v-if="ifShowSummary">
+				<u-tr class="u-tr">
+					
+					<u-td class="u-td" :width="firstColumnWidth">
+						<text class="text-bold">{{ i18n.wishlist.common.summary }}</text>
+					</u-td>
+					<u-td class="u-td">
+						<text class="cuIcon cuIcon-goods text-orange">{{ $basejs.getProSelectSpecInfo(productInfo.selectSpecPropInfo).selectTotalNum }}</text>
+					</u-td>
+					<u-td class="u-td">
+						<text class="cuIcon cuIcon-moneybagfill text-red">{{ $basejs.getProSelectSpecInfo(productInfo.selectSpecPropInfo).selectTotalPrice }}</text>
+					</u-td>
+					
+				</u-tr>
+			</template>
+			
 			<!-- 备注 -->
 			<template v-if="ifShowRemark">
-				<u-tr v-if="ownProductInfo.remark" class="u-tr">
-					<u-td class="u-td" width="200rpx">
+				<u-tr v-if="productInfo.remark" class="u-tr">
+					<u-td class="u-td" :width="firstColumnWidth">
 						<text class="text-bold">{{ i18n.wishlist.common.remark }}</text>
 					</u-td>
-					<u-td class="u-td">{{ ownProductInfo.remark }}</u-td>
+					<u-td class="u-td">{{ productInfo.remark }}</u-td>
 				</u-tr>
 			</template>
 			
@@ -85,6 +105,8 @@
 </template>
 
 <script>
+	
+	var _this
 	
 	export default {
 		
@@ -108,8 +130,20 @@
 					default: true
 				},
 				
+				// 是否显示别名
+				ifShowAliasName: {
+					type: Boolean,
+					default: true
+				},
+				
 				// 是否显示规格
 				ifShowSpec: {
+					type: Boolean,
+					default: true
+				},
+				
+				// 是否显示商品汇总
+				ifShowSummary: {
 					type: Boolean,
 					default: true
 				},
@@ -124,19 +158,19 @@
 			
 			data() {
 				return {
-					ownProductInfo: null, // 自身商品数据
+					firstColumnWidth: '200rpx', // 首列宽度
 				}
 			},
 			
 			created() {
-				this.ownProductInfo = this.productInfo
+				_this = this
 			},
 			
 			methods: {
 	
 				// 获取一级分类的展示图片链接
-				getFirstSpecImgSrc(ownProductInfo, firstSpec) {
-					let proMainImg = ownProductInfo.imgs.split(',')[0]
+				getFirstSpecImgSrc(productInfo, firstSpec) {
+					let proMainImg = productInfo.imgs.split(',')[0]
 					let firstImg = firstSpec.img || proMainImg // 默认一级分类图片
 					if(Array.isArray(firstSpec.img)) {
 						firstImg = firstSpec.img.length > 0 && firstSpec.img[0] ? firstSpec.img[0] : proMainImg
@@ -147,10 +181,10 @@
 				},
 				
 				// 获取商品选中规格的表格展示行数据
-				getFirstSpecRowData(ownProductInfo) {
+				getFirstSpecRowData(productInfo) {
 					
 					let newPropValList = []
-					let propValList = ownProductInfo.selectSpecPropInfo.propValList
+					let propValList = productInfo.selectSpecPropInfo.propValList
 					
 					propValList.forEach(firstspec => {
 						// 过滤一级属性下的所有未选择数量的二级属性

@@ -183,9 +183,9 @@
 						</view>
 						
 						<!-- 商品汇总信息 -->
-						<view v-if="getProSelectSpecInfo(eachproduct.selectSpecPropInfo)" class="flex align-center justify-end margin-top">
-							<text class="text-bold text-black">{{ `共${getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalNum}件` }}</text>
-							<text class="text-price text-red margin-left">{{ `${getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalPrice}` }}</text>
+						<view v-if="$basejs.getProSelectSpecInfo(eachproduct.selectSpecPropInfo)" class="flex align-center justify-end margin-top">
+							<text class="text-bold text-black">{{ `共${$basejs.getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalNum}件` }}</text>
+							<text class="text-price text-red margin-left">{{ `${$basejs.getProSelectSpecInfo(eachproduct.selectSpecPropInfo).selectTotalPrice}` }}</text>
 						</view>
 						
 					</view>
@@ -258,7 +258,7 @@
 							
 							totalProNum += 1
 							
-							let proSelectSpecPropInfo = this.getProSelectSpecInfo(eachproduct.selectSpecPropInfo)
+							let proSelectSpecPropInfo = this.$basejs.getProSelectSpecInfo(eachproduct.selectSpecPropInfo)
 							let selectTotalNum = proSelectSpecPropInfo.selectTotalNum // 选择的总数量
 							let selectTotalPrice = proSelectSpecPropInfo.selectTotalPrice // 选择的总金额
 							
@@ -380,37 +380,6 @@
 					totalPrice
 				}
 				this.summaryInfo = summaryInfo
-				
-			},
-			
-			// 计算某个商品选中规格的商品数量和总金额
-			getProSelectSpecInfo(selectSpecPropInfo) {
-				
-				// 计算每个商品的总数量和总金额
-				let selectTotalNum = 0
-				let selectTotalPrice = 0
-				
-				selectSpecPropInfo.propValList.forEach(firstspec => {
-					firstspec.specStockList.forEach(secondspec => {
-						
-						if(secondspec.amount > 0) {
-							
-							let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
-							
-							selectTotalNum = Number(selectTotalNum) + Number(secondspec.amount)
-							selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
-							
-						}
-						
-					})
-				})
-				
-				let proSelectSpecInfo = {
-					selectTotalNum: selectTotalNum,
-					selectTotalPrice: this.$basejs.keepTwoDecimalFull(Number(selectTotalPrice))
-				}
-				
-				return proSelectSpecInfo
 				
 			},
 			

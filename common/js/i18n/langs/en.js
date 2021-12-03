@@ -173,6 +173,7 @@ const en = {
 			sellnum: "Sell Number",
 			spec: "Specification",
 			params: "Parameter",
+			summary: "Summary",
 			pricesummary: "Price Summary",
 			remark: "Remark",
 			hurrylevel: "Hurry Level",

@@ -584,6 +584,37 @@ export function getlinkbycode(codecontent) {
 	
 }
 
+// 计算某个商品选中规格的商品数量和总金额
+export function getProSelectSpecInfo(selectSpecPropInfo) {
+	
+	// 计算每个商品的总数量和总金额
+	let selectTotalNum = 0
+	let selectTotalPrice = 0
+	
+	selectSpecPropInfo.propValList.forEach(firstspec => {
+		firstspec.specStockList.forEach(secondspec => {
+			
+			if(secondspec.amount > 0) {
+				
+				let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
+				
+				selectTotalNum = Number(selectTotalNum) + Number(secondspec.amount)
+				selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
+				
+			}
+			
+		})
+	})
+	
+	let proSelectSpecInfo = {
+		selectTotalNum: selectTotalNum,
+		selectTotalPrice: keepTwoDecimalFull(Number(selectTotalPrice))
+	}
+	
+	return proSelectSpecInfo
+	
+}
+
 export default {
 	roleEnum, // 角色枚举类型
 	storeName, // 返回供应商名称  用于生成二维码的前缀
@@ -605,4 +636,5 @@ export default {
 	translatecontent, // 翻译内容
 	keepTwoDecimalFull, // 四舍五入保留2位小数（不够位数，则用0替补）
 	getlinkbycode, // 根据心愿商品的搜索文本提取口令和链接
+	getProSelectSpecInfo, // 计算某个商品选中规格的商品数量和总金额
 }
