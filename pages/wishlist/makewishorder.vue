@@ -471,6 +471,11 @@
 					// 生成心愿单数据
 					let wishdata = {
 						productList: samestoreproductlist,
+						quotationInfo: {
+							totalProPrice: "",
+							totalShippingFee: "",
+							totalCommissionFee: ""
+						}
 					}
 					// 草稿箱id数据
 					let addIds = samestoreproductlist.map(eachproduct => (eachproduct.draftproId))

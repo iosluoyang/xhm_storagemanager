@@ -534,8 +534,7 @@ export function translatecontent(sourcecontent, ENToCN=false) {
 export function keepTwoDecimalFull(num) {
  var result = parseFloat(num);
  if (isNaN(result)) {
- alert('传递参数错误，请检查！');
- return false;
+ return '';
  }
  result = Math.round(num * 100) / 100;
  var s_x = result.toString();
@@ -596,7 +595,7 @@ export function getProSelectSpecInfo(selectSpecPropInfo) {
 			
 			if(secondspec.amount > 0) {
 				
-				let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
+				let specTotalPrice = (Number(keepTwoDecimalFull(Number(secondspec.price))) * Number(secondspec.amount))
 				
 				selectTotalNum = Number(selectTotalNum) + Number(secondspec.amount)
 				selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
@@ -612,6 +611,36 @@ export function getProSelectSpecInfo(selectSpecPropInfo) {
 	}
 	
 	return proSelectSpecInfo
+	
+}
+
+// 计算某个心愿中所有选中商品的商品数量和总金额
+export function getWishSelectSpecInfo(wishInfo) {
+	
+	let productList = wishInfo.productList
+	
+	let selectTotalNum = 0
+	let selectTotalPrice = 0
+	
+	productList.forEach(eachproduct => {
+		eachproduct.selectSpecPropInfo.propValList.forEach(firstSpec => {
+			firstSpec.specStockList.forEach(secondSpec => {
+				if(secondSpec.amount > 0) {
+					let specTotalPrice = (Number(keepTwoDecimalFull(Number(secondSpec.price))) * Number(secondSpec.amount))
+					
+					selectTotalNum = Number(selectTotalNum) + Number(secondSpec.amount)
+					selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
+				}
+			})
+		})
+	})
+	
+	let wishSelectSpecInfo = {
+		selectTotalNum: selectTotalNum,
+		selectTotalPrice: keepTwoDecimalFull(Number(selectTotalPrice))
+	}
+	
+	return wishSelectSpecInfo
 	
 }
 
@@ -637,4 +666,5 @@ export default {
 	keepTwoDecimalFull, // 四舍五入保留2位小数（不够位数，则用0替补）
 	getlinkbycode, // 根据心愿商品的搜索文本提取口令和链接
 	getProSelectSpecInfo, // 计算某个商品选中规格的商品数量和总金额
+	getWishSelectSpecInfo, // 计算某个心愿中所有选中商品的商品数量和总金额
 }

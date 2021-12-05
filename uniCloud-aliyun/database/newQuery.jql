@@ -36,3 +36,15 @@ db.collection('wish').update({
 
 db.collection('wish').remove()
 db.collection('wish-timeline').remove()
+
+db.collection('wish-draft-product').remove()
+
+db.collection('wish').doc('61ac5c68c2d0220001dc128c').update({
+	quotationInfo: {
+		totalProPrice: "",
+		totalShippingFee: "",
+		totalCommissionFee: ""
+	}
+})
+
+db.collection('wish').remove()
