@@ -104,7 +104,7 @@
 								<!-- #endif -->
 								
 								<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为待确认前状态时显示 -->
-								<button v-if="wishInfo.status < 2 && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editwish"></button>
+								<button v-if="wishInfo.status < 2 && user && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editWish"></button>
 								
 								<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
 								<button v-if="(wishInfo.achieveFlag == 0 || wishInfo.achieveFlag == 1) && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
@@ -134,7 +134,7 @@
 		
 					<!-- 心愿规格table -->
 					<view class="wishspecview margin padding-sm solid">
-						<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo"></wishTableSpec>
+						<wishTableSpec ref="wishtablespec" :wishInfo="wishInfo" :ifCollapse="true"></wishTableSpec>
 					</view>
 					
 				</view>
@@ -150,7 +150,7 @@
 					<!-- 心愿没有被关联时 -->
 					<template v-if="wishInfo.status == 0">
 						
-						<button class="eachbtn cu-btn bg-gradual-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
+						<button class="eachbtn cu-btn bg-blue shadow-blur cuIcon" @tap.stop="agentBindWish">
 							<text class="cuIcon-servicefill"></text>
 						</button>
 						
@@ -159,8 +159,8 @@
 					<!-- 自身代理的心愿 -->
 					<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
 						
-						<!-- 显示添加按钮 -->
-						<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+						<!-- 显示报价按钮 -->
+						<button class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="wishQuotation">
 							<text class="cuIcon-add"></text>
 						</button>
 						
@@ -172,9 +172,9 @@
 				<template v-else-if="user._id == wishInfo.creatUser._id">
 					
 					<!-- 心愿单进行中显示更新时间轴按钮 -->
-					<button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updatewishtimeline">
+					<!-- <button class="eachbtn cu-btn bg-gradual-purple shadow-blur cuIcon" @tap.stop="updateWish">
 						<text class="cuIcon-add"></text>
-					</button>
+					</button> -->
 					
 				</template>
 				
@@ -262,57 +262,92 @@
 					<view class="date">13:23</view>
 				</view>
 				
-				<block v-for="(item, index) in timelinedataList" :key="item._id">
+				<view class="cu-item" v-for="(item, index) in timelinedataList" :key="item._id" 
+					:class="{ 'self': item.creatUser._id == user._id }"
+				>
 					
-					<view class="cu-item" :class="[ item.creatUser._id == user._id ? 'self' : '' ]">
+					<!-- 头像区域 -->
+					<template v-if="false">
 						
-						<!-- 头像区域 -->
-						<template v-if="false">
-							
-							<!-- 代理员角色 -->
-							<template v-if="item.creatUser && item.creatUser.role == $basejs.roleEnum.productAgent ">
-								<u-image class="cu-avatar" :src="item.creatUser.avatar" mode="square" size="60rpx" 
-										show-level level-icon="kefu-ermai" level-bg-color="#0081ff"
-								></u-image>
-							</template>
-							
-							<!-- 商家角色 -->
-							<template v-if="item.creatUser && item.creatUser.role == $basejs.roleEnum.merchantAdmin ">
-								<u-image class="cu-avatar" :src="item.creatUser.avatar" mode="square" size="mini" 
-										show-level level-icon="me-fill" level-bg-color="#f37b1d"
-								></u-image>
-							</template>
-							
+						<!-- 代理员角色 -->
+						<template v-if="item.creatUser && item.creatUser.role == $basejs.roleEnum.productAgent ">
+							<u-image class="cu-avatar" :src="item.creatUser.avatar" mode="square" size="60rpx" 
+									show-level level-icon="kefu-ermai" level-bg-color="#0081ff"
+							></u-image>
 						</template>
 						
-						<!-- 他人头像区域 -->
-						<template v-if="item.creatUser._id != user._id">
-							<view class="cu-avatar radius" :style="{ backgroundImage: `url(${item.creatUser.avatar})` }"></view>
+						<!-- 商家角色 -->
+						<template v-if="item.creatUser && item.creatUser.role == $basejs.roleEnum.merchantAdmin ">
+							<u-image class="cu-avatar" :src="item.creatUser.avatar" mode="square" size="mini" 
+									show-level level-icon="me-fill" level-bg-color="#f37b1d"
+							></u-image>
 						</template>
 						
-						<!-- 内容 -->
-						<view class="main">
-							
-							<!-- 心愿单开始类型 -->
-							<template v-if="item.type == 0">
-								<view class="content bg-pink shadow">
-									<text>{{ item.content }}</text>
+					</template>
+					
+					<!-- 他人头像区域 -->
+					<template v-if="item.creatUser._id != user._id">
+						<view class="cu-avatar radius" :style="{ backgroundImage: `url(${item.creatUser.avatar})` }"></view>
+					</template>
+					
+					<!-- 内容 -->
+					<view class="main">
+						
+						<!-- 心愿单开始类型 -->
+						<template v-if="item.type == 0">
+							<view class="content bg-pink shadow">
+								<text>{{ item.content }}</text>
+							</view>
+						</template>
+						
+						<!-- 代理关联心愿单 -->
+						<template v-if="item.type == 90">
+							<view class="content bg-blue shadow">
+								<text>{{ i18n.wishlist.timeline.wishagentbindtip }}</text>
+							</view>
+						</template>
+						
+						<!-- 心愿单编辑类型 -->
+						<template v-if="item.type == 2">
+							<view class="content bg-grey shadow">
+								<text>{{ item.content }}</text>
+							</view>
+						</template>
+						
+						<!-- 心愿单报价类型 -->
+						<template v-if="item.type == 3">
+							<view class="content bg-orange shadow">
+								
+								<view class="confirmiew">
+									
+									<!-- 文本内容 -->
+									<view class="margin-top-sm t_wrap text-white">
+										{{ i18n.wishlist.timeline.wishupdatequotationtip }}
+									</view>
+									
+									<!-- 价格 -->
+									<view v-if="item.price" class="priceview bg-white radius margin-top-sm flex align-center justify-center">
+										<text class="text-price text-red text-bold text-xl margin-left-sm">{{ item.price }}</text>
+									</view>
 								</view>
-							</template>
-							
-						</view>
-						
-						<!-- 本人头像区域 -->
-						<template v-if="item.creatUser._id == user._id">
-							<view class="cu-avatar radius" :style="{ backgroundImage: `url(${item.creatUser.avatar})` }"></view>
+								
+								
+							</view>
 						</template>
 						
-						<!-- 时间区域 -->
-						<uni-dateformat class="date" :date="item.creatTime"  format="yyyy/MM/dd hh:mm:ss" />
+						<!--  -->
 						
 					</view>
 					
-				</block>
+					<!-- 本人头像区域 -->
+					<template v-if="item.creatUser._id == user._id">
+						<view class="cu-avatar radius" :style="{ backgroundImage: `url(${item.creatUser.avatar})` }"></view>
+					</template>
+					
+					<!-- 时间区域 -->
+					<uni-dateformat class="date" :date="item.creatTime"  format="yyyy/MM/dd hh:mm:ss" />
+					
+				</view>
 				
 			</view>
 			
@@ -473,7 +508,7 @@
 			return {
 				
 				needtochecktoken: true, // 是否检测用户token信息
-				id: null, // 当前心愿详情id
+				wishId: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishInfo: null, // 当前心愿详情
 				
@@ -589,17 +624,16 @@
 			_this = this
 			
 			let id = option.id
-			this.id = id
+			this.wishId = id
 			
 			// 判断是否是分享的内容
 			let ifShare = option.ifShare == 'true'
 			this.ifShare = ifShare
 			
-			if(this.id) {
+			if(this.wishId) {
 				// 开始加载心愿详情数据
-				this.loaddetaildata()
-				
-				// 加载心愿时间轴数据
+				this.loadDetailData()
+				// 开始加载时间轴数据
 				this.loadTimeLineData()
 			}
 			else {
@@ -609,12 +643,12 @@
 				})
 			}
 			
+			// 更新跟心愿详情相关的所有内容
 			uni.$on('updatewishdetail', function() {
-				_this.loaddetaildata()
+				_this.loadDetailData()
 			})
 			
 			uni.$on('updatetimeline', function() {
-				// 仅更新时间轴
 				_this.loadTimeLineData()
 			})
 			
@@ -669,14 +703,14 @@
 		methods: {
 			
 			// 获取心愿详情
-			loaddetaildata() {
+			loadDetailData() {
 				
 				_this.ifloading = true // 开始缓冲动画
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
 				db.collection('wish,uni-id-users')
-					.doc(_this.id)
+					.doc(_this.wishId)
 					.field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,updateTime,status,productList,quotationInfo')
 					.get({getOne:true})
 					.then(res => {
@@ -706,8 +740,6 @@
 							_this.wishInfo = detaildata
 							console.log(_this.wishInfo);
 							
-							_this.loadTimeLineData()
-							
 						}
 					})
 					.catch(error => {
@@ -719,11 +751,11 @@
 			// 加载时间轴数据
 			loadTimeLineData() {
 				
-				// 加载时间轴数据
+				// 加载时间轴数据				
 				const db = uniCloud.database();
 				db.collection('wish-timeline, uni-id-users')
-				.where(`wishId == '${_this.id}' `)
-				.field(`creatUid{username,nickname,avatar,role} as creatUser, agentUid{username,nickname,avatar,role} as agentUser, type, content, imgs, link, price`)
+				.where(`wishId == '${_this.wishId}' `)
+				.field(`creatUid{username,nickname,avatar,role} as creatUser, agentUid{username,nickname,avatar,role} as agentUser, type, creatTime, content, imgs, link, price`)
 				.orderBy(`creatTime desc`)
 				.get()
 				.then(response => {
@@ -747,14 +779,22 @@
 						if(eachtimeline.type == 0) {
 							eachtimeline.content = _this.i18n.wishlist.timeline.startsign
 						}
+						// 心愿单被代理关联
+						else if(eachtimeline.type == 90) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.wishagentbindtip
+						}
+						// 心愿单编辑
+						else if(eachtimeline.type == 2) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.editsign
+						}
 					}) 
 					console.log(data);
-					let timelinedatalist = data
+					let timelinedatalist = data.reverse() // 逆序展示时间轴
+					_this.timelinedataList = timelinedatalist
 					
 					let noticeBarList = timelinedatalist.map(eachitem => eachitem.content)
 					_this.noticeBarList = noticeBarList
 					
-					_this.timelinedataList = timelinedatalist
 					
 				})
 				.catch(error => {
@@ -928,10 +968,10 @@
 				})
 			},
 			
-			// 更新心愿时间轴进度
-			updatewishtimeline() {
+			// 心愿单报价
+			wishQuotation() {
 				uni.navigateTo({
-					url: `/pages/wishlist/handletimeline?wishId=${this.id}`
+					url: `/pages/wishlist/handlewish?wishId=${this.wishId}&type=quotation`
 				});
 			},
 			
@@ -962,37 +1002,39 @@
 					success: res => {
 						if(res.confirm) {
 							
-							// 开始关联商品
+							// 开始代理心愿
 							let wishInfo = _this.wishInfo
 							const db = uniCloud.database();
-							db.collection('wishlist').doc(wishInfo._id)
-							.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
+							db.collection('wish')
+							.doc(_this.wishId)
+							.update({agentUid:db.env.uid, status: 1, updateTime: db.env.now})
 							.then(response => {
 								// 关联成功
 								uni.showToast({
-									title: _this.i18n.tip.addsuccess,
+									title: _this.i18n.tip.optionsuccess,
 									icon: 'none'
 								});
 								
 								// 添加一个代理人关联心愿时间轴记录
-								db.collection('wishlisttimeline')
-								.add({type: 90,wishId: wishInfo._id})
+								db.collection('wish-timeline')
+								.add({type: 90,wishId: _this.wishId})
 								.then(response => {
 									// 创建时间轴成功
 									console.log(`创建关联时间轴成功`);
-									// 刷新数据
-									_this.loaddetaildata()
-									_this.loadtimelinedata()
-									// 更新列表数据
-									uni.$emit('updatewishlist')
 								})
 								.catch(error => {
-									
+									console.log(`创建关联时间轴失败`);
+									console.log(error);
 								})
-								
-								// 发送代理员关联消息通知
-								_this.pushnoticemsg('agentbindwish')
-								
+								.finally(() => {
+									// 刷新数据
+									_this.loadDetailData()
+									// 更新列表数据
+									uni.$emit('updatewishlist')
+									// 发送代理员关联消息通知
+									_this.pushnoticemsg('agentbindwish')
+								})
+
 							})
 							.catch(error => {
 								// 关联失败
@@ -1006,9 +1048,9 @@
 			},
 			
 			// 编辑心愿
-			editwish() {
+			editWish() {
 				uni.navigateTo({
-					url: `/pages/wishlist/handlewish_new?wishId=${_this.id}&type=edit`
+					url: `/pages/wishlist/handlewish?wishId=${_this.wishId}&type=edit`
 				});
 			},
 			
@@ -1024,7 +1066,7 @@
 						if(res.confirm) {
 							// 开始调用openDB 删除该心愿
 							const db = uniCloud.database();
-							db.collection('wishlist').doc(_this.id).remove()
+							db.collection('wish').doc(_this.wishId).remove()
 								.then(res => {
 									// 删除成功
 									// 更新列表数据
@@ -1081,7 +1123,7 @@
 				if(msgtype == 'agentbindwish') {
 					info = {
 						msgtype: msgtype,
-						wishId: _this.wishInfo._id
+						wishId: _this.wishId
 					}
 				}
 				

@@ -122,8 +122,16 @@
 				{
 					"path":"handlewish",
 					"style": {
-						"navigationBarTitleText":"许下心愿"
+						"navigationBarTitleText":"处理心愿"
 					}
+				},
+				{
+				    "path" : "handlewish_old",
+				    "style" :                                                                                    
+						{
+							"navigationBarTitleText": "旧的处理心愿",
+							"enablePullDownRefresh": false
+						}
 				},
 				{
 				    "path" : "list",
@@ -147,7 +155,8 @@
                 {
                     "path" : "handletimeline",
                     "style" : {
-						"navigationBarTitleText":"时间轴"
+						"navigationBarTitleText":"时间轴",
+						"enablePullDownRefresh":true
 					}
                 },
 				{
@@ -162,15 +171,6 @@
 						"navigationBarTitleText":"收银台"
 					}
 				}
-                ,{
-                    "path" : "handlewish_new",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
             ]
 		}
 		

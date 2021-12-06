@@ -8,6 +8,7 @@ const en = {
 		edit: "Edit",
 		delete: "Delete",
 		search: "Search",
+		quotation: "Quotation",
 		searchhistory: "Search Record",
 		cancel: "Cancel",
 		confirm: "Confirm",
@@ -293,6 +294,7 @@ const en = {
 			
 			title: "TimeLine",
 			startsign: "Wish Start",
+			editsign: "Wish Edit",
 			finishsign: "Wish Finished",
 			wishtitle: "WishList",
 			addcomment: "Say Something",

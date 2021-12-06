@@ -33,7 +33,7 @@
 				
 				<!-- 展开样式 -->
 				<view v-else class="productListView">
-					<block v-for="(eachproduct, productindex) in sownWishInfo.productList" :key="eachproduct.pid">
+					<block v-for="(eachproduct, productindex) in ownWishInfo.productList" :key="eachproduct.pid">
 						<!-- 报价单状态时有此按钮 -->
 						<button v-if="type == 'quotation' " class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="$emit('changeProSpec', productindex)"></button>
 						<wishproducttable :productInfo="eachproduct" :ifShowTitle="true"></wishproducttable>
@@ -77,8 +77,8 @@
 									
 									<!-- 不一致时 显示两个价格 -->
 									<template v-else>
-										<text class="text-price text-bold text-black">{{ ownWishInfo.quotationInfo.totalProPrice }}</text>
-										<text class="text-price text-bold text-grey text-del">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
+										<text class="text-price text-bold text-lg text-black">{{ ownWishInfo.quotationInfo.totalProPrice }}</text>
+										<text class="text-price text-light text-df text-gray text-del">{{ getTotalProPriceByWish(ownWishInfo) }}</text>
 									</template>
 									
 								</template>
@@ -93,7 +93,9 @@
 						
 						<u-td class="u-td">{{ ownWishInfo.quotationInfo.totalShippingFee || '/' }}</u-td>
 						<u-td class="u-td">{{ ownWishInfo.quotationInfo.totalCommissionFee || '/' }}</u-td>
-						<u-td class="u-td">{{ getWishInfoTotalMoney() || '/' }}</u-td>
+						<u-td class="u-td">
+							<text :class="{'text-red text-bold text-xl': getWishInfoTotalMoney() != ''}">{{ getWishInfoTotalMoney() || '/' }}</text>
+						</u-td>
 					</u-tr>
 				</u-table>
 				
@@ -108,7 +110,7 @@
 	
 	import wishproducttable from '@/components/wishtablespec/wishproducttable.vue'
 	
-	var _this
+	// var _this  自定义组件,尤其重复使用的自定义组件，不能用全局this指代 否则导致复用组件的更新问题
 	
 	export default {
 		
@@ -156,10 +158,12 @@
 			wishInfo: {
 				handler: function(newValue, oldValue) {
 					console.log(`心愿数据发生变更`);
-					_this.ownWishInfo = newValue
-					_this.$nextTick(function(){
+					this.ownWishInfo = newValue
+					this.$nextTick(function(){
 						// 重新设置手风琴内部高度
-						_this.$refs.ucollapseview.init()
+						if(this.$refs.ucollapseview) {
+							this.$refs.ucollapseview.init()
+						}
 					})
 				},
 				deep: true,
@@ -167,8 +171,7 @@
 		},
 		
 		created() {
-			_this = this
-			_this.ownWishInfo = _this.wishInfo
+			this.ownWishInfo = this.wishInfo
 		},
 		
 		methods: {
@@ -188,12 +191,8 @@
 			// 计算心愿的总费用
 			getWishInfoTotalMoney() {
 				
-				let quotationInfo = _this.ownWishInfo.quotationInfo
-				if(!quotationInfo) {
-					return ''
-				}
-				// 首先计算商品总价
-				let totalProPrice = quotationInfo.totalProPrice || this.getTotalProPriceByWish(ownWishInfo)
+				let quotationInfo = this.ownWishInfo.quotationInfo
+				let totalProPrice = quotationInfo.totalProPrice || this.getTotalProPriceByWish(this.ownWishInfo)
 				let totalShippingFee = quotationInfo.totalShippingFee
 				let totalCommissionFee = quotationInfo.totalCommissionFee
 				console.log(totalProPrice,totalShippingFee,totalCommissionFee);

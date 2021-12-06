@@ -8,6 +8,7 @@ const zh = {
 		edit: "编辑",
 		delete: "删除",
 		search: "搜索",
+		quotation: "报价",
 		searchhistory: "搜索记录",
 		cancel: "取消",
 		confirm: "确定",
@@ -294,6 +295,7 @@ const zh = {
 			
 			title: "时间轴",
 			startsign: "心愿单开始",
+			editsign: "编辑心愿单",
 			finishsign: "心愿单完成",
 			wishtitle: "心愿单",
 			addcomment: "说点什么",
