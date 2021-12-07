@@ -1,7 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
-	"description":"心愿单表   当用户支付完成之后心愿单完成，转换为订单",
+	"description":"心愿单表  当用户确认完成之后心愿单完成，转换为订单",
 	"required": [],
 	"permission": {
 		"read": true,
@@ -41,14 +41,13 @@
 		},
 		"status": {
 			"bsonType": "int",
-			"description": "心愿单状态", // 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+			"description": "心愿单状态", // 0 未代理  1已代理待报价  2 已报价待确认  3 已确认已完成  90 已关闭
 			"defaultValue": 0,
 			"enum": [
 				0, // 未代理
 				1, // 已代理待报价
 				2, // 已报价待确认
-				3, // 已确认待支付
-				4, // 已支付已完成
+				3, // 已确认已完成
 				90 // 已关闭
 			]
 		},

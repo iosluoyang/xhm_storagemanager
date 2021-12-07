@@ -420,7 +420,7 @@ export function getrolenameandcolor(roleId) {
 }
 
 // 根据当前心愿单标识返回心愿单的背景颜色类名
-// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认已完成  90 已关闭
 export function getwishtagbgcolorclassname(status) {
 	switch (status){
 		// 0 未代理
@@ -435,12 +435,8 @@ export function getwishtagbgcolorclassname(status) {
 		case 2:
 			return 'bg-orange'
 			break;
-		// 3 已确认待支付
+		// 3 已确认已完成
 		case 3:
-			return 'bg-red'
-			break;
-		// 4 已支付已完成
-		case 4:
 			return 'bg-green'
 			break;
 		// 90 已关闭
@@ -454,7 +450,7 @@ export function getwishtagbgcolorclassname(status) {
 }
 
 // 根据当前心愿单标识返回心愿单的tag名字
-// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+// 0 未代理  1已代理待报价  2 已报价待确认  3 已确认已完成  90 已关闭
 export function getwishtagname(status) {
 	
 	switch (status){
@@ -470,12 +466,8 @@ export function getwishtagname(status) {
 		case 2:
 			return i18n.wishlist.common.achieveflagdata.waittoconfirm
 			break;
-		// 3 已确认待支付
+		// 3 已确认已完成
 		case 3:
-			return i18n.wishlist.common.achieveflagdata.waittopay
-			break;
-		// 4 已支付已完成
-		case 4:
 			return i18n.wishlist.common.achieveflagdata.finish
 			break;
 		// 90 已关闭

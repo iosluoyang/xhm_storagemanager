@@ -57,39 +57,42 @@
 									<view class="margin-left flex0 flex align-center">
 										<text class="cuIcon cuIcon-goods text-orange margin-right-sm"></text>
 										<text class="text-grey">{{ `${getamountbyspecInfo(currentProduct.selectSpecPropInfo)}` }}</text>
+										<!-- 查看商品详情按钮 -->
+										<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-left-sm" @tap.stop="checkProductDetail(currentProduct.pid)"></button>
 									</view>
+									
 								</view>
 								
-								<!-- 创建者代理员及留言 -->
-								<view class="creatuserview margin-top-sm flex align-center justify-between">
+							</view>
+							
+							<!-- 创建者代理员及留言 -->
+							<view class="creatuserview padding-sm margin-top-sm flex align-center justify-between">
+								
+								<!-- 创建者 -->
+								<view class="creatuserview flex align-center">
 									
-									<!-- 创建者 -->
-									<view class="creatuserview flex align-center">
-										
-										<u-avatar class="flex0" :src="wishInfo.creatUser.avatar" size="mini"></u-avatar>
-										
-										<!-- 没有备注时 -->
-										<view v-if="!currentProduct.remark" class="margin-left-sm flex flex-direction">
-											<view>{{wishInfo.creatUser.nickname || wishInfo.creatUser.username}}</view>
-											<view class="text-gray text-sm">
-												<uni-dateformat :date="wishInfo.creatTime" />
-											</view>
+									<u-avatar class="flex0" :src="wishInfo.creatUser.avatar" size="mini"></u-avatar>
+									
+									<!-- 没有备注时 -->
+									<view v-if="!currentProduct.remark" class="margin-left-sm flex flex-direction">
+										<view>{{wishInfo.creatUser.nickname || wishInfo.creatUser.username}}</view>
+										<view class="text-gray text-sm">
+											<uni-dateformat :date="wishInfo.creatTime" />
 										</view>
-										
-										<!-- 有备注时 显示备注 -->
-										<view v-if="currentProduct.remark" class="flex1 margin-left margin-right bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longpress="$basejs.copytoclipboard(currentProduct.remark)">{{ currentProduct.remark }}</view>
-										
 									</view>
 									
-									<!-- 右侧区域 -->
-									<view class="agentuserview">
+									<!-- 有备注时 显示备注 -->
+									<view v-if="currentProduct.remark" class="flex1 margin-left margin-right bg-grey round text-sm padding-left padding-right padding-top-sm padding-bottom-sm" @longpress="$basejs.copytoclipboard(currentProduct.remark)">{{ currentProduct.remark }}</view>
 									
-										<!-- 右侧代理人头像 -->
-										<template v-if="wishInfo.agentUser">
-											<u-avatar class="flex0" :src="wishInfo.agentUser.avatar" size="mini" show-level level-icon="kefu-ermai" level-bg-color="#0081ff"></u-avatar>
-										</template>
-										
-									</view>
+								</view>
+								
+								<!-- 右侧区域 -->
+								<view class="agentuserview">
+								
+									<!-- 右侧代理人头像 -->
+									<template v-if="wishInfo.agentUser">
+										<u-avatar class="flex0" :src="wishInfo.agentUser.avatar" size="mini" show-level level-icon="kefu-ermai" level-bg-color="#0081ff"></u-avatar>
+									</template>
 									
 								</view>
 								
@@ -106,21 +109,20 @@
 								<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为待确认前状态时显示 -->
 								<button v-if="wishInfo.status < 2 && user && wishInfo.creatUser._id == user._id" class="cu-btn round bg-gray cuIcon-edit margin-right-sm" @tap.stop="editWish"></button>
 								
-								<!-- 删除按钮 仅自己可删除 且在该心愿单为进行中和待确认时显示 -->
-								<button v-if="(wishInfo.achieveFlag == 0 || wishInfo.achieveFlag == 1) && wishInfo.creatUser && wishInfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deletewish"></button>
+								<!-- 删除按钮 仅商家自己可删除 且在该心愿单为待支付前状态时显示 -->
+								<button v-if="wishInfo.status < 3 && user && wishInfo.creatUser._id == user._id" class="cu-btn round bg-red cuIcon-delete margin-right-sm" @tap.stop="deleteWish"></button>
+								
+								<!-- 再次购买按钮 商家角色时显示 -->
+								<button v-if="user && (user.role == $basejs.roleEnum.merchantAdmin)" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="wishBuyAgain"></button>
 								
 								<!-- 计算国际运费按钮 -->
 								<button v-if="productExt && productExt.boxVolume" class="cu-btn round bg-gradual-blue cuIcon-form margin-right-sm" @tap.stop="openshippingtool"></button>
 								
-								<!-- 再次购买按钮 -->
-								<button v-if="user && (user.role == $basejs.roleEnum.merchantAdmin)" class="cu-btn round bg-pink cuIcon-add margin-right-sm" @tap.stop="buyagain"></button>
+								
 								
 								<!-- 查看订单按钮 -->
 								<button v-if="wishOrderInfo && user && (wishInfo.creatUser._id == user._id || wishInfo.agentUser._id == user._id) " class="cu-btn round bg-purple cuIcon-formfill margin-right-sm" @tap.stop="gotoWishOrder"></button>
-								
-								<!-- 查看1688详情按钮 -->
-								<button class="cu-btn round bg-gradual-orange cuIcon-goods margin-right-sm" @tap.stop="check1688prodetail"></button>
-								
+						
 							</view>
 							
 						</view>
@@ -129,7 +131,7 @@
 					
 					<!-- 消息通知区域 -->
 					<view v-if="noticeBarList" class="noticebarview margin" @tap.stop="showDrawer = true">
-						<u-notice-bar mode="vertical" type="success" :duration="3000" more-icon :list="noticeBarList"></u-notice-bar>
+						<u-notice-bar mode="horizontal" :speed="100" type="info" :duration="3000" more-icon padding="18rpx 24rpx" border-radius="10rpx" :list="noticeBarList"></u-notice-bar>
 					</view>
 		
 					<!-- 心愿规格table -->
@@ -176,6 +178,19 @@
 						<text class="cuIcon-add"></text>
 					</button> -->
 					
+					<!-- 心愿单待确认时显示拒绝和同意按钮 -->
+					<view v-if="wishInfo.status == 2" class="flex align-center justify-around">
+						
+						<button class="eachbtn cu-btn bg-grey shadow-blur cuIcon" @tap.stop="refuseQuotation">
+							<text class="cuIcon-close"></text>
+						</button>
+						
+						<button class="margin-left eachbtn cu-btn bg-green shadow-blur cuIcon" @tap.stop="agreeQuotation">
+							<text class="cuIcon-check"></text>
+						</button>
+						
+					</view>
+					
 				</template>
 				
 			</view>
@@ -191,79 +206,10 @@
 		<scroll-view scroll-y class="DrawerWindow" :class="{show: showDrawer}" style="background-color: #F1F1F1;">
 			
 			<view class="cu-chat">
-				<view class="cu-item self">
-					<view class="main">
-						<view class="content bg-green shadow">
-							<text>喵喵喵！喵喵喵！喵喵喵！喵喵！喵喵！！喵！喵喵喵！</text>
-						</view>
-					</view>
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
-					<view class="date">2018年3月23日 13:23</view>
-				</view>
-				<view class="cu-info round">对方撤回一条消息!</view>
-				<view class="cu-item">
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg);"></view>
-					<view class="main">
-						<view class="content shadow">
-							<text>喵喵喵！喵喵喵！</text>
-						</view>
-					</view>
-					<view class="date "> 13:23</view>
-				</view>
-				<view class="cu-info">
-					<text class="cuIcon-roundclosefill text-red "></text> 对方拒绝了你的消息
-				</view>
-				<view class="cu-info">
-					对方开启了好友验证，你还不是他(她)的好友。请先发送好友验证请求，对方验证通过后，才能聊天。
-					<text class="text-blue">发送好友验证</text>
-				</view>
-				<view class="cu-item self">
-					
-					<view class="main">
-						<image src="https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg" class="radius" mode="widthFix"></image>
-					</view>
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
-					<view class="date"> 13:23</view>
-				</view>
-				<view class="cu-item self">
-					<view class="main">
-						<view class="action text-bold text-grey">
-							3"
-						</view>
-						<view class="content shadow">
-							<text class="cuIcon-sound text-xxl padding-right-xl"> </text>
-						</view>
-					</view>
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
-					<view class="date">13:23</view>
-				</view>
-				<view class="cu-item self">
-					<view class="main">
-						<view class="action">
-							<text class="cuIcon-locationfill text-orange text-xxl"></text>
-						</view>
-						<view class="content shadow">
-							喵星球，喵喵市
-						</view>
-					</view>
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
-					<view class="date">13:23</view>
-				</view>
-				<view class="cu-item">
-					<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg);"></view>
-					<view class="main">
-						<view class="content shadow">
-							@#$^&**
-						</view>
-						<view class="action text-grey">
-							<text class="cuIcon-warnfill text-red text-xxl"></text> <text class="text-sm margin-left-sm">翻译错误</text>
-						</view>
-					</view>
-					<view class="date">13:23</view>
-				</view>
 				
-				<view class="cu-item" v-for="(item, index) in timelinedataList" :key="item._id" 
-					:class="{ 'self': item.creatUser._id == user._id }"
+				<view class="cu-item" 
+						v-for="(item, index) in timelinedataList" :key="item._id" 
+						:class="{ 'self': item.creatUser._id == user._id }"
 				>
 					
 					<!-- 头像区域 -->
@@ -309,8 +255,8 @@
 						
 						<!-- 心愿单编辑类型 -->
 						<template v-if="item.type == 2">
-							<view class="content bg-grey shadow">
-								<text>{{ item.content }}</text>
+							<view class="content bg-grey light shadow">
+								<text class="text-black">{{ item.content }}</text>
 							</view>
 						</template>
 						
@@ -331,11 +277,22 @@
 									</view>
 								</view>
 								
-								
 							</view>
 						</template>
 						
-						<!--  -->
+						<!-- 心愿单同意类型 -->
+						<template v-if="item.type == 4">
+							<view class="content bg-green shadow">
+								{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishconfirmquotationagenttip : i18n.wishlist.timeline.wishconfirmquotationcustomertip }}
+							</view>
+						</template>
+						
+						<!-- 心愿单拒绝类型 -->
+						<template v-if="item.type == 5">
+							<view class="content bg-grey shadow">
+								{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishrefusequotationagenttip : i18n.wishlist.timeline.wishrefusequotationcustomertip }}
+							</view>
+						</template>
 						
 					</view>
 					
@@ -349,17 +306,92 @@
 					
 				</view>
 				
+				
+				<template v-if="false">
+					<view class="cu-item self">
+						<view class="main">
+							<view class="content bg-green shadow">
+								<text>喵喵喵！喵喵喵！喵喵喵！喵喵！喵喵！！喵！喵喵喵！</text>
+							</view>
+						</view>
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
+						<view class="date">2018年3月23日 13:23</view>
+					</view>
+					<view class="cu-info round">对方撤回一条消息!</view>
+					<view class="cu-item">
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg);"></view>
+						<view class="main">
+							<view class="content shadow">
+								<text>喵喵喵！喵喵喵！</text>
+							</view>
+						</view>
+						<view class="date "> 13:23</view>
+					</view>
+					<view class="cu-info">
+						<text class="cuIcon-roundclosefill text-red "></text> 对方拒绝了你的消息
+					</view>
+					<view class="cu-info">
+						对方开启了好友验证，你还不是他(她)的好友。请先发送好友验证请求，对方验证通过后，才能聊天。
+						<text class="text-blue">发送好友验证</text>
+					</view>
+					<view class="cu-item self">
+						
+						<view class="main">
+							<image src="https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg" class="radius" mode="widthFix"></image>
+						</view>
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
+						<view class="date"> 13:23</view>
+					</view>
+					<view class="cu-item self">
+						<view class="main">
+							<view class="action text-bold text-grey">
+								3"
+							</view>
+							<view class="content shadow">
+								<text class="cuIcon-sound text-xxl padding-right-xl"> </text>
+							</view>
+						</view>
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
+						<view class="date">13:23</view>
+					</view>
+					<view class="cu-item self">
+						<view class="main">
+							<view class="action">
+								<text class="cuIcon-locationfill text-orange text-xxl"></text>
+							</view>
+							<view class="content shadow">
+								喵星球，喵喵市
+							</view>
+						</view>
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg);"></view>
+						<view class="date">13:23</view>
+					</view>
+					<view class="cu-item">
+						<view class="cu-avatar radius" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg);"></view>
+						<view class="main">
+							<view class="content shadow">
+								@#$^&**
+							</view>
+							<view class="action text-grey">
+								<text class="cuIcon-warnfill text-red text-xxl"></text> <text class="text-sm margin-left-sm">翻译错误</text>
+							</view>
+						</view>
+						<view class="date">13:23</view>
+					</view>
+				</template>
+				
 			</view>
 			
 			<view class="cu-bar foot input" :style="[{bottom:InputBottom+'px'}]">
 				<view class="action">
-					<text class="cuIcon-sound text-grey"></text>
+					<text class="cuIcon-picfill text-grey"></text>
 				</view>
-				<input class="solid-bottom" :adjust-position="false" :focus="false" maxlength="300" cursor-spacing="10"
-				 @focus="(e) => {InputBottom = e.detail.height}" @blur="() => {InputBottom = 0}"></input>
-				<view class="action">
+				<!-- <input class="solid-bottom" :adjust-position="false" :focus="false" :maxlength="-1" cursor-spacing="10"
+				 @focus="(e) => {InputBottom = e.detail.height}" @blur="() => {InputBottom = 0}"></input> -->
+				 <u-field v-model="timelineContent" type="textarea" fixed label=""></u-field>
+				<!-- <view class="action">
 					<text class="cuIcon-emojifill text-grey"></text>
-				</view>
+				</view> -->
 				<button class="cu-btn bg-green shadow">{{ i18n.base.confirm }}</button>
 			</view>
 			
@@ -496,7 +528,6 @@
 <script>
 	
 	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
-	import wishTimeLineItem from '@/components/wishtimelineitem/wishtimelineitem.vue'; // 单个时间轴组件
 	
 	
 	var _this
@@ -521,6 +552,8 @@
 				
 				timelinedataList: null, // 时间轴数据
 				noticeBarList: null, // 滚动消息通知数据
+				
+				timelineContent: '', // 输入的时间轴内容
 				
 				wishOrderInfo: null, // 心愿订单数据
 				paymenttimediff: 0, // 待付款订单倒计时
@@ -563,7 +596,6 @@
 		
 		components: {
 			wishTableSpec,
-			wishTimeLineItem,
 		},
 		
 		computed: {
@@ -662,12 +694,6 @@
 		
 		// 页面显示时开始自动播放轮播图
 		onShow() {
-			// 如果没有登录则跳转登录页
-			if(!_this.user) {
-				uni.navigateTo({
-					url: '/pages/base/login'
-				});
-			}
 			this.swiperautoplay = true
 		},
 		
@@ -787,13 +813,28 @@
 						else if(eachtimeline.type == 2) {
 							eachtimeline.content = _this.i18n.wishlist.timeline.editsign
 						}
+						// 心愿单待确认
+						else if(eachtimeline.type == 3) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.wishupdatequotationtip
+						}
+						// 心愿单同意
+						else if(eachtimeline.type == 4) {
+							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishconfirmquotationagenttip : _this.i18n.wishlist.timeline.wishconfirmquotationcustomertip
+						}
+						// 心愿单拒绝
+						else if(eachtimeline.type == 5) {
+							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishrefusequotationagenttip : _this.i18n.wishlist.timeline.wishrefusequotationcustomertip
+						}
 					}) 
-					console.log(data);
-					let timelinedatalist = data.reverse() // 逆序展示时间轴
+					
+					let tmpData = [...data] // 注意深拷贝
+					let timelinedatalist = tmpData.reverse() // 逆序展示时间轴
 					_this.timelinedataList = timelinedatalist
 					
-					let noticeBarList = timelinedatalist.map(eachitem => eachitem.content)
-					_this.noticeBarList = noticeBarList
+					// 设置通知栏最新内容
+					let noticeBarList = data.map(eachitem => eachitem.content)
+					// _this.noticeBarList = noticeBarList
+					_this.noticeBarList = noticeBarList.slice(0,1) // 展示最新的时间轴内容
 					
 					
 				})
@@ -833,6 +874,302 @@
 					this.ifshowqrcode = true
 				}
 			},
+			
+			// 查看商品详情数据
+			checkProductDetail(pid) {
+				uni.navigateTo({
+					url: `/pages/wishlist/linkprodetail?pid=${pid}`
+				});
+			},
+			
+			// 代理员关联心愿
+			agentBindWish() {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 开始代理心愿
+							let wishInfo = _this.wishInfo
+							const db = uniCloud.database();
+							db.collection('wish')
+							.doc(_this.wishId)
+							.update({agentUid:db.env.uid, status: 1, updateTime: db.env.now})
+							.then(response => {
+								// 关联成功
+								uni.showToast({
+									title: _this.i18n.tip.optionsuccess,
+									icon: 'none'
+								});
+								
+								// 添加一个代理人关联心愿时间轴记录
+								db.collection('wish-timeline')
+								.add({type: 90,wishId: _this.wishId})
+								.then(response => {
+									// 创建时间轴成功
+									console.log(`创建关联时间轴成功`);
+								})
+								.catch(error => {
+									console.log(`创建关联时间轴失败`);
+									console.log(error);
+								})
+								.finally(() => {
+									// 刷新数据
+									_this.loadDetailData()
+									// 更新列表数据
+									uni.$emit('updatewishlist')
+									// 发送代理员关联消息通知
+									_this.pushnoticemsg('agentbindwish')
+								})
+			
+							})
+							.catch(error => {
+								// 关联失败
+								
+							})
+							
+						}
+					}
+				});
+				
+			},
+			
+			// 编辑心愿
+			editWish() {
+				uni.navigateTo({
+					url: `/pages/wishlist/handlewish?wishId=${_this.wishId}&type=edit`
+				});
+			},
+			
+			// 删除心愿
+			deleteWish() {
+				
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							// 开始调用openDB 删除该心愿
+							const db = uniCloud.database();
+							db.collection('wish')
+							.doc(_this.wishId)
+							.remove()
+							.then(res => {
+								// 删除成功
+								// 更新列表数据
+								uni.$emit('updatewishlist')
+								
+								// 删除对应的时间轴数据
+								db.collection('wish-timeline').where( `wishId == '${_this.wishId}'` ).remove()
+								.then(response => {
+									console.log(`删除时间轴数据成功`);
+								})
+								.catch(error => {
+									console.log(`删除时间轴数据失败`);
+								})
+								
+								// 返回上个页面
+								uni.navigateBack();
+								// 提示
+								setTimeout(function() {
+									uni.showToast({
+										title: _this.i18n.tip.deletesuccess,
+										icon: 'none'
+									});
+								}, 300);
+							})
+							.catch(err => {
+								// 删除失败
+								uni.showToast({
+									title: _this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					},
+				})
+				
+			},
+			
+			// 用户拒绝报价
+			refuseQuotation() {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 更新心愿状态
+							const db = uniCloud.database();
+							db.collection('wish')
+							.doc(_this.wishId)
+							.update({status: 1, updateTime: db.env.now})
+							.then(response => {
+								// 拒绝成功
+								// 刷新数据
+								_this.loadDetailData()
+								// 刷新列表数据
+								uni.$emit('updatewishlist')
+								
+								// 推送消息
+								_this.pushnoticemsg('refusequotation')
+								
+								// 添加拒绝时间轴
+								let timelinedata = {
+									type: 5,
+									wishId: _this.wishId
+								}
+								db.collection('wish-timeline')
+								.add(timelinedata)
+								.then(response => {
+									if(response.result.code == 0) {
+										console.log(`添加时间轴成功`);
+										// 刷新时间轴数据
+										_this.loadTimeLineData()
+									}
+									else {
+										console.log(`添加时间轴失败`);
+									}
+								})
+								.catch(error => {
+									console.log(`添加时间轴失败`);
+								})
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.tips.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+
+			},
+			
+			// 用户同意报价
+			agreeQuotation() {
+				
+				uni.showModal({
+					content: _this.i18n.tip.optionconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							
+							// 更新心愿状态
+							const db = uniCloud.database();
+							db.collection('wish')
+							.doc(_this.wishId)
+							.update({status: 3, updateTime: db.env.now})
+							.then(response => {
+								// 同意报价成功
+								// 刷新数据
+								_this.loadDetailData()
+								// 刷新列表数据
+								uni.$emit('updatewishlist')
+								
+								// 推送代理员消息
+								_this.pushnoticemsg('agreequotation')
+								
+								// 商家订阅消息
+								_this.subscribeNoticeMsg()
+								
+								// 添加同意时间轴
+								let timelinedata = {
+									type: 4,
+									wishId: _this.wishId
+								}
+								db.collection('wish-timeline')
+								.add(timelinedata)
+								.then(response => {
+									if(response.result.code == 0) {
+										console.log(`添加时间轴成功`);
+										// 刷新时间轴数据
+										_this.loadTimeLineData()
+									}
+									else {
+										console.log(`添加时间轴失败`);
+									}
+								})
+								.catch(error => {
+									console.log(`添加时间轴失败`);
+								})
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.tips.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+					}
+				});
+				
+			},
+			
+			// 再次购买
+			wishBuyAgain() {
+				uni.navigateTo({
+					url: `/pages/wishlist/makewishorder?sourceFrom=wishbuyagain&wishId=${this.wishId}`
+				});
+			},
+			
+			// 订阅消息
+			subscribeNoticeMsg() {
+				
+				// 开始获取订阅
+				// #ifdef MP-WEIXIN
+				
+				// 增加订阅模板消息的功能
+				let purchaseorderId = this.$store.getters.configData.wxminiNoticeTemplateDic.purchaseorder
+				let deliveryorderId = this.$store.getters.configData.wxminiNoticeTemplateDic.deliveryorder
+				
+				uni.requestSubscribeMessage({
+					tmplIds: [purchaseorderId,deliveryorderId],
+					success(res){
+						let errMsg = res.errMsg
+						console.log(errMsg);
+						if(errMsg == 'requestSubscribeMessage:ok') {
+							console.log(res[purchaseorderId]);
+							// 用户同意订阅
+							if(res[purchaseorderId] == 'accept') {
+								console.log(`用户订阅消息成功`);
+							} else if(res[purchaseorderId] == 'reject') {
+								console.log(`用户拒绝订阅消息`);
+							}
+						}
+						else {
+							console.log(`订阅消息失败`);
+						}
+					},
+					fail(err) {
+						console.log(`订阅消息失败`);
+						console.log(err.errMsg);
+					},
+					complete() {
+						console.log(`订阅消息接口完成`);
+					}
+				})
+				
+				// #endif
+				
+			},
+			
+			
 			
 			// 计算付款倒计时时长
 			gettimecountstamp() {
@@ -983,130 +1320,6 @@
 				});
 			},
 			
-			// 再次购买
-			buyagain() {
-				// replace到新增心愿页面
-				uni.navigateTo({
-					url: `/pages/wishlist/handlewish?type=copy&id=${this.wishInfo._id}`
-				});
-			}, 
-			
-			// 代理员关联心愿
-			agentBindWish() {
-				
-				uni.showModal({
-					content: _this.i18n.tip.optionconfirm,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							
-							// 开始代理心愿
-							let wishInfo = _this.wishInfo
-							const db = uniCloud.database();
-							db.collection('wish')
-							.doc(_this.wishId)
-							.update({agentUid:db.env.uid, status: 1, updateTime: db.env.now})
-							.then(response => {
-								// 关联成功
-								uni.showToast({
-									title: _this.i18n.tip.optionsuccess,
-									icon: 'none'
-								});
-								
-								// 添加一个代理人关联心愿时间轴记录
-								db.collection('wish-timeline')
-								.add({type: 90,wishId: _this.wishId})
-								.then(response => {
-									// 创建时间轴成功
-									console.log(`创建关联时间轴成功`);
-								})
-								.catch(error => {
-									console.log(`创建关联时间轴失败`);
-									console.log(error);
-								})
-								.finally(() => {
-									// 刷新数据
-									_this.loadDetailData()
-									// 更新列表数据
-									uni.$emit('updatewishlist')
-									// 发送代理员关联消息通知
-									_this.pushnoticemsg('agentbindwish')
-								})
-
-							})
-							.catch(error => {
-								// 关联失败
-								
-							})
-							
-						}
-					}
-				});
-				
-			},
-			
-			// 编辑心愿
-			editWish() {
-				uni.navigateTo({
-					url: `/pages/wishlist/handlewish?wishId=${_this.wishId}&type=edit`
-				});
-			},
-			
-			// 删除心愿
-			deletewish() {
-				
-				uni.showModal({
-					content: _this.i18n.tip.deleteconfirm,
-					showCancel: true,
-					cancelText: _this.i18n.base.cancel,
-					confirmText: _this.i18n.base.confirm,
-					success: res => {
-						if(res.confirm) {
-							// 开始调用openDB 删除该心愿
-							const db = uniCloud.database();
-							db.collection('wish').doc(_this.wishId).remove()
-								.then(res => {
-									// 删除成功
-									// 更新列表数据
-									uni.$emit('updatewishlist')
-									uni.navigateBack();
-									// 返回
-									setTimeout(function() {
-										uni.showToast({
-											title: _this.i18n.tip.deletesuccess,
-											icon: 'none'
-										});
-									}, 300);
-								})
-								.catch(err => {
-									// 删除失败
-									uni.showToast({
-										title: _this.i18n.error.optionerror,
-										icon: 'none'
-									});
-								})
-							
-						}
-					},
-				})
-				
-			},
-			
-			// 查看1688商品详情数据
-			check1688prodetail() {
-				
-				console.log(this.wishInfo);
-				let thirdPid = this.wishInfo.thirdPid
-				
-				// 将原链接存储在本地
-				uni.setStorageSync('linkprosearchtext',this.wishInfo.sourceLink)
-				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
-				});
-
-			},
 			
 			// 编辑时间轴数据
 			edittimeline(timelineitem) {
@@ -1164,6 +1377,10 @@
 		
 		.wishInfoview{
 			padding-bottom: 120rpx;
+		}
+		
+		.foot{
+			transition: all 0.3s;
 		}
 		
 		.paymentcountdownview{

@@ -208,7 +208,6 @@
 			_this = this
 			
 			if(option.searchText) {
-				
 				let searchText = decodeURIComponent(option.searchText)
 				this.searchText = searchText
 			}

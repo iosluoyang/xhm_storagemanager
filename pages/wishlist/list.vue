@@ -91,7 +91,7 @@
 			// 初始化选项卡数据
 			initTabArr() {
 				
-				// 心愿单标识 0 未代理	1 已代理待报价	2 已报价待确认	3 已确认待支付	4 已支付已完成	90 已关闭
+				// 心愿单标识 0 未代理	1 已代理待报价	2 已报价待确认	3 已确认已完成	90 已关闭
 				// -1代表查询所有 为虚拟的一个status 放在未代理心愿tab的后面展示
 				let tabArr = [
 					{
@@ -115,13 +115,8 @@
 						count: 0,
 					},
 					{
-						name: this.i18n.wishlist.common.achieveflagdata.makeorder,
-						status: 3,
-						count: 0,
-					},
-					{
 						name: this.i18n.wishlist.common.achieveflagdata.finish,
-						status: 4,
+						status: 3,
 						count: 0,
 					},
 					{
@@ -180,82 +175,6 @@
 			searchwishlist() {
 				this.starttorefresh()
 			},
-			
-			// 设置初始化筛选项
-			// setFilterOptionData() {
-				
-			// 	let agentStatusOption = [
-			// 		{
-			// 			label: this.i18n.wishlist.list.all,
-			// 			value: -1
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.agentstatus.unbind,
-			// 			value: 0
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.agentstatus.bind,
-			// 			value: 1
-			// 		}
-			// 	]
-			// 	this.agentStatusOption = agentStatusOption
-				
-			// 	let payStatsuOption = [
-			// 		{
-			// 			label: this.i18n.wishlist.list.all,
-			// 			value: -1
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.paystatus.unpay,
-			// 			value: 0
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.paystatus.pay,
-			// 			value: 1
-			// 		}
-			// 	]
-			// 	this.payStatusOption = payStatsuOption
-				
-			// 	let purchaseStatusOption = [
-			// 		{
-			// 			label: this.i18n.wishlist.list.all,
-			// 			value: -1,
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.purchasestatus.unpurchase,
-			// 			value: 0,
-			// 		},
-			// 		{
-			// 			label: this.i18n.wishlist.list.purchasestatus.purchase,
-			// 			value: 1,
-			// 		}
-			// 	]
-			// 	this.purchaseStatusOption = purchaseStatusOption
-				
-			// },
-			
-			// changeAgentStatus(value) {
-			// 	this.agentStatus = value
-			// 	this.starttorefresh()
-			// },
-			
-			// changePayStatus(value) {
-			// 	this.payStatus = value
-			// 	this.starttorefresh()
-			// },
-			
-			// changePurchaseStatus(value) {
-			// 	this.purchaseStatus = value
-			// 	this.starttorefresh()
-			// },
-			
-			// // 重置筛选项
-			// resetFilterData() {
-			// 	this.agentStatus = -1
-			// 	this.payStatus = -1
-			// 	this.purchaseStatus = -1
-			// },
-			
 			
 			// tabs通知swiper切换
 			tabsChange(index) {

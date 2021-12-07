@@ -116,19 +116,11 @@
 				
 			</view>
 			
-			<!-- 操作区域 当心愿状态为0时不显示 -->
-			<view v-if="ownwishitem.status != 0" class="actionview shadow-warp padding-sm flex align-center">
+			<!-- 操作区域 当心愿状态为3已完成时或者为管理员角色时显示 -->
+			<view v-if="(ownwishitem.status == 3) || (user && user.role == $basejs.roleEnum.admin)" class="actionview shadow-warp padding-sm flex align-center">
 				
 				<!-- 跳转订单按钮  当心愿变成已支付已完成且为自己或代理员代理的心愿时有此按钮 -->
-				<button v-if="user && (user._id == ownwishitem.creatUser._id || user._id == ownwishitem.agentUser._id) && ownwishitem.status == 4" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
-				
-				<!-- 付款按钮  商家自身角色且为待付款 -->
-				<button v-if="user && user._id == ownwishitem.creatUser._id && ownwishitem.status == 3" class="cu-btn margin-left-sm round bg-gradual-red u-font-20" @tap.stop="paynow">
-					<view class="flex flex-direction align-center">
-						<text class="u-font-20">{{ i18n.base.paynow }}</text>
-						<u-count-down v-if="paymenttimediff" class="u-margin-top-5" :timestamp="paymenttimediff" autoplay font-size="10" :show-days="false"></u-count-down>
-					</view>
-				</button>
+				<button v-if="user && (user._id == ownwishitem.creatUser._id || user._id == ownwishitem.agentUser._id) && ownwishitem.status == 3" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
 				
 				<!-- 切换心愿状态 超级管理员有此功能 -->
 				<button v-if="user && user.role == $basejs.roleEnum.admin " class="cu-btn margin-left-sm round bg-grey cuIcon cuIcon-order" @tap.stop="changewishliststatus"></button>
@@ -163,7 +155,7 @@
 				return {
 					
 					bindAnimation: false, // 是否显示绑定动画  默认为否
-					ownwishitem: this.wishitem,
+					ownwishitem: null, // 自身心愿数据
 					paymenttimediff: 0, // 待付款订单倒计时
 					
 				}
@@ -212,16 +204,7 @@
 			},
 			
 			created() {
-				let productList = this.ownwishitem.productList
-				this.ownwishitem.sellerInfo = productList[0].sellerInfo
-				this.ownwishitem.productList = productList
-			},
-			
-			mounted() {
-				// 挂载之后如果为待付款状态则开始计算倒计时
-				if(this.ownwishitem.achieveFlag == 2 && this.ownwishitem.wishOrderInfo && this.ownwishitem.wishOrderInfo.status == 0) {
-					this.gettimecountstamp()
-				}
+				this.ownwishitem = this.wishitem
 			},
 			
 			methods: {
@@ -251,16 +234,6 @@
 					
 				},
 				
-				// 再次购买
-				buyagain() {
-					
-					let copyId = this.ownwishitem._id
-					uni.navigateTo({
-						url: `/pages/wishlist/handlewish?type=copy&id=${copyId}`
-					});
-					
-				},
-				
 				// 代理员关联心愿
 				agentBindWish() {
 					const _this = this
@@ -271,7 +244,7 @@
 						confirmText: _this.i18n.base.confirm,
 						success: res => {
 							if(res.confirm) {
-								_this.agentOptionBindWish()
+								_this.agentOperateBindWish()
 							}
 						}
 					});
@@ -279,7 +252,7 @@
 				},
 				
 				// 代理进行关联接口调用
-				agentOptionBindWish() {
+				agentOperateBindWish() {
 					const _this = this
 					// 开始代理商品
 					_this.bindAnimation = true
@@ -287,7 +260,8 @@
 					let wishinfo = _this.ownwishitem
 					
 					uni.showLoading()
-					db.collection('wish').doc(wishinfo._id)
+					db.collection('wish')
+					.doc(wishinfo._id)
 					.update({agentUid:db.env.uid, status: 1, updateTime: db.env.now})
 					.then(response => {
 						console.log(response);
@@ -381,7 +355,7 @@
 					
 					const _this = this
 					
-					// 心愿单完成标识 0 未代理  1已代理待报价  2 已报价待确认  3 已确认待支付  4 已支付已完成  90 已关闭
+					// 心愿单完成标识 0 未代理  1已代理待报价  2 已报价待确认  3 已确认已完成  90 已关闭
 					let optionList = [
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.ing,
@@ -392,12 +366,8 @@
 							status: 2
 						},
 						{
-							name: this.i18n.wishlist.common.achieveflagdata.waittopay,
-							status: 3
-						},
-						{
 							name: this.i18n.wishlist.common.achieveflagdata.finish,
-							status: 4
+							status: 3
 						},
 						{
 							name: this.i18n.wishlist.common.achieveflagdata.closed,

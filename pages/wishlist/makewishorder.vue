@@ -8,107 +8,6 @@
 		
 		<!-- 仓库地址区域 -->
 		
-		<!-- 订单信息区域  下单页根据分组展示 无需考虑顺序 -->
-		<unicloud-db v-if="false" ref="udb" v-slot:default="{data, loading, error, options}" collection="wish-draft-product, product"
-					:where=" `_id in ${JSON.stringify(draftIds)}` "
-					orderby=" updateTime desc, creatTime desc "
-					groupby="sellerId"
-					group-field=" addToSet( pid ) as productList, addToSet( selectSpecPropInfo ) as selectSpecPropInfoList, addToSet(_id) as ids "
-					loadtime="auto"
-					@load="loadData"
-		>
-			<view v-if="error">{{error.message}}</view>
-			<view v-else-if="loading" class="cu-load loading"></view>
-			<view v-else>
-				
-				<!-- 商品展示区域 -->
-				<view class="ordercontentview storesview padding-sm">
-					
-					<!-- 店铺 -->
-					<view class="eachstore u-margin-bottom-20 bg-white radius shadow-warp" v-for="(eachstore, storeindex) in data" :key="eachstore.sellerId">
-						
-						<!-- 商店头部展示区域 -->
-						<view v-if="eachstore.sellerInfo" class="storeheaderview cu-bar bg-white solids-bottom">
-							<view class="action">
-								<text class="cuIcon cuIcon-shopfill text-pink"></text>
-								<text class="text-black">{{ storeindex + 1 }}.</text>
-								<text class="text-df text-black">{{ eachstore.sellerInfo.nickName }}</text>
-							</view>
-						</view>
-						
-						<!-- 商店对应的商品列表 -->
-						<view class="storeproductlistview">
-							
-							<view class="eachproductview padding-sm solid-bottom" v-for="(eachproduct, productindex) in eachstore.productList" :key="eachproduct._id">
-								
-								<!-- 商品基本信息 -->
-								<view class="productcontent flex align-center padding-sm">
-									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
-									<view class="titleview flex1 u-line-2">{{ eachproduct.title }}</view>
-								</view>
-								
-								<!-- 选中的规格数组 -->
-								<view v-if="eachproduct.selectSpecPropInfo" class="productspeclist padding-left-sm padding-right-sm">
-									
-									<!-- 一级属性 -->
-									<block v-for="(firstspec, firstspecindex) in eachproduct.selectSpecPropInfo.propValList" :key="firstspecindex">
-										
-										<!-- 二级属性 -->
-										<block v-if="secondspec.amount > 0" v-for="(secondspec , secondspecindex) in firstspec.specStockList" :key="secondspec.specId">
-											
-											<view class="eachspecview bg-gray flex align-center margin-top-sm padding-sm radius">
-												
-												<view class="leftview flex1">
-													
-													<!-- 规格参数 -->
-													<text class="text-df u-line-2">{{ `${firstspec.propVal},${secondspec.propVal}` }}</text>
-													
-												</view>
-												
-												<view class="rightview flex0 flex flex-direction align-center">
-													<!-- 价格 -->
-													<text class="text-red text-price text-sm">{{ secondspec.price }}</text>
-													<!-- 数量 -->
-													<text class="text-black  margin-top-sm">{{ `x ${secondspec.amount}` }}</text>
-												</view>
-												
-											</view>
-											
-										</block>
-										
-									</block>
-									
-								</view>
-								
-								<view class="padding-sm radius solid margin-top-sm">
-									<!-- 该商品别名 -->
-									<view class="cu-form-group">
-										<view class="title text-sm">{{ i18n.wishlist.common.aliasname }}</view>
-										<input :style="{fontSize: '12px'}" v-model="eachproduct.aliasName" :placeholder="i18n.placeholder.handlewish.aliasname" name="input"></input>
-									</view>
-									
-									<!-- 该商品的备注 -->
-									<view class="cu-form-group">
-										<textarea maxlength="-1" :style="{fontSize: '12px'}" v-model="eachproduct.remark" :placeholder=" i18n.placeholder.handlewish.remark "></textarea>
-									</view>
-								</view>
-								
-								<!-- 商品汇总信息 -->
-								<view class="flex align-center justify-end margin-top">
-									<text class="text-bold text-black">{{ `共${eachproduct.selectNum}件` }}</text>
-									<text class="text-price text-red margin-left">{{ `${eachproduct.selectTotalPrice}` }}</text>
-								</view>
-								
-							</view>
-							
-						</view>
-						
-					</view>
-					
-				</view>
-				
-			</view>
-		</unicloud-db>
 		
 		<!-- 下单店铺区域  根据草稿箱顺序而定 -->
 		<view v-if="ownDataList" class="ordercontentview storesview padding-sm">
@@ -229,11 +128,12 @@
 		
 		data() {
 			return {
-				sourceFrom: 'draftpro', // 下单页来源  draftpro 为心愿草稿箱  directbuy 为直购下单
+				sourceFrom: 'draftpro', // 下单页来源  draftpro 为心愿草稿箱 wishbuyagain 为心愿单再次购买 directbuy 为直购下单
 				ifloading: false, // 是否加载中
 				ownDataList: null, // 重组后的数据列表
 				
 				draftIds: [], // 选中心愿草稿的id数组 sourceFrom = draftpro时使用
+				wishId: null, // 心愿单再次购买的id  sourceFrom = wishbuyagain 时使用
 			}
 		},
 		
@@ -291,13 +191,24 @@
 			if(option.sourceFrom) {
 				this.sourceFrom = option.sourceFrom
 			}
+			
+			// 来源心愿草稿箱
 			if(this.sourceFrom == 'draftpro') {
 				let makeorderdraftidarr = uni.getStorageSync('makeorderdraftidarr')
 				if(makeorderdraftidarr) {
+					// 获取草稿箱下单数据
 					this.draftIds = makeorderdraftidarr
-					// 获取下单数据
-					this.loadMakeOrderData()
+					this.loadDraftProMakeOrderData()
+					// 移除本地缓存
+					uni.removeStorageSync('makeorderdraftidarr')
+					
 				}
+			}
+			// 来源心愿单再次购买
+			else if(this.sourceFrom == 'wishbuyagain') {
+				// 获取心愿单再次购买的下单数据
+				this.wishId = option.wishId
+				this.loadWishBuyAgainMakeOrderData()
 			}
 			
 			//
@@ -305,86 +216,8 @@
 		
 		methods: {
 			
-			// 加载数据 对数据进行加工
-			loadData(data, ended, pagination) {
-				
-				let totalStoreNum = 0
-				let totalProNum = 0
-				let totalNum = 0
-				let totalPrice = 0
-				
-				// 遍历数据进行数据重组
-				data.forEach(eachstore => {
-					
-					totalStoreNum += 1
-					
-					// 商店商品列表
-					let productList = []
-					let selectSpecPropInfoList = eachstore.selectSpecPropInfoList
-					let ids = eachstore.ids
-					
-					eachstore.productList.forEach((eachproduct, productindex) => {
-						
-						totalProNum += 1
-						
-						eachproduct = eachproduct[0] // 转数组为对象
-						eachproduct['selectSpecPropInfo'] = selectSpecPropInfoList[productindex]
-						eachproduct['draftproId'] = ids[productindex]
-						// 初始化别名和备注
-						eachproduct['aliasName'] = ''
-						eachproduct['remark'] = ''
-						
-						// 计算每个商品的总数量和总金额
-						let selectNum = 0
-						let selectTotalPrice = 0
-						eachproduct.selectSpecPropInfo.propValList.forEach(firstspec => {
-							firstspec.specStockList.forEach(secondspec => {
-								
-								if(secondspec.amount > 0) {
-									
-									let specTotalPrice = (Number(secondspec.price) * Number(secondspec.amount))
-									
-									selectNum = Number(selectNum) + Number(secondspec.amount)
-									selectTotalPrice = Number(selectTotalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
-									
-									totalNum = Number(totalNum) + Number(secondspec.amount)
-									totalPrice = Number(totalPrice) + Number(Math.round(specTotalPrice * 100) / 100)
-									
-								}
-								
-							})
-						})
-						
-						eachproduct['selectNum'] = selectNum
-						eachproduct['selectTotalPrice'] = this.$basejs.keepTwoDecimalFull(Number(selectTotalPrice))
-						
-						delete eachproduct._id
-						productList.push(eachproduct)
-						if(productindex == 0) {
-							eachstore['sellerInfo'] = eachproduct.sellerInfo
-						}
-					})
-					eachstore.productList = productList
-					
-					delete eachstore.selectSpecPropInfoList
-					delete eachstore.ids
-					
-				})
-				totalPrice = this.$basejs.keepTwoDecimalFull(Number(totalPrice))
-				console.log(data);
-				
-				let summaryInfo = {
-					totalStoreNum,
-					totalProNum,
-					totalNum,
-					totalPrice
-				}
-				this.summaryInfo = summaryInfo
-				
-			},
-			
-			// 加载预下单数据 对数据进行按同店铺重组
-			loadMakeOrderData() {
+			// 加载心愿草稿箱下单数据 对数据进行按同店铺重组
+			loadDraftProMakeOrderData() {
 				
 				_this.ifloading = true
 				
@@ -454,10 +287,52 @@
 				
 			},
 			
+			// 心愿单再次购买获取下单数据
+			loadWishBuyAgainMakeOrderData() {
+				
+				let wishId = this.wishId
+				_this.ifloading = true
+				
+				const db = uniCloud.database();
+				db.collection('wish')
+				.doc(wishId)
+				.field(`productList`)
+				.get({getOne:true})
+				.then(response => {
+					if(response.result.code == 0) {
+						let productList = response.result.data.productList
+						
+						// 组装数据
+						let storeList = []
+						let eachstore = {
+							sellerId: productList[0].sellerInfo.sellerId,
+							sellerInfo: productList[0].sellerInfo,
+							productList: productList
+						}
+						storeList.push(eachstore)
+						this.ownDataList = storeList
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.tips.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.tips.loaderror,
+						icon: 'none'
+					});
+				})
+				.finally(() => {
+					_this.ifloading = false
+				})
+			},
+			
 			// 生成心愿单
 			makeWish() {
 				console.log(`开始生成心愿单`);
-				// let dataList = this.$refs.udb.dataList
 				let dataList = this.ownDataList
 				
 				let draftIds = []
@@ -477,18 +352,22 @@
 							totalCommissionFee: ""
 						}
 					}
-					// 草稿箱id数据
-					let addIds = samestoreproductlist.map(eachproduct => (eachproduct.draftproId))
-					draftIds = draftIds.concat(addIds)
-					
 					addWishArr.push(wishdata)
+					
+					// 如果是草稿箱下单则收集草稿箱id
+					if(this.sourceFrom == 'draftpro') {
+						// 草稿箱id数据
+						let addIds = samestoreproductlist.map(eachproduct => (eachproduct.draftproId))
+						draftIds = draftIds.concat(addIds)
+					}
 					
 				})
 				
 				this.ifloading = true
 				
 				const db = uniCloud.database();
-				db.collection('wish').add(addWishArr)
+				db.collection('wish')
+				.add(addWishArr)
 				.then(response => {
 					// 添加成功
 					if(response.result.code == 0) {
@@ -503,7 +382,8 @@
 							}
 							return timelineinfo
 						})
-						db.collection('wish-timeline').add(addTimeLineArr)
+						db.collection('wish-timeline')
+						.add(addTimeLineArr)
 						.then(response => {
 							if(response.result.code == 0) {
 								console.log(`批量添加时间轴数据成功`);
@@ -513,32 +393,45 @@
 							console.log(`批量添加时间轴数据发生错误`);
 						})
 						
-						// 添加成功后将草稿箱中的数据状态变更为已加入心愿单
-						db.collection('wish-draft-product')
-						.where( `_id in ${JSON.stringify(draftIds)}` )
-						.update({status: 1})
-						.then(response => {
+						// 如果来源为草稿箱下单则变更状态
+						if(this.sourceFrom == 'draftpro') {
 							
+							// 添加成功后将草稿箱中的数据状态变更为已加入心愿单
+							db.collection('wish-draft-product')
+							.where( `_id in ${JSON.stringify(draftIds)}` )
+							.update({status: 1})
+							.then(response => {
+								
+								_this.ifloading = false
+								console.log(`修改草稿箱数据成功`);
+								
+								// 更新草稿箱数据
+								uni.$emit('updatecartdata')
+								
+								// 跳转到心愿单列表页面
+								uni.redirectTo({
+									url: '/pages/wishlist/list'
+								});
+								
+							})
+							.catch(error => {
+								_this.ifloading = false
+								uni.showToast({
+									title: _this.i18n.tip.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+						// 其他情况跳转至心愿列表页
+						else {
 							_this.ifloading = false
-							console.log(`修改草稿箱数据成功`);
-							
-							// 更新草稿箱数据
-							uni.$emit('updatecartdata')
-							
+							console.log(`生成心愿单成功`);
 							// 跳转到心愿单列表页面
 							uni.redirectTo({
 								url: '/pages/wishlist/list'
 							});
-							
-						})
-						.catch(error => {
-							_this.ifloading = false
-							uni.showToast({
-								title: _this.i18n.tip.optionerror,
-								icon: 'none'
-							});
-						})
-					
+						}
 					}
 					else {
 						_this.ifloading = false

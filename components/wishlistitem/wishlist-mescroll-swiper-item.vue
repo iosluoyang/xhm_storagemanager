@@ -179,6 +179,7 @@
 							list.forEach(item => {
 								item.creatUser = item.creatUser && item.creatUser.length > 0 ? item.creatUser[0] : null
 								item.agentUser = item.agentUser && item.agentUser.length > 0 ? item.agentUser[0] : null
+								item.sellerInfo = item.productList && item.productList.length > 0 ? item.productList[0].sellerInfo : null
 							})
 							console.log(`本次共获取${list.length}个数据,具体数据为:`);
 							console.log(list);
@@ -221,98 +222,7 @@
 					})
 				
 			},
-			
-			// 关联其他店铺的心愿
-			showSameStoreWish(unbindsamestorewishlist) {
-				this.sameStoreDataList = unbindsamestorewishlist
-				this.ifshowpopup = true
-			},
-			
-			// 一键关联其他店铺的心愿单
-			bindallwish() {
-				
-				const _this = this
-				
-				let bindwishlist = this.sameStoreDataList
-				const db = uniCloud.database();
-				
-				let promiseArr = []
-				bindwishlist.forEach(eachwish => {
-					
-					let promise = new Promise((resolve, reject) => {
-						
-						db.collection('wishlist').doc(eachwish._id)
-						.update({agentUser:db.env.uid, agentFlag: 1, optionTime: db.env.now})
-						.then(response => {
-							
-							// 添加一个代理人关联心愿时间轴记录
-							db.collection('wishlisttimeline')
-							.add({type: 90,wishId: eachwish._id})
-							.then(response => {
-								// 创建时间轴成功
-								
-								let info = {
-									msgType: 'agentbindwish',
-									wishId: eachwish._id
-								}
-								uniCloud.callFunction({
-									name: 'base',
-									data: {
-										type: 'sendwxmsg',
-										info: info
-									}
-								}).then(response => {
-									// 发送微信消息成功
-									if(response.result.errCode == 0) {
-										console.log(`发送微信订阅消息成功`);
-									}
-									else {
-										console.log(`发送微信订阅消息失败,原因是:${response.result.message}`);
-									}
-									
-								}).catch(error => {
-									console.log(error.message);
-								})
-								resolve(response)
-								
-							})
-							.catch(error => {
-								uni.showToast({
-									title: error.message,
-									icon: 'none'
-								});
-								reject(error)
-							})
-							
-						})
-						.catch(error => {
-							reject(error)
-						})
-						
-					})
-					promiseArr.push(promise)
-					
-				})
-				
-				Promise.all(promiseArr).then(response => {
-					uni.showToast({
-						title: _this.i18n.tip.optionsuccess,
-						icon: 'none'
-					});
-					
-					console.log(`关联成功`);
-					console.log(response);
-					// 关联成功
-					_this.ifshowpopup = false
-					_this.mescroll.resetUpScroll(true)
-					
-				}).catch(error => {
-					console.log(`关联失败`);
-					console.log(error);
-				})
-				
-			},
-			
+
 			//
 		}
 	}
