@@ -374,6 +374,30 @@
 				
 			</scroll-view>
 			
+			<!-- 发布时间轴区域 -->
+			<!-- <view v-if="false" class="timelineinputview">
+				
+				<view class="cu-form-group solid-bottom pos-relative">
+					
+					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.placeholder.handletimeline.typecontent" :focus="textareaHighScreen" />
+					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;z-index: 9999;font-size: 24px;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
+					
+				</view>
+				
+				<view class="cu-bar bg-white margin-top">
+					<view class="action">{{i18n.base.uploadimg}}</view>
+					<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
+				</view>
+				
+				<view class="bg-white padding">
+					<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
+					return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+					@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
+					</uni-file-picker>
+				</view>
+				
+			</view> -->
+
 			<view class="cu-bar foot input timelineinput" :style="[{bottom:InputBottom+'px'}]">
 				<view class="action">
 					<text class="cuIcon-picfill text-grey"></text>
