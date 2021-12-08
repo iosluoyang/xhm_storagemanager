@@ -90,8 +90,7 @@
 				{
 					"path":"wishlistfavor",
 					"style": {
-						"navigationBarTitleText":"收藏列表",
-						"enablePullDownRefresh": true
+						"navigationBarTitleText":"收藏列表"
 					}
 				},
 				{

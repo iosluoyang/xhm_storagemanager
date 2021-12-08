@@ -4,7 +4,7 @@
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.prodetail}}</block>
-			<text class="cuIcon cuIcon-cartfill text-white u-font-40 margin-right" slot="right" @tap.stop="jumptodraft"></text>
+			<text class="cuIcon cuIcon-cartfill text-white u-font-40 margin-left" slot="backText" @tap.stop="jumptodraft"></text>
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
@@ -225,6 +225,22 @@
 		},
 		
 		methods: {
+			
+			// 自定义返回
+			customBack() {
+				
+				// 如果没有前面的页面则重定向至首页
+				let pages = getCurrentPages()
+				if(pages.length == 1) {
+					// 仅有当前一个页面
+					uni.reLaunch({
+						url: '/pages/home/index'
+					})
+				}
+				else {
+					uni.navigateBack();
+				}
+			},
 			
 			// 翻译属性值和属性名
 			translateattribute() {

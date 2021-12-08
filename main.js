@@ -63,6 +63,7 @@ Vue.mixin({
 		return {
 			StatusBar: this.StatusBar,
 			CustomBar: this.CustomBar,
+			defaultImgUrl: '/static/publicicon/logo.png',// 默认图片路径
 		}
 	},
 	

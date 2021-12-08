@@ -5,7 +5,7 @@
 		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.wishdraft}}</block>
 			<template>
-				<text class="text-white margin-right" slot="right" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit'; showSelector = false ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
+				<text class="text-white margin-left" slot="backText" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit'; showSelector = false ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
 			</template>
 		</cu-custom>
 		
@@ -44,7 +44,7 @@
 									<text class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="eachproduct.ifSelect = !eachproduct.ifSelect"></text>
 									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
 									<view class="titleview flex1 u-line-2" style="max-width: 200px;">{{ eachproduct.title }}</view>
-									<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></button>
+									<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="changeProSpec({storeindex, productindex})"></button>
 									<!-- <text class="cuIcon cuIcon-order margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></text> -->
 								</view>
 								
@@ -143,6 +143,7 @@
 				ownDataList: [], // 重组后的数据列表 注意此处udb的data和真实ownDataList不一致  以ownDataList为主
 				showSelector: false, // 是否显示规格选择器
 				selectProduct: null, // 当前选择的商品数据
+				selectIndexArr: [0,0], // 默认选中的商品索引
 				
 			}
 		},
@@ -268,7 +269,15 @@
 				
 			},
 			
-			// 切换某个商品的规格
+			// 修改某个商品规格
+			changeProSpec({storeindex, productindex}) {
+				this.selectIndexArr = [storeindex, productindex]
+				let selectProduct = this.ownDataList[storeindex].productList[productindex]
+				this.selectProduct = {...selectProduct} // 深度拷贝以便于独立处理
+				this.showSelector = true
+			},
+			
+			// 完成修改某个商品的规格
 			specFinishSelect(selectSpecPropInfo) {
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
@@ -280,7 +289,11 @@
 					success: (res) => {
 						// 修改成功
 						// 改变当前ownDataList的数据
-						_this.$set(_this.selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
+						let storeindex = _this.selectIndexArr[0]
+						let productindex = _this.selectIndexArr[1]
+						let selectStore = _this.ownDataList[storeindex]
+						let selectProduct = selectStore.productList[productindex]
+						_this.$set(selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
 					}
 				})
 			},

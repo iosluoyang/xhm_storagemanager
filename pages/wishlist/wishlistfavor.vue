@@ -5,8 +5,9 @@
 		<cu-custom bgColor="bg-gradual-orange">
 			<block slot="content">{{ i18n.nav.mywishlistfavor }}</block>
 		</cu-custom>
-
-		<unicloud-db v-slot:default="{data, loading, error, options}" ref="udb" 
+		
+		<!-- 小程序中存在插槽问题 暂时不用udb -->
+		<!-- <unicloud-db v-slot:default="{data, loading, error, options}" ref="udb" 
 			collection="favorpro,product"
 			where="creatUid == $cloudEnv_uid" orderby="favorTime desc" 
 			page-data="add" :page-size="10" @load="loaddata">
@@ -18,18 +19,13 @@
 					<view class="eachgood flex align-center margin padding solid-bottom bg-white"
 						v-for="(item, index) in data" :key="index" @tap.stop="gotoprodetail(item)">
 
-						<!-- 商品首图 -->
-
 						<u-image style="flex-shrink: 0;" :src="item.productInfo.imgs.split(',')[0]" width="150"
 							height="150"></u-image>
 
-						<!-- 商品内容 -->
 						<view class="margin-left flex flex-direction">
 
-							<!-- 商品名称 -->
 							<text class="text-black text-df t_twoline">{{item.productInfo.title}}</text>
 
-							<!-- 价格 和 取消收藏按钮-->
 							<view class="priceinfo margin-top-sm flex align-center justify-between">
 								<text class="text-red text-price text-lg">{{item.productInfo.price}}</text>
 								<text class="cuIcon cuIcon-favorfill text-orange u-font-40"
@@ -42,10 +38,10 @@
 
 				</view>
 			</view>
-		</unicloud-db>
+		</unicloud-db> -->
 
 		<!-- mescroll区域  通过fixed来进行定位处理-->
-		<mescroll-body v-if="false" class="mescroll" @init="mescrollInit" @down="downCallback" @up="upCallBack">
+		<mescroll-body class="mescroll" @init="mescrollInit" @down="downCallback" @up="upCallBack">
 
 			<view class="goodslistview">
 
@@ -84,14 +80,12 @@
 <script>
 	var _this
 
-	import MescrollUni from '@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-uni.vue'
 	import MescrollBody from '@/uni_modules/mescroll-uni/components/mescroll-body/mescroll-body.vue'
 	import MescrollMixin from "@/uni_modules/mescroll-uni/components/mescroll-uni/mescroll-mixins.js" // 引入mescroll-mixins.js
 
 	export default {
 
 		components: {
-			MescrollUni,
 			MescrollBody
 		},
 
@@ -111,15 +105,20 @@
 			_this = this
 		},
 
-		onPullDownRefresh() { //下拉刷新
-			this.$refs.udb.loadData({
-				clear: true //可选参数，是否清空数据
-			}, () => {
-				uni.stopPullDownRefresh()
-			})
+		onPullDownRefresh() { 
+			//下拉刷新
+			
+			// this.$refs.udb.loadData({
+			// 	clear: true //可选参数，是否清空数据
+			// }, () => {
+			// 	uni.stopPullDownRefresh()
+			// })
+			
+			_this.mescroll.resetUpScroll(true)
 		},
-		onReachBottom() { //滚动到底翻页
-			this.$refs.udb.loadMore()
+		onReachBottom() { 
+			//滚动到底翻页
+			// this.$refs.udb.loadMore()
 		},
 
 		methods: {
@@ -182,8 +181,9 @@
 			},
 
 			// 取消收藏
-			unfavoritem(item) {
-
+			unfavoritem(index) {
+				let item = _this.dataArr[index]
+				
 				uni.showModal({
 					content: _this.i18n.tip.optionconfirm,
 					showCancel: true,
@@ -192,9 +192,36 @@
 					success: res => {
 						if (res.confirm) {
 
-							let id = item._id
-							_this.$refs.udb.remove(id,{
-								needConfirm: false
+							// let id = item._id
+							// _this.$refs.udb.remove(id,{
+							// 	needConfirm: false
+							// })
+							
+							const db = uniCloud.database();
+							db.collection('favorpro')
+							.doc(item._id)
+							.remove()
+							.then(response => {
+								if(response.result.code == 0) {
+									// 取消收藏成功
+									uni.showToast({
+										title: _this.i18n.tip.optionsuccess,
+										icon: 'none'
+									});
+									_this.dataArr.splice(index, 1)
+								}
+								else {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								}
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.optionerror,
+									icon: 'none'
+								});
 							})
 
 						}

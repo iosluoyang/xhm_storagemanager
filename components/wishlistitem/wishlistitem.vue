@@ -10,29 +10,32 @@
 			<view class="image">
 				
 				<!-- grid-square  等宽等高时使用 -->
-				<view class="imgsview grid" :class="[ `col-${ownwishitem.productList.length}` ]">
+				<!-- class="imgsview grid" :class="[ `col-${ownwishitem.productList.length}` ]" -->
+				<view class="imgsview flex align-center flex-wrap justify-around">
 					<block v-for="(product, index) in ownwishitem.productList" :key="index">
 						
 						<!-- 正常图片 -->
 						<template>
 							<!-- 一张图片 -->
 							<template v-if="ownwishitem.productList.length == 1">
-								<u-image 
-									width="" height="160px" 
+								<!-- <u-image 
+									width="100%" height="160px" 
 									mode="aspectFill" shape="square"
 									lazy-load fade
-									:src="product.imgs.split(',')[0]"
-								></u-image>
+									:src="getProMainImg(product)"
+								></u-image> -->
+								<image :src="getProMainImg(product)" mode="aspectFit" :style="{width: '100%', height: '160px'}"></image>
 							</template>
 							
 							<!-- 超过一张图片 -->
 							<template v-if="ownwishitem.productList.length > 1">
-								<u-image 
+								<!-- <u-image 
 									width="" height="100px" 
 									mode="aspectFit" shape="square"
 									lazy-load fade
-									:src="product.imgs.split(',')[0]"
-								></u-image>
+									:src="getProMainImg(product)"
+								></u-image> -->
+								<image :src="getProMainImg(product)" mode="aspectFit" :style="{width: '100px', height: '100px'}"></image>
 							</template>
 							
 						</template>
@@ -411,6 +414,14 @@
 					})
 				   
 				},
+				
+				// 获取商品主图
+				getProMainImg(product) {
+					let mainImg = product.imgs && product.imgs.length > 0 ? product.imgs.split(',')[0] : _this.defaultImgUrl
+					return mainImg
+				},
+				
+				//
 				
 			},
 		

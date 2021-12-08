@@ -24,12 +24,12 @@
 						<text class="text-orange margin-left-sm text-bold">{{ i18n.wishlist.common.product }}</text>
 					</view>
 					
-					<view class="eachproduct shadow-warp margin-top-sm padding-sm" v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
+					<view class="eachproduct margin-top-sm padding-sm" v-for="(eachproduct, productindex) in wishInfo.productList" :key="eachproduct.pid">
 						
 						<view class="titleview flex align-center">
-							<u-image class="flex0" :src="eachproduct.imgs.split(',')[0]" width="80rpx" height="80rpx" mode="aspectFill"></u-image>
+							<u-image class="flex0" :src="getProMainImg(eachproduct)" width="80rpx" height="80rpx" mode="aspectFill"></u-image>
 							<text class="margin-left-sm text-bold text-sm">{{ `${eachproduct.title}${eachproduct.aliasName ? `——(${eachproduct.aliasName})` : '' }` }}</text>
-							<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="selectProduct = eachproduct; showSelector = true"></button>
+							<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="changeProSpec(productindex)"></button>
 						</view>
 						
 						<!-- 当前选中的规格table展示 -->
@@ -167,6 +167,7 @@
 				
 				showSelector: false, // 是否显示规格选择器
 				selectProduct: null, // 当前选择的商品数据
+				selectProductIndex: 0, // 当前选择的商品索引
 				
 				priceEditFlag: false, // 心愿单价格编辑状态 默认为否
 				tmpQuotationInfo: null, // 临时报价对象
@@ -233,7 +234,7 @@
 				
 				// 使用openDB获取详情信息
 				const db = uniCloud.database();
-				db.collection('wish,uni-id-users')
+				db.collection('wish')
 					.doc(_this.wishId)
 					// .field('creatUid{username,nickname,avatar} as creatUser,agentUid{username,nickname,avatar} as agentUser,creatTime,updateTime,status,productList,quotationInfo')
 					.get({getOne:true})
@@ -243,8 +244,8 @@
 						
 						if(res.result.code == 0) {
 							let detaildata = res.result.data
-							detaildata.creatUser = detaildata.creatUid[0]
-							detaildata.agentUser = detaildata.agentUid && detaildata.agentUid.length > 0 ? detaildata.agentUid[0] : null
+							// detaildata.creatUser = detaildata.creatUid[0]
+							// detaildata.agentUser = detaildata.agentUid && detaildata.agentUid.length > 0 ? detaildata.agentUid[0] : null
 							if(detaildata.productList.length > 0) {
 								let sellerInfo = detaildata.productList[0].sellerInfo
 								detaildata['sellerInfo'] = sellerInfo
@@ -261,10 +262,17 @@
 				
 			},
 			
-			// 报价类型修改某个商品规格
+			// 获取商品主图
+			getProMainImg(product) {
+				let mainImg = product.imgs && product.imgs.length > 0 ? product.imgs.split(',')[0] : _this.defaultImgUrl
+				return mainImg
+			},
+			
+			// 修改某个商品规格
 			changeProSpec(proIndex) {
-				let selectProduct = this.wishInfo.productList[proIndex]
-				this.selectProduct = selectProduct
+				this.selectProductIndex = proIndex
+				let selectProduct = this.wishInfo.productList[this.selectProductIndex]
+				this.selectProduct = {...selectProduct} // 深度拷贝以便于独立处理
 				this.showSelector = true
 			},
 			
@@ -274,7 +282,9 @@
 				console.log(`当前选择完规格的数据为`);
 				console.log(selectSpecPropInfo);
 				// 修改当前商品的选中规格
-				this.$set(this.selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
+				let productList = this.wishInfo.productList
+				let selectProduct = productList[this.selectProductIndex]
+				this.$set(selectProduct, 'selectSpecPropInfo', selectSpecPropInfo)
 				
 			},
 			

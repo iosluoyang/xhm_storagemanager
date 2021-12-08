@@ -150,7 +150,7 @@
 					</template>
 					
 					<!-- 自身代理的心愿 -->
-					<template v-else=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
+					<template v-else-if=" wishInfo.agentUser && wishInfo.agentUser._id == user._id ">
 						
 						<!-- 显示报价按钮 -->
 						<button class="eachbtn cu-btn bg-orange shadow-blur cuIcon" @tap.stop="wishQuotation">
@@ -199,6 +199,7 @@
 			<scroll-view class="cu-chat" :style="{height: 'calc(100% - 50px)'}"
 					scroll-y :scroll-into-view=" `item-${timeLineScrollViewId}` " 
 					enable-back-to-top scroll-with-animation
+					@tap.stop="timelineSendPicFlag = false"
 			>
 				
 				<template v-if="false">
@@ -297,8 +298,22 @@
 						<!-- 普通时间轴内容 -->
 						<template v-if="item.type == 1">
 							<view class="content bg-green shadow">
-								<text>{{ item.content }}</text>
+								<view class="contentview">
+									
+									<!-- 文本内容 -->
+									<view class="margin-top-sm t_wrap text-white">
+										{{ i18n.wishlist.timeline.wishupdatequotationtip }}
+									</view>
+									
+									<view v-if="item.imgs" class="imgsview margin-top">
+										<view class="grid col-2 grid-square">
+											<view class="bg-img" v-for="(img,index) in getTimeLineImgs(item)" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(getTimeLineImgs(item),index)"></view>
+										</view>
+									</view>
+									
+								</view>
 							</view>
+							
 						</template>
 						
 						<!-- 代理关联心愿单 -->
@@ -375,41 +390,31 @@
 			</scroll-view>
 			
 			<!-- 发布时间轴区域 -->
-			<!-- <view v-if="false" class="timelineinputview">
+			<view class="timelineinputbottomview bg-white">
 				
-				<view class="cu-form-group solid-bottom pos-relative">
+				<view v-if="timelineSendPicFlag" class="topview">
+					<view class="bg-white padding">
+						<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="picMaxNum"
+						return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
+						@select="fileSelect" @delete="fileDelete" @progress="fileProgress" @success="filesuccess" @fail="fileFail">
+						</uni-file-picker>
+					</view>
+				</view>
+				
+				<view class="bottomview flex align-end justify-between padding-sm">
 					
-					<textarea class="contenttextarea" :style="{height: textareaHighScreen ? '400rpx' : '100rpx' }" maxlength="-1" :show-confirm-bar="false" disable-default-padding :cursor-spacing="60" v-model="content" :placeholder="i18n.placeholder.handletimeline.typecontent" :focus="textareaHighScreen" />
-					<cover-view class="cuIcon text-pink pos-absolute" :class="[textareaHighScreen ? 'cuIcon-fold' : 'cuIcon-full']" style="right: 10rpx;bottom: 10rpx;z-index: 9999;font-size: 24px;" @tap.stop="textareaHighScreen = !textareaHighScreen"></cover-view>
+					<view class="flex0 lefticonview flex align-center margin-right-sm">
+						<text class="cuIcon-picfill text-grey u-font-40" @tap.stop="timelineSendPicFlag = !timelineSendPicFlag"></text>
+					</view>
+					
+					<u-input class="flex1" type="textarea" v-model="timelineContent" :height="50" :maxlength="-1" fixed border :cursor-spacing="20" :placeholder="i18n.placeholder.handletimeline.typecontent"></u-input>
+					
+					<button class="flex0 cu-btn bg-green shadow margin-left-sm" @tap.stop="sendTimeLine">{{ i18n.base.confirm }}</button>
 					
 				</view>
 				
-				<view class="cu-bar bg-white margin-top">
-					<view class="action">{{i18n.base.uploadimg}}</view>
-					<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
-				</view>
-				
-				<view class="bg-white padding">
-					<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="mainpiclimitnum"
-					return-type="array" :del-icon="true" :auto-upload="false" mode='grid' :disable-preview="false" file-mediatype="image" 
-					@select="fileselect" @delete="filedelete" @progress="fileprogress" @success="filesuccess" @fail="filefail">
-					</uni-file-picker>
-				</view>
-				
-			</view> -->
-
-			<view class="cu-bar foot input timelineinput" :style="[{bottom:InputBottom+'px'}]">
-				<view class="action">
-					<text class="cuIcon-picfill text-grey"></text>
-				</view>
-				<input class="solid-bottom" v-model="timelineContent" :adjust-position="false" :focus="false" :maxlength="-1" cursor-spacing="10"
-				 @focus="(e) => {InputBottom = e.detail.height}" @blur="() => {InputBottom = 0}"></input>
-				<!-- <view class="action">
-					<text class="cuIcon-emojifill text-grey"></text>
-				</view> -->
-				<button class="cu-btn bg-green shadow" @tap.stop="sendTimeLine">{{ i18n.base.confirm }}</button>
 			</view>
-			
+
 		</view>
 		
 		<!-- 加载条 -->
@@ -525,6 +530,10 @@
 				timeLineScrollViewId: '', // 时间轴滚动视图id
 				
 				timelineContent: '', // 输入的时间轴内容
+				timelineSendPicFlag: false, // 时间轴发送图片的标识  默认为false
+				picMaxNum: 9, // 图片上传的数量限制
+				imgArr: [], // 图片数组
+				
 				
 				popuptype: 'wishlink' , //模态框的类型  shippingtool为运费工具  wishlink为心愿链接展示  inputarea为输入内容类型  默认为心愿链接展示
 				popmode: 'bottom', // 模态框的方向类型  默认为bottom
@@ -687,6 +696,20 @@
 						_this.ifloading = false // 结束缓冲动画
 					})
 				
+			},
+			
+			// 获取某时间轴的图片数组
+			getTimeLineImgs(item) {
+				let imgs = item.imgs ? item.imgs.split(',') : []
+				return imgs
+			},
+			
+			// 预览某个时间轴的图片
+			previewImgs(imgsArr, index) {
+				uni.previewImage({
+					current: index,
+					urls: imgsArr
+				})
 			},
 			
 			// 加载时间轴数据
@@ -1146,17 +1169,81 @@
 				
 			},
 			
+			
+			// 选择图片成功
+			fileSelect(e) {
+				console.log(`图片选择成功`);
+				console.log(e);
+				this.imgArr.push.apply(this.imgArr, e.tempFiles)
+				// this.imgArr =  this.imgArr.concat(e.tempFiles)
+				console.log(this.imgArr);
+			},
+			
+			// 图片删除
+			fileDelete(e) {
+				console.log(`图片删除成功`);
+				let deleteIndex = this.imgArr.findIndex(item => {
+					return e.tempFilePath == item.path
+				})
+				if(deleteIndex > -1) {
+					console.log(`删除了第${deleteIndex}张图片`);
+					this.imgArr.splice(deleteIndex,1)
+				}
+			},
+			
+			// 图片上传
+			fileProgress(e) {
+				console.log(`上传图片中`);
+				console.log(e);
+			},
+			
+			// 上传图片成功
+			filesuccess(e) {
+				console.log(`上传图片成功,`);
+				console.log(e);
+				
+				this.ifloading = false
+				
+				// 继续提交时间轴数据
+				this.sendTimeLine()
+			},
+			
+			// 上传图片失败
+			fileFail(e) {
+				// 上传图片失败
+				console.log(`上传图片失败`);
+				console.log(e);
+				
+				this.ifloading = false
+				uni.showToast({
+					title: this.i18n.error.uploaderror,
+					icon: 'none'
+				});
+			},
+			
 			// 发送时间轴数据
 			sendTimeLine() {
+				
 				if(!this.timelineContent) {
 					return
 				}
+				// 检查是否需要上传图片
+				if(this.imgArr.find(item => { return item.progress == 0 })) {
+					// 开始上传图片
+					this.ifloading = true
+					this.$refs.filepickerref.upload()
+					return
+				}
+				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = this.imgArr.map(item => (item.url)).join(',')
 				
 				const db = uniCloud.database();
 				_this.ifloading = true
 				let timelineitem = {
 					wishId: _this.wishId,
 					content: _this.timelineContent,
+					imgs: imgs,
 					type: 1,
 				}
 				db.collection('wish-timeline')
@@ -1165,7 +1252,11 @@
 					_this.ifloading = false
 					if(response.result.code == 0) {
 						// 添加成功
+						// 重置数据
 						_this.timelineContent = ''
+						_this.imgArr = []
+						_this.timelineSendPicFlag = false
+						
 						// 刷新时间轴数据
 						_this.loadTimeLineData()
 					}
@@ -1342,6 +1433,14 @@
 			transition: all 0.3s;
 		}
 		
+		.timelineinputbottomview{
+			position: fixed;
+			z-index: 999;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+		
 	}
 	
 	.DrawerPage {
@@ -1370,7 +1469,7 @@
 		opacity: 0;
 		pointer-events: none;
 		transition: all 0.4s;
-		padding: 0;
+		padding: 100rpx 0 0 0;
 	}
 	
 	.DrawerWindow.show {
