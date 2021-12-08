@@ -128,9 +128,9 @@
 		
 		<!-- 支付按钮 -->
 		<view class="bottombtnview">
-			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm">
-				{{ `${i18n.base.confirm}` }}
-				{{ totalPrice ? `(&yen${totalPrice})` : '' }}
+			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm" :disabled=" !orderInfo || !orderInfo.totalOrderPrice ">
+				{{ `${i18n.base.paynow}` }}
+				{{ orderInfo && orderInfo.totalOrderPrice ? `(&yen${orderInfo.totalOrderPrice})` : '' }}
 			</button>
 		</view>
 		
@@ -155,9 +155,8 @@
 				
 				ifloading: false, // 是否正在加载中
 				
-				orderType: 'wishorder', // 订单类型  wishorder代表心愿订单
 				orderId: null, // 订单id
-				wishId: null, // 订单对应的心愿单id
+				orderInfo: null, // 订单信息
 				
 				paymentArr: null, // 支付方式数组
 				paymentType: 'bankcard', // 支付方式  alipay  wechat  bandcard
@@ -202,12 +201,14 @@
 		onLoad(option) {
 			_this = this
 			
-			let orderType = option.orderType
-			if(orderType) this.orderType = orderType
+			// 获取支付方式
+			_this.loadPaymentData()
 			
 			let orderId = option.orderId
 			if(orderId){
 				this.orderId = orderId
+				// 获取订单支付信息
+				_this.loadPayOrderData()
 			}
 			else {
 				uni.showToast({
@@ -216,11 +217,6 @@
 				});
 			}
 			
-			// 获取支付方式
-			_this.loadPaymentData()
-			
-			// 获取订单信息
-			_this.loadPayOrderData()
 		},
 		
 		methods: {
@@ -253,36 +249,30 @@
 			// 获取订单信息
 			loadPayOrderData() {
 				
-				// 根据不同的订单类型选择不同的数据获取
-				if(this.orderType == 'wishorder') {
-					const db = uniCloud.database();
-					db.collection('order')
-					.doc(_this.orderId)
-					.get({getOne: true})
-					.then(response => {
-						if(response.result.code == 0) {
-							
-							let totalPrice = response.result.data.totalOrderPrice
-							_this.totalPrice = totalPrice
-							
-							let wishId = response.result.data.wishId
-							_this.wishId = wishId
-							
-						}
-						else {
-							uni.showToast({
-								title: _this.i18n.error.loaderror,
-								icon: 'none'
-							});
-						}
-					})
-					.catch(error => {
+				const db = uniCloud.database();
+				db.collection('order')
+				.doc(_this.orderId)
+				.get({getOne: true})
+				.then(response => {
+					if(response.result.code == 0) {
+						
+						let orderInfo = response.result.data
+						_this.orderInfo = orderInfo
+						
+					}
+					else {
 						uni.showToast({
 							title: _this.i18n.error.loaderror,
 							icon: 'none'
 						});
-					})
-				}
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
 				
 			},
 			
@@ -401,36 +391,37 @@
 					// 更新成功
 					if(response.result.code == 0) {
 						
+						uni.showToast({
+							title: _this.i18n.tips.optionsuccess,
+							icon: 'none'
+						});
+						
 						// 发送用户支付成功通知
 						_this.pushnoticemsg('finishpay')
-						
-						// 刷新心愿详情数据和心愿订单数据
-						uni.$emit('updatewishlist')
-						uni.$emit('updatewishdetail')
 						uni.$emit('updatewishorderdetail')
 						
-						// 增加用户已支付的时间轴
-						db.collection('wishlisttimeline')
-						.add({type: 91, wishId: _this.wishId})
-						.then(response => {
-							// 刷新时间轴
-							uni.$emit('updatetimeline')
+						// 如果订单有心愿id则添加对应的时间轴数据
+						if(_this.orderInfo.wishId) {
+							// 刷新心愿详情数据和心愿订单数据
+							// uni.$emit('updatewishlist')
+							// uni.$emit('updatewishdetail')
 							
-							uni.showToast({
-								title: _this.i18n.tip.optionsuccess,
-								icon: 'none'
-							});
-						})
-						.catch(error => {
-							console.log(error);
-						})
-						.finally(() => {
+							// 增加用户已支付的时间轴
+							db.collection('wish-timeline')
+							.add({type: 7, wishId: _this.orderInfo.wishId})
+							.then(response => {
+								// 刷新时间轴
+								uni.$emit('updatetimeline')
+							})
+							.catch(error => {
+								console.log(error);
+							})
 							
-							setTimeout(function() {
-								uni.navigateBack()
-							}, 1000);
-							
-						})
+						}
+						
+						setTimeout(function() {
+							uni.navigateBack()
+						}, 1000);
 				
 					}
 					else {

@@ -47,4 +47,19 @@ db.collection('wish').doc('61ac5c68c2d0220001dc128c').update({
 	}
 })
 
-db.collection('wish').remove()
+db.collection('wish-timeline').where(`wishId == '61ad6d4154ebf60001bd28b6' `).get()
+
+db.collection('wish').doc('61ad6d4154ebf60001bd28b6').update({
+	status: 0,
+	agentUid: ''
+})
+
+db.collection('wish-timeline').where(`type == null`).update({
+	type: 1
+})
+
+db.collection('wish').doc('61af110acd02c3000107ddd3').update({
+	status: 2
+})
+
+db.collection('order').remove()

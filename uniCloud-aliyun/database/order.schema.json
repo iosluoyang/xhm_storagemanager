@@ -40,7 +40,7 @@
 		},
 		"deliveryType": {
 			"bsonType":"int",
-			"description": "物流方式 0无物流发货 1物流发货"
+			"description": "发货方式 0无物流发货 1物流发货"
 		},
 		"deliveryInfo": {
 			"bsonType":"object",
@@ -73,7 +73,7 @@
 		},
 		"receiveType": {
 			"bsonType":"int",
-			"description":"订单商品收货状态 0未收货 1部分收货 2全部收货",
+			"description":"订单收货状态 0未收货 1部分收货 2全部收货",
 			"defaultValue": 0
 		},
 		"receiveInfo": {
@@ -137,28 +137,28 @@
 			"description":"评分分数",
 			"defaultValue": -1
 		},
-		"creatUser": {
+		"creatUid": {
 			"bsonType": "string",
 			"description": "发布者的uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
-		"agentUser": {
+		"agentUid": {
 			"bsonType": "string",
-			"description": "代理员的uid",
+			"description": "代理员的uid  订单有wishId值时存在 代表该订单对应的心愿单的代理人id",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
 		},
 		"status": {
 			"bsonType": "int",
-			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货完成 4已评价完成"
+			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货待评价 4已评价已完成 90已关闭"
 		},
 		"wishId": {
 			"bsonType": "string",
-			"description": "心愿id" // 此处不能做外键关联 所以需要单独查询一次
+			"description": "心愿单id",  // 当订单为从心愿单生成时有值
+			"foreignKey":"wish._id"
 		},
-		"title": {
-			"bsonType": "string",
-			"description": "订单标题",
-			"defaultValue": ""
+		"productList": {
+			"bsonType":"array",
+			"description":"订单包含的商品列表"
 		},
 		"totalProPrice": {
 			"bsonType": "string",

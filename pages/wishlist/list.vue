@@ -67,12 +67,8 @@
 			// 初始化选项卡数组数据
 			this.initTabArr()
 			
-			// 初始化筛选项
-			// this.setFilterOptionData()
-			
 			// 监听更新事件
 			uni.$on('updatewishlist', function(data) {
-				_this.getbadgenum()
 				_this.starttorefresh()
 			})
 			uni.$on('updatebadgenum', function() {
@@ -156,18 +152,16 @@
 					.then(res => {
 						
 						let countdata = res.result.data
-						countdata.forEach(item => {
-							let selectitem = _this.tabArr.find(dataitem => (dataitem.status == item.status))
-							if(selectitem) {
-								selectitem.count = item.count
-							}
+						// 注意遍历的顺序  考虑从非0到0的情况
+						_this.tabArr.forEach(eachtab => {
+							let existdataitem = countdata.find(dataitem => (dataitem.status == eachtab.status))
+							eachtab.count = existdataitem ? existdataitem.count : 0
 						})
 						
 					})
 					.catch(err => {
 						console.log(err.message);
 					})
-				console.log(`获取成功`);
 				
 			},
 			

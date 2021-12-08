@@ -340,7 +340,8 @@
 								// 更新心愿单列表和详情
 								uni.$emit('updatewishlist')
 								uni.$emit('updatewishdetail')
-								uni.$emit('updatetimeline')
+								
+								uni.navigateBack(); // 返回上一页面 注意此处不能加延时
 								
 								// 新增编辑心愿单时间轴
 								let timelineinfo = {
@@ -363,11 +364,6 @@
 								})
 								.catch(err => {
 									console.log(err.message);
-								})
-								.finally(() => {
-									setTimeout(function() {
-										uni.navigateBack(); // 返回上一页面
-									}, 500);
 								})
 								
 							})

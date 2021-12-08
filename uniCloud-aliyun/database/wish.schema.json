@@ -53,7 +53,7 @@
 		},
 		"productList": {
 			"bsonType":"array",
-			"description":"心愿单对应的商品列表快照数据,其中每条数据都为心愿草稿箱中的数据格式"
+			"description":"心愿单对应的商品列表快照数据,其中每条数据都为基本商品信息+草稿箱商品id(draftproId可空)+别名+备注的样式"
 		},
 		"quotationInfo": {
 			"bsonType":"object",

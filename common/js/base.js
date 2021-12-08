@@ -547,7 +547,7 @@ export function getlinkbycode(codecontent) {
 	let content = codecontent
 	let resultInfo = {
 		code: "",
-		link: ""
+		pureLink: ""
 	}
 	
 	// 首先尝试匹配口令和链接
@@ -556,22 +556,24 @@ export function getlinkbycode(codecontent) {
 	if(resultArr && resultArr.length > 1) {
 		let productSecretCode = RegExp.$1
 		let productPureUrl = RegExp.$2
+		console.log(`口令: ${productSecretCode}--链接:${productPureUrl}`);
 		if(productSecretCode) {
 			resultInfo.code = productSecretCode
 		}
 		if(productPureUrl) {
-			resultInfo.link = productPureUrl
+			resultInfo.pureLink = productPureUrl
 		}
+		return resultInfo
 		
 	}
-	
 	// 再匹配纯链接
-	let linkpatt = new RegExp(`https?:\\S+`)
-	if(linkpatt.test(content)) {
-		resultInfo.link = content
+	else {
+		let linkpatt = new RegExp(`https?:\\S+`)
+		if(linkpatt.test(content)) {
+			resultInfo.pureLink = content
+		}
+		return resultInfo
 	}
-	
-	return resultInfo
 	
 }
 

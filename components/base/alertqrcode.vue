@@ -15,11 +15,6 @@
 					<text class="cuIcon cuIcon-copy margin-left-sm" @tap.stop="$basejs.copytoclipboard(qrCodeContent)"></text>
 				</view>
 				
-				<!-- <view class="optionbtnview">
-					
-					
-				</view> -->
-				
 			</view>
 			
 		</u-popup>
@@ -91,8 +86,8 @@
 						// console.log(`检测到父组件参数ifshow发生变化-${newValue}`);
 						this.show = newValue
 						if(this.show) {
-							_this.makeCustom()
-							// _this.makeQR()
+							// _this.makeCustom()
+							_this.makeQR()
 						}
 					}
 				},
@@ -105,20 +100,10 @@
 					}
 				},
 				
-				// qrCodeContent: {
-				// 	handler: function(newValue, oldValue) {
-				// 		console.log(newValue, oldValue);
-				// 		if(newValue !== oldValue) {
-				// 			_this.makeCustom()
-				// 		}
-				// 	},
-				// 	deep: true,
-				// 	immediate: true
-				// }
-				
 				qrCodeContent(newValue, oldValue) {
 					if(newValue !== oldValue) {
-						
+						// _this.makeCustom()
+						_this.makeQR()
 					}
 				}
 				
@@ -139,6 +124,7 @@
 	
 				// 渲染二维码
 				makeQR() {
+					if(!this.qrCodeContent) {return}
 					
 					uQRCode.make({
 						canvasId: 'customqrcode',
@@ -153,9 +139,6 @@
 						enableDelay: false
 					})
 					.then(res => {
-						console.log(`成功`);
-						console.log(res)
-						
 						let qrcodeImgSrc = res.tempFilePath
 						_this.qrcodeImgSrc = qrcodeImgSrc
 					})
@@ -165,10 +148,12 @@
 					
 				},
 				
+				// 自定义二维码
 				makeCustom() {
 					
 					let qrCodeContent = this.qrCodeContent
-				
+					if(!qrCodeContent) {return}
+					
 					// 得到矩阵，可根据返回的矩阵信息自行实现二维码生成，甚至是样式。以下为示例
 					var modules = uQRCode.getModules({
 						text: qrCodeContent,

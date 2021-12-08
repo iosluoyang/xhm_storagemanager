@@ -302,6 +302,13 @@
 					if(response.result.code == 0) {
 						let productList = response.result.data.productList
 						
+						// 如果是从心愿单再次加购来则删除商品信息中的draftproId(如果有的话)
+						productList.forEach(eachproduct => {
+							if(eachproduct.draftproId) {
+								delete eachproduct.draftproId
+							}
+						})
+						
 						// 组装数据
 						let storeList = []
 						let eachstore = {

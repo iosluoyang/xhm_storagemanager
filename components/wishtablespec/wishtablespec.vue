@@ -161,6 +161,7 @@
 					this.ownWishInfo = newValue
 					this.$nextTick(function(){
 						// 重新设置手风琴内部高度
+						// 此处更新需注意，当表格所在页面为隐藏状态时更新会偶发性出问题
 						if(this.$refs.ucollapseview) {
 							this.$refs.ucollapseview.init()
 						}
@@ -195,7 +196,7 @@
 				let totalProPrice = quotationInfo.totalProPrice || this.getTotalProPriceByWish(this.ownWishInfo)
 				let totalShippingFee = quotationInfo.totalShippingFee
 				let totalCommissionFee = quotationInfo.totalCommissionFee
-				console.log(totalProPrice,totalShippingFee,totalCommissionFee);
+				// console.log(totalProPrice,totalShippingFee,totalCommissionFee);
 				//三者缺其一
 				if(!totalProPrice || !totalShippingFee || !totalCommissionFee) {
 					return ''

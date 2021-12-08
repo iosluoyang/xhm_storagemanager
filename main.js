@@ -71,7 +71,6 @@ Vue.mixin({
 		// 国际化计算属性
 		i18n() {
 			return this.$i18nMsg().index
-			// return this.$t('index')
 		},
 		
 		// 当前语言类型
@@ -91,10 +90,12 @@ Vue.mixin({
 		imgUrl() {
 			return defaultconfig.imgUrl()
 		},
+		
 		// 是否登录
 		iflogin() {
 			return basejs.ifloginflag()
 		},
+		
 		// 用户信息
 		user() {
 			return store.getters.user
@@ -111,6 +112,12 @@ Vue.mixin({
 					name: 'user',
 					data: {
 						type: 'checktoken',
+					},
+					success(response) {
+						console.log(`检测token成功`);
+					},
+					fail(error) {
+						console.log(`检测token失败`);
 					}
 				})
 			}
