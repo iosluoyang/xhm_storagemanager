@@ -307,7 +307,7 @@
 									
 									<view v-if="item.imgs" class="imgsview margin-top">
 										<view class="grid col-2 grid-square">
-											<view class="bg-img" v-for="(img,index) in getTimeLineImgs(item)" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(getTimeLineImgs(item),index)"></view>
+											<view class="bg-img" v-for="(img,index) in getTimeLineImgs(item)" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(item.imgs,index)"></view>
 										</view>
 									</view>
 									
@@ -705,10 +705,10 @@
 			},
 			
 			// 预览某个时间轴的图片
-			previewImgs(imgsArr, index) {
+			previewImgs(imgs, index) {
 				uni.previewImage({
 					current: index,
-					urls: imgsArr
+					urls: imgs.split(',')
 				})
 			},
 			
