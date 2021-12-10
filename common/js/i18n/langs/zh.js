@@ -17,6 +17,7 @@ const zh = {
 		customerservice: "客服",
 		favor: "收藏",
 		buynow: "立即购买",
+		shoppingcart: "购物车",
 		uploadimg: "图片上传",
 		share: "分享",
 		setshareparam: "设置分享内容",

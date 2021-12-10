@@ -4,7 +4,6 @@
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.prodetail}}</block>
-			<text class="cuIcon cuIcon-cartfill text-white u-font-40 margin-left" slot="backText" @tap.stop="jumptodraft"></text>
 		</cu-custom>
 		
 		<!-- 商品详情信息 -->
@@ -88,18 +87,16 @@
 		<!-- 底部操作条 -->
 		<view v-if="linkProduct" class="bottomoptionview cu-bar bg-white tabbar border shop" :style="{zIndex: 3}">
 			
-			<!-- 联系客服按钮 -->
-			<!-- #ifdef MP-WEIXIN -->
-			<button class="action" open-type="contact">
-				<view class="cuIcon-service text-green"></view>
-				{{ i18n.base.customerservice }}
-			</button>
-			<!-- #endif -->
-			
 			<!-- 收藏按钮 -->
 			<view class="action" @click="favorPro">
 				<view :class="[ isFavor ? 'cuIcon-favorfill text-orange' : 'cuIcon-favor' ]"></view>
 				{{ i18n.base.favor }}
+			</view>
+			
+			<!-- 草稿箱按钮 -->
+			<view class="action" @click="draftPro">
+				<view class="cuIcon-cartfill text-pink"></view>
+				{{ i18n.base.shoppingcart }}
 			</view>
 			
 			<!-- 立即购买按钮 -->
@@ -507,6 +504,13 @@
 					})
 				}
 				
+			},
+			
+			// 跳转草稿箱
+			draftPro() {
+				uni.navigateTo({
+					url: '/pages/wishlist/wishdraftpro'
+				});
 			},
 			
 			// 开始购买

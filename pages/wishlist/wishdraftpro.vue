@@ -41,7 +41,7 @@
 								
 								<!-- 商品基本信息 -->
 								<view class="productcontent flex align-center padding-sm" @tap.stop="checkProDetail(eachproduct)">
-									<text class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="eachproduct.ifSelect = !eachproduct.ifSelect"></text>
+									<view class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleProduct({storeindex, productindex})"></view>
 									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
 									<view class="titleview flex1 u-line-2" style="max-width: 200px;">{{ eachproduct.title }}</view>
 									<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="changeProSpec({storeindex, productindex})"></button>
@@ -95,7 +95,7 @@
 			
 			<view class="flex align-center">
 				
-				<text class="cuIcon" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
+				<text class="cuIcon text-lg" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
 				
 				<view v-if="selectInfo" class="flex flex-direction justify-center margin-left">
 					<text v-if="type == 'normal' " class="text-price text-red text-xl">{{ `${selectInfo.totalPrice}元` }}</text>
@@ -424,6 +424,13 @@
 					url: '/pages/wishlist/makewishorder?sourceFrom=draftpro'
 				});
 			},
+			
+			// 切换商品选中状态
+			toggleProduct({storeindex, productindex}) {
+				let eachproduct = this.ownDataList[storeindex].productList[productindex]
+				eachproduct.ifSelect = !eachproduct.ifSelect
+			},
+			
 			
 		}
 	}

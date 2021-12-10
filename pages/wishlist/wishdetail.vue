@@ -445,19 +445,19 @@
 			<!-- 链接展示 -->
 			<template v-if="popuptype == 'productLink'">
 				
-				<view v-if="currentProduct && currentProduct.proLinkInfo" class="contentview padding">
+				<view v-if="currentProLinkInfo" class="contentview padding">
 					
 					<!-- 二维码 -->
-					<view class="qrcodeview flex align-center justify-center padding-sm solid-bottom">
+					<view class="qrcodeview flex align-center justify-center padding-sm solid-bottom pos-relative">
 						
 						<!-- 二维码图片 -->
-						<u-image v-if="currentProduct.proLinkInfo.qrCodeUrl" :src="currentProduct.proLinkInfo.qrCodeUrl" width="200px" height="200px" show-menu-by-longpress>
+						<u-image :src="currentProLinkInfo.qrCodeUrl" width="200px" height="200px" show-menu-by-longpress :fade="false">
 							<u-loading slot="loading"></u-loading>
-							<view slot="error" style="font-size: 24rpx;">{{ i18n.error.loaderror }}</view>
+							<u-loading slot="error"></u-loading>
 						</u-image>
 						
 						<!-- 画布 不存在二维码时 -->
-						<canvas v-else class="canvasview" :style="{width: '200px', height: '200px'}" id="customqrcode" canvas-id="customqrcode" />
+						<canvas class="canvasview" id="customqrcode" canvas-id="customqrcode" />
 						
 					</view>
 					
@@ -469,7 +469,7 @@
 							<view class="content padding-tb-sm" style="max-width: 70%;">
 								<view>
 									<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
-									{{ currentProduct.proLinkInfo.code || '' }}
+									{{ currentProLinkInfo.code || '' }}
 								</view>
 								<view class="text-gray text-sm">
 									<text class="cuIcon-infofill margin-right-xs"></text>
@@ -478,7 +478,7 @@
 							</view>
 							
 							<view class="action">
-								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProduct.proLinkInfo.code);showpopup=false"></button>
+								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProLinkInfo.code);showpopup=false"></button>
 							</view>
 							
 						</view>
@@ -488,7 +488,7 @@
 							<view class="content padding-tb-sm" style="max-width: 70%;">
 								<view>
 									<text class="cuIcon-link text-yellow margin-right-xs"></text>
-									{{ currentProduct.proLinkInfo.pureLink || '' }}
+									{{ currentProLinkInfo.pureLink || '' }}
 								</view>
 								<view class="text-gray text-sm">
 									<text class="cuIcon-infofill margin-right-xs"></text>
@@ -497,7 +497,7 @@
 							</view>
 							
 							<view class="action">
-								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProduct.proLinkInfo.pureLink);showpopup=false"></button>
+								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProLinkInfo.pureLink);showpopup=false"></button>
 							</view>
 							
 						</view>
@@ -529,10 +529,7 @@
 			</template>
 			
 		</u-popup>
-		
-		<!-- 弹出二维码组件 -->
-		<alertqrcode ref="qrcodealert" :qrCodeContent="qrCodeContent" :qrcodeSize="180" :ifshow.sync="ifshowqrcode"></alertqrcode>
-		
+				
 	</view>
 </template>
 
@@ -554,6 +551,7 @@
 				wishId: null, // 当前心愿详情id
 				ifShare: false, // 是否是分享来源
 				wishInfo: null, // 当前心愿详情
+				currentProLinkInfo: null, // 当前商品的外链信息
 				
 				showDrawer: false, // 是否显示抽屉  默认为否
 				InputBottom: 0, // 时间轴输入框底部
@@ -577,10 +575,7 @@
 				popuptype: 'productLink' , //模态框的类型   productLink为商品链接展示  share为分享类型  默认为商品链接展示
 				popmode: 'bottom', // 模态框的方向类型  默认为bottom
 				showpopup: false, // 是否显示模态框
-				
-				ifshowqrcode: false, // 是否显示弹出二维码  默认否
-				qrCodeContent: "", // 二维码显示内容
-				
+								
 			};
 		},
 		
@@ -753,10 +748,10 @@
 				let proLinkInfo = this.$basejs.getlinkbycode(this.currentProduct.platformLink)
 				console.log(`获取到的商品外链相关信息为:`);
 				console.log(proLinkInfo);
-				_this.$set(this.currentProduct, 'proLinkInfo', proLinkInfo)
+				_this.currentProLinkInfo = proLinkInfo
 				
-				// 不存在二维码链接则生成二维码
-				if(!proLinkInfo.qrCodeUrl) {
+				// 生成二维码
+				if(proLinkInfo.pureLink) {
 					uQRCode.make({
 						canvasId: 'customqrcode',
 						text: proLinkInfo.pureLink,
@@ -772,10 +767,7 @@
 						let qrcodeImgSrc = res.tempFilePath
 						console.log(`获取到的二维码链接为:`);
 						console.log(qrcodeImgSrc);
-						let newProLinkInfo = proLinkInfo
-						newProLinkInfo['qrCodeUrl'] = qrcodeImgSrc
-						_this.$set(_this.currentProduct, 'proLinkInfo', newProLinkInfo)
-						
+						_this.currentProLinkInfo = {..._this.currentProLinkInfo, ...{qrCodeUrl:qrcodeImgSrc}}
 					})
 					.catch(err => {
 						console.log(err);
@@ -785,18 +777,6 @@
 				this.popuptype = 'productLink'
 				this.showpopup = true
 				
-			},
-			
-			// 点击二维码图标
-			clickShowQR() {
-				let prolinkinfo = this.$basejs.getlinkbycode(this.currentProduct.platformLink)
-				console.log(`获取到的商品外链相关信息为:`);
-				console.log(prolinkinfo);
-				let qrcode = this.$basejs.getlinkbycode(this.currentProduct.platformLink).pureLink
-				if(qrcode) {
-					this.qrCodeContent = qrcode
-					this.ifshowqrcode = true
-				}
 			},
 			
 			// 查看商品详情数据
@@ -1604,6 +1584,14 @@
 			.cu-info{
 				display: block !important;
 			}
+		}
+		
+		.canvasview{
+			width: 200px;
+			height: 200px;
+			position: absolute;
+			opacity: 0;
+			z-index: -1;
 		}
 		
 		.floatview{

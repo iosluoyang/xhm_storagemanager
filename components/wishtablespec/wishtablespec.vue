@@ -14,7 +14,7 @@
 			<template>
 				
 				<!-- 商品折叠样式 -->
-				<u-collapse ref="ucollapseview" v-if="ifCollapse" :item-style="{ marginTop: '20rpx' }" :accordion="false">
+				<u-collapse ref="ucollapseview" v-if="ifCollapse" :item-style="{ marginTop: '20rpx' }" :accordion="false" @change="collapseChange">
 					<u-collapse-item v-for="(eachproduct, productindex) in ownWishInfo.productList" :key="eachproduct.pid">
 						
 						<view slot="title" class="titleview flex align-center">
@@ -24,7 +24,7 @@
 							<button v-if="type == 'quotation' " class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="$emit('changeProSpec', productindex)"></button>
 						</view>
 						
-						<view class="eachproducttableview">
+						<view class="eachproducttableview padding">
 							<wishproducttable :productInfo="eachproduct" :ifShowTitle="false"></wishproducttable>
 						</view>
 						
@@ -209,6 +209,20 @@
 				
 			},
 			
+			// ucollapse状态发生变化时
+			// 小程序中重新计算一下高度
+			collapseChange() {
+				// #ifdef MP-WEIXIN
+				this.$nextTick(function(){
+					// 重新设置手风琴内部高度
+					// 此处更新需注意，当表格所在页面为隐藏状态时更新会偶发性出问题
+					if(this.$refs.ucollapseview) {
+						console.log(`重新计算了高度`);
+						this.$refs.ucollapseview.init()
+					}
+				})
+				// #endif
+			}
 			//
 		},
 	}

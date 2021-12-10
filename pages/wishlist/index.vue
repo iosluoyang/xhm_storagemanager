@@ -77,7 +77,7 @@
 			</view>
 			
 		</view>
-				
+		
 	</view>
 </template>
 

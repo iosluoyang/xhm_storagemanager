@@ -16,6 +16,7 @@ const en = {
 		translate: "文/A",
 		customerservice: "Service",
 		favor: "Favor",
+		shoppingcart: "Draft",
 		buynow: "Buy Now",
 		uploadimg: "Upload Images",
 		share: "Share",
