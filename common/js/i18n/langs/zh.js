@@ -111,7 +111,6 @@ const zh = {
 			}
 		}
 		
-		
 	},
 	
 	// 正常提示
@@ -132,6 +131,7 @@ const zh = {
 		logoutsuccess: "登出成功",
 		needtoregister: "该账号不存在,是否进行注册?",
 		pleasechecknetwork: "请检查网络情况",
+		pleaseinputcontent: "请输入内容",
 		
 	},
 	

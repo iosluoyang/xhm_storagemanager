@@ -131,6 +131,7 @@ const en = {
 		logoutsuccess: "Logout Success",
 		needtoregister: "This account doesnt exist , do you want to register ?",
 		pleasechecknetwork: "Please check your network",
+		pleaseinputcontent: "Please input content",
 		
 	},
 	

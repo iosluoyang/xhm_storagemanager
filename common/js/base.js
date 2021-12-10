@@ -541,13 +541,14 @@ export function keepTwoDecimalFull(num) {
  return s_x;
 }
 
-// 根据口令获取链接
+// 根据搜索文本获取口令，纯链接以及二维码链接
 export function getlinkbycode(codecontent) {
 	
 	let content = codecontent
 	let resultInfo = {
 		code: "",
-		pureLink: ""
+		pureLink: "",
+		qrCodeUrl: ""
 	}
 	
 	// 首先尝试匹配口令和链接

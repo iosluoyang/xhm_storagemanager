@@ -38,12 +38,12 @@
 						<view v-if="currentProduct" class="currentproductview padding-sm">
 							
 							<!-- 标题 -->
-							<view class="tilteview padding-sm">
+							<view class="tilteview padding-sm text-xl">
 								
 								<!-- 商品外链 -->
-								<text v-if="currentProduct.platformLink" class="margin-right-sm cuIcon cuIcon-qr_code text-green" @click="clickShowQR"></text>
+								<text v-if="currentProduct.platformLink" class="margin-right-sm cuIcon cuIcon-link text-green" @click="checkProLinkInfo"></text>
 								<!-- 商品标题 -->
-								<text class="protitle text-bold text-xl">{{ `${currentProduct.title}`}}</text>
+								<text class="protitle text-bold">{{ `${currentProduct.title}`}}</text>
 								
 							</view>
 							
@@ -274,8 +274,9 @@
 						<view class="date">13:23</view>
 					</view>
 				</template>
+				
 				<view class="cu-item"
-						v-for="(item, index) in timelinedataList" :key="item._id" 
+						v-for="(item, itemindex) in timelinedataList" :key="item._id" 
 						:id=" `item-${item._id}` "
 						:class="{ 'self': item.creatUser._id == user._id }"
 				>
@@ -297,18 +298,34 @@
 						
 						<!-- 普通时间轴内容 -->
 						<template v-if="item.type == 1">
-							<view class="content bg-green shadow">
+							
+							<!-- 普通时间轴  长按可操作 -->
+							<view class="content shadow" :class="[ item.creatUser._id == user._id ? 'bg-green text-white' : 'bg-white text-black' ]"
+								@longpress="longpressTimeLine(itemindex)"
+							>
 								<view class="contentview">
 									
 									<!-- 文本内容 -->
-									<view class="margin-top-sm t_wrap text-white">
-										{{ i18n.wishlist.timeline.wishupdatequotationtip }}
+									<view class="t_wrap">
+										{{ item.content }}
 									</view>
 									
-									<view v-if="item.imgs" class="imgsview margin-top">
+									<!-- 图片区域 -->
+									<view v-if="item.imgs" class="imgsview margin-top" style="width: 240rpx;">
 										<view class="grid col-2 grid-square">
 											<view class="bg-img" v-for="(img,index) in getTimeLineImgs(item)" :key="index" :style="[{ backgroundImage:'url(' + img + ')' }]" @tap.stop="previewImgs(item.imgs,index)"></view>
 										</view>
+									</view>
+									
+									<!-- 操作按钮区域 -->
+									<view v-if="false" class="operateview flex justify-between align-center margin-top-sm" style="width: 240rpx;">
+										
+										<button class="cu-btn round bg-grey cuIcon cuIcon-edit" @tap.stop="editTimeLine(itemindex)"></button>
+										
+										<button class="cu-btn round bg-red cuIcon cuIcon-delete" @tap.stop="deleteTimeLine(itemindex)"></button>
+										
+										<button class="cu-btn round bg-green cuIcon cuIcon-share"></button>
+									
 									</view>
 									
 								</view>
@@ -319,7 +336,7 @@
 						<!-- 代理关联心愿单 -->
 						<template v-if="item.type == 90">
 							<view class="content bg-blue shadow">
-								<text>{{ i18n.wishlist.timeline.wishagentbindtip }}</text>
+								<text>{{ item.content }}</text>
 							</view>
 						</template>
 						
@@ -332,13 +349,13 @@
 						
 						<!-- 心愿单报价类型 -->
 						<template v-if="item.type == 3">
-							<view class="content bg-orange shadow">
+							<view class="content bg-gradual-orange shadow">
 								
 								<view class="confirmiew">
 									
 									<!-- 文本内容 -->
-									<view class="margin-top-sm t_wrap text-white">
-										{{ i18n.wishlist.timeline.wishupdatequotationtip }}
+									<view class="t_wrap text-white">
+										{{ item.content }}
 									</view>
 									
 									<!-- 价格 -->
@@ -352,15 +369,15 @@
 						
 						<!-- 心愿单同意类型 -->
 						<template v-if="item.type == 4">
-							<view class="content bg-green shadow">
-								{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishconfirmquotationagenttip : i18n.wishlist.timeline.wishconfirmquotationcustomertip }}
+							<view class="content bg-gradual-green shadow">
+								{{ item.content }}
 							</view>
 						</template>
 						
 						<!-- 心愿单拒绝类型 -->
 						<template v-if="item.type == 5">
 							<view class="content bg-grey shadow">
-								{{ user.role == $basejs.roleEnum.productAgent ? i18n.wishlist.timeline.wishrefusequotationagenttip : i18n.wishlist.timeline.wishrefusequotationcustomertip }}
+								{{ item.content }}
 							</view>
 						</template>
 						
@@ -374,17 +391,6 @@
 					<!-- 时间区域 -->
 					<uni-dateformat class="date" :date="item.creatTime"  format="yyyy/MM/dd hh:mm:ss" />
 					
-					<!-- 添加操作按钮区域 -->
-					<!-- 操作区域 -->
-					<view v-if="false" class="operateview margin-top-sm flex align-center">
-						
-						<button class="cu-btn round bg-grey cuIcon cuIcon-edit"></button>
-						
-						<button class="cu-btn round bg-red cuIcon cuIcon-delete margin-left-sm"></button>
-						
-						<button class="cu-btn round bg-green cuIcon cuIcon-share margin-left-sm"></button>
-					</view>
-					
 				</view>
 				
 			</scroll-view>
@@ -392,6 +398,7 @@
 			<!-- 发布时间轴区域 -->
 			<view class="timelineinputbottomview bg-white">
 				
+				<!-- 发送图片区域 -->
 				<view v-if="timelineSendPicFlag" class="topview">
 					<view class="bg-white padding">
 						<uni-file-picker ref="filepickerref" v-model="imgArr" :limit="picMaxNum"
@@ -401,15 +408,27 @@
 					</view>
 				</view>
 				
+				<!-- 底部输入区域 -->
 				<view class="bottomview flex align-end justify-between padding-sm">
 					
-					<view class="flex0 lefticonview flex align-center margin-right-sm">
-						<text class="cuIcon-picfill text-grey u-font-40" @tap.stop="timelineSendPicFlag = !timelineSendPicFlag"></text>
+					<view class="flex0 lefticonview flex align-center margin-right-sm text-xxl">
+						<text class="cuIcon-picfill text-grey" @tap.stop="timelineSendPicFlag = !timelineSendPicFlag"></text>
 					</view>
 					
-					<u-input class="flex1" type="textarea" v-model="timelineContent" :height="50" :maxlength="-1" fixed border :cursor-spacing="20" :placeholder="i18n.placeholder.handletimeline.typecontent"></u-input>
+					<u-input class="flex1" type="textarea" v-model="timelineContent" :focus="timelineInputFocus" :height="50" :maxlength="-1" :clearable="false" fixed border :cursor-spacing="20"></u-input>
 					
-					<button class="flex0 cu-btn bg-green shadow margin-left-sm" @tap.stop="sendTimeLine">{{ i18n.base.confirm }}</button>
+					<!-- 发送按钮 -->
+					<template>
+						
+						<!-- 编辑状态 -->
+						<view v-if="selectTimeLineEditFlag" class="flex0 flex align-center">
+							<button class="cu-btn round cuIcon-close bg-grey shadow margin-left-sm" @tap.stop="editCancelTimeLine"></button>
+							<button class="cu-btn round cuIcon-check bg-green shadow margin-left-sm" @tap.stop="editConfirmTimeLine"></button>
+						</view>
+						<!-- 发送状态 -->
+						<button v-else class="flex0 cu-btn round cuIcon-forwardfill bg-green shadow margin-left-sm" @tap.stop="sendTimeLine"></button>
+						
+					</template>
 					
 				</view>
 				
@@ -421,55 +440,72 @@
 		<loading :loadModal="ifloading"></loading>
 		
 		<!-- 弹出视图 -->
-		<u-popup v-model="showpopup" :mode="popmode" width="80%" border-radius="16" :mask-close-able=" popuptype !== 'share' ">
+		<u-popup v-model="showpopup" :mode="popmode" width="80%" border-radius="16">
 			
 			<!-- 链接展示 -->
-			<template v-if="popuptype == 'productlink'">
-				<view v-if="productLinkInfo" class="cu-list menu text-left">
+			<template v-if="popuptype == 'productLink'">
+				
+				<view v-if="currentProduct && currentProduct.proLinkInfo" class="contentview padding">
 					
-					<!-- 口令 -->
-					<view class="cu-item">
-						<view class="content padding-tb-sm" style="max-width: 70%;">
-							<view>
-								<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
-								{{ productLinkInfo.secretCode || '' }}
-							</view>
-							<view class="text-gray text-sm">
-								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.common.secretcodetip }}
-							</view>
-						</view>
+					<!-- 二维码 -->
+					<view class="qrcodeview flex align-center justify-center padding-sm solid-bottom">
 						
-						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(productLinkInfo.secretCode);showpopup=false">
-								<!-- <text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> -->
-							</button>
-						</view>
+						<!-- 二维码图片 -->
+						<u-image v-if="currentProduct.proLinkInfo.qrCodeUrl" :src="currentProduct.proLinkInfo.qrCodeUrl" width="200px" height="200px" show-menu-by-longpress>
+							<u-loading slot="loading"></u-loading>
+							<view slot="error" style="font-size: 24rpx;">{{ i18n.error.loaderror }}</view>
+						</u-image>
+						
+						<!-- 画布 不存在二维码时 -->
+						<canvas v-else class="canvasview" :style="{width: '200px', height: '200px'}" id="customqrcode" canvas-id="customqrcode" />
 						
 					</view>
 					
-					<!-- 纯链接 -->
-					<view class="cu-item">
-						<view class="content padding-tb-sm" style="max-width: 70%;">
-							<view>
-								<text class="cuIcon-link text-yellow margin-right-xs"></text>
-								{{ productLinkInfo.pureLink || '' }}
+					<!-- 外链其他内容 -->
+					<view class="cu-list menu text-left">
+						
+						<!-- 口令 -->
+						<view class="cu-item">
+							<view class="content padding-tb-sm" style="max-width: 70%;">
+								<view>
+									<text class="cuIcon-explorefill text-blue margin-right-xs"></text>
+									{{ currentProduct.proLinkInfo.code || '' }}
+								</view>
+								<view class="text-gray text-sm">
+									<text class="cuIcon-infofill margin-right-xs"></text>
+									{{ i18n.wishlist.common.secretcodetip }}
+								</view>
 							</view>
-							<view class="text-gray text-sm">
-								<text class="cuIcon-infofill margin-right-xs"></text>
-								{{ i18n.wishlist.common.pureurltip }}
+							
+							<view class="action">
+								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProduct.proLinkInfo.code);showpopup=false"></button>
 							</view>
+							
 						</view>
 						
-						<view class="action">
-							<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(productLinkInfo.pureLink);showpopup=false">
-								<!-- <text class="cuIcon-copy text-sm">{{ i18n.base.copy }}</text> -->
-							</button>
+						<!-- 纯链接 -->
+						<view class="cu-item">
+							<view class="content padding-tb-sm" style="max-width: 70%;">
+								<view>
+									<text class="cuIcon-link text-yellow margin-right-xs"></text>
+									{{ currentProduct.proLinkInfo.pureLink || '' }}
+								</view>
+								<view class="text-gray text-sm">
+									<text class="cuIcon-infofill margin-right-xs"></text>
+									{{ i18n.wishlist.common.pureurltip }}
+								</view>
+							</view>
+							
+							<view class="action">
+								<button class="cu-btn round bg-gradual-blue shadow cuIcon-copy" @click="$basejs.copytoclipboard(currentProduct.proLinkInfo.pureLink);showpopup=false"></button>
+							</view>
+							
 						</view>
 						
 					</view>
 					
 				</view>
+			
 			</template>
 			
 			<!-- 中间输入内容 -->
@@ -502,6 +538,7 @@
 
 <script>
 	
+	import uQRCode from '@/uni_modules/Sansnn-uQRCode/components/uqrcode/common/uqrcode.js'
 	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
 	
 	var _this
@@ -523,19 +560,21 @@
 				
 				swiperCur: 0, // 当前轮播图索引
 				swiperList: null, // 轮播图数据
-				productLinkInfo: null, // 商品外链相关内容
 				
 				timelinedataList: null, // 时间轴数据
 				noticeBarList: null, // 滚动消息通知数据
 				timeLineScrollViewId: '', // 时间轴滚动视图id
+				selectTimeLineIndex: 0, // 当前选中的时间轴索引
+				selectTimeLineEditFlag: false, // 当前时间轴是否编辑的标识
 				
 				timelineContent: '', // 输入的时间轴内容
+				timelineInputFocus: false, // 时间轴输入框是否聚焦
 				timelineSendPicFlag: false, // 时间轴发送图片的标识  默认为false
 				picMaxNum: 9, // 图片上传的数量限制
 				imgArr: [], // 图片数组
 				
 				
-				popuptype: 'wishlink' , //模态框的类型  shippingtool为运费工具  wishlink为心愿链接展示  inputarea为输入内容类型  默认为心愿链接展示
+				popuptype: 'productLink' , //模态框的类型   productLink为商品链接展示  share为分享类型  默认为商品链接展示
 				popmode: 'bottom', // 模态框的方向类型  默认为bottom
 				showpopup: false, // 是否显示模态框
 				
@@ -698,93 +737,6 @@
 				
 			},
 			
-			// 获取某时间轴的图片数组
-			getTimeLineImgs(item) {
-				let imgs = item.imgs ? item.imgs.split(',') : []
-				return imgs
-			},
-			
-			// 预览某个时间轴的图片
-			previewImgs(imgs, index) {
-				uni.previewImage({
-					current: index,
-					urls: imgs.split(',')
-				})
-			},
-			
-			// 加载时间轴数据
-			loadTimeLineData() {
-	
-				const db = uniCloud.database();
-				db.collection('wish-timeline, uni-id-users')
-				.where(`wishId == '${_this.wishId}' `)
-				.field(`creatUid{username,nickname,avatar,role} as creatUser, agentUid{username,nickname,avatar,role} as agentUser, type, creatTime, content, imgs, link, price`)
-				.orderBy(`creatTime desc`)
-				.get()
-				.then(response => {
-					
-					// 时间轴数据加载成功
-					let data = response.result.data
-					// 重组数据
-					data.forEach(eachtimeline => {
-						eachtimeline.creatUser = eachtimeline.creatUser ? eachtimeline.creatUser[0] : null
-						if(eachtimeline.creatUser) {
-							eachtimeline.creatUser.role = eachtimeline.creatUser.role[0]
-						}
-						eachtimeline.agentUser = eachtimeline.agentUser ? eachtimeline.agentUser[0] : null
-						if(eachtimeline.agentUser) {
-							eachtimeline.agentUser.role = eachtimeline.agentUser.role[0]
-						}
-						
-						// 特殊处理内容
-						
-						// 心愿单开始
-						if(eachtimeline.type == 0) {
-							eachtimeline.content = _this.i18n.wishlist.timeline.startsign
-						}
-						// 心愿单被代理关联
-						else if(eachtimeline.type == 90) {
-							eachtimeline.content = _this.i18n.wishlist.timeline.wishagentbindtip
-						}
-						// 心愿单编辑
-						else if(eachtimeline.type == 2) {
-							eachtimeline.content = _this.i18n.wishlist.timeline.editsign
-						}
-						// 心愿单待确认
-						else if(eachtimeline.type == 3) {
-							eachtimeline.content = _this.i18n.wishlist.timeline.wishupdatequotationtip
-						}
-						// 心愿单同意
-						else if(eachtimeline.type == 4) {
-							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishconfirmquotationagenttip : _this.i18n.wishlist.timeline.wishconfirmquotationcustomertip
-						}
-						// 心愿单拒绝
-						else if(eachtimeline.type == 5) {
-							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishrefusequotationagenttip : _this.i18n.wishlist.timeline.wishrefusequotationcustomertip
-						}
-					}) 
-					
-					let tmpData = [...data] // 注意深拷贝
-					let timelinedatalist = tmpData.reverse() // 逆序展示时间轴
-					_this.timelinedataList = timelinedatalist
-					let lastId = timelinedatalist[timelinedatalist.length - 1]._id
-					_this.$nextTick(function(){
-						_this.timeLineScrollViewId = lastId
-					})
-					
-					// 设置通知栏最新内容
-					let noticeBarList = data.map(eachitem => eachitem.content)
-					// _this.noticeBarList = noticeBarList
-					let newestNoticeList = noticeBarList.slice(0,1)
-					_this.noticeBarList = newestNoticeList // 展示最新的时间轴内容
-					
-				})
-				.catch(error => {
-					console.log(`时间轴数据加载失败`);
-				})
-				
-			},
-			
 			// 点击轮播图  查看该商品的主图
 			clickSwiper(index) {
 				let selectproduct = this.currentProduct
@@ -792,6 +744,47 @@
 					current: 0,
 					urls: selectproduct.imgs.split(',')
 				})
+			},
+			
+			// 点击商品链接信息图标
+			checkProLinkInfo() {
+				
+				// 获取对应的链接信息
+				let proLinkInfo = this.$basejs.getlinkbycode(this.currentProduct.platformLink)
+				console.log(`获取到的商品外链相关信息为:`);
+				console.log(proLinkInfo);
+				_this.$set(this.currentProduct, 'proLinkInfo', proLinkInfo)
+				
+				// 不存在二维码链接则生成二维码
+				if(!proLinkInfo.qrCodeUrl) {
+					uQRCode.make({
+						canvasId: 'customqrcode',
+						text: proLinkInfo.pureLink,
+						size: 200,
+						margin: 0,
+						backgroundColor: '#ffffff',
+						foregroundColor: '#000000',
+						fileType: 'png',
+						errorCorrectLevel: uQRCode.errorCorrectLevel.H,
+						enableDelay: true
+					})
+					.then(res => {
+						let qrcodeImgSrc = res.tempFilePath
+						console.log(`获取到的二维码链接为:`);
+						console.log(qrcodeImgSrc);
+						let newProLinkInfo = proLinkInfo
+						newProLinkInfo['qrCodeUrl'] = qrcodeImgSrc
+						_this.$set(_this.currentProduct, 'proLinkInfo', newProLinkInfo)
+						
+					})
+					.catch(err => {
+						console.log(err);
+					})
+				}
+				
+				this.popuptype = 'productLink'
+				this.showpopup = true
+				
 			},
 			
 			// 点击二维码图标
@@ -1205,7 +1198,15 @@
 				this.ifloading = false
 				
 				// 继续提交时间轴数据
-				this.sendTimeLine()
+				// 编辑状态下
+				if(this.selectTimeLineEditFlag) {
+					this.editConfirmTimeLine()
+				}
+				// 正常的发送时间轴
+				else {
+					this.sendTimeLine()
+				}
+				
 			},
 			
 			// 上传图片失败
@@ -1221,14 +1222,107 @@
 				});
 			},
 			
+			// 获取某时间轴的图片数组
+			getTimeLineImgs(item) {
+				let imgs = item.imgs ? item.imgs.split(',') : []
+				return imgs
+			},
+			
+			// 预览某个时间轴的图片
+			previewImgs(imgs, index) {
+				uni.previewImage({
+					current: index,
+					urls: imgs.split(',')
+				})
+			},
+			
+			// 加载时间轴数据
+			loadTimeLineData() {
+				
+				const db = uniCloud.database();
+				db.collection('wish-timeline, uni-id-users')
+				.where(`wishId == '${_this.wishId}' `)
+				.field(`creatUid{username,nickname,avatar,role} as creatUser, agentUid{username,nickname,avatar,role} as agentUser, type, creatTime, content, imgs, link, price`)
+				.orderBy(`creatTime desc`)
+				.get()
+				.then(response => {
+					
+					// 时间轴数据加载成功
+					let data = response.result.data
+					// 重组数据
+					data.forEach(eachtimeline => {
+						
+						eachtimeline.creatUser = eachtimeline.creatUser ? eachtimeline.creatUser[0] : null
+						if(eachtimeline.creatUser) {
+							eachtimeline.creatUser.role = eachtimeline.creatUser.role[0]
+						}
+						eachtimeline.agentUser = eachtimeline.agentUser ? eachtimeline.agentUser[0] : null
+						if(eachtimeline.agentUser) {
+							eachtimeline.agentUser.role = eachtimeline.agentUser.role[0]
+						}
+						
+						// 特殊处理内容
+						
+						// 心愿单开始
+						if(eachtimeline.type == 0) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.startsign
+						}
+						// 心愿单被代理关联
+						else if(eachtimeline.type == 90) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.wishagentbindtip
+						}
+						// 心愿单编辑
+						else if(eachtimeline.type == 2) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.editsign
+						}
+						// 心愿单待确认
+						else if(eachtimeline.type == 3) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.wishupdatequotationtip
+						}
+						// 心愿单同意
+						else if(eachtimeline.type == 4) {
+							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishconfirmquotationagenttip : _this.i18n.wishlist.timeline.wishconfirmquotationcustomertip
+						}
+						// 心愿单拒绝
+						else if(eachtimeline.type == 5) {
+							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishrefusequotationagenttip : _this.i18n.wishlist.timeline.wishrefusequotationcustomertip
+						}
+					
+					}) 
+					
+					let tmpData = [...data] // 注意深拷贝
+					let timelinedatalist = tmpData.reverse() // 变为正序用于时间轴展示
+					_this.timelinedataList = timelinedatalist
+					// 获取最新消息
+					let lastTimeLine = timelinedatalist[timelinedatalist.length - 1]
+					_this.$nextTick(function(){
+						_this.timeLineScrollViewId = lastTimeLine._id // 设置时间轴最新一条数据的id用于滚动
+					})
+					
+					// 设置通知栏最新内容(最新一条数据)
+					let noticeBarList = [lastTimeLine.content]
+					_this.noticeBarList = noticeBarList
+					
+				})
+				.catch(error => {
+					console.log(`时间轴数据加载失败`);
+				})
+				
+			},
+			
 			// 发送时间轴数据
 			sendTimeLine() {
 				
+				// 无内容
 				if(!this.timelineContent) {
+					uni.showToast({
+						title: _this.i18n.tip.pleaseinputcontent,
+						icon: 'none'
+					});
 					return
 				}
 				// 检查是否需要上传图片
-				if(this.imgArr.find(item => { return item.progress == 0 })) {
+				if(this.imgArr.find(item => { return (item.progress == 0 || item.url.indexOf('blob') > -1) })) {
 					// 开始上传图片
 					this.ifloading = true
 					this.$refs.filepickerref.upload()
@@ -1279,62 +1373,160 @@
 			
 			// 长按时间轴
 			longpressTimeLine(index) {
-				let selectTimeLineIndex = index
-				let selectTimeLineItem = _this.timelinedataList[index]
 				
-				let itemList = [
-					_this.i18n.base.edit,
-					_this.i18n.base.delete
-				]
-				uni.showActionSheet({
-					itemList: itemList,
-					success: res => {
-						let tapIndex = res.tapIndex
-						
-						// 编辑
-						if(tapIndex == 0) {
+				// 自身发布的时间轴才可以操作
+				let selectTimeLineItem = _this.timelinedataList[index]
+				if(selectTimeLineItem.creatUser._id == _this.user._id) {
+					
+					_this.selectTimeLineIndex = index
+					let itemList = [
+						_this.i18n.base.edit,
+						_this.i18n.base.delete
+					]
+					uni.showActionSheet({
+						itemList: itemList,
+						success: res => {
 							
+							// 编辑时间轴
+							if(res.tapIndex == 0) {
+								_this.editTimeLine(_this.selectTimeLineIndex)
+							}
+							// 删除时间轴
+							else if(res.tapIndex == 1) {
+								_this.deleteTimeLine(_this.selectTimeLineIndex)
+							}
 						}
-						// 删除
-						else if(tapIndex == 1) {
-							uni.showModal({
-								content: _this.i18n.tip.deleteconfirm,
-								showCancel: true,
-								cancelText: _this.i18n.base.cancel,
-								confirmText: _this.i18n.base.confirm,
-								success: res => {
-									if(res.confirm) {
-										const db = uniCloud.database();
-										db.collection('wish-timeline')
-										.doc(selectTimeLineItem._id)
-										.remove()
-										.then(response => {
-											if(response.result.code == 0) {
-												// 删除成功
-												_this.timelinedataList.splice(selectTimeLineIndex, 1)
-											}
-											else {
-												uni.showToast({
-													title: _this.i18n.error.optionerror,
-													icon: 'none'
-												});
-											}
-										})
-										.catch(error => {
-											uni.showToast({
-												title: _this.i18n.error.optionerror,
-												icon: 'none'
-											});
-										})
-									}
+					});
+					
+				}
+				
+			},
+			
+			// 编辑时间轴
+			editTimeLine(itemindex) {
+				
+				let selectTimeLineItem = _this.timelinedataList[itemindex]
+				if(selectTimeLineItem.imgs) {
+					// 重组编辑图片集合
+					let imgArr = selectTimeLineItem.imgs.split(',').map(item => ({url: item}))
+					this.imgArr = imgArr
+					this.timelineSendPicFlag = true
+				}
+				if(selectTimeLineItem.content) {
+					this.timelineContent = selectTimeLineItem.content
+					this.timelineInputFocus = true
+				}
+				
+				this.selectTimeLineEditFlag = true
+			},
+			
+			// 编辑时间轴取消
+			editCancelTimeLine() {
+				this.selectTimeLineEditFlag = false
+				this.imgArr = []
+				this.timelineContent = ''
+				this.timelineSendPicFlag = false
+			},
+			
+			// 编辑时间轴完成
+			editConfirmTimeLine() {
+				
+				let selectTimeLineItem = _this.timelinedataList[_this.selectTimeLineIndex]
+				
+				// 无内容
+				if(!this.timelineContent) {
+					uni.showToast({
+						title: _this.i18n.tip.pleaseinputcontent,
+						icon: 'none'
+					});
+					return
+				}
+				
+				// 检查是否需要上传图片
+				if(this.imgArr.find(item => { return (item.progress == 0 || item.url.indexOf('blob') > -1) })) {
+					// 开始上传图片
+					this.ifloading = true
+					this.$refs.filepickerref.upload()
+					return
+				}
+				
+				// 上传图片已经成功 此时开始提交其他数据
+				let imgs = this.imgArr.map(item => (item.url)).join(',')
+				
+				const db = uniCloud.database();
+				_this.ifloading = true
+				let timelineitem = {
+					content: _this.timelineContent,
+					imgs: imgs,
+				}
+				db.collection('wish-timeline')
+				.doc(selectTimeLineItem._id)
+				.update(timelineitem)
+				.then(response => {
+					_this.ifloading = false
+					if(response.result.code == 0) {
+						// 更新成功
+						// 更新当前的内容和图片
+						let newtimelineitem = {...selectTimeLineItem, ...timelineitem}
+						_this.$set(_this.timelinedataList, _this.selectTimeLineIndex, newtimelineitem)
+						// 重置数据
+						_this.editCancelTimeLine()
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.optionerror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					_this.ifloading = false
+					uni.showToast({
+						title: _this.i18n.error.optionerror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 删除时间轴
+			deleteTimeLine(itemindex) {
+				
+				let selectTimeLineItem = _this.timelinedataList[itemindex]
+				
+				uni.showModal({
+					content: _this.i18n.tip.deleteconfirm,
+					showCancel: true,
+					cancelText: _this.i18n.base.cancel,
+					confirmText: _this.i18n.base.confirm,
+					success: res => {
+						if(res.confirm) {
+							const db = uniCloud.database();
+							db.collection('wish-timeline')
+							.doc(selectTimeLineItem._id)
+							.remove()
+							.then(response => {
+								if(response.result.code == 0) {
+									// 删除时间轴和滚动通知栏的内容
+									_this.timelinedataList.splice(itemindex, 1)
 								}
-							});
+								else {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								}
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
 						}
-						
-					},
-					fail: () => {},
-					complete: () => {}
+					}
 				});
+				
 			},
 			
 			// 弹出框点击取消
@@ -1358,13 +1550,6 @@
 				
 			},
 
-			// 编辑时间轴数据
-			edittimeline(timelineitem) {
-				uni.navigateTo({
-					url: `/pages/wishlist/handletimeline?wishId=${timelineitem.wishId}&timelineId=${timelineitem._id}&type=edit`
-				});
-			},
-			
 			// 推送消息
 			pushNoticeMsg(msgtype) {
 				
@@ -1413,6 +1598,12 @@
 		
 		.wishInfoview{
 			padding-bottom: 120rpx;
+		}
+		
+		/deep/.cu-chat{
+			.cu-info{
+				display: block !important;
+			}
 		}
 		
 		.floatview{

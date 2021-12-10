@@ -26,8 +26,8 @@
 				<button class="cu-btn bg-gradual-pink shadow-blur round lg width100" @click="startSearch">{{ i18n.base.search }}</button>
 			</view>
 			
-			<!-- 搜索记录区域 -->
-			<view v-if="searchrecord && searchrecord.length > 0" class="searchrecord bg-white">
+			<!-- 搜索记录区域  暂时屏蔽 -->
+			<view v-if="false && searchrecord && searchrecord.length > 0" class="searchrecord bg-white">
 				
 				<view class="titleview flex margin align-center text-sm">
 					{{ i18n.base.searchhistory }}
