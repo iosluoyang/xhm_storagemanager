@@ -8,8 +8,14 @@ const uniID = require('uni-id')
 const { sendWxMiniMsg } = require('hello-common')
 
 exports.main = async (event, context) => {
+	
 	//event为客户端上传的参数
 	console.log('event : ', event)
+	
+	// const dbJQL = uniCloud.databaseForJQL({ // 获取JQL database引用，此处需要传入云函数的event和context，必传
+	// 	event,
+	// 	context 
+ //    })
 	
 	//context中可获取客户端调用的上下文
 	let clientIP = context.CLIENTIP // 客户端ip信息
@@ -22,8 +28,10 @@ exports.main = async (event, context) => {
 	let deviceId = context.DEVICEID // 客户端标识，新增于HBuilderX 3.1.0，同uni-app客户端getSystemInfo接口获取的deviceId
 	// console.log(`clientIP:${clientIP}\nclientUA:${clientUA}\nos:${os}\nplatform:${platform}\nappid:${appid}\ndeviceId:${deviceId}`);
 	
+	const db = uniCloud.database();
 	// 当前时间字符串
 	let currenttimestr = moment().add(8,'h').format('YYYY-MM-DD HH:mm:ss') // 注意服务器时间要比客户端时间晚8个小时 所以这里要增加8个小时
+	// let currenttimestr = dbJQL.env.now()
 	
 	//获取集合对象
 	const uniIDIns = uniID.createInstance({ // 创建uni-id实例，其上方法同uniID
@@ -33,7 +41,6 @@ exports.main = async (event, context) => {
 	// 根据不同的type区分不同的业务
 	let type = event.type
 	let info = event.info
-	
 	
 	// 发送微信消息
 	if(type == 'sendwxmsg') {
@@ -63,6 +70,10 @@ exports.main = async (event, context) => {
 				.doc(wishId)
 				.get()
 			wishInfo = wishres.data[0]
+			// let wishRes = db.collection('wish').doc(wishId).get({getOne: true})
+			// if(wishRes.result.code == 0) {
+			// 	wishInfo = wishRes.result.data
+			// }
 			productTitle = wishInfo.productList[0].title.substr(0,10) + '...' // 取心愿单首个商品的标题
 			
 			console.log(`获取的心愿详情`);
@@ -103,7 +114,7 @@ exports.main = async (event, context) => {
 		console.log(`获取的心愿的客户信息`);
 		console.log(creatUserInfo);
 		
-		let agentUserInfo = {nickname: 'LAL'}
+		let agentUserInfo = {nickname: 'ThaiEasy'}
 		let agentUserWxOpenId = ''
 		if(agentUserId) {
 			let agentuserres = await uniID.getUserInfo({uid: agentUserId})
@@ -192,6 +203,8 @@ exports.main = async (event, context) => {
 			page = `/pages/wishlist/wishdetail?id=${info.wishId}&ifShare=true`
 			
 		}
+		
+		// 截止此处...
 		
 		// 客户完成支付(发送给代理员)
 		else if(msgtype == 'finishpay') {

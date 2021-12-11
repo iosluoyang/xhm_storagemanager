@@ -61,6 +61,13 @@
 				</view>
 			</view>
 			
+			<view class="padding-sm">
+				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-purple" @tap.stop="checkdraftpro">
+					<view class="cuIcon-cartfill text-white u-font-18"></view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.wishdraft }}</view>
+				</view>
+			</view>
+			
 			<!-- 暂时注释 -->
 			<!-- <view class="padding-sm">
 				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-blue" @tap.stop="gotoproductcategory">
@@ -198,6 +205,13 @@
 				});
 			},
 			
+			// 跳转心愿草稿箱页面
+			checkdraftpro() {
+				uni.navigateTo({
+					url: '/pages/wishlist/wishdraftpro'
+				});
+			},
+			
 			// 跳转商品分类页面
 			gotoproductcategory() {
 				uni.navigateTo({
@@ -212,6 +226,9 @@
 				});
 			},
 			
+			
+			
+			//
 		},
 	}
 

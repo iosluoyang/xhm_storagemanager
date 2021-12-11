@@ -6,6 +6,9 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
+	"extensions": {
+		"uni-cloud-jql": {}
+	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {

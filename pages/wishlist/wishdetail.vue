@@ -101,7 +101,7 @@
 							
 							<!-- 分享按钮 小程序平台有 -->
 							<!-- #ifdef MP -->
-							<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share"></button>
+							<button class="cu-btn round bg-orange cuIcon-share margin-right-sm" open-type="share" @tap.stop="shareType='wish'"></button>
 							<!-- #endif -->
 							
 							<!-- 编辑按钮 仅商家自己可编辑 且在该心愿单为待确认前状态时显示 -->
@@ -324,7 +324,7 @@
 										
 										<button class="cu-btn round bg-red cuIcon cuIcon-delete" @tap.stop="deleteTimeLine(itemindex)"></button>
 										
-										<button class="cu-btn round bg-green cuIcon cuIcon-share"></button>
+										<button class="cu-btn round bg-orange cuIcon-share" open-type="share" @tap.stop="shareType='timeline'"></button>
 									
 									</view>
 									
@@ -508,26 +508,6 @@
 			
 			</template>
 			
-			<!-- 中间输入内容 -->
-			<template v-if="popuptype === 'share'">
-				
-				<view class="cu-dialog">
-					
-					<view class="cu-bar bg-white">
-						<view class="content">{{ i18n.base.share }}</view>
-					</view>
-					<view class="padding-sm text-left">
-						<textarea auto-height disable-default-padding :focus="showpopup" :show-confirm-bar="false" :maxlength="-1" :cursor-spacing="100" :placeholder="i18n.base.setshareparam" v-model="sharecontent"></textarea>
-					</view>
-					<view class="cu-bar bg-white flex justify-around">
-						<button class="cu-btn round bg-gray text-grey" @tap.stop="modalcancel">{{i18n.base.cancel}}</button>
-						<button open-type="share" class="cu-btn round bg-gradual-orange" @tap="showpopup = false">{{i18n.base.confirm}}</button>
-					</view>
-				
-				</view>
-				
-			</template>
-			
 		</u-popup>
 				
 	</view>
@@ -564,7 +544,6 @@
 				timeLineScrollViewId: '', // 时间轴滚动视图id
 				selectTimeLineIndex: 0, // 当前选中的时间轴索引
 				selectTimeLineEditFlag: false, // 当前时间轴是否编辑的标识
-				
 				timelineContent: '', // 输入的时间轴内容
 				timelineInputFocus: false, // 时间轴输入框是否聚焦
 				timelineSendPicFlag: false, // 时间轴发送图片的标识  默认为false
@@ -572,9 +551,11 @@
 				imgArr: [], // 图片数组
 				
 				
-				popuptype: 'productLink' , //模态框的类型   productLink为商品链接展示  share为分享类型  默认为商品链接展示
+				popuptype: 'productLink' , //模态框的类型   productLink为商品链接展示  默认为商品链接展示
 				popmode: 'bottom', // 模态框的方向类型  默认为bottom
 				showpopup: false, // 是否显示模态框
+				
+				shareType: 'wish', // 分享类型  wish代表整个心愿的分享  timeline代表时间轴的分享  默认为wish
 								
 			};
 		},
@@ -666,22 +647,25 @@
 			
 			console.log(`当前页面的分享来源为:${res.from === 'button' ? '页面内分享按钮' : '右上角分享按钮' }`);
 			
-			// 当前要分享出去的时间轴数据
-			let sharetimelineitem = this.temptimelineitem
-			// 设置分享的内容
-			let title = this.sharecontent ? this.sharecontent : `${this.wishInfo.productTitle}`
-			let path = sharetimelineitem ? `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&timelineId=${sharetimelineitem._id}&ifShare=true` : `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&ifShare=true`
-			let imageUrl = sharetimelineitem && sharetimelineitem.imgs && sharetimelineitem.imgs.length > 0 ? sharetimelineitem.imgs.split(',')[0] : this.wishInfo.imgs.split(',')[0]
-			let shareobj = {
-				title: title,
-				path: path,
-				imageUrl: imageUrl
+			let shareobj = {}
+			// 根据点击的分享内容不同选择不同的分享参数
+			
+			// 分享心愿
+			if(this.shareType == 'wish') {
+				
+				// 设置分享的内容
+				let title = this.wishInfo.productList.length == 1 ? this.wishInfo.productList[0].title : 'Come and have a look of this Wish'
+				let path = `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&ifShare=true`
+				let imageUrl = this.wishInfo.productList.length == 1 ? this.wishInfo.productList[0].imgs.split(',')[0] : ''
+				let shareobj = {
+					title: title,
+					path: path,
+					imageUrl: imageUrl
+				}
+				
 			}
-			
-			this.temptimelineitem = null
-			this.sharecontent = ''
-			
 			return shareobj
+			
 		},
 		
 		methods: {
@@ -1508,38 +1492,13 @@
 				});
 				
 			},
-			
-			// 弹出框点击取消
-			modalcancel() {
-				
-				this.showpopup=false;
-				this.temptimelineitem = null
-				this.sharecontent = ''
-				
-			},
-			
-			// 点击分享时间轴
-			sharetimeline(timelineitem) {
-				
-				this.temptimelineitem = timelineitem // 赋值临时变量
-				this.sharecontent = timelineitem.content || ''
-				// 弹出输入框
-				this.popmode = 'center'
-				this.popuptype = 'share'
-				this.showpopup = true
-				
-			},
 
 			// 推送消息
 			pushNoticeMsg(msgtype) {
 				
-				let info
-				// 根据不同的消息类型准备不同的数据内容
-				if(msgtype == 'agentbindwish') {
-					info = {
-						msgtype: msgtype,
-						wishId: _this.wishId
-					}
+				let info = {
+					msgtype: msgtype,
+					wishId: _this.wishId
 				}
 				
 				uniCloud.callFunction({
