@@ -95,7 +95,9 @@
 			
 			<view class="flex align-center">
 				
-				<text class="cuIcon text-lg" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
+				<view class="text-xxl">
+					<text class="cuIcon" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
+				</view>
 				
 				<view v-if="selectInfo" class="flex flex-direction justify-center margin-left">
 					<text v-if="type == 'normal' " class="text-price text-red text-xl">{{ `${selectInfo.totalPrice}元` }}</text>
