@@ -1,7 +1,7 @@
 {
-    "name" : "XHM_Storage",
+    "name" : "ThaiEasy",
     "appid" : "__UNI__63B9E78",
-    "description" : "进销存管理系统",
+    "description" : "ThaiEasy",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
@@ -159,7 +159,7 @@
             "maps" : {}
         },
         "domain" : "http://thaieasy.xiaohemu.net",
-        "title" : "XHM_Storage",
+        "title" : "ThaiEasy",
         "optimization" : {
             "treeShaking" : {
                 "enable" : true

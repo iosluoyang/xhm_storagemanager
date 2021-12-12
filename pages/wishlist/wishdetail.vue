@@ -649,7 +649,6 @@
 			
 			let shareobj = {}
 			// 根据点击的分享内容不同选择不同的分享参数
-			
 			// 分享心愿
 			if(this.shareType == 'wish') {
 				
@@ -657,13 +656,13 @@
 				let title = this.wishInfo.productList.length == 1 ? this.wishInfo.productList[0].title : 'Come and have a look of this Wish'
 				let path = `/pages/wishlist/wishdetail?id=${this.wishInfo._id}&ifShare=true`
 				let imageUrl = this.wishInfo.productList.length == 1 ? this.wishInfo.productList[0].imgs.split(',')[0] : ''
-				let shareobj = {
+				shareobj = {
 					title: title,
 					path: path,
 					imageUrl: imageUrl
 				}
-				
 			}
+			console.log(shareobj);
 			return shareobj
 			
 		},
