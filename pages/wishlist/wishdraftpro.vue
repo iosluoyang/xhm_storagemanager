@@ -2,7 +2,7 @@
 	<view class="pagecontent">
 		
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-purple">
+		<cu-custom bgColor="bg-gradual-pink">
 			<block slot="content">{{i18n.nav.wishdraft}}</block>
 			<template>
 				<text class="text-white margin-left" slot="backText" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit'; showSelector = false ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
@@ -28,8 +28,8 @@
 						<!-- 商店头部展示区域 -->
 						<view v-if="eachstore.sellerInfo" class="storeheaderview cu-bar bg-white solids-bottom">
 							<view class="action">
-								<text class="cuIcon u-font-40 margin-right" :class="[ getStoreSelectFlag(eachstore) ? 'cuIcon-roundcheckfill text-purple' : 'cuIcon-round text-gray' ]" @tap.stop="toggleStoeSelectFlag(eachstore)"></text>
-								<text class="cuIcon cuIcon-shopfill text-purple"></text>
+								<text class="cuIcon u-font-40 margin-right" :class="[ getStoreSelectFlag(eachstore) ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleStoeSelectFlag(eachstore)"></text>
+								<text class="cuIcon cuIcon-shopfill text-pink"></text>
 								<text class="text-df text-black">{{ eachstore.sellerInfo.nickName }}</text>
 							</view>
 						</view>
@@ -41,7 +41,7 @@
 								
 								<!-- 商品基本信息 -->
 								<view class="productcontent flex align-center padding-sm" @tap.stop="checkProDetail(eachproduct)">
-									<view class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-purple' : 'cuIcon-round text-gray' ]" @tap.stop="toggleProduct({storeindex, productindex})"></view>
+									<view class="cuIcon u-font-40 margin-right" :class="[ eachproduct.ifSelect ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleProduct({storeindex, productindex})"></view>
 									<u-image class="flex0 margin-right" width="100" height="100" :src="eachproduct.imgs.split(',')[0]"></u-image>
 									<view class="titleview flex1 u-line-2" style="max-width: 200px;">{{ eachproduct.title }}</view>
 									<button class="flex0 cu-btn round cuIcon cuIcon-order bg-gray margin-left" @tap.stop="changeProSpec({storeindex, productindex})"></button>
@@ -96,7 +96,7 @@
 			<view class="flex align-center">
 				
 				<view class="text-xxl">
-					<text class="cuIcon" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-purple' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
+					<text class="cuIcon" :class="[ allSelectFlag ? 'cuIcon-roundcheckfill text-pink' : 'cuIcon-round text-gray' ]" @tap.stop="toggleSelectFlag"></text>
 				</view>
 				
 				<view v-if="selectInfo" class="flex flex-direction justify-center margin-left">
@@ -109,7 +109,7 @@
 			<view class="btnview">
 				<!-- 根据不同状态选择不同元素 -->
 				<template>
-					<button v-if="type == 'normal'" class="cu-btn bg-gradual-purple lg" :disabled="selectInfo.totalProNum == 0" @tap.stop="gotoMakeWish">{{ i18n.base.confirm }}</button>
+					<button v-if="type == 'normal'" class="cu-btn bg-gradual-pink lg" :disabled="selectInfo.totalProNum == 0" @tap.stop="gotoMakeWish">{{ i18n.base.confirm }}</button>
 					<button v-if="type == 'edit'" class="cu-btn bg-red lg" :disabled="selectInfo.totalProNum == 0" @tap.stop="deleteSpecPro">{{ i18n.base.delete }}</button>
 				</template>
 				
@@ -223,6 +223,8 @@
 			uni.$on('updatecartdata', function() {
 				console.log(`更新购物车数据`);
 				_this.$refs.udb.refresh()
+				// 获取最新的购物车数量
+				_this.$store.dispatch('user/getshoppingcartnum')
 			})
 			
 		},
@@ -386,6 +388,9 @@
 											dataList.splice(indexitem.storeindex, 1)
 										}
 									})
+									
+									// 获取最新的购物车数量
+									_this.$store.dispatch('user/getshoppingcartnum')
 									
 								},
 								fail: (err) => {

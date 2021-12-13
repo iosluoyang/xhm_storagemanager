@@ -93,9 +93,11 @@
 				{{ i18n.base.favor }}
 			</view>
 			
-			<!-- 草稿箱按钮 -->
+			<!-- 购物车按钮 -->
 			<view class="action" @click="draftPro">
-				<view class="cuIcon-cartfill text-pink"></view>
+				<view class="cuIcon-cartfill text-pink">
+					<text v-if="shoppingCartNum" class="cu-tag badge">{{ shoppingCartNum }}</text>
+				</view>
 				{{ i18n.base.shoppingcart }}
 			</view>
 			
@@ -192,7 +194,12 @@
 				console.log(`当前计算的top值为${toprpx}`);// 注意转成rpx单位
 				return toprpx
 				// #endif
-			}
+			},
+			
+			// 购物车数量
+			shoppingCartNum() {
+				return this.$store.getters.shoppingcartNum
+			},
 			
 		},
 		
@@ -577,6 +584,9 @@
 								
 								// 通知更新草稿箱数据
 								uni.$emit('updatecartdata')
+								
+								// 获取最新的购物车数量
+								_this.$store.dispatch('user/getshoppingcartnum')
 								
 							}).catch(error => {
 								uni.showToast({

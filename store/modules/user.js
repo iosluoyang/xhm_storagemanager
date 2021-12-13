@@ -7,6 +7,7 @@ const state = {
 	accessTokenExpiredDate: uni.getStorageSync('accessTokenExpiredDate'),
 	refreshToken: uni.getStorageSync('refreshToken'),
 	user: uni.getStorageSync('user'),
+	shoppingcartNum: 0, // 用户购物车数量
 }
 
 const mutations = {
@@ -56,6 +57,10 @@ const mutations = {
 			uni.removeStorageSync('user')
 		}
 	},
+	SET_SHOPPINGCARTNUM: (state, shoppingcartnum) => {
+		state.shoppingcartNum = shoppingcartnum
+	},
+	
 }
 
 const actions = {
@@ -230,6 +235,7 @@ const actions = {
 							commit('SET_ACCESSTOKEN',null)
 							commit('SET_REFRESHTOKEN',null)
 							commit('SET_USER',null)
+							commit('SET_SHOPPINGCARTNUM', 0)
 							resolve()
 					}
 					// 登出失败
@@ -264,6 +270,7 @@ const actions = {
 			commit('SET_ACCESSTOKEN',null)
 			commit('SET_REFRESHTOKEN',null)
 			commit('SET_USER',null)
+			commit('SET_SHOPPINGCARTNUM', 0)
 	
 			resolve()
 		})
@@ -307,6 +314,34 @@ const actions = {
 			resolve()
 		})
 	},
+	
+	// get user shoppingcart number
+	getshoppingcartnum({commit}) {
+		return new Promise((resolve,reject) => {
+			
+			const db = uniCloud.database();
+			db.collection('wish-draft-product')
+			.where(`creatUid == $cloudEnv_uid && status == 0`)
+			.count()
+			.then(response => {
+				if(response.result.code == 0) {
+					let shoppingcartnum = response.result.total
+					commit('SET_SHOPPINGCARTNUM',shoppingcartnum)
+					resolve()
+				}
+				else {
+					console.log(`获取购物车数量失败`);
+					reject(res.result)
+				}
+			})
+			.catch(error => {
+				console.log(`获取购物车数量失败`);
+				console.log(error);
+				reject(error)
+			})
+			
+		})
+	}
 	
 }
 

@@ -55,30 +55,40 @@
 		<view class="grid col-2 padding-left padding-right margin-top-sm">
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-pink" @tap.stop="checkwishlist">
-					<view class="cuIcon-likefill text-white u-font-18"></view>
+				<view class="padding radius text-center shadow-warp bg-gradual-pink" @tap.stop="checkwishlist">
+					<view class="text-xsl">
+						<text class="cuIcon cuIcon-likefill text-white"></text>
+					</view>
 					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlist }}</view>
 				</view>
 			</view>
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-purple" @tap.stop="checkdraftpro">
-					<view class="cuIcon-cartfill text-white u-font-18"></view>
+				<view class="padding radius text-center shadow-warp bg-gradual-purple" @tap.stop="checkdraftpro">
+					<view class="text-xsl">
+						<text class="cuIcon cuIcon-cartfill text-white pos-relative">
+							<text v-if="shoppingCartNum" class="cu-tag badge">{{ shoppingCartNum }}</text>
+						</text>
+					</view>
+					
 					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.wishdraft }}</view>
+					
 				</view>
 			</view>
 			
 			<!-- 暂时注释 -->
 			<!-- <view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-blue" @tap.stop="gotoproductcategory">
+				<view class="padding radius text-center shadow-warp bg-gradual-blue" @tap.stop="gotoproductcategory">
 					<view class="cuIcon-cascades text-white u-font-18"></view>
 					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.procategory }}</view>
 				</view>
 			</view> -->
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-blur shadow-warp bg-gradual-orange" @tap.stop="checkwishlistfavor">
-					<view class="cuIcon-favorfill text-white u-font-18"></view>
+				<view class="padding radius text-center shadow-warp bg-gradual-orange" @tap.stop="checkwishlistfavor">
+					<view class="text-xsl">
+						<text class="cuIcon cuIcon-favorfill text-white"></text>
+					</view>
 					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlistfavor }}</view>
 				</view>
 			</view>
@@ -110,7 +120,14 @@
 			let searchrecord = uni.getStorageSync('searchrecordarr')
 			this.searchrecord = searchrecord
 		},
-			
+		
+		computed: {
+			// 购物车数量
+			shoppingCartNum() {
+				return this.$store.getters.shoppingcartNum
+			},
+		},
+		
 		methods: {
 			
 			// 粘贴内容

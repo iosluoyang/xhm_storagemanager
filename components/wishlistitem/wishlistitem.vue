@@ -285,7 +285,7 @@
 						// uni.$emit('updatewishlist')
 						
 						// 添加一个代理人关联心愿时间轴记录
-						db.collection('wishlisttimeline')
+						db.collection('wish-timeline')
 						.add({type: 90,wishId: wishinfo._id})
 						.then(response => {
 							// 创建时间轴成功

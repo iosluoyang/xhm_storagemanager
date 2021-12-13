@@ -176,7 +176,7 @@
 							<text class="cuIcon-close"></text>
 						</button>
 						
-						<button class="margin-left eachbtn cu-btn bg-green shadow-blur cuIcon" @tap.stop="agreeQuotation">
+						<button class="margin-left-xl eachbtn cu-btn bg-green shadow-blur cuIcon" @tap.stop="agreeQuotation">
 							<text class="cuIcon-check"></text>
 						</button>
 						
@@ -964,7 +964,7 @@
 			
 			// 用户同意报价
 			agreeQuotation() {
-				
+			
 				uni.showModal({
 					content: _this.i18n.tip.optionconfirm,
 					showCancel: true,
@@ -1014,6 +1014,7 @@
 								})
 								
 								// 生成订单信息
+								let productList = []
 								let orderProductList = [..._this.wishInfo.productList]
 								orderProductList.forEach(eachproduct => {
 									// 删除心愿单商品中的草稿箱商品记录id(如果有的话)

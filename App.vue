@@ -129,6 +129,11 @@
 				});
 			})
 			
+			// 获取已登录用户的购物车数量
+			if(this.user) {
+				this.$store.dispatch('user/getshoppingcartnum')
+			}
+			
 		},
 		onShow: function() {
 			console.log('App Show')

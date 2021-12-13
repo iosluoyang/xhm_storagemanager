@@ -19,7 +19,8 @@
 						<template>
 							<u-icon v-if="item.type == 'alipay'" name="zhifubao" color="#108EE9" size="50"></u-icon>
 							<u-icon v-else-if="item.type == 'wechat'" name="weixin-fill" color="#07C160" size="50"></u-icon>
-							<u-icon v-else="item.type == 'bankcard'" name="rmb-circle-fill" color="#e54d42" size="50"></u-icon>
+							<u-icon v-else-if="item.type == 'bankcard'" name="rmb-circle-fill" color="#000000" size="50"></u-icon>
+							<u-icon v-else-if="item.type == 'balance'" name="red-packet-fill" color="#e54d42" size="50"></u-icon>
 						</template>
 						
 						<text class="text-df margin-left">{{ item.title }}</text>
@@ -159,7 +160,7 @@
 				orderInfo: null, // 订单信息
 				
 				paymentArr: null, // 支付方式数组
-				paymentType: 'bankcard', // 支付方式  alipay  wechat  bandcard
+				paymentType: 'balance', // 支付方式 balance  alipay  wechat  bandcard
 				
 				totalPrice: null, // 支付金额
 				
