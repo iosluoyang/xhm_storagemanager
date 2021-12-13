@@ -5,44 +5,50 @@
 		<cu-custom v-if="!ifforbidback" bgColor="transparent"></cu-custom>
 		
 		<!-- 登录注册主页面 -->
-		<view class="maincontent flex flex-direction align-center padding-xl">
+		<view class="maincontent flex flex-direction align-center padding">
 			
 			<!-- 头部logo -->
-			<view class="header flex flex-direction align-center">
-				<image class="img" mode="aspectFill" :src=" configData && configData.appLogo ? configData.appLogo : '/static/publicicon/logo.png' "></image>
-				<!-- <text class="text-bold text-xl text-center margin-top text-pink">{{ configData.appName }}</text> -->
+			<view v-if="configData" class="header flex flex-direction align-center">
+				<image class="img round" mode="aspectFill" :src="configData.appLogo"></image>
+				<text class="text-bold text-xl text-center margin-top">{{ configData.appName }}</text>
 			</view>
 			
 			<!-- 输入内容区域 -->
-			<view class="eachareaview inputview margin-top">
+			<u-form class="eachareaview margin-top" ref="uForm" :model="formData" :error-type="formErrorType">
 				
 				<!-- 账号 -->
-				<uni-easyinput v-model="account" :placeholder="i18n.placeholder.login.account" trim prefixIcon="person-filled" />
+				<u-form-item prop="account" left-icon="account-fill">
+					<u-input v-model="formData.account" :placeholder="i18n.placeholder.login.account"></u-input>
+				</u-form-item>
 				
 				<!-- 密码 -->
-				<uni-easyinput type="password" v-model="password" :placeholder="i18n.placeholder.login.password" trim prefixIcon="locked-filled" />
+				<u-form-item prop="password" left-icon="lock-fill">
+					<u-input v-model="formData.password" type="password" :placeholder="i18n.placeholder.login.passwordagain"></u-input>
+				</u-form-item>
 				
-				<!-- 确认密码 -->
-				<uni-easyinput v-if="type == 'register'" type="password" v-model="confirmpassword" :placeholder="i18n.placeholder.login.passwordagain" trim prefixIcon="locked-filled"></uni-easyinput>
+				<!-- 确认密码 注册时显示 -->
+				<u-form-item v-if="type == 'register'" prop="confirmpassword" left-icon="lock-fill">
+					<u-input v-model="formData.confirmpassword" type="password" :placeholder="i18n.placeholder.login.passwordagain"></u-input>
+				</u-form-item>
 				
 				<!-- 选择注册角色 -->
 				<uni-collapse class="margin-top" v-if="type == 'register'">
 					<uni-collapse-item :title="i18n.placeholder.login.selectrole" open showAnimation>
 						
 						<view class="cu-list grid no-border col-3">
-							<view class="cu-item" :class="[role == item.value ? 'bg-yellow light animation-scale-up' : '']" v-for="(item,index) in roleList" :key="index" @click="role=item.value">
+							<view class="cu-item" :class="[formData.role == item.value ? 'bg-yellow light animation-scale-up' : '']" v-for="(item,index) in roleList" :key="index" @click="formData.role=item.value">
 								<view :class="[item.icon,item.color]"></view>
 								<text>{{item.title}}</text>
 							</view>
 						</view>
 						
-						<!-- 一段文字的简介 -->
-						<view class="text-xs padding text-cut">{{ i18n.role[role]['des'] }}</view>
+						<!-- 简介 -->
+						<view class="text-sm text-grey padding">{{ i18n.role[formData.role]['des'] }}</view>
 						
 					</uni-collapse-item>
 				</uni-collapse>
 				
-			</view>
+			</u-form>
 			
 			<!-- 其他操作区域 -->
 			<view class="eachareaview otherview flex align-center justify-between margin-top">
@@ -82,17 +88,22 @@
 			return {
 				
 				type: 'login', // 页面类型  login为登录  register为注册  默认为登录
-				
 				ifforbidback: false, // 是否禁止返回 默认为否 代表有导航栏 可以返回
-				account:'', //用户/电话
-				password:'', //密码
-				confirmpassword: '', // 确认密码
-				role: this.$basejs.roleEnum.merchantAdmin, // 默认的角色为商家角色
-				roleList: [], // 角色列表
 				
-				invitecode: '', // 邀请码
+				formData: {
+					account: "",
+					password: "",
+					confirmpassword: "",
+					role: "",
+					invitecode: "",
+					role: this.$basejs.roleEnum.merchantAdmin, // 默认的角色为商家角色
+					store: "",
+					shipping: ""
+				},
+				formErrorType: ['border-bottom','toast'],
+				
+				roleList: [], // 角色列表
 				isLoading: false, //是否正在加载
-				isFocus: false ,// 是否聚焦
 				
 			};
 		},
@@ -112,7 +123,7 @@
 			
 			// 如果有邀请码的话则填充邀请码
 			if(option && option.inviteCode) {
-				this.invitecode = option.inviteCode
+				this.formData.invitecode = option.inviteCode
 			}
 			
 			// 设置角色列表
@@ -140,13 +151,53 @@
 			
 		},
 		
-		methods: {
+		onReady() {
 			
-			// 选择角色
-			selectrole(e) {
-				let role = e.detail.value
-				this.role = role
-			},
+			let formRules = {
+				account: [
+					{ 
+						required: true, 
+						message: _this.i18n.placeholder.login.account,
+						// 可以单个或者同时写两个触发验证方式 
+						trigger: ['change','blur'],
+					},
+					{
+						pattern: /^[0-9a-zA-Z]*$/g,
+						// 正则检验前先将值转为字符串
+						transform(value) {
+							return String(value);
+						},
+						message: _this.i18n.tip.pleaseinputrightcontent
+					},
+				],
+				password: [
+					{
+						required: true,
+						message: _this.i18n.placeholder.login.password,
+						trigger: 'blur'
+					}
+				],
+				confirmpassword: [
+					{
+						required: true,
+						message: _this.i18n.placeholder.login.confirmpassword,
+						trigger: 'blur'
+					},
+					// 自定义规则判断是否包含字母"A"
+					{
+						validator: (rule, value, callback) => {
+							let password = _this.formData.password
+							return value == password
+						},
+						message: _this.i18n.login.typenewagainpwd
+					},
+				]
+			}
+			this.$refs.uForm.setRules(formRules);
+		
+		},
+		
+		methods: {
 			
 			// 检测店铺名称
 			checkStoreName() {
@@ -164,40 +215,20 @@
 		    confirm(){
 				
 				// 校验规则
-				if (_this.account == "") {
-				     uni.showToast({
-				        title: _this.i18n.placeholder.login.account,
-						icon: 'none'
-				    });
-				    return;
-				}
-				else if (_this.password == '') {
-				    uni.showToast({
-				        title: _this.i18n.placeholder.login.password,
-						icon: 'none',
-				    });
-				    return;
-				}
-				
-				// 如果是注册则多增加一次确认密码的判断
-				if(this.type == 'register') {
-					
-					if(this.password != this.confirmpassword) {
-						uni.showToast({
-							title: _this.i18n.login.typenewagainpwd,
-							icon: 'none'
-						});
-						return
+				this.$refs.uForm.validate(valid => {
+					if (valid) {
+						console.log('验证通过');
+					} else {
+						console.log('验证失败');
 					}
-					
-				}
+				});
 				
 				// 开始登录操作
 				if(this.type == 'login') {
 					
 					let data = {
-						account: _this.account,
-						password: _this.password,
+						account: _this.formData.account,
+						password: _this.formData.password,
 					}
 					
 					uni.showLoading()
@@ -214,7 +245,7 @@
 						});
 						setTimeout(function() {
 							uni.navigateBack();
-						}, 1500);
+						}, 1000);
 						// #endif
 						
 						// 如果是在微信小程序环境则判断是否有绑定微信
@@ -327,6 +358,7 @@
 										}
 										// 获取失败(此时账号已经登录)
 										else {
+											uni.navigateBack();
 											uni.showToast({
 												title: res.result.message,
 												icon: 'none'
@@ -335,6 +367,7 @@
 									},
 									fail() {
 										uni.hideLoading()
+										uni.navigateBack();
 									}
 								})
 							},
@@ -378,12 +411,12 @@
 					
 					// 进行注册
 					let data = {
-						account: _this.account,
-						password: _this.password,
-						invitecode: _this.invitecode,
-						role: [_this.role],
-						store: _this.store,
-						shipping: _this.shipping
+						account: _this.formData.account,
+						password: _this.formData.password,
+						invitecode: _this.formData.invitecode,
+						role: [_this.formData.role],
+						store: _this.formData.store,
+						shipping: _this.formData.shipping
 					}
 					_this.$store.dispatch('user/register', data).then(res => {
 						// 注册成功
@@ -392,15 +425,11 @@
 							icon: 'success'
 						});
 						
-						// 注册成功后将店铺或者物流公司的管理员与该用户进行绑定
-						// const db = uniCloud.database();
-						// db.collection('store')
-						
 						// 进行自动登录
 						setTimeout(function() {
 							_this.type = 'login'
 							_this.confirm()
-						}, 1500);
+						}, 1000);
 						
 					}).catch(err => {
 						uni.showModal({
@@ -417,10 +446,12 @@
 			havequestion() {
 				// 预览大图客服二维码
 				let serviceImg = this.$store.getters.configData.serviceImg
-				uni.previewImage({
-					urls: [serviceImg],
-					current:0
-				})
+				if(serviceImg) {
+					uni.previewImage({
+						urls: [serviceImg],
+						current:0
+					})
+				}
 			},
 			
 			// 绑定微信
@@ -469,7 +500,7 @@
 				
 			},
 			
-			//微信登录
+			// 点击了微信登录
 			clickWxlogin() {
 				
 				// 获取微信openId
@@ -532,7 +563,18 @@
 													showCancel: false,
 													confirmText: _this.i18n.base.confirm,
 													success: res => {
-														
+														// 重置为注册模态
+														_this.type = 'register'
+														_this.formData = {
+															account: "",
+															password: "",
+															confirmpassword: "",
+															role: "",
+															invitecode: "",
+															role: _this.$basejs.roleEnum.merchantAdmin, // 默认的角色为商家角色
+															store: "",
+															shipping: ""
+														}
 													}
 												});
 											}
@@ -579,7 +621,6 @@
 			// 微信小程序登录
 			wxMiniLogin() {
 				
-				// let data = {invitecode: _this.invitecode, role: _this.role}
 				let data = {}
 				uni.showLoading()
 				_this.$store.dispatch('user/wxlogin', data).then(res => {
@@ -617,12 +658,6 @@
 		
 		.eachareaview{
 			width: 80%;
-			
-			&.inputview{
-				/deep/.uni-easyinput{
-					margin-top: 20px;
-				}
-			}
 			
 			/deep/.uni-collapse{
 				

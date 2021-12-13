@@ -133,6 +133,7 @@ const zh = {
 		needtoregister: "该账号不存在,是否进行注册?",
 		pleasechecknetwork: "请检查网络情况",
 		pleaseinputcontent: "请输入内容",
+		pleaseinputrightcontent: "请输入正确内容",
 		
 	},
 	
