@@ -68,14 +68,11 @@
 		<!-- 列表 -->
 		<view class="cu-list menu sm-border card-menu margin-top">
 			
-			<!-- 当前版本 -->
-			<view class="cu-item" v-if="configData">
+			<!-- 我的收藏商品 -->
+			<view v-if="iflogin" class="cu-item arrow" @tap.stop="jumpToProFavor">
 				<view class="content">
-					<image :src="configData.appLogo" mode="aspectFit"></image>
-					<text class="text-grey">{{i18n.me.appversion}}</text>
-				</view>
-				<view class="action">
-					<text class="text-grey text-sm">{{configData.appVersion}}</text>
+					<text class="cuIcon-favorfill text-grey"></text>
+					<text class="text-black">{{i18n.nav.profavor}}</text>
 				</view>
 			</view>
 			
@@ -83,7 +80,18 @@
 			<view v-if="iflogin" class="cu-item arrow" @tap.stop="exit">
 				<view class="content">
 					<text class="cuIcon-circlefill text-grey"></text>
-					<text class="text-grey">{{i18n.me.exit}}</text>
+					<text class="text-black">{{i18n.me.exit}}</text>
+				</view>
+			</view>
+			
+			<!-- 当前版本 -->
+			<view class="cu-item" v-if="configData">
+				<view class="content">
+					<image class="round sm" :src="configData.appLogo" mode="aspectFit"></image>
+					<text class="text-black">{{i18n.me.appversion}}</text>
+				</view>
+				<view class="action">
+					<text class="text-grey text-sm">{{configData.appVersion}}</text>
 				</view>
 			</view>
 			
@@ -258,6 +266,13 @@
 					url: jumpurl
 				});
 				
+			},
+			
+			// 跳转收藏商品页面
+			jumpToProFavor() {
+				uni.navigateTo({
+					url: '/pages/product/favorlist'
+				});
 			},
 			
 			// 点击面板操作按钮
