@@ -3,7 +3,7 @@
 		
 		<!-- 自定义导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
-			<block slot="content">{{i18n.nav.wishdraft}}</block>
+			<block slot="content">{{i18n.nav.shoppingcart}}</block>
 			<template>
 				<text class="text-white margin-left" slot="backText" @tap.stop=" type = type == 'edit' ? 'normal' : 'edit'; showSelector = false ">{{ type == 'normal' ? i18n.base.edit : i18n.base.cancel }}</text>
 			</template>
@@ -336,7 +336,7 @@
 			// 查看商品
 			checkProDetail(eachproduct) {
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?pid=${eachproduct.pid}&platformPid=${eachproduct.platformPid}`
+					url: `/pages/product/prodetail?pid=${eachproduct.pid}&platformPid=${eachproduct.platformPid}`
 				});
 			},
 			
@@ -428,7 +428,7 @@
 				// 跳转至下单页 将选择的draftId数组传递至下单页进行请求
 				uni.setStorageSync('makeorderdraftidarr', selectSpecProIdArr)
 				uni.navigateTo({
-					url: '/pages/wishlist/makewishorder?sourceFrom=draftpro'
+					url: '/pages/makeorder/index?sourceFrom=draftpro'
 				});
 			},
 			

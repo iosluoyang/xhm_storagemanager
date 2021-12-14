@@ -1,5 +1,5 @@
 <template>
-	<view class="linkprodetailview">
+	<view class="prodetailview">
 		
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
@@ -94,7 +94,7 @@
 			</view>
 			
 			<!-- 购物车按钮 -->
-			<view class="action" @click="draftPro">
+			<view class="action" @click="jumptoshoppingcart">
 				<view class="cuIcon-cartfill text-pink">
 					<text v-if="shoppingCartNum" class="cu-tag badge">{{ shoppingCartNum }}</text>
 				</view>
@@ -367,10 +367,10 @@
 				
 			},
 			
-			// 跳转心愿草稿箱
-			jumptodraft() {
+			// 跳转购物车
+			jumptoshoppingcart() {
 				uni.navigateTo({
-					url: '/pages/wishlist/wishdraftpro'
+					url: '/pages/makeorder/shoppingcart'
 				});
 			},
 			
@@ -512,14 +512,7 @@
 				}
 				
 			},
-			
-			// 跳转草稿箱
-			draftPro() {
-				uni.navigateTo({
-					url: '/pages/wishlist/wishdraftpro'
-				});
-			},
-			
+		
 			// 开始购买
 			starttobuy() {
 				
@@ -661,7 +654,7 @@
 </script>
 
 <style lang="scss" scoped>
-	.linkprodetailview{
+	.prodetailview{
 		
 		padding-bottom: 50px;
 		

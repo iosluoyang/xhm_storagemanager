@@ -223,7 +223,7 @@
 				paynow() {
 					let orderId = this.ownwishitem.wishOrderInfo._id
 					uni.navigateTo({
-						url: `/pages/wishlist/payment?orderType=wishorder&orderId=${orderId}`
+						url: `/pages/makeorder/payment?orderType=wishorder&orderId=${orderId}`
 					});
 				},
 				
@@ -232,7 +232,7 @@
 					
 					let wishOrderId = this.ownwishitem.wishOrderInfo._id
 					uni.navigateTo({
-						url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
+						url: `/pages/order/orderdetail?wishOrderId=${wishOrderId}`
 					});
 					
 				},

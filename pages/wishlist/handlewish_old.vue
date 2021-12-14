@@ -2,7 +2,7 @@
 	<view class="content addwishview bg-gray">
 		
 		<cu-custom bgColor="bg-gradual-pink" isBackConfirm>
-			<block slot="content">{{i18n.nav.wishlist}}</block>
+			<block slot="content">{{i18n.nav.wish}}</block>
 		</cu-custom>
 
 		<!-- 填写的表单信息 -->

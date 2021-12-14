@@ -221,7 +221,7 @@ exports.main = async (event, context) => {
 				time8: {value: currenttimestr}, // 推送时间
 			}
 			
-			page = `/pages/wishlist/wishorder?wishOrderId=${orderId}&ifShare=true`
+			page = `/pages/order/orderdetail?wishOrderId=${orderId}&ifShare=true`
 			
 			console.log(`模拟发送的消息体为:`);
 			console.log(data);
@@ -287,7 +287,7 @@ exports.main = async (event, context) => {
 			   thing8: {value: "订单状态变更,请尽快确认"}
 			},
 			
-			page = `/pages/wishlist/linkprocategory`
+			page = `/pages/product/category`
 			
 		}
 		

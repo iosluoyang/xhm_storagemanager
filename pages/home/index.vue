@@ -207,7 +207,7 @@
 				
 				// 心愿单功能
 				let wishlistitem = {
-					title: this.i18n.nav.wishlist,
+					title: this.i18n.nav.wish,
 					id: 'wishlist',
 					name: 'Wishlist',
 					color: 'mauve',
@@ -221,7 +221,7 @@
 					name: 'Personal',
 					color: 'orange',
 					cuIcon: 'people',
-					url: '/pages/me/index'
+					url: '/pages/base/me'
 				}
 				
 				let elements = []
@@ -307,7 +307,7 @@
 			// 跳转个人页面
 			jumpToPersonal() {
 				uni.navigateTo({
-					url: '/pages/me/index'
+					url: '/pages/base/me'
 				});
 			},
 			

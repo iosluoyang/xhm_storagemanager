@@ -583,7 +583,7 @@
 				
 				let wishOrderId = this.wishInfo.wishOrderId
 				uni.navigateTo({
-					url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
+					url: `/pages/order/orderdetail?wishOrderId=${wishOrderId}`
 				});
 				
 			},
@@ -592,7 +592,7 @@
 			paynow() {
 				let wishOrderId = this.wishInfo.wishOrderId
 				uni.navigateTo({
-					url: `/pages/wishlist/payment?orderType=wishorder&orderId=${wishOrderId}`
+					url: `/pages/makeorder/payment?orderType=wishorder&orderId=${wishOrderId}`
 				});
 			},
 			
@@ -600,7 +600,7 @@
 			confirmproductreceive() {
 				// 跳转收货页面
 				uni.navigateTo({
-					url: `/pages/wishlist/wishorder?type=clientconfirmreceive&wishId=${_this.wishInfo._id}`
+					url: `/pages/order/orderdetail?type=clientconfirmreceive&wishId=${_this.wishInfo._id}`
 				});
 			},
 			

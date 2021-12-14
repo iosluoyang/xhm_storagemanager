@@ -3,13 +3,13 @@
 		
 		<!-- 自定义导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
-			<block slot="content">{{i18n.nav.makewishorder}}</block>
+			<block slot="content">{{i18n.nav.makeorder}}</block>
 		</cu-custom>
 		
 		<!-- 仓库地址区域 -->
 		
 		
-		<!-- 下单店铺区域  根据草稿箱顺序而定 -->
+		<!-- 下单店铺区域  根据购物车顺序而定 -->
 		<view v-if="ownDataList" class="ordercontentview storesview padding-sm">
 			
 			<!-- 店铺 -->

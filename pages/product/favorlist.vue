@@ -3,7 +3,7 @@
 
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-orange">
-			<block slot="content">{{ i18n.nav.mywishlistfavor }}</block>
+			<block slot="content">{{ i18n.nav.profavor }}</block>
 		</cu-custom>
 		
 		<!-- 小程序中存在插槽问题 暂时不用udb -->
@@ -233,7 +233,7 @@
 			// 点击详情
 			gotoprodetail(item) {
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?pid=${item.productInfo.pid}`
+					url: `/pages/product/prodetail?pid=${item.productInfo.pid}`
 				});
 			},
 

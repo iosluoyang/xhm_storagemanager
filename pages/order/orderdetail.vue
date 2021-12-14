@@ -1,9 +1,9 @@
 <template>
-	<view class="pagecontent wishorderpage">
+	<view class="pagecontent orderdetailpage">
 		
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-purple">
-			<block slot="content">{{ i18n.nav.wishorder }}</block>
+			<block slot="content">{{ i18n.nav.orderdetail }}</block>
 		</cu-custom>
 		
 		<!-- 内容视图 -->
@@ -838,7 +838,7 @@
 			gotoprodetail(wishinfo) {
 				let thirdPid = wishinfo.thirdPid
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
+					url: `/pages/product/prodetail?thirdPid=${thirdPid}`
 				});
 			},
 			
@@ -1034,7 +1034,7 @@
 				
 				let orderId = this.orderinfo._id
 				uni.navigateTo({
-					url: `/pages/wishlist/payment?orderType=wishorder&orderId=${orderId}`
+					url: `/pages/makeorder/payment?orderType=wishorder&orderId=${orderId}`
 				});
 				
 			},

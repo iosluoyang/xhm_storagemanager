@@ -48,20 +48,21 @@ const th = {
 	// 导航栏主分类
 	nav: {
 		
+		wish: "Wish",
 		wishlist: "WishList",
-		mywishlist: "My WishList",
-		mywishlistfavor: "Favor List",
+		profavor: "Favor List",
 		procategory: "Category",
 		prodetail: "Product Detail",
-		wishdraft: "wish Draft",
-		makewishorder: "Make Wish Order",
+		shoppingcart: "ShoppingCart",
+		makeorder: "Make Order",
 		wishdetail: "Wish Detail",
 		me: "Me",
+		wallet: "Wallet",
 		storemanage: "Store Manage",
 		shipping: "Shipping",
 		notice: "Notice",
 		resetpwd: "Reset Password",
-		wishorder: "Wish Order",
+		orderdetail: "Order Detail",
 		payment: "Payment",
 		scan: "Scan",
 

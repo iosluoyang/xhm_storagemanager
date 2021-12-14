@@ -140,7 +140,7 @@
 			// 添加公告
 			addnotice() {
 				uni.navigateTo({
-					url: '/pages/notice/handlenotice?type=add'
+					url: '/pages/admin/notice/handlenotice?type=add'
 				});
 			},
 			
@@ -185,7 +185,7 @@
 			editnotice(index) {
 				let noticeinfo = _this.datalist[index]
 				uni.navigateTo({
-					url: `/pages/notice/handlenotice?type=edit&id=${noticeinfo._id}`
+					url: `/pages/admin/notice/handlenotice?type=edit&id=${noticeinfo._id}`
 				});
 			},
 		

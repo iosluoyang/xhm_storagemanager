@@ -3,7 +3,7 @@
 		
 		<!-- 导航栏 -->
 		<cu-custom bgColor="bg-gradual-pink">
-			<block slot="content">{{i18n.nav.wishlist}}</block>
+			<block slot="content">{{i18n.nav.wish}}</block>
 		</cu-custom>
 		
 		<!-- 搜索区域 -->
@@ -59,19 +59,19 @@
 					<view class="text-xsl">
 						<text class="cuIcon cuIcon-likefill text-white"></text>
 					</view>
-					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlist }}</view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.wishlist }}</view>
 				</view>
 			</view>
 			
 			<view class="padding-sm">
-				<view class="padding radius text-center shadow-warp bg-gradual-purple" @tap.stop="checkdraftpro">
+				<view class="padding radius text-center shadow-warp bg-gradual-purple" @tap.stop="jumptoshoppingcart">
 					<view class="text-xsl">
 						<text class="cuIcon cuIcon-cartfill text-white pos-relative">
 							<text v-if="shoppingCartNum" class="cu-tag badge">{{ shoppingCartNum }}</text>
 						</text>
 					</view>
 					
-					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.wishdraft }}</view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.shoppingcart }}</view>
 					
 				</view>
 			</view>
@@ -89,7 +89,7 @@
 					<view class="text-xsl">
 						<text class="cuIcon cuIcon-favorfill text-white"></text>
 					</view>
-					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.mywishlistfavor }}</view>
+					<view class="margin-top-sm text-Abc text-bold">{{ i18n.nav.profavor }}</view>
 				</view>
 			</view>
 			
@@ -157,7 +157,7 @@
 					// 将搜索文本存储在本地
 					let searchText = encodeURIComponent(this.searchText)
 					uni.navigateTo({
-						url: `/pages/wishlist/linkprodetail?searchText=${searchText}&platform=1688`
+						url: `/pages/product/prodetail?searchText=${searchText}&platform=1688`
 					});
 					
 					// 清空搜索文本
@@ -211,7 +211,7 @@
 			// 点击记录进行搜索
 			searchRecord(item) {
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?pid=${item.pid}`
+					url: `/pages/product/prodetail?pid=${item.pid}`
 				});
 			},
 			
@@ -222,24 +222,24 @@
 				});
 			},
 			
-			// 跳转心愿草稿箱页面
-			checkdraftpro() {
+			// 跳转购物车页面
+			jumptoshoppingcart() {
 				uni.navigateTo({
-					url: '/pages/wishlist/wishdraftpro'
+					url: '/pages/makeorder/shoppingcart'
 				});
 			},
 			
 			// 跳转商品分类页面
 			gotoproductcategory() {
 				uni.navigateTo({
-					url: '/pages/wishlist/linkprocategory'
+					url: '/pages/product/category'
 				});
 			},
 			
-			// 跳转心愿收藏页面
+			// 跳转商品收藏页面
 			checkwishlistfavor() {
 				uni.navigateTo({
-					url: '/pages/wishlist/wishlistfavor'
+					url: '/pages/product/favorlist'
 				});
 			},
 			

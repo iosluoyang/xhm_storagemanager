@@ -295,7 +295,7 @@
 			gotoprodetail(item) {
 				let thirdPid = item.thirdPid
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?thirdPid=${thirdPid}`
+					url: `/pages/product/prodetail?thirdPid=${thirdPid}`
 				});
 			},
 			

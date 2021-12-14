@@ -49,20 +49,21 @@ const zh = {
 	// 导航栏主分类
 	nav: {
 		
-		wishlist: "心愿单",
-		mywishlist: "心愿清单",
-		mywishlistfavor: "收藏心愿",
+		wish: "心愿",
+		wishlist: "心愿清单",
+		profavor: "收藏心愿",
 		procategory: "商品分类",
 		prodetail: "商品详情",
-		wishdraft: "心愿草稿箱",
-		makewishorder: "心愿单下单",
+		shoppingcart: "购物车",
+		makeorder: "心愿单下单",
 		wishdetail: "心愿详情",
 		me: "个人中心",
+		wallet: "钱包",
 		storemanage: "店铺管理",
 		shipping: "物流",
 		notice: "公告",
 		resetpwd: "重置密码",
-		wishorder: "心愿订单",
+		orderdetail: "订单详情",
 		payment: "收银台",
 		scan: "扫描",
 

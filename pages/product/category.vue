@@ -134,7 +134,7 @@
 			clickSecondItem(item1){
 				let typeId = item1.typeId
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprolist?typeId=${typeId}`
+					url: `/pages/product/prolist?typeId=${typeId}`
 				});
 			},
 			// 获取一个目标元素的高度

@@ -765,7 +765,7 @@
 			// 查看商品详情数据
 			checkProductDetail(pid) {
 				uni.navigateTo({
-					url: `/pages/wishlist/linkprodetail?pid=${pid}`
+					url: `/pages/product/prodetail?pid=${pid}`
 				});
 			},
 			
@@ -1038,7 +1038,7 @@
 										// 跳转支付收银台页面
 										let orderId = response.result.id
 										uni.navigateTo({
-											url: `/pages/wishlist/payment?orderId=${orderId}`
+											url: `/pages/makeorder/payment?orderId=${orderId}`
 										});
 										
 									}
@@ -1073,7 +1073,7 @@
 			// 再次购买
 			wishBuyAgain() {
 				uni.navigateTo({
-					url: `/pages/wishlist/makewishorder?sourceFrom=wishbuyagain&wishId=${this.wishId}`
+					url: `/pages/makeorder/index?sourceFrom=wishbuyagain&wishId=${this.wishId}`
 				});
 			},
 			
@@ -1081,7 +1081,7 @@
 			// gotoWishOrder() {
 			// 	let wishOrderId = this.wishOrderInfo._id
 			// 	uni.navigateTo({
-			// 		url: `/pages/wishlist/wishorder?wishOrderId=${wishOrderId}`
+			// 		url: `/pages/order/orderdetail?wishOrderId=${wishOrderId}`
 			// 	});
 			// },
 			

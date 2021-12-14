@@ -5,113 +5,69 @@
 			"style" : {
 				"navigationBarTitleText":"首页"
 			}
-		}
-        ,{
+		},
+        {
             "path" : "pages/base/login",
             "style" : {
             	"navigationBarTitleText":"登录"
 			}
-		}
-        ,{
-            "path" : "pages/me/index",
+		},
+        {
+            "path" : "pages/base/me",
             "style" : {
-            	"navigationBarTitleText":"我"
+            	"navigationBarTitleText":"个人中心"
             }
-        }
-		,{
-		    "path" : "pages/me/storemanage",
+        },
+		{
+			"path":"pages/product/category",
+			"style": {
+				"navigationBarTitleText":"商品分类"
+			}
+		},
+		{
+			"path":"pages/product/prolist",
+			"style": {
+				"navigationBarTitleText":"商品列表"
+			}
+		},
+		{
+			"path":"pages/product/prodetail",
+			"style": {
+				"navigationBarTitleText":"商品详情"
+			}
+		},
+		{
+			"path":"pages/product/favorlist",
+			"style": {
+				"navigationBarTitleText":"商品收藏"
+			}
+		},
+		{
+			"path":"pages/makeorder/shoppingcart",
+			"style": {
+				"navigationBarTitleText":"购物车"
+			}
+		},
+		{
+			"path":"pages/makeorder/index",
+			"style": {
+				"navigationBarTitleText":"下单页"
+			}
+		},
+		{
+		    "path" : "pages/makeorder/payment",
 		    "style" : {
-				"navigationBarTitleText":"店铺管理"
+				"navigationBarTitleText":"收银台"
 			}
 		}
-		,{
-		    "path" : "pages/me/shipping",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "物流"
-		    }
-		    
-		}
-		,{
-		    "path" : "pages/me/resetpwd",
-		    "style" : {
-				"navigationBarTitleText":"重置密码"
-			}
-		}
-        ,{
-            "path" : "pages/me/persondetail",
-            "style" : {
-            	"navigationBarTitleText":"个人详情"
-            }
-        }
-        ,{
-            "path" : "pages/notice/index",
-            "style" : {
-				"navigationBarTitleText":"公告栏"
-			}
-        }
-        ,{
-            "path" : "pages/notice/handlenotice",
-            "style" : {
-				"navigationBarTitleText":"公告管理"
-			}
-        }
-   //      ,{
-   //          "path" : "pages/logistic/index",
-   //          "style" : {
-			// 	"navigationBarTitleText":"物流管理"
-			// }
-   //      }
-   //      ,{
-   //          "path" : "pages/logistic/checklogisticresult",
-   //          "style" : {
-			// 	"navigationBarTitleText":"查询物流"
-			// }
-   //      }
-        
+		
     ],
 	"subPackages": [
+		
 		// 心愿单分包
 		{
 			"root":"pages/wishlist",
 			"pages": [
-				{
-					"path":"linkprocategory",
-					"style": {
-						"navigationBarTitleText":"商品分类"
-					}
-				},
-				{
-					"path":"linkprolist",
-					"style": {
-						"navigationBarTitleText":"商品列表"
-					}
-				},
-				{
-					"path":"wishlistfavor",
-					"style": {
-						"navigationBarTitleText":"收藏列表"
-					}
-				},
-				{
-					"path":"linkprodetail",
-					"style": {
-						"navigationBarTitleText":"商品详情"
-					}
-				},
-				{
-				    "path" : "wishdraftpro",
-				    "style" : {
-						"navigationBarTitleText": "心愿草稿箱"
-					}
-				
-				},
-				{
-				    "path" : "makewishorder",
-				    "style" :	{
-						"navigationBarTitleText": "心愿单下单"
-					}
-				},
 				{
 					"path":"index",
 					"style": {
@@ -125,17 +81,9 @@
 					}
 				},
 				{
-				    "path" : "handlewish_old",
-				    "style" :                                                                                    
-						{
-							"navigationBarTitleText": "旧的处理心愿",
-							"enablePullDownRefresh": false
-						}
-				},
-				{
 				    "path" : "list",
 				    "style" : {
-						"navigationBarTitleText": "心愿单"
+						"navigationBarTitleText": "心愿单列表"
 					}
 				},
 			    {
@@ -150,27 +98,98 @@
 						"navigationBarTitleText": "心愿报价单"
 					}
 				
-				},
-                {
-                    "path" : "handletimeline",
-                    "style" : {
-						"navigationBarTitleText":"时间轴",
-						"enablePullDownRefresh":true
-					}
-                },
+				}
+     //            {
+     //                "path" : "handletimeline",
+     //                "style" : {
+					// 	"navigationBarTitleText":"时间轴",
+					// 	"enablePullDownRefresh":true
+					// }
+     //            },
+            ]
+		},
+		
+		// 订单分包
+		{
+			"root":"pages/order",
+			"pages": [
 				{
-				    "path" : "wishorder",
-				    "style" : {
-						"navigationBarTitleText":"心愿订单"
-					}
-				},
-				{
-				    "path" : "payment",
-				    "style" : {
-						"navigationBarTitleText":"收银台"
+					"path":"orderdetail",
+					"style": {
+						"navigationBarTitleText":"订单详情"
 					}
 				}
-            ]
+			]
+		},
+		
+		// 个人中心管理分包
+		{
+			"root": "pages/me",
+			"pages": [
+				{
+				    "path" : "persondetail",
+				    "style" : {
+				    	"navigationBarTitleText":"个人详情"
+				    }
+				},
+				{
+					"path" : "resetpwd",
+					"style" : {
+						"navigationBarTitleText":"重置密码"
+					}
+				},
+				{
+					"path" : "wallet",
+					"style" : {
+						"navigationBarTitleText":"钱包"
+					}
+				}
+			]
+		},
+		
+		// 商家管理内容分包
+		{
+			"root": "pages/merchant",
+			"pages": [
+				{
+					"path" : "storemanage",
+					"style" : {
+						"navigationBarTitleText":"店铺管理"
+					}
+				}
+			]
+		},
+		
+		// 物流商内容分包
+		{
+			"root":"pages/shippingcompany",
+			"pages": [
+				{
+					"path" : "shippingmanage",
+					"style" : {
+						"navigationBarTitleText": "物流管理"
+					}
+				}
+			]
+		},
+		
+		// 管理员内容分包
+		{
+			"root": "pages/admin",
+			"pages": [
+				{
+				    "path" : "notice/index",
+				    "style" : {
+						"navigationBarTitleText":"公告栏"
+					}
+				}
+				,{
+				    "path" : "notice/handlenotice",
+				    "style" : {
+						"navigationBarTitleText":"公告管理"
+					}
+				}
+			]
 		}
 		
 	],
