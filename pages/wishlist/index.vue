@@ -112,7 +112,8 @@
 		
 		onLoad() {
 			_this = this
-			
+			// 获取购物车数据
+			this.$store.dispatch('user/getshoppingcartnum')
 		},
 		
 		onShow() {
