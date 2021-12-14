@@ -72,10 +72,18 @@
 			<view class="cu-item" v-if="configData">
 				<view class="content">
 					<image :src="configData.appLogo" mode="aspectFit"></image>
-					<text class="text-grey">{{i18n.me.appversion}}</text>
+					<text class="text-black">{{i18n.me.appversion}}</text>
 				</view>
 				<view class="action">
 					<text class="text-grey text-sm">{{configData.appVersion}}</text>
+				</view>
+			</view>
+			
+			<!-- 我的收藏商品 -->
+			<view v-if="iflogin" class="cu-item arrow" @tap.stop="jumpToProFavor">
+				<view class="content">
+					<text class="cuIcon-favorfill text-grey"></text>
+					<text class="text-black">{{i18n.nav.profavor}}</text>
 				</view>
 			</view>
 			
@@ -259,6 +267,13 @@
 						icon: 'none'
 					});
 				}
+			},
+			
+			// 跳转收藏商品页面
+			jumpToProFavor() {
+				uni.navigateTo({
+					url: '/pages/product/favorlist'
+				});
 			},
 			
 			// 退出登录

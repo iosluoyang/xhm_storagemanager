@@ -51,7 +51,7 @@ const zh = {
 		
 		wish: "心愿",
 		wishlist: "心愿清单",
-		profavor: "收藏心愿",
+		profavor: "收藏商品",
 		procategory: "商品分类",
 		prodetail: "商品详情",
 		shoppingcart: "购物车",
