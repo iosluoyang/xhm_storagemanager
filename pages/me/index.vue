@@ -211,19 +211,25 @@
 						panelList.push(noticeitem)
 					}
 					
-					// 如果有商家角色
-					if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
-						// 添加店铺管理选项
-						panelList.push(storemanageitem)
+					// 如果是商家角色
+					else if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
 						
-						// 添加仓库代码选项
-						panelList.push(shippingitem)
+						panelList.push(walletitem) // 我的钱包
+						
+						panelList.push(storemanageitem) // 添加店铺管理选项
+						
+						panelList.push(shippingitem) // 添加仓库代码选项
+						
+						panelList.push(resetpwditem) // 重置密码
+					}
+					
+					// 如果是代理角色
+					else if(this.user.role == this.$basejs.roleEnum.productAgent) {
+						panelList.push(resetpwditem) // 重置密码
 					}
 					
 				}
 				
-				panelList.push(walletitem) // 我的钱包
-				panelList.push(resetpwditem) // 重置密码
 				
 				// #ifdef MP-WEIXIN
 				panelList.push(feedbackitem) // 反馈
