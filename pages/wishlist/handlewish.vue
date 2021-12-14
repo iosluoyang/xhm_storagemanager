@@ -145,8 +145,8 @@
 <script>
 	
 	import proSpecSelector from '@/components/base/prospecselector.vue'; // 多规格选择器
-	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
-	import wishproducttable from '@/components/wishtablespec/wishproducttable.vue'
+	import wishTableSpec from '@/pages/wishlist/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
+	import wishproducttable from '@/pages/wishlist/components/wishtablespec/wishproducttable.vue'
 	
 	var _this
 	

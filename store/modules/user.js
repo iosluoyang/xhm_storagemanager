@@ -291,7 +291,7 @@ const actions = {
 					// 加载个人信息成功
 					let user = res.result.userInfo
 					commit('SET_USER',user)
-					resolve()
+					resolve(user)
 				}
 				else {
 					reject(res.result)

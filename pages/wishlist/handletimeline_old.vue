@@ -263,7 +263,7 @@
 
 <script>
 	
-	import wishTableSpec from '@/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
+	import wishTableSpec from '@/pages/wishlist/components/wishtablespec/wishtablespec.vue'; // 使用u-table的多规格表格
 		
 	var _this
 	

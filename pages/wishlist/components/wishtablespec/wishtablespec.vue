@@ -108,7 +108,7 @@
 
 <script>
 	
-	import wishproducttable from '@/components/wishtablespec/wishproducttable.vue'
+	import wishproducttable from '@/pages/wishlist/components/wishtablespec/wishproducttable.vue'
 	
 	// var _this  自定义组件,尤其重复使用的自定义组件，不能用全局this指代 否则导致复用组件的更新问题
 	

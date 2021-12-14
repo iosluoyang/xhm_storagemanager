@@ -143,7 +143,7 @@
 					url: '/pages/shippingcompany/shippingmanage'
 				}
 				
-				// 公告管理
+				// 公告管理 仅超级管理员有
 				let noticeitem = {
 					id: 'notice',
 					cuIcon: 'notificationfill',
@@ -153,7 +153,7 @@
 					url: '/pages/admin/notice/index'
 				}
 				
-				// 我的钱包
+				// 我的钱包 仅普通用户有
 				let walletitem = {
 					id: 'wallet',
 					cuIcon: 'rechargefill',
@@ -191,31 +191,42 @@
 					name: this.i18n.me.panel.more
 				}
 				
-				
 				let panelList = []
 				
 				// 登录状态下 根据身份获取不同的操作区域
 				if(this.iflogin) {
 					
-					// 如果有超级管理员角色
+					// 如果是超级管理员角色
 					if(this.user.role == this.$basejs.roleEnum.admin) {
 						// 添加公告选项
 						panelList.push(noticeitem)
 					}
 					
-					// 如果有商家角色
-					if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
+					// 如果是商家角色
+					else if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
+						
+						panelList.push(walletitem) // 我的钱包
+						panelList.push(resetpwditem) // 重置密码
+						
 						// 添加店铺管理选项
 						panelList.push(storemanageitem)
 						
-						// 添加仓库代码选项
-						panelList.push(shippingitem)
+					}
+					
+					// 如果是代理角色
+					else if(this.user.role == this.$basejs.roleEnum.productAgent) {
+						
+						panelList.push(resetpwditem) // 重置密码
+						
+					}
+					
+					// 如果是物流公司角色
+					else if(this.user.role == this.$basejs.roleEnum.shippingAdmin) {
+						panelList.push(resetpwditem) // 重置密码
+						panelList.push(shippingitem) // 添加仓库代码选项
 					}
 					
 				}
-				
-				panelList.push(walletitem) // 我的钱包
-				panelList.push(resetpwditem) // 重置密码
 				
 				// #ifdef MP-WEIXIN
 				panelList.push(feedbackitem) // 反馈
@@ -228,9 +239,14 @@
 			
 			// 加载个人信息
 			loadpersondetail() {
-				
-				_this.$store.dispatch('user/getuserdetail')
-				
+				_this.$store.dispatch('user/getuserdetail').then(response => {
+					// 获取个人信息成功
+					console.log(`获取个人信息成功`);
+					console.log(response);
+				}).catch(error => {
+					console.log(`获取个人信息失败`);
+					console.log(error);
+				})
 			},
 			
 			// 跳转个人详情页
