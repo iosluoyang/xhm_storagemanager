@@ -18,7 +18,7 @@
 				
 				<!-- 账号 -->
 				<u-form-item prop="account" left-icon="account-fill">
-					<u-input v-model="formData.account" :placeholder="i18n.placeholder.login.account"></u-input>
+					<u-input v-model="formData.account" focus :placeholder="i18n.placeholder.login.account"></u-input>
 				</u-form-item>
 				
 				<!-- 密码 -->

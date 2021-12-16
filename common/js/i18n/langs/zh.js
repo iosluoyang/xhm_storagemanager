@@ -423,7 +423,13 @@ const zh = {
 			editnotice: "编辑公告",
 			title: "标题",
 			content: "内容",
-		}
+		},
+		
+		wallet: {
+			income: "收入",
+			expense: "支出",
+			charge: "充值",
+		},
 		
 	},
 	

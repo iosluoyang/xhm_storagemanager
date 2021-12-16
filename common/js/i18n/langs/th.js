@@ -422,7 +422,13 @@ const th = {
 			editnotice: "Edit Notice",
 			title: "Title",
 			content: "Content",
-		}
+		},
+		
+		wallet: {
+			income: "Income",
+			expense: "Expense",
+			charge: "Charge",
+		},
 		
 	},
 	

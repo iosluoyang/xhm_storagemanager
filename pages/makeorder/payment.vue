@@ -19,8 +19,8 @@
 						<template>
 							<u-icon v-if="item.type == 'alipay'" name="zhifubao" color="#108EE9" size="50"></u-icon>
 							<u-icon v-else-if="item.type == 'wechat'" name="weixin-fill" color="#07C160" size="50"></u-icon>
-							<u-icon v-else-if="item.type == 'bankcard'" name="rmb-circle-fill" color="#000000" size="50"></u-icon>
-							<u-icon v-else-if="item.type == 'balance'" name="red-packet-fill" color="#e54d42" size="50"></u-icon>
+							<u-icon v-else-if="item.type == 'bankcard'" name="grid" color="#9c26b0" size="50"></u-icon>
+							<u-icon v-else-if="item.type == 'balance'" name="rmb-circle-fill" color="#e54d42" size="50"></u-icon>
 						</template>
 						
 						<text class="text-df margin-left">{{ item.title }}</text>
@@ -35,7 +35,7 @@
 				
 			</view>
 			
-			<!-- 支付信息区域 -->
+			<!-- 支付信息区域  -->
 			<view v-if="selectpaymentinfo" class="payinfoview padding shadow-blur bg-white margin-top">
 				
 				<view class="text-bold text-xl text-center">{{ i18n.wishlist.payment.paymentinfo }}</view>
@@ -107,7 +107,7 @@
 				
 			</view>
 			
-			<!-- 已经支付完成的信息区域 -->
+			<!-- 支付凭证上传区域 -->
 			<view class="alreadypaidinfoview padding shadow-blur shadow-warp bg-white margin-top">
 				
 				<!-- 图片上传 -->
@@ -128,10 +128,9 @@
 		</view>
 		
 		<!-- 支付按钮 -->
-		<view class="bottombtnview">
-			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm" :disabled=" !orderInfo || !orderInfo.totalOrderPrice ">
-				{{ `${i18n.base.paynow}` }}
-				{{ orderInfo && orderInfo.totalOrderPrice ? `(&yen${orderInfo.totalOrderPrice})` : '' }}
+		<view v-if="totalPrice" class="bottombtnview">
+			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm" :disabled="!totalPrice">
+				{{ `&yen${totalPrice}` }}
 			</button>
 		</view>
 		
@@ -155,6 +154,8 @@
 			return {
 				
 				ifloading: false, // 是否正在加载中
+				type: 'makeorder', // 收银台类型  makeorder为订单支付  walletcharge为钱包充值  默认为订单支付
+				
 				
 				orderId: null, // 订单id
 				orderInfo: null, // 订单信息
@@ -162,7 +163,7 @@
 				paymentArr: null, // 支付方式数组
 				paymentType: 'balance', // 支付方式 balance  alipay  wechat  bandcard
 				
-				totalPrice: null, // 支付金额
+				totalPrice: '', // 支付金额
 				
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
@@ -200,16 +201,38 @@
 		
 		// 页面加载后
 		onLoad(option) {
-			_this = this
 			
+			_this = this
+			// 页面类型
+			let type = option.type
+			if(type) {
+				_this.type = type
+			}
 			// 获取支付方式
 			_this.loadPaymentData()
+			// 根据收银台类型选择加载不同的数据
 			
-			let orderId = option.orderId
-			if(orderId){
-				this.orderId = orderId
-				// 获取订单支付信息
-				_this.loadPayOrderData()
+			// 支付订单类型
+			if(_this.type == 'makeorder') {
+				
+				let orderId = option.orderId
+				if(orderId){
+					this.orderId = orderId
+					// 获取订单支付信息
+					_this.loadPayOrderData()
+				}
+				else {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				}
+			}
+			
+			// 钱包充值类型
+			else if(_this.type == 'walletcharge') {
+				// 加载钱包充值的套餐类型
+				_this.loadChargePackages()
 			}
 			else {
 				uni.showToast({
@@ -231,8 +254,16 @@
 					
 					let paymentInfo = _this.$store.getters.configData.paymentInfo
 					let paymentArr = paymentInfo.paymentArr
-					_this.paymentArr = paymentArr
 					let defaultType = paymentInfo.defaultType
+					
+					// 筛选支付方式数组
+					// 如果为钱包充值 则过滤掉余额支付的方式
+					if(_this.type == 'walletcharge') {
+						paymentArr = paymentArr.filter(item => (item.type !== 'balance'))
+						defaultType = defaultType == 'balance' ? paymentArr[0].type : defaultType
+					}
+					// 其余的根据正常的支付信息来设置
+					_this.paymentArr = paymentArr
 					_this.paymentType = defaultType
 					
 					console.log(_this.paymentArr, _this.paymentType)
@@ -259,6 +290,8 @@
 						
 						let orderInfo = response.result.data
 						_this.orderInfo = orderInfo
+						let totalMoney = orderInfo.totalOrderPrice
+						_this.totalMoney = totalMoney
 						
 					}
 					else {
@@ -274,6 +307,13 @@
 						icon: 'none'
 					});
 				})
+				
+			},
+			
+			// 加载钱包充值的套餐
+			loadChargePackages() {
+				
+				
 				
 			},
 			

@@ -1,0 +1,41 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description": "钱包余额表  每一个用户一个钱包表 记录当前用户的最新余额",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatTime": {
+			"bsonType": "timestamp",
+			"description": "开通钱包的时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"uid": {
+			"bsonType": "string",
+			"description": "钱包所有者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue": {
+				"$env": "uid"
+			} // 强制设置creatUid的值为当前登录用户的id
+		},
+		"updateTime": {
+			"bsonType": "timestamp",
+			"description": "更新钱包余额的时间"
+		},
+		"money": {
+			"bsonType":"string",
+			"description":"该用户钱包余额",
+			"defaultValue":"0.00" // 默认均为0元
+		}
+	}
+}

@@ -1,0 +1,50 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"description": "账单记录表",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatTime": {
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"creatUid": {
+			"bsonType": "string",
+			"description": "账单创建者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"forceDefaultValue": {
+				"$env": "uid"
+			} // 强制设置creatUid的值为当前登录用户的id
+		},
+		"type": {
+			"bsonType":"int",
+			"description":"消费类型 0支出 1充值",
+			"enum": [0,1]
+		},
+		"price": {
+			"bsonType":"string",
+			"description":"金额",
+			"defaultValue":""
+		},
+		"billType": {
+			"bsonType":"int",
+			"description":"账单类型 0为心愿订单支出  1为普通订单支出 2为余额充值"
+		},
+		"orderId": {
+			"bsonType": "string",
+			"description": "账单关联的订单id",
+			"foreignKey": "order._id"
+		}
+	}
+}
