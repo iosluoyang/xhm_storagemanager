@@ -1,7 +1,7 @@
 // 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
 {
 	"bsonType": "object",
-	"description": "钱包余额表  每一个用户一个钱包表 记录当前用户的最新余额",
+	"description": "收藏商品列表",
 	"required": [],
 	"permission": {
 		"read": true,
@@ -13,37 +13,39 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
-		"creatTime": {
-			"bsonType": "timestamp",
-			"description": "开通钱包的时间",
+		"favorTime": {
+			"description": "收藏时间",
 			"forceDefaultValue": {
 				"$env": "now"
 			}
 		},
-		"uid": {
+		"creatUid": {
 			"bsonType": "string",
-			"description": "钱包所有者的uid",
+			"description": "收藏者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue": {
 				"$env": "uid"
 			} // 强制设置creatUid的值为当前登录用户的id
 		},
-		"updateTime": {
-			"bsonType": "timestamp",
-			"description": "更新钱包余额的时间",
-			"defaultValue": {
-				"$env": "now"
-			}
-		},
-		"money": {
+		"platform": {
 			"bsonType":"string",
-			"description":"该用户钱包余额",
-			"defaultValue":"0.00" // 默认均为0元
+			"description":"收藏商品的渠道来源",
+			"enum": [
+				"1688",
+				"taobao",
+				"jd",
+				"pdd"
+			]
 		},
-		"payPassword": {
-			"bsonType":"string",
-			"description":"钱包的支付密码",
-			"defaultValue":""
+		"platformPid": {
+			"bsonType": "string",
+			"description": "收藏商品的第三方pid",
+			"foreignKey": "product.platformPid"
+		},
+		"pid": {
+			"bsonType": "string",
+			"description": "收藏商品的pid",
+			"foreignKey": "product._id"
 		}
 	}
 }

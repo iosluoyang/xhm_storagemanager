@@ -222,7 +222,7 @@
 				_this.ifloading = true
 				
 				const db = uniCloud.database();
-				db.collection('wish-draft-product, product')
+				db.collection('shoppingcart, product')
 				.where(`_id in ${JSON.stringify(_this.draftIds)}`)
 				.orderBy('updateTime desc, creatTime desc')
 				.get()
@@ -404,7 +404,7 @@
 						if(this.sourceFrom == 'draftpro') {
 							
 							// 添加成功后将草稿箱中的数据状态变更为已加入心愿单
-							db.collection('wish-draft-product')
+							db.collection('shoppingcart')
 							.where( `_id in ${JSON.stringify(draftIds)}` )
 							.update({status: 1})
 							.then(response => {

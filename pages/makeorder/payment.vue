@@ -10,7 +10,7 @@
 		<view class="contentview">
 			
 			<!-- 支付方式区域 -->
-			<view v-if="paymentArr && paymentArr.length > 0" class="paymentview margin-top cu-list menu card-menu">
+			<view v-if="paymentArr" class="paymentview margin-top cu-list menu card-menu">
 				
 				<view class="cu-item" v-for="(item, index) in paymentArr" :key="item.type" @tap.stop="paymentType = item.type">
 					
@@ -28,90 +28,18 @@
 					</view>
 					
 					<view class="action">
-						<radio :checked="item.type == paymentType" />
+						<radio :checked="item.type == paymentType" :disabled=" type == 'walletcharge' && Number(totalPrice) > Number(walletMoney) " />
 					</view>
 					
 				</view>
 				
 			</view>
 			
-			<!-- 支付信息区域  -->
-			<view v-if="selectpaymentinfo" class="payinfoview padding shadow-blur bg-white margin-top">
-				
-				<view class="text-bold text-xl text-center">{{ i18n.wishlist.payment.paymentinfo }}</view>
-				
-				<view class="cu-list menu margin-top-sm">
-					
-					<!-- 账号 -->
-					<view v-if="selectpaymentinfo.account" class="cu-item">
-						
-						<view class="content">
-							<view class="text-black text-bold">{{ selectpaymentinfo.account }}</view>
-							<view class="text-df">{{ i18n.wishlist.payment.account }}</view>
-						</view>
-						
-						<view class="action">
-							<button class="cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(selectpaymentinfo.account)">{{ i18n.base.copy }}</button>
-						</view>
-						
-					</view>
-					
-					<!-- 姓名 -->
-					<view v-if="selectpaymentinfo.name" class="cu-item">
-						
-						<view class="content">
-							<view class="text-black text-bold">{{ selectpaymentinfo.name }}</view>
-							<view class="text-df">{{ i18n.wishlist.payment.name }}</view>
-						</view>
-						
-						<view class="action">
-							<button class="cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(selectpaymentinfo.name)">{{ i18n.base.copy }}</button>
-						</view>
-						
-					</view>
-					
-					<!-- 银行名称 -->
-					<view v-if="selectpaymentinfo.bankname" class="cu-item">
-						
-						<view class="content">
-							<view class="text-black text-bold">{{ selectpaymentinfo.bankname }}</view>
-							<view class="text-df">{{ i18n.wishlist.payment.bankname }}</view>
-						</view>
-						
-						<view class="action">
-							<button class="cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(selectpaymentinfo.bankname)">{{ i18n.base.copy }}</button>
-						</view>
-						
-					</view>
-					
-					<!-- 银行分支名称 -->
-					<view v-if="selectpaymentinfo.bankbranch" class="cu-item">
-						
-						<view class="content">
-							<view class="text-black text-bold">{{ selectpaymentinfo.bankbranch }}</view>
-							<view class="text-df">{{ i18n.wishlist.payment.bankbranch }}</view>
-						</view>
-						
-						<view class="action">
-							<button class="cu-btn radius line-grey sm" @tap.stop="$basejs.copytoclipboard(selectpaymentinfo.bankbranch)">{{ i18n.base.copy }}</button>
-						</view>
-						
-					</view>
-					
-				</view>
-				
-				<!-- 支付图片 -->
-				<view v-if="selectpaymentinfo.img" class="paymentimg margin-top flex justify-center">
-					<image :src="selectpaymentinfo.img" :style="{width: '400rpx', height: '400rpx'}" mode="aspectFit" @tap.stop="previewimg(selectpaymentinfo.img)"></image>
-				</view>
-				
-			</view>
-			
-			<!-- 支付凭证上传区域 -->
-			<view class="alreadypaidinfoview padding shadow-blur shadow-warp bg-white margin-top">
+			<!-- 支付凭证上传区域 仅余额充值类型时展示 用于上传充值凭证 -->
+			<view class="alreadypaidinfoview radius margin padding shadow-blur bg-white">
 				
 				<!-- 图片上传 -->
-				<view class="cu-bar bg-white margin-top">
+				<view class="cu-bar bg-white">
 					<view class="action">{{i18n.base.uploadimg}}</view>
 					<view class="action">{{`${imgArr.length} / ${mainpiclimitnum}`}}</view>
 				</view>
@@ -155,7 +83,7 @@
 				
 				ifloading: false, // 是否正在加载中
 				type: 'makeorder', // 收银台类型  makeorder为订单支付  walletcharge为钱包充值  默认为订单支付
-				
+				walletMoney: '', // 用户钱包余额
 				
 				orderId: null, // 订单id
 				orderInfo: null, // 订单信息
@@ -168,18 +96,6 @@
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
 
-			}
-		},
-		
-		computed: {
-			
-			// 当前选中的支付方式对应的信息
-			selectpaymentinfo() {
-				if(this.paymentArr && this.paymentArr.length > 0) {
-					let selectpaymentinfo = this.paymentArr.find(item => (item.type == this.paymentType))
-					return selectpaymentinfo
-				}
-				return null
 			}
 		},
 		
@@ -208,8 +124,7 @@
 			if(type) {
 				_this.type = type
 			}
-			// 获取支付方式
-			_this.loadPaymentData()
+			
 			// 根据收银台类型选择加载不同的数据
 			
 			// 支付订单类型
@@ -231,15 +146,30 @@
 			
 			// 钱包充值类型
 			else if(_this.type == 'walletcharge') {
-				// 加载钱包充值的套餐类型
-				_this.loadChargePackages()
+				
+				let totalPrice = option.totalPrice
+				// 如果是钱包充值则赋值支付价格
+				if(totalPrice) {
+					_this.totalPrice = totalPrice
+				}
+				else {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				}
+				
 			}
+			
 			else {
 				uni.showToast({
 					title: _this.i18n.error.loaderror,
 					icon: 'none'
 				});
 			}
+			
+			// 获取支付方式
+			_this.loadPaymentData()
 			
 		},
 		
@@ -248,6 +178,7 @@
 			// 获取支付信息
 			loadPaymentData() {
 				
+				_this.ifloading = true
 				// 初始化完成时  加载配置信息
 				_this.$store.dispatch('app/setConfigData').then(response => {
 					// 此时配置信息已经加载成功并且保存到本地
@@ -262,6 +193,32 @@
 						paymentArr = paymentArr.filter(item => (item.type !== 'balance'))
 						defaultType = defaultType == 'balance' ? paymentArr[0].type : defaultType
 					}
+					else {
+						// 有余额支付方式  获取钱包余额
+						const db = uniCloud.database();
+						db.collection('wallet')
+						.where(`uid == $cloudEnv_uid`)
+						.field('money')
+						.get({getOne: true})
+						.then(response => {
+							if(response.result.code == 0) {
+								let walletMoney = response.result.data.money
+								this.walletMoney = walletMoney
+							}
+							else {
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							}
+						})
+						.catch(error => {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						})
+					}
 					// 其余的根据正常的支付信息来设置
 					_this.paymentArr = paymentArr
 					_this.paymentType = defaultType
@@ -274,6 +231,9 @@
 						title: this.i18n.error.configerror,
 						icon: 'none'
 					});
+				})
+				.finally(() => {
+					_this.ifloading = false
 				})
 				
 			},
@@ -309,21 +269,7 @@
 				})
 				
 			},
-			
-			// 加载钱包充值的套餐
-			loadChargePackages() {
-				
-				
-				
-			},
-			
-			// 点击查看大图
-			previewimg(img) {
-				uni.previewImage({
-					urls: [img]
-				})
-			},
-			
+		
 			// 选择图片成功
 			fileselect(e) {
 				this.imgArr.push.apply(this.imgArr, e.tempFiles)
@@ -372,34 +318,28 @@
 			// 确定按钮
 			confirm() {
 				
-				// 开始检测上传支付凭证
-				
-				// 如果没有上传凭证则将页面滑动到最底部提示用户上传凭证
-				if(this.imgArr.length == 0) {
+				// 根据不同的收银台类型选择不同的校验标准
+				if(this.type == 'walletcharge') {
+					// 校验转账凭证
 					
-					uni.showModal({
-						content: _this.i18n.wishlist.payment.pleaseuploadpaymentimg,
-						showCancel: true,
-						cancelText: _this.i18n.base.cancel,
-						confirmText: _this.i18n.base.confirm,
-						success: res => {
-							if(res.confirm) {
-								// 直接提交
-								_this.uploaddata()
-							}
-							else {
-								uni.pageScrollTo({
-									scrollTop: 5000,
-									duration: 300
-								})
-							}
-						}
-					});
+					// 如果没有上传凭证则将页面滑动到最底部提示用户上传凭证
+					if(this.imgArr.length == 0) {
+						uni.showToast({
+							title: _this.i18n.me.wallet.paymentimgtip,
+							icon: 'none'
+						});
+						return
+					}
+					// 有了支付凭证 开始充值
+					else {
+						// 开始
+						_this.ifloading = true
+						_this.$refs.filepickerref.upload()
+					}
 					
 				}
 				else {
-					// 直接提交
-					this.uploaddata()
+					_this.uploaddata()
 				}
 				
 			},
@@ -407,78 +347,115 @@
 			// 提交数据
 			uploaddata() {
 				
-				// 检查是否需要上传图片
-				if(this.imgArr.find(item => { return item.progress == 0 })) {
-					// 开始上传图片
-					this.ifloading = true
-					this.$refs.filepickerref.upload()
-					return
-				}
+				// 根据不同的收银台类型选择不同的数据修改
 				
-				// 上传图片已经成功 此时开始提交其他数据
-				let imgs = this.imgArr.map(item => (item.url)).join(',')
-				
-				// 开始更新数据
-				const db = uniCloud.database();
-				db.collection('order')
-				.doc(_this.orderId)
-				.update({
-					payTime: db.env.now,
-					status: 1,
-					payType: _this.paymentType,
-					payImgs: imgs
-				})
-				.then(response => {
-					// 更新成功
-					if(response.result.code == 0) {
-						
+				// 钱包余额充值
+				if(this.type == 'walletcharge') {
+					
+					// 上传图片已经成功 此时开始提交其他数据
+					let imgs = this.imgArr.map(item => (item.url)).join(',')
+					
+					let billitem = {
+						status: 0, // 账单待确认状态
+						type: 1, // 充值类型
+						price: _this.totalPrice, // 充值金额
+						billType: 2, // 2为用户主动充值
+						imgs: imgs, // 凭证图片
+					}
+					const db = uniCloud.database();
+					db.collection('bill')
+					.add(billitem)
+					.then(response => {
+						if(response.result.code == 0) {
+							// 操作成功
+							uni.showToast({
+								title: _this.i18n.tip.optionsuccess,
+								icon: 'none'
+							});
+							uni.$emit('updatebillrecord') // 刷新账单记录数据
+							uni.navigateBack();
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(error => {
 						uni.showToast({
-							title: _this.i18n.tips.optionsuccess,
+							title: _this.i18n.error.loaderror,
 							icon: 'none'
 						});
-						
-						// 发送用户支付成功通知
-						_this.pushnoticemsg('finishpay')
-						uni.$emit('updatewishorderdetail')
-						
-						// 如果订单有心愿id则添加对应的时间轴数据
-						if(_this.orderInfo.wishId) {
-							// 刷新心愿详情数据和心愿订单数据
-							// uni.$emit('updatewishlist')
-							// uni.$emit('updatewishdetail')
-							
-							// 增加用户已支付的时间轴
-							db.collection('wish-timeline')
-							.add({type: 7, wishId: _this.orderInfo.wishId})
-							.then(response => {
-								// 刷新时间轴
-								uni.$emit('updatetimeline')
-							})
-							.catch(error => {
-								console.log(error);
-							})
-							
-						}
-						
-						setTimeout(function() {
-							uni.navigateBack()
-						}, 1000);
+					})
+				}
 				
-					}
-					else {
+				// 正常订单支付
+				else if(this.type == 'makeorder') {
+					
+					// 开始更新数据
+					const db = uniCloud.database();
+					db.collection('order')
+					.doc(_this.orderId)
+					.update({
+						payTime: db.env.now,
+						status: 1,
+						payType: _this.paymentType,
+						payImgs: imgs
+					})
+					.then(response => {
+						// 更新成功
+						if(response.result.code == 0) {
+							
+							uni.showToast({
+								title: _this.i18n.tips.optionsuccess,
+								icon: 'none'
+							});
+							
+							// 发送用户支付成功通知
+							_this.pushnoticemsg('finishpay')
+							uni.$emit('updatewishorderdetail')
+							
+							// 如果订单有心愿id则添加对应的时间轴数据
+							if(_this.orderInfo.wishId) {
+								// 刷新心愿详情数据和心愿订单数据
+								// uni.$emit('updatewishlist')
+								// uni.$emit('updatewishdetail')
+								
+								// 增加用户已支付的时间轴
+								db.collection('wish-timeline')
+								.add({type: 7, wishId: _this.orderInfo.wishId})
+								.then(response => {
+									// 刷新时间轴
+									uni.$emit('updatetimeline')
+								})
+								.catch(error => {
+									console.log(error);
+								})
+								
+							}
+							
+							setTimeout(function() {
+								uni.navigateBack()
+							}, 1000);
+					
+						}
+						else {
+							uni.showToast({
+								title: _this.i18n.error.optionerror,
+								icon: 'none'
+							});
+						}
+					})
+					.catch(error => {
 						uni.showToast({
 							title: _this.i18n.error.optionerror,
 							icon: 'none'
 						});
-					}
-				})
-				.catch(error => {
-					uni.showToast({
-						title: _this.i18n.error.optionerror,
-						icon: 'none'
-					});
-				})
-				
+					})
+					
+				}
+
 			},
 			
 			// 推送消息

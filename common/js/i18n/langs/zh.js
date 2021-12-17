@@ -374,18 +374,6 @@ const zh = {
 			pleasechoosereceivealltype: "系统检测到您已全部收货,请选择全部收货"
 		},
 		
-		// 收银台相关
-		payment: {
-			paymentinfo: "收款信息",
-			account: "收款账号",
-			name: "姓名",
-			bankname: "银行名称",
-			bankbranch: "收款行支行",
-			pleaseuploadpaymentimg: "暂未收到支付凭证,是否直接提交?(您可以在下方上传支付凭证)",
-			
-			
-		}
-		
 	},
 	
 	// 我的
@@ -429,6 +417,15 @@ const zh = {
 			income: "收入",
 			expense: "支出",
 			charge: "充值",
+			openwallet: "开通钱包账户",
+			openwallettip: "您还未开通钱包,点击确定即刻开通,后续可直接使用钱包余额进行支付，各种不定时优惠现金活动等您来参与!",
+			pleasetypepaypassword: "请输入支付密码",
+			pleasetyenewpaypassword: "请输入新的支付密码",
+			pleasetypepaypasswordagain: "请再次输入支付密码",
+			paypasswordwrong: "支付密码错误,请重试",
+			changepaypassword: "修改支付密码",
+			closewallet: "注销钱包",
+			paymentimgtip: "请上传支付凭证",
 		},
 		
 	},

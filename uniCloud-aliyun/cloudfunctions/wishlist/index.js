@@ -182,7 +182,7 @@ exports.main = async (event, context) => {
 			let favorFlag = 0 // 默认为未收藏
 			// 如果用户登录则开始查询
 			if(uid) {
-				let favorcollection = db.collection('favorpro')
+				let favorcollection = db.collection('product-favor')
 				let favorres =  await favorcollection.where({creatUid: uid, pid: product.pid}).count()
 				if(favorres.total > 0) {
 					// 找到了收藏表中的数据 则为已收藏状态

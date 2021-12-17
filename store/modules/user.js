@@ -320,7 +320,7 @@ const actions = {
 		return new Promise((resolve,reject) => {
 			
 			const db = uniCloud.database();
-			db.collection('wish-draft-product')
+			db.collection('shoppingcart')
 			.where(`creatUid == $cloudEnv_uid && status == 0`)
 			.count()
 			.then(response => {

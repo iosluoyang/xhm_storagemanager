@@ -13,15 +13,29 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"status": {
+			"bsonType":"int",
+			"description":"账单状态  0待确认状态  1已确认状态",
+			"enum": [0,1],
+			"defaultValue": 1
+		},
 		"creatTime": {
 			"description": "创建时间",
 			"forceDefaultValue": {
 				"$env": "now"
 			}
 		},
+		"uid": {
+			"bsonType": "string",
+			"description": "该条账单所有者的uid",
+			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"defaultValue": {
+				"$env": "uid"
+			}
+		},
 		"creatUid": {
 			"bsonType": "string",
-			"description": "账单创建者的uid",
+			"description": "该条账单创建者的uid",
 			"foreignKey": "uni-id-users._id", // 使用foreignKey表示，此字段关联uni-id-users表的_id
 			"forceDefaultValue": {
 				"$env": "uid"
@@ -39,12 +53,17 @@
 		},
 		"billType": {
 			"bsonType":"int",
-			"description":"账单类型 0为心愿订单支出  1为普通订单支出 2为余额充值"
+			"description":"账单类型 0为普通订单支出 1为心愿订单支出 2为用户主动充值 3为平台赠送充值"
 		},
 		"orderId": {
 			"bsonType": "string",
 			"description": "账单关联的订单id",
 			"foreignKey": "order._id"
+		},
+		"imgs": {
+			"bsonType":"string",
+			"description":"账单的图片  例如余额充值时上传的支付凭证"
 		}
+		
 	}
 }

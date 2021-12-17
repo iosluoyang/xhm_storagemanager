@@ -8,7 +8,7 @@
 		
 		<!-- 小程序中存在插槽问题 暂时不用udb -->
 		<!-- <unicloud-db v-slot:default="{data, loading, error, options}" ref="udb" 
-			collection="favorpro,product"
+			collection="product-favor,product"
 			where="creatUid == $cloudEnv_uid" orderby="favorTime desc" 
 			page-data="add" :page-size="10" @load="loaddata">
 			<view v-if="error">{{error.message}}</view>
@@ -137,9 +137,9 @@
 				let dataArr = [...this.dataArr]
 
 				const db = uniCloud.database();
-				db.collection('favorpro,product')
+				db.collection('product-favor,product')
 					.where(`creatUid == $cloudEnv_uid`)
-					.foreignKey('favorpro.pid')
+					.foreignKey('product-favor.pid')
 					.orderBy(`favorTime desc`)
 					.skip((pageNum - 1) * pageSize)
 					.limit(pageSize)
@@ -198,7 +198,7 @@
 							// })
 							
 							const db = uniCloud.database();
-							db.collection('favorpro')
+							db.collection('product-favor')
 							.doc(item._id)
 							.remove()
 							.then(response => {

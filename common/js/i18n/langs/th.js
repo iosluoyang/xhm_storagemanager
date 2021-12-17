@@ -374,17 +374,6 @@ const th = {
 			pleasechoosereceivealltype: "System found that you already received all the products, please choose receive all",
 		},
 		
-		// 收银台相关
-		payment: {
-			paymentinfo: "Payment Info",
-			account: "Account",
-			name: "Name",
-			bankname: "Bank Name",
-			bankbranch: "Bank Branch Name",
-			pleaseuploadpaymentimg: "Have no payment image, Are you sure to continue ?(you can upload the payment image below)",
-			
-		}
-		
 	},
 	
 	// 我的
@@ -428,6 +417,15 @@ const th = {
 			income: "Income",
 			expense: "Expense",
 			charge: "Charge",
+			openwallet: "Open Wallet Account",
+			openwallettip: "You have not open the wallet account, please click confirm to open. You can pay with the wallet balance after, and we will have more discount and promotion to offer, come and open now !",
+			pleasetypepaypassword: "Please Input PayPassword",
+			pleasetyenewpaypassword: "Please Input New PayPassword",
+			pleasetypepaypasswordagain: "Please Input PayPassword Again",
+			paypasswordwrong: "Wrong Password, please try again",
+			changepaypassword: "Change PayPassword",
+			closewallet: "Close Wallet Account",
+			paymentimgtip: "Please Upload Payment Picture",
 		},
 		
 	},

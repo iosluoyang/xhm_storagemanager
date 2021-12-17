@@ -13,7 +13,7 @@ const dbCmd = db.command;
 
 db.collection('wish').where(`agentUid == ''`).get()
 
-db.collection('favorpro').remove()
+db.collection('product-favor').remove()
 
 db.collection('wish').where(`_id != '' `).update({
 	quotationInfo: {
@@ -37,7 +37,7 @@ db.collection('wish').update({
 db.collection('wish').remove()
 db.collection('wish-timeline').remove()
 
-db.collection('wish-draft-product').remove()
+db.collection('shoppingcart').remove()
 
 db.collection('wish').doc('61ac5c68c2d0220001dc128c').update({
 	quotationInfo: {

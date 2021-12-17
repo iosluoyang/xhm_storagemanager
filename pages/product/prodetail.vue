@@ -464,7 +464,7 @@
 				if(this.isFavor) {
 					// 取消收藏
 					const dbCmd = db.command
-					db.collection('favorpro').where( `pid == '${linkProduct.pid}'` ).remove()
+					db.collection('product-favor').where( `pid == '${linkProduct.pid}'` ).remove()
 					.then(res => {
 						
 						if(res.result.code == 0) {
@@ -491,7 +491,7 @@
 				else {
 					// 开始收藏
 					let data = {platformPid: linkProduct.platformPid,pid: linkProduct.pid, platform: linkProduct.platform}
-					db.collection('favorpro').add(data).then(res => {
+					db.collection('product-favor').add(data).then(res => {
 						if(res.result.code == 0) {
 							uni.showToast({
 								title: this.i18n.tip.optionsuccess,
@@ -554,7 +554,7 @@
 				const db = uniCloud.database();
 				// 查看是否存在同一用户同一商品pid且状态为0(未加入心愿单)的记录 如果有则进行合并
 				let wherequery = ` creatUid == $cloudEnv_uid && pid == '${this.linkProduct.pid}' && status == 0 `
-				db.collection('wish-draft-product').where(wherequery).get()
+				db.collection('shoppingcart').where(wherequery).get()
 				.then(response => {
 					console.log(response.result);
 					if(response.result.code == 0) {
@@ -569,7 +569,7 @@
 								selectSpecPropInfo: selectSpecPropInfo,
 								updateTime: db.env.now, // 默认更新时间为创建时间
 							}
-							db.collection('wish-draft-product')
+							db.collection('shoppingcart')
 							.add(draftprodata)
 							.then(response => {
 								// 添加成功
@@ -607,7 +607,7 @@
 								})
 							})
 							
-							db.collection('wish-draft-product').doc(docId)
+							db.collection('shoppingcart').doc(docId)
 							.update({selectSpecPropInfo: selectSpecPropInfo, updateTime: db.env.now})
 							.then(response => {
 								// 更新成功

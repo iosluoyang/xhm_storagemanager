@@ -11,7 +11,7 @@
 		
 		<!-- 查询草稿箱商品 -->
 		<unicloud-db ref="udb" v-slot:default="{data, loading, error, options}" 
-					collection="wish-draft-product, product" 
+					collection="shoppingcart, product" 
 					where=" creatUid == $cloudEnv_uid && status == 0 " 
 					orderby=" updateTime desc, creatTime desc "
 					@load="loadData"
