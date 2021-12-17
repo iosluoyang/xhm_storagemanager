@@ -43,6 +43,7 @@ const en = {
 		single: "Single Model",
 		multiple: "Multiple Model",
 		intotal: "In Total",
+		checkall: "check all",
 	},
 	
 	// 导航栏主分类
@@ -426,6 +427,7 @@ const en = {
 			changepaypassword: "Change PayPassword",
 			closewallet: "Close Wallet Account",
 			paymentimgtip: "Please Upload Payment Picture",
+			waittoconfirm: "Wait for Confirm",
 		},
 		
 	},

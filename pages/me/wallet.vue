@@ -20,7 +20,7 @@
 					
 					<view class="rightview flex1 flex align-end justify-between">
 						
-						<u-count-to ref="uCountTo" start-val="0.00" :end-val="walletInfo ? walletInfo.money : '0.00' "
+						<u-count-to ref="uCountTo" start-val="0" :end-val="walletInfo ? walletInfo.money : '0' "
 									:decimals="2" separator="," :duration="2000" 
 									font-size="60" color="#FFFFFF"
 									:use-easing="true" :autoplay="false"
@@ -62,7 +62,7 @@
 			<view v-if=" bottomType == 'record' && walletInfo " class="recordlistview padding margin">
 				
 				<!-- 切换选项 -->
-				<u-subsection mode="subsection" :list="subsectionlist" :current="sectionIndex" active-color="#e54d42" @change="sectionChange"></u-subsection>
+				<u-subsection mode="button" :list="subsectionlist" :current="sectionIndex" active-color="#e54d42" @change="sectionChange"></u-subsection>
 				
 				<!-- 其他的内容视图 -->
 				<unicloud-db  v-slot:default="{data, loading, error, options}" collection="bill"
@@ -74,17 +74,31 @@
 					<view v-if="error">{{error.message}}</view>
 					<view v-else-if="loading" class="cu-load loading"></view>
 					<view v-else class="billview" style="max-height: 600rpx;overflow: auto;">
-
+						
 						<view class="cu-list menu margin-top-sm">
-							<view class="cu-item arrow" v-for="(item, index) in data" :key="item._id">
+							<view v-if="data && data.length > 4" class="titleview flex align-center justify-end padding-sm">
+								<view class="checkallbtn text-gray" @tap.stop="checkAllBillRecord">
+									{{ i18n.base.checkall }}
+									<text class="text-df cuIcon-right"></text>
+								</view>
+							</view>
+							<view class="cu-item arrow" v-for="(item, index) in data" :key="item._id" @tap.stop="checkBillDetail(item)">
 								<view class="content">
 									<view class="topview">
-										<text class="text-lg margin-right-sm" :class="[item.type == 0 ? 'cuIcon-forwardfill text-green' : 'cuIcon-moneybagfill text-red']"></text>
+										<text class="text-bold margin-right-sm" :class="[ item.type == 0 ? 'cuIcon-move text-green' : 'cuIcon-add text-red']"></text>
 										<text class="text-price text-bold text-xl" :class="[ item.type == 0 ? 'text-green' : 'text-red' ]">{{ item.price }}</text>
+										
+										<!-- 待确认状态下有该值 -->
+										<view v-if="item.status == 0" class="text-sm">
+											<text class="cuIcon cuIcon-infofill text-grey margin-left">{{ i18n.me.wallet.waittoconfirm }}</text>
+										</view>
 									</view>
-									<view class="bottom text-gray text-sm">
+									<view class="bottomview text-grey text-sm">
 										<uni-dateformat :date="item.creatTime" />
 									</view>
+								</view>
+								<view class="action">
+									
 								</view>
 							</view>
 						</view>
@@ -139,7 +153,6 @@
 			</view>
 			
 		</template>
-		
 		
 		<!-- 设置支付密码 -->
 		<u-keyboard
@@ -292,9 +305,7 @@
 			// 设置充值包数据
 			_this.setChargePackges()
 			
-			//
-			
-			uni.$emit('updatebillrecord', function() {
+			uni.$on('updatebillrecord', function() {
 				_this.$refs.udb.refresh() // 刷新账单数据
 			})
 			
@@ -420,6 +431,23 @@
 			sectionChange(index) {
 				this.sectionIndex = index
 				this.billType = this.subsectionlist[this.sectionIndex].type
+			},
+			
+			// 查看全部账单记录
+			checkAllBillRecord() {
+				let billType = this.billType
+				console.log(billType);
+				uni.navigateTo({
+					url: `/pages/me/billrecord?billType=${billType}`
+				});
+			},
+			
+			// 查看账单详情
+			checkBillDetail(item) {
+				let billId = item._id
+				uni.navigateTo({
+					url: `/pages/me/billrecorddetail?id=${billId}`
+				});
 			},
 			
 			// 设置充值包数据

@@ -43,6 +43,7 @@ const zh = {
 		single: "单个模式",
 		multiple: "多个模式",
 		intotal: "共计",
+		checkall: "查看全部",
 
 	},
 	
@@ -426,6 +427,7 @@ const zh = {
 			changepaypassword: "修改支付密码",
 			closewallet: "注销钱包",
 			paymentimgtip: "请上传支付凭证",
+			waittoconfirm: "等待管理员确认",
 		},
 		
 	},

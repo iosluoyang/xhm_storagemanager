@@ -143,6 +143,19 @@
 					"style" : {
 						"navigationBarTitleText":"钱包"
 					}
+				},
+				{
+					"path":"billrecord",
+					"style": {
+						"navigationBarTitleText":"账单记录",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path":"billrecorddetail",
+					"style": {
+						"navigationBarTitleText":"账单详情"
+					}
 				}
 			]
 		},
