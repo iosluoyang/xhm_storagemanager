@@ -21,8 +21,8 @@
 					<view class="rightview flex1 flex align-end justify-between">
 						
 						<u-count-to ref="uCountTo" start-val="0" :end-val="walletInfo ? walletInfo.money : '0' "
-									:decimals="2" separator="," :duration="2000" 
-									font-size="60" color="#FFFFFF"
+									:decimals="2" separator="," :duration="1000" 
+									font-size="60" bold color="#FFFFFF"
 									:use-easing="true" :autoplay="false"
 						></u-count-to>
 						
