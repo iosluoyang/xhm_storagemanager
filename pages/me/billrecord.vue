@@ -7,7 +7,7 @@
 				active-color="#e54d42" :height="60" @change="sectionChange"></u-subsection>
 		</cu-custom>
 
-		<unicloud-db v-slot:default="{data, loading, error, options}" collection="bill" ref="udb"
+		<unicloud-db v-slot:default="{data, loading, error, options}" collection="bill" ref="udb" :options="options"
 			:where=" `creatUid == $cloudEnv_uid && type == ${billType}` " orderby="creatTime desc"
 			:page-size="20" page-data="add">
 			<view v-if="error">{{error.message}}</view>
