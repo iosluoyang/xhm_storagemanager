@@ -16,7 +16,7 @@ const en = {
 		translate: "文/A",
 		customerservice: "Service",
 		favor: "Favor",
-		shoppingcart: "Draft",
+		addtocart: "Add to Box",
 		buynow: "Buy Now",
 		uploadimg: "Upload Images",
 		share: "Share",
@@ -59,7 +59,10 @@ const en = {
 		wishdetail: "Wish Detail",
 		me: "Me",
 		wallet: "Wallet",
+		bill: "Bill",
+		financialmanage: "Financial Manage",
 		storemanage: "Store Manage",
+		addressmanage: "Address Manage",
 		shipping: "Shipping",
 		notice: "Notice",
 		resetpwd: "Reset Password",
@@ -418,8 +421,11 @@ const en = {
 			income: "Income",
 			expense: "Expense",
 			charge: "Charge",
+			balance: "Balance",
 			openwallet: "Open Wallet Account",
 			openwallettip: "You have not open the wallet account, please click confirm to open. You can pay with the wallet balance after, and we will have more discount and promotion to offer, come and open now !",
+			balancetip: "The platform admin needs to confirm after you charged the wallet balance, balance will update once the admin confirmed, please wait a minute .",
+			chargetip: "Please input charge amount or select charge packages",
 			pleasetypepaypassword: "Please Input PayPassword",
 			pleasetyenewpaypassword: "Please Input New PayPassword",
 			pleasetypepaypasswordagain: "Please Input PayPassword Again",
@@ -427,9 +433,22 @@ const en = {
 			changepaypassword: "Change PayPassword",
 			closewallet: "Close Wallet Account",
 			paymentimgtip: "Please Upload Payment Picture",
-			waittoconfirm: "Wait for Confirm",
+			billType: {
+				0: "Normal Order",
+				1: "Wish Order",
+				2: "Customer charge",
+				3: "Platform Gift"
+			},
 		},
 		
+		address: {
+			name: "Name",
+			mobile: "Mobile",
+			address: "Address",
+			shippingcode: "ShippingCode",
+			alias: "Alias",
+			setdefault: "Set Default",
+		}
 	},
 	
 	// 角色相关

@@ -381,6 +381,13 @@
 							</view>
 						</template>
 						
+						<!-- 心愿单订单已支付类型 -->
+						<template v-if="item.type == 6">
+							<view class="content bg-gradual-blue shadow">
+								{{ item.content }}
+							</view>
+						</template>
+						
 					</view>
 					
 					<!-- 本人头像区域 -->
@@ -964,7 +971,7 @@
 			
 			// 用户同意报价
 			agreeQuotation() {
-			
+				
 				uni.showModal({
 					content: _this.i18n.tip.optionconfirm,
 					showCancel: true,
@@ -1022,14 +1029,21 @@
 										delete eachproduct.draftproId
 									}
 								})
-								// 获取支付总金额
-								let totalPrice = _this.$refs.wishtablespecref.getWishInfoTotalMoney()
+								// 获取心愿支付的总金额
+								let totalOrderPrice = _this.$refs.wishtablespecref.getWishInfoTotalMoney()
 								
 								let orderdata = {
-									wishId: _this.wishId,
+									orderType: 1, // 0 普通订单  1心愿订单
+									status: 0, // 0 待付款订单
 									productList: orderProductList,
-									totalOrderPrice: totalPrice,
+									totalProPrice: _this.wishInfo.quotationInfo.totalProPrice,
+									totalDomesticShippingFee: _this.wishInfo.quotationInfo.totalShippingFee,
+									totalCommissionFee: _this.wishInfo.quotationInfo.totalCommissionFee,
+									totalOrderPrice: totalOrderPrice,
+									wishId: _this.wishId, // 该心愿订单对应的心愿id
+									agentUid: _this.wishInfo?.agentUser?._id || '', // 该心愿订单对应的代理人uid
 								}
+								
 								db.collection('order')
 								.add(orderdata)
 								.then(response => {
@@ -1038,7 +1052,7 @@
 										// 跳转支付收银台页面
 										let orderId = response.result.id
 										uni.navigateTo({
-											url: `/pages/makeorder/payment?orderId=${orderId}`
+											url: `/pages/makeorder/payment?type=makeorder&orderId=${orderId}`
 										});
 										
 									}
@@ -1250,6 +1264,10 @@
 						// 心愿单拒绝
 						else if(eachtimeline.type == 5) {
 							eachtimeline.content = _this.user.role == _this.$basejs.roleEnum.productAgent ? _this.i18n.wishlist.timeline.wishrefusequotationagenttip : _this.i18n.wishlist.timeline.wishrefusequotationcustomertip
+						}
+						// 心愿单对应的订单支付完成
+						else if(eachtimeline.type == 6) {
+							eachtimeline.content = _this.i18n.wishlist.timeline.wishfinishpay
 						}
 					
 					}) 

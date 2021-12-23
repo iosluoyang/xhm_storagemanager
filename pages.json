@@ -156,6 +156,18 @@
 					"style": {
 						"navigationBarTitleText":"账单详情"
 					}
+				},
+				{
+					"path":"addresslist",
+					"style": {
+						"navigationBarTitleText":"地址管理"
+					}
+				},
+				{
+					"path":"addresslisthandle",
+					"style": {
+						"navigationBarTitleText":"地址管理"
+					}
 				}
 			]
 		},
@@ -200,6 +212,13 @@
 				    "path" : "notice/handlenotice",
 				    "style" : {
 						"navigationBarTitleText":"公告管理"
+					}
+				},
+				{
+					"path":"financialmanage/index",
+					"style": {
+						"navigationBarTitleText":"财务管理",
+						"enablePullDownRefresh": true
 					}
 				}
 			]

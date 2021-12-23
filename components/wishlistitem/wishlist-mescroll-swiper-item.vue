@@ -8,9 +8,7 @@
 	<mescroll-uni class="mescrollview" :ref="'mescrollRef'+i" @init="mescrollInit" :height="height" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback">
 		<!-- 顶部提示 -->
 		<u-top-tips :ref="'uTips' + i" :navbar-height="0"></u-top-tips>
-		
 		<wishlistitem v-for="(wishitem, wishindex) in dataList" :key="wishitem._id" :wishitem="wishitem"></wishlistitem>
-		
 	</mescroll-uni>
 	
 </template>

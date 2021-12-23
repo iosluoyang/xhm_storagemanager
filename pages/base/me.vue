@@ -68,22 +68,6 @@
 		<!-- 列表 -->
 		<view class="cu-list menu sm-border card-menu margin-top">
 			
-			<!-- 我的收藏商品 -->
-			<view v-if="iflogin" class="cu-item arrow" @tap.stop="jumpToProFavor">
-				<view class="content">
-					<text class="cuIcon-favorfill text-grey"></text>
-					<text class="text-black">{{i18n.nav.profavor}}</text>
-				</view>
-			</view>
-			
-			<!-- 退出登录 -->
-			<view v-if="iflogin" class="cu-item arrow" @tap.stop="exit">
-				<view class="content">
-					<text class="cuIcon-circlefill text-grey"></text>
-					<text class="text-black">{{i18n.me.exit}}</text>
-				</view>
-			</view>
-			
 			<!-- 当前版本 -->
 			<view class="cu-item" v-if="configData">
 				<view class="content">
@@ -92,6 +76,14 @@
 				</view>
 				<view class="action">
 					<text class="text-grey text-sm">{{configData.appVersion}}</text>
+				</view>
+			</view>
+			
+			<!-- 退出登录 -->
+			<view v-if="iflogin" class="cu-item arrow" @tap.stop="exit">
+				<view class="content">
+					<text class="cuIcon-circlefill text-grey"></text>
+					<text class="text-black">{{i18n.me.exit}}</text>
 				</view>
 			</view>
 			
@@ -131,6 +123,16 @@
 			// 设置面板信息
 			setpaneldata() {
 				
+				// 地址管理  仅商家管理员有
+				let addressitem = {
+					id: 'addressmanage',
+					cuIcon: 'addressbook',
+					color: 'blue',
+					badge: 0,
+					name: this.i18n.nav.addressmanage,
+					url: '/pages/me/addresslist'
+				}
+				
 				// 店铺管理  仅商家管理员有
 				let storemanageitem = {
 					id: 'storemanage',
@@ -161,7 +163,7 @@
 					url: '/pages/admin/notice/index'
 				}
 				
-				// 我的钱包 仅普通用户有
+				// 我的钱包 仅商家管理员有
 				let walletitem = {
 					id: 'wallet',
 					cuIcon: 'rechargefill',
@@ -169,6 +171,26 @@
 					badge: 0,
 					name: this.i18n.nav.wallet,
 					url: '/pages/me/wallet'
+				}
+				
+				// 财务管理 仅超级管理员有
+				let financialmanageitem = {
+					id: 'financialmanage',
+					cuIcon: 'rechargefill',
+					color: 'red',
+					badge: 0,
+					name: this.i18n.nav.financialmanage,
+					url: '/pages/admin/financialmanage/index'
+				}
+				
+				// 收藏商品
+				let favorproitem = {
+					id: 'favorpro',
+					cuIcon: 'favorfill',
+					color: 'orange',
+					badge: 0,
+					name: this.i18n.nav.profavor,
+					url: '/pages/product/favorlist'
 				}
 				
 				// 重置密码
@@ -206,30 +228,33 @@
 					
 					// 如果是超级管理员角色
 					if(this.user.role == this.$basejs.roleEnum.admin) {
-						// 添加公告选项
-						panelList.push(noticeitem)
+						
+						panelList.push(financialmanageitem) // 财务管理
+						panelList.push(noticeitem) // 公告管理
+						panelList.push(favorproitem) // 商品收藏
+						panelList.push(resetpwditem) // 重置密码
 					}
 					
 					// 如果是商家角色
 					else if(this.user.role == this.$basejs.roleEnum.merchantAdmin) {
 						
 						panelList.push(walletitem) // 我的钱包
+						panelList.push(favorproitem) // 商品收藏
+						panelList.push(addressitem) // 地址管理
 						panelList.push(resetpwditem) // 重置密码
-						
-						// 添加店铺管理选项
-						panelList.push(storemanageitem)
+						panelList.push(storemanageitem) // 店铺管理
 						
 					}
 					
 					// 如果是代理角色
 					else if(this.user.role == this.$basejs.roleEnum.productAgent) {
-						
+						panelList.push(favorproitem) // 商品收藏
 						panelList.push(resetpwditem) // 重置密码
-						
 					}
 					
 					// 如果是物流公司角色
 					else if(this.user.role == this.$basejs.roleEnum.shippingAdmin) {
+						panelList.push(favorproitem) // 商品收藏
 						panelList.push(resetpwditem) // 重置密码
 						panelList.push(shippingitem) // 添加仓库代码选项
 					}
@@ -242,6 +267,29 @@
 				panelList.push(moreitem) // 更多
 				
 				this.panelList = panelList
+				
+				// 如果是超级管理员角色则获取当前未处理的到账申请
+				if(this.user && this.user.role == this.$basejs.roleEnum.admin) {
+					const db = uniCloud.database();
+					// status 0待确认 1已确认  type 0支出 1充值
+					db.collection('bill')
+					.where(`status == 0 && type == 1`)
+					.count()
+					.then(response => {
+						if(response.result.code == 0) {
+							// 设置当前未处理的财务角标数量
+							let unhandlebillnum = response.result.total
+							let financialmanageitem = _this.panelList.find(item => (item.id == 'financialmanage'))
+							if(financialmanageitem) {
+								financialmanageitem.badge = unhandlebillnum
+							}
+						}
+					})
+					.catch(error => {
+						console.log(`获取未处理账单数量失败`);
+						console.log(error);
+					})
+				}
 				
 			},
 			

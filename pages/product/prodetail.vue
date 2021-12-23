@@ -98,12 +98,12 @@
 				<view class="cuIcon-cartfill text-pink">
 					<text v-if="shoppingCartNum" class="cu-tag badge">{{ shoppingCartNum }}</text>
 				</view>
-				{{ i18n.base.shoppingcart }}
+				{{ i18n.nav.shoppingcart }}
 			</view>
 			
 			<!-- 立即购买按钮 -->
 			<view class="btn-group flex align-center ">
-				<button class="cu-btn bg-gradual-pink round shadow-blur width50" @click="starttobuy">{{ i18n.base.buynow }}</button>
+				<button class="cu-btn bg-gradual-pink round shadow-blur width50" @click="addtocart">{{ i18n.base.addtocart }}</button>
 			</view>
 		
 		</view>
@@ -516,8 +516,8 @@
 				
 			},
 		
-			// 开始购买
-			starttobuy() {
+			// 加入购物车
+			addtocart() {
 				
 				// 如果有规格数据则显示规格弹框  没有规格数据则提示进入手动录入模式
 				if(this.specPropInfo && this.linkProduct.specPropInfo.propValList && this.linkProduct.specPropInfo.propValList.length > 0) {
@@ -574,7 +574,7 @@
 							.then(response => {
 								// 添加成功
 								uni.showToast({
-									title: this.i18n.tip.optionsuccess,
+									title: this.i18n.tip.addsuccess,
 									icon: 'none'
 								});
 								
@@ -613,7 +613,7 @@
 								// 更新成功
 								if(response.result.code == 0) {
 									uni.showToast({
-										title: this.i18n.tip.optionsuccess,
+										title: this.i18n.tip.addsuccess,
 										icon: 'none'
 									});
 									
@@ -623,13 +623,13 @@
 								}
 								else {
 									uni.showToast({
-										title: this.i18n.error.optionerror,
+										title: this.i18n.error.adderror,
 										icon: 'none'
 									});
 								}
 							}).catch(error => {
 								uni.showToast({
-									title: this.i18n.error.optionerror,
+									title: this.i18n.error.adderror,
 									icon: 'none'
 								});
 							})
@@ -637,14 +637,14 @@
 					}
 					else {
 						uni.showToast({
-							title: this.i18n.error.optionerror,
+							title: this.i18n.error.adderror,
 							icon: 'none'
 						});
 					}
 				})
 				.catch(error => {
 					uni.showToast({
-						title: this.i18n.error.optionerror,
+						title: this.i18n.error.adderror,
 						icon: 'none'
 					});
 				})

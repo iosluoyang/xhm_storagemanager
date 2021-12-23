@@ -1,0 +1,69 @@
+{
+	"bsonType": "object",
+	"description":"用户收货地址管理",
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"creatUid": {
+			"bsonType":"string",
+			"description":"所属人uid",
+			"foreignKey":"uni-id-users._id",
+			"forceDefaultValue": {
+				"$env":"uid"
+			}
+		},
+		"updateTime": {
+			"bsonType":"timestamp",
+			"description":"更新时间",
+			"forceDefaultValue": {
+				"$env":"now"
+			}
+		},
+		"name": {
+			"bsonType": "string",
+			"description": "姓名",
+			"trim": "both",
+			"defaultValue":""
+		},
+		"mobile": {
+			"bsonType": "string",
+			"description": "电话",
+			"trim": "both",
+			"defaultValue":""
+		},
+		"address": {
+			"bsonType": "string",
+			"description": "详细地址  包含省市区的全部内容",
+			"trim": "both",
+			"defaultValue":""
+		},
+		"shippingCode": {
+			"bsonType":"string",
+			"description":"唛头",
+			"defaultValue":""
+		},
+		"alias": {
+			"bsonType": "string",
+			"description": "地址别名，例如：家、公司、学校",
+			"trim": "both"
+		},
+		"ifDefault" : {
+			"bsonType":"bool",
+			"description":"是否为默认地址",
+			"defaultValue": false
+		}
+		
+	},
+	"required": [
+		"name",
+		"mobile",
+		"address"
+	]
+}

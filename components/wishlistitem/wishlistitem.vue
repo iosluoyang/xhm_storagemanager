@@ -123,10 +123,10 @@
 			<view v-if="(ownwishitem.status == 3) || (user && user.role == $basejs.roleEnum.admin)" class="actionview shadow-warp padding-sm flex align-center">
 				
 				<!-- 跳转订单按钮  当心愿变成已支付已完成且为自己或代理员代理的心愿时有此按钮 -->
-				<button v-if="user && (user._id == ownwishitem.creatUser._id || user._id == ownwishitem.agentUser._id) && ownwishitem.status == 3" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
+				<button v-if="user && (ownwishitem.creatUser && ownwishitem.agentUser && (user._id == ownwishitem.creatUser._id || user._id == ownwishitem.agentUser._id) ) && ownwishitem.status == 3" class="cu-btn margin-left-sm round bg-purple cuIcon cuIcon-formfill" @tap.stop="jumpToOrderDetail"></button>
 				
 				<!-- 切换心愿状态 超级管理员有此功能 -->
-				<button v-if="user && user.role == $basejs.roleEnum.admin " class="cu-btn margin-left-sm round bg-grey cuIcon cuIcon-order" @tap.stop="changewishliststatus"></button>
+				<button v-if="user && user.role == $basejs.roleEnum.admin" class="cu-btn margin-left-sm round bg-grey cuIcon cuIcon-order" @tap.stop="changewishliststatus"></button>
 				
 			</view>
 			

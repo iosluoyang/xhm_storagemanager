@@ -14,21 +14,70 @@
 				
 				<view class="cu-item" v-for="(item, index) in paymentArr" :key="item.type" @tap.stop="paymentType = item.type">
 					
-					<view class="content titleleftview flex align-center">
+					<view class="content titleleftview padding-tb-sm">
 						
-						<template>
-							<u-icon v-if="item.type == 'alipay'" name="zhifubao" color="#108EE9" size="50"></u-icon>
-							<u-icon v-else-if="item.type == 'wechat'" name="weixin-fill" color="#07C160" size="50"></u-icon>
-							<u-icon v-else-if="item.type == 'bankcard'" name="grid" color="#9c26b0" size="50"></u-icon>
-							<u-icon v-else-if="item.type == 'balance'" name="rmb-circle-fill" color="#e54d42" size="50"></u-icon>
-						</template>
+						<view class="topview flex align-center">
+							
+							<template>
+								<u-icon v-if="item.type == 'alipay'" name="zhifubao" color="#108EE9" size="50"></u-icon>
+								<u-icon v-else-if="item.type == 'wechat'" name="weixin-fill" color="#07C160" size="50"></u-icon>
+								<u-icon v-else-if="item.type == 'bankcard'" name="grid" color="#9c26b0" size="50"></u-icon>
+								<u-icon v-else-if="item.type == 'balance'" name="rmb-circle-fill" color="#e54d42" size="50"></u-icon>
+							</template>
+							
+							<text class="text-df margin-left">{{ item.title }}</text>
+							
+							<view v-if="item.type == 'balance' && walletMoney">
+								<view class="balanceview margin-left text-red text-price">
+									<u-count-to ref="uCountTo" start-val="0" :end-val="walletMoney"
+												:decimals="2" separator="," :duration="300" 
+												font-size="30" bold color="#FF3B30"
+												:use-easing="true" :autoplay="true"
+									></u-count-to>
+								</view>
+							</view>
+							
+						</view>
 						
-						<text class="text-df margin-left">{{ item.title }}</text>
+						<!-- 下方区域 -->
+						<view class="margin-top-sm u-margin-left-60 desc flex align-center">
+							<!-- 描述文字 -->
+							<text class="text-grey text-sm">{{ item.desc }}</text>
+						</view>
 						
 					</view>
 					
+					<!-- 操作区域 -->
 					<view class="action">
-						<radio :checked="item.type == paymentType" :disabled=" type == 'walletcharge' && Number(totalPrice) > Number(walletMoney) " />
+						
+						<!-- 如果是余额支付类型 则根据余额情况显示相应的文字 -->
+						<view v-if="item.type == 'balance' ">
+							
+							<!-- 未开通钱包提示去开通钱包 -->
+							<template v-if="!walletMoney">
+								<button class="cu-btn round sm bg-red" @tap.stop="gotoWalletPage">{{ i18n.me.wallet.openwallet }}</button>
+							</template>
+							
+							<!-- 已开通钱包 判断余额是否足够支付 -->
+							<view v-else>
+								
+								<!-- 钱包余额不够支付 点击跳转钱包页面 -->
+								<template v-if="Number(totalPrice) > Number(walletMoney)">
+									<button class="cu-btn round sm bg-orange" @tap.stop="gotoWalletPage">{{ i18n.me.wallet.charge }}</button>
+								</template>
+								
+								<!-- 钱包余额够支付 -->
+								<template v-else>
+									<radio :checked="item.type == paymentType" />
+								</template>
+								
+							</view>
+							
+						</view>
+						
+						<!-- 其他支付类型 -->
+						<radio v-else :checked="item.type == paymentType" />
+						
 					</view>
 					
 				</view>
@@ -36,7 +85,7 @@
 			</view>
 			
 			<!-- 支付凭证上传区域 仅余额充值类型时展示 用于上传充值凭证 -->
-			<view class="alreadypaidinfoview radius margin padding shadow-blur bg-white">
+			<view v-if="type == 'walletcharge' " class="alreadypaidinfoview radius margin padding shadow-blur bg-white">
 				
 				<!-- 图片上传 -->
 				<view class="cu-bar bg-white">
@@ -57,7 +106,7 @@
 		
 		<!-- 支付按钮 -->
 		<view v-if="totalPrice" class="bottombtnview">
-			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm" :disabled="!totalPrice">
+			<button class="paybtn cu-btn bg-blue text-xl" @tap.stop="confirm" :disabled="paybtndisable">
 				{{ `&yen${totalPrice}` }}
 			</button>
 		</view>
@@ -65,10 +114,55 @@
 		<!-- 加载条 -->
 		<loading :loadModal="ifloading"></loading>
 		
+		<!-- 设置支付密码 -->
+		<u-keyboard
+			ref="uKeyboard" 
+			mode="number" 
+			:mask="true" 
+			:mask-close-able="false"
+			:dot-enabled="false" 
+			v-model="keyboardShow"
+			:safe-area-inset-bottom="true"
+			:tooltip="false"
+			:show-tips="false"
+			:cancel-text="i18n.base.cancel"
+			:confirm-text="i18n.base.confirm"
+			@change="keyboardOnChange"
+			@backspace="keyboardOnBackspace">
+			<view>
+				
+				<!-- 上方内容区域 -->
+				<view class="topview padding">
+					
+					<view class="toolsview flex align-center justify-between padding-left padding-right">
+						<text class="text-grey text-df" @tap.stop="keyboardCancel">{{ i18n.base.cancel }}</text>
+						<text class="text-black text-df text-bold">{{ i18n.base.confirm }}</text>
+					</view>
+					
+					<view class="text-center margin-top-sm">
+						<text class="text-bold text-black text-df">{{ i18n.me.wallet.pleasetypepaypassword }}</text>
+					</view>
+					
+				</view>
+				
+				<view class="flex justify-center margin-bottom-sm">
+					<u-message-input 
+						mode="box" 
+						:maxlength="passwordMaxLength"
+						:dot-fill="true"
+						v-model="payPassword"
+						:disabled-keyboard="true"
+						@finish="typePayPasswordFinish"
+					></u-message-input>
+				</view>
+			</view>
+		</u-keyboard>
+		
 	</view>
 </template>
 
 <script>
+	import md5Libs from "uview-ui/libs/function/md5";
 	
 	var _this
 	
@@ -93,6 +187,10 @@
 				
 				totalPrice: '', // 支付金额
 				
+				keyboardShow: false, // 支付键盘是否显示  默认为否
+				passwordMaxLength: 6, // 支付密码长度
+				payPassword: '', // 支付密码
+				
 				mainpiclimitnum: 5, // 图片上传的数量限制
 				imgArr: [], // 图片数组
 
@@ -113,6 +211,36 @@
 			let shareObj = this.shareObj
 			return shareObj
 			
+		},
+		
+		onShow() {
+			// 页面显示如果为正常订单支付则获取钱包余额信息
+			if(this.type == 'makeorder') {
+				this.loadWalletBalance()
+			}
+		},
+		
+		computed: {
+			// 支付按钮是否禁用
+			paybtndisable() {
+				
+				// 没有金额则禁用
+				if(!this.totalPrice) {
+					return true
+				}
+				
+				// 正常订单支付
+				if(this.type == 'makeorder') {
+					// 当选择类型为余额支付时进行校验余额和支付金额的大小
+					if(this.paymentType == 'balance') {
+						if(Number(this.totalPrice) > Number(this.walletMoney)) {
+							return true
+						}
+					}
+					return false
+				}
+				
+			}
 		},
 		
 		// 页面加载后
@@ -183,47 +311,19 @@
 				_this.$store.dispatch('app/setConfigData').then(response => {
 					// 此时配置信息已经加载成功并且保存到本地
 					
-					let paymentInfo = _this.$store.getters.configData.paymentInfo
+					let paymentInfo = {..._this.$store.getters.configData.paymentInfo}
 					let paymentArr = paymentInfo.paymentArr
 					let defaultType = paymentInfo.defaultType
 					
 					// 筛选支付方式数组
-					// 如果为钱包充值 则过滤掉余额支付的方式
+					// 如果为钱包充值 则过滤掉余额支付的方式 默认选中第一个支付方式
 					if(_this.type == 'walletcharge') {
 						paymentArr = paymentArr.filter(item => (item.type !== 'balance'))
 						defaultType = defaultType == 'balance' ? paymentArr[0].type : defaultType
 					}
-					else {
-						// 有余额支付方式  获取钱包余额
-						const db = uniCloud.database();
-						db.collection('wallet')
-						.where(`uid == $cloudEnv_uid`)
-						.field('money')
-						.get({getOne: true})
-						.then(response => {
-							if(response.result.code == 0) {
-								let walletMoney = response.result.data.money
-								this.walletMoney = walletMoney
-							}
-							else {
-								uni.showToast({
-									title: _this.i18n.error.loaderror,
-									icon: 'none'
-								});
-							}
-						})
-						.catch(error => {
-							uni.showToast({
-								title: _this.i18n.error.loaderror,
-								icon: 'none'
-							});
-						})
-					}
 					// 其余的根据正常的支付信息来设置
 					_this.paymentArr = paymentArr
 					_this.paymentType = defaultType
-					
-					console.log(_this.paymentArr, _this.paymentType)
 					
 				}).catch(error => {
 					// 配置信息加载失败,提示用户
@@ -238,6 +338,48 @@
 				
 			},
 			
+			// 获取钱包余额信息
+			loadWalletBalance() {
+				
+				const db = uniCloud.database();
+				db.collection('wallet')
+				.where(`uid == $cloudEnv_uid`)
+				.get({getOne: true})
+				.then(response => {
+					if(response.result.code == 0) {
+						// 如果存在钱包信息则获取钱包余额
+						if(response.result.data) {
+							let walletMoney = response.result.data.money
+							this.walletMoney = walletMoney
+						}
+						// 不存在钱包信息 提示用户开通钱包
+						else {
+							console.log(`您还没有开通钱包 请及时开通`);
+						}
+					}
+					else {
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+				
+			},
+			
+			// 开通钱包账户
+			gotoWalletPage() {
+				uni.navigateTo({
+					url: '/pages/me/wallet'
+				});
+			},
+			
 			// 获取订单信息
 			loadPayOrderData() {
 				
@@ -250,8 +392,8 @@
 						
 						let orderInfo = response.result.data
 						_this.orderInfo = orderInfo
-						let totalMoney = orderInfo.totalOrderPrice
-						_this.totalMoney = totalMoney
+						let totalPrice = orderInfo.totalOrderPrice
+						_this.totalPrice = totalPrice
 						
 					}
 					else {
@@ -299,7 +441,7 @@
 				this.ifloading = false
 				
 				// 继续提交数据
-				this.uploaddata()
+				this.finalSubmit()
 			},
 			
 			// 上传图片失败
@@ -319,6 +461,8 @@
 			confirm() {
 				
 				// 根据不同的收银台类型选择不同的校验标准
+				
+				// 钱包余额充值
 				if(this.type == 'walletcharge') {
 					// 校验转账凭证
 					
@@ -338,14 +482,156 @@
 					}
 					
 				}
-				else {
-					_this.uploaddata()
+				// 正常下单类型
+				else if(this.type == 'makeorder') {
+					_this.finalSubmit()
 				}
 				
 			},
 			
+			// 支付键盘输入和回退
+			keyboardOnChange(val){
+				// 输入未达限制
+				if(this.payPassword.length<this.passwordMaxLength){
+					this.payPassword += val;
+				}
+				// 输入完成
+				if(this.payPassword.length>=this.passwordMaxLength){
+					this.typePayPasswordFinish()
+				}
+			},
+			
+			// 点击退格
+			keyboardOnBackspace(e){
+				if(this.payPassword.length>0){
+					this.payPassword = this.payPassword.substring(0,this.payPassword.length-1);
+				}
+			},
+			
+			keyboardCancel() {
+				// 清空输入密码和临时密码
+				this.payPassword = ''
+				this.keyboardShow = false
+			},
+			
+			// 输入完支付密码
+			typePayPasswordFinish() {
+				
+				console.log(this.payPassword);
+				
+				// 校验支付密码
+				uni.showLoading()
+				
+				const db = uniCloud.database();
+				db.collection('wallet')
+				.where(`uid == $cloudEnv_uid`)
+				.field('payPassword,money')
+				.get({getOne: true})
+				.then(response => {
+					
+					uni.hideLoading()
+					
+					if(response.result.code == 0) {
+						let walletId = response.result.data._id
+						let payPassword = response.result.data.payPassword
+						let walletMoney = response.result.data.money
+						
+						// 验证成功
+						if(payPassword == md5Libs.md5(_this.payPassword)) {
+							
+							// 扣除钱包余额
+							let leftWalletMoneyNum = Number(walletMoney) - Number(_this.totalPrice)
+							let newWalletMoney = _this.$basejs.keepTwoDecimalFull(leftWalletMoneyNum)
+							db.collection('wallet')
+							.doc(walletId)
+							.update({
+								money: newWalletMoney,
+								updateTime: db.env.now
+							})
+							.then(response => {
+								if(response.result.code == 0) {
+									// 扣款成功
+									
+									// 添加一个账单信息
+									let billitem = {
+										status: 1,
+										type: 0,
+										price: _this.totalPrice,
+										billType: _this.orderInfo.orderType == 0 ? 0 : _this.orderInfo.orderType == 1 ? 1 : 0,
+										orderId: _this.orderId
+									}
+									db.collection('bill')
+									.add(billitem)
+									.then(response => {
+										console.log(`添加账单成功`);
+										if(response.result.code == 0) {
+											_this.payPassword = ''
+											_this.keyboardShow = false
+											// 完成支付
+											_this.finishPay()
+										}
+										else {
+											uni.showToast({
+												title: _this.i18n.error.optionerror,
+												icon: 'none'
+											});
+										}
+									})
+									.catch(error => {
+										console.log(`添加账单失败`);
+										uni.showToast({
+											title: _this.i18n.error.optionerror,
+											icon: 'none'
+										});
+									})
+									
+								}
+								else {
+									uni.showToast({
+										title: _this.i18n.error.optionerror,
+										icon: 'none'
+									});
+								}
+							})
+							.catch(error => {
+								uni.showToast({
+									title: _this.i18n.error.optionerror,
+									icon: 'none'
+								});
+							})
+							
+						}
+						// 验证失败
+						else {
+							_this.payPassword = ''
+							uni.showToast({
+								title: _this.i18n.me.wallet.paypasswordwrong,
+								icon: 'none'
+							});
+						}
+					}
+					else {
+						_this.payPassword = ''
+						uni.showToast({
+							title: _this.i18n.error.loaderror,
+							icon: 'none'
+						});
+					}
+				})
+				.catch(error => {
+					
+					uni.hideLoading()
+					
+					_this.payPassword = ''
+					uni.showToast({
+						title: _this.i18n.error.loaderror,
+						icon: 'none'
+					});
+				})
+			},
+			
 			// 提交数据
-			uploaddata() {
+			finalSubmit() {
 				
 				// 根据不同的收银台类型选择不同的数据修改
 				
@@ -367,24 +653,28 @@
 					.add(billitem)
 					.then(response => {
 						if(response.result.code == 0) {
+							
 							// 操作成功
 							uni.showToast({
 								title: _this.i18n.tip.optionsuccess,
 								icon: 'none'
 							});
 							uni.$emit('updatebillrecord') // 刷新账单记录数据
-							uni.navigateBack();
+							setTimeout(function() {
+								uni.navigateBack();
+							}, 1000);
+							
 						}
 						else {
 							uni.showToast({
-								title: _this.i18n.error.loaderror,
+								title: _this.i18n.error.optionerror,
 								icon: 'none'
 							});
 						}
 					})
 					.catch(error => {
 						uni.showToast({
-							title: _this.i18n.error.loaderror,
+							title: _this.i18n.error.optionerror,
 							icon: 'none'
 						});
 					})
@@ -393,38 +683,99 @@
 				// 正常订单支付
 				else if(this.type == 'makeorder') {
 					
-					// 开始更新数据
+					// 如果是余额支付则进行校验和扣除
+					if(this.paymentType == 'balance') {
+						
+						// 校验钱包余额
+						const db = uniCloud.database();
+						db.collection('wallet')
+						.where(`uid == $cloudEnv_uid`)
+						.get({getOne: true})
+						.then(response => {
+							if(response.result.code == 0) {
+								let walletMoney = response.result.data.money
+								this.walletMoney = walletMoney
+								// 余额够支付
+								if(Number(this.walletMoney) >= Number(this.totalPrice)) {
+									
+									// 输入支付密码控件
+									_this.payPassword = ''
+									_this.keyboardShow = true
+									
+								}
+							}
+							else {
+								uni.showToast({
+									title: _this.i18n.error.loaderror,
+									icon: 'none'
+								});
+							}
+						})
+						.catch(error => {
+							uni.showToast({
+								title: _this.i18n.error.loaderror,
+								icon: 'none'
+							});
+						})
+					}
+					
+					// 其他支付方式  提示暂不支持支付
+					else {
+						uni.showToast({
+							title: _this.i18n.base.needtowait,
+							icon: 'none'
+						});
+					}
+					
+				}
+				
+				// 其他支付
+				else {
+					uni.showToast({
+						title: _this.i18n.base.needtowait,
+						icon: 'none'
+					});
+				}
+				
+			},
+			
+			// 正常订单完成支付
+			finishPay() {
+				
+				if(this.type == 'makeorder') {
+					
+					// 修改订单的状态和对应心愿单状态(如有)
+					uni.showLoading()
+					
 					const db = uniCloud.database();
+					
+					// 开始更新数据
 					db.collection('order')
 					.doc(_this.orderId)
 					.update({
 						payTime: db.env.now,
 						status: 1,
 						payType: _this.paymentType,
-						payImgs: imgs
 					})
 					.then(response => {
+						
 						// 更新成功
 						if(response.result.code == 0) {
 							
 							uni.showToast({
-								title: _this.i18n.tips.optionsuccess,
+								title: _this.i18n.tip.optionsuccess,
 								icon: 'none'
 							});
 							
 							// 发送用户支付成功通知
 							_this.pushnoticemsg('finishpay')
-							uni.$emit('updatewishorderdetail')
 							
 							// 如果订单有心愿id则添加对应的时间轴数据
 							if(_this.orderInfo.wishId) {
-								// 刷新心愿详情数据和心愿订单数据
-								// uni.$emit('updatewishlist')
-								// uni.$emit('updatewishdetail')
-								
+					
 								// 增加用户已支付的时间轴
 								db.collection('wish-timeline')
-								.add({type: 7, wishId: _this.orderInfo.wishId})
+								.add({type: 6, wishId: _this.orderInfo.wishId})
 								.then(response => {
 									// 刷新时间轴
 									uni.$emit('updatetimeline')
@@ -453,9 +804,12 @@
 							icon: 'none'
 						});
 					})
+					.finally(() => {
+						uni.hideLoading()
+					})
 					
 				}
-
+				
 			},
 			
 			// 推送消息

@@ -6,157 +6,193 @@
 			<block slot="content">{{i18n.nav.wallet}}</block>
 		</cu-custom>
 		
-		<!-- 钱包余额区域 -->
-		<view class="balanceview margin padding radius bg-gradual-red shadow-blur">
+		<view v-show="pageType == 'wallet' ">
 			
-			<!-- 开通了钱包 显示余额数据 -->
-			<view v-if="walletInfo" class="walletview flex flex-direction justify-between height100">
+			<view class="walletview">
 				
-				<view class="topview flex align-center justify-between">
+				<!-- 钱包余额区域 -->
+				<view class="balanceview margin padding radius bg-gradual-red shadow-blur">
 					
-					<view class="leftview flex0 flex flex-direction align-center margin-right">
-						<u-icon name="rmb-circle-fill" color="#fbbd08" size="100"></u-icon>
+					<!-- 开通了钱包 显示余额数据 -->
+					<view v-if="walletInfo" class="walletview flex flex-direction justify-between height100">
+						
+						<view class="topview tipsview flex align-center justify-between">
+							
+							<view class="leftview tipview flex align-center text-lg">
+								<text class="text-df">{{ i18n.me.wallet.balance }}</text>
+								<text class="cuIcon cuIcon-info text-white margin-left-sm" @tap.stop="showBalanceTip"></text>
+							</view>
+							
+							<view class="rightview text-lg">
+								<text class="cuIcon text-white" :class="[showBalanceFlag ? 'cuIcon-attentionfill' : 'cuIcon-attentionforbidfill']" @tap.stop="showBalanceFlag = !showBalanceFlag"></text>
+							</view>
+				
+						</view>
+						
+						<view class="middleview moneyview">
+							
+							<view v-show="showBalanceFlag">
+								<u-count-to ref="uCountTo" start-val="0" :end-val="walletInfo ? walletInfo.money : '0' "
+											:decimals="2" separator="," :duration="500" 
+											font-size="60" bold color="#FFFFFF"
+											:use-easing="true" :autoplay="false"
+								></u-count-to>
+							</view>
+							
+							<view v-show="!showBalanceFlag" class="text-xsl">
+								<text class="text-white">{{ `****` }}</text>
+							</view>
+							
+						</view>
+						
+						<view class="bottomview operateview flex align-center justify-between">
+							
+							<!-- 更新时间 -->
+							<view class="text-xs text-white flex align-center">
+								<uni-dateformat :date="walletInfo.updateTime" />
+							</view>
+							
+							<!-- 操作按钮 -->
+							<view class="flex align-center justify-end text-xl">
+								<text class="cuIcon cuIcon-settingsfill text-white" @tap.stop="clicksetting"></text>
+								<button class="margin-left-sm cu-btn sm round bg-yellow text-white" @tap.stop="chargeWallet">{{ i18n.me.wallet.charge }}</button>
+							</view>
+							
+						</view>
+						
 					</view>
 					
-					<view class="rightview flex1 flex align-end justify-between">
-						
-						<u-count-to ref="uCountTo" start-val="0" :end-val="walletInfo ? walletInfo.money : '0' "
-									:decimals="2" separator="," :duration="1000" 
-									font-size="60" bold color="#FFFFFF"
-									:use-easing="true" :autoplay="false"
-						></u-count-to>
-						
-						<button v-if="bottomType == 'record'" class="margin-left-sm cu-btn sm round bg-yellow text-white" @tap.stop="chargeWallet">{{ i18n.me.wallet.charge }}</button>
-						
+					<!-- 未开通钱包 -->
+					<view v-else class="nowalletview flex align-center justify-center margin">
+						<button class="cu-btn round lg bg-yellow text-white text-bold" @tap.stop="startToOpenWallet">{{ i18n.me.wallet.openwallet }}</button>
 					</view>
 					
 				</view>
 				
-				<view class="bottomview flex align-center justify-between">
+				<!-- 消费充值记录区域 -->
+				<view class="recordlistview padding margin">
 					
-					<!-- 更新时间 -->
-					<view class="text-xs text-white flex align-center">
-						<uni-dateformat :date="walletInfo.updateTime" />
-					</view>
+					<!-- 切换选项 -->
+					<u-subsection mode="button" :list="subsectionlist" :current="sectionIndex" active-color="#e54d42" @change="sectionChange"></u-subsection>
 					
-					<!-- 操作按钮 -->
-					<view class="flex align-center justify-end text-xl">
-						<text v-if="bottomType == 'record'" class="cuIcon cuIcon-settingsfill text-white" @tap.stop="clicksetting"></text>
-					</view>
+					<!-- 其他的内容视图 -->
+					<unicloud-db  v-slot:default="{data, loading, error, options}" collection="bill"
+								ref="udb"
+								:where=" `creatUid == $cloudEnv_uid && type == ${billType}` "
+								orderby="creatTime desc"
+								:page-size="5" page-data="replace"
+					>
+						<view v-if="error">{{error.message}}</view>
+						<view v-else-if="loading" class="cu-load loading"></view>
+						<view v-else class="billview" style="max-height: 750rpx;overflow: auto;">
+							
+							<view class="cu-list menu margin-top-sm">
+								<view v-if="data && data.length > 4" class="titleview flex align-center justify-end padding-sm">
+									<view class="checkallbtn text-gray" @tap.stop="checkAllBillRecord">
+										{{ i18n.base.checkall }}
+										<text class="text-df cuIcon-right"></text>
+									</view>
+								</view>
+								<view class="cu-item arrow" v-for="(item, index) in data" :key="item._id" @tap.stop="checkBillDetail(item)">
+									<!-- 列表内容 -->
+									<view class="content padding-sm">
+										<view class="topview">
+											<text class="text-bold margin-right-sm" :class="[ item.type == 0 ? 'cuIcon-move text-green' : 'cuIcon-add text-red']"></text>
+											<text class="text-price text-bold text-xl" :class="[ item.type == 0 ? 'text-green' : 'text-red' ]">{{ item.price }}</text>
+											<!-- 待确认状态下显示 -->
+											<view v-if="item.status == 0" class="text-sm margin-left-sm" @tap.stop="showConfirmTip">
+												<text class="cuIcon cuIcon-questionfill text-gray"></text>
+											</view>
+										</view>
+										<view class="bottomview text-grey text-sm">
+											<uni-dateformat :date="item.creatTime" format="yy/MM/dd hh:mm:ss"/>
+										</view>
+									</view>
+									<view class="action">
+										<text class="cu-tag round text-sm">{{ i18n.me.wallet.billType[item.billType] }}</text>
+									</view>
+								</view>
+							</view>
+							
+						</view>
+					</unicloud-db>
 					
 				</view>
 				
-			</view>
-			
-			<!-- 未开通钱包 -->
-			<view v-else class="nowalletview flex align-center justify-center margin">
-				<button class="cu-btn round lg bg-yellow text-white text-bold" @tap.stop="startToOpenWallet">{{ i18n.me.wallet.openwallet }}</button>
 			</view>
 			
 		</view>
 		
-		<!-- 底部区域  根据是充值还是钱包普通页面选择渲染不同的组件 -->
-		<template>
-			
-			<!-- 消费充值记录区域 -->
-			<view v-if=" bottomType == 'record' && walletInfo " class="recordlistview padding margin">
-				
-				<!-- 切换选项 -->
-				<u-subsection mode="button" :list="subsectionlist" :current="sectionIndex" active-color="#e54d42" @change="sectionChange"></u-subsection>
-				
-				<!-- 其他的内容视图 -->
-				<unicloud-db  v-slot:default="{data, loading, error, options}" collection="bill"
-							ref="udb"
-							:where=" `creatUid == $cloudEnv_uid && type == ${billType}` "
-							orderby="creatTime desc"
-							:page-size="5" page-data="replace"
-				>
-					<view v-if="error">{{error.message}}</view>
-					<view v-else-if="loading" class="cu-load loading"></view>
-					<view v-else class="billview" style="max-height: 600rpx;overflow: auto;">
-						
-						<view class="cu-list menu margin-top-sm">
-							<view v-if="data && data.length > 4" class="titleview flex align-center justify-end padding-sm">
-								<view class="checkallbtn text-gray" @tap.stop="checkAllBillRecord">
-									{{ i18n.base.checkall }}
-									<text class="text-df cuIcon-right"></text>
-								</view>
-							</view>
-							<view class="cu-item arrow" v-for="(item, index) in data" :key="item._id" @tap.stop="checkBillDetail(item)">
-								<view class="content">
-									<view class="topview">
-										<text class="text-bold margin-right-sm" :class="[ item.type == 0 ? 'cuIcon-move text-green' : 'cuIcon-add text-red']"></text>
-										<text class="text-price text-bold text-xl" :class="[ item.type == 0 ? 'text-green' : 'text-red' ]">{{ item.price }}</text>
-										
-										<!-- 待确认状态下有该值 -->
-										<view v-if="item.status == 0" class="text-sm">
-											<text class="cuIcon cuIcon-infofill text-grey margin-left">{{ i18n.me.wallet.waittoconfirm }}</text>
-										</view>
-									</view>
-									<view class="bottomview text-grey text-sm">
-										<uni-dateformat :date="item.creatTime" />
-									</view>
-								</view>
-								<view class="action">
-									
-								</view>
-							</view>
-						</view>
-						
-					</view>
-				</unicloud-db>
-				
-			</view>
+		<view v-if="pageType == 'charge' ">
 			
 			<!-- 充值区域 -->
-			<view v-if="bottomType == 'charge' && chargePackages " class="chargeview">
+			<view class="chargeview">
 				
-				<swiper class="card-swiper round-dot" :indicator-dots="true" :circular="true"
-				 :autoplay="false" interval="5000" duration="500" @change="(index) => swiperCur=index" indicator-color="#8799a3"
-				 indicator-active-color="#e54d42">
-					<swiper-item v-for="(item,index) in chargePackages" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="selectPackageType = item.type">
-						<view class="swiper-item pos-relative">
-							
-							<view :class="[ 'bg-img flex align-center', item.colorItem.bgColorClass ]" :style="{height: '414rpx', backgroundImage: `url(${item.bgImg})`}" >
+				<!-- 手动输入金额区域 -->
+				<view class="manualinputview margin padding">
+					
+					<!-- 手动输入类型 -->
+					<view class="flex align-end">
+						<text class="text-price text-sl margin-right-sm"></text>
+						<u-input v-model="chargeMoney" type="digit" maxlength="9" :focus="true" :cursor-spacing="20" :clearable="false" placeholder="" :custom-style="{fontSize: '40px', fontWeight: 'bold', color: '#000000', borderBottom: '#CDCDCD 1px solid'}"></u-input>
+					</view>
+					
+				</view>
+				
+				<!-- 套餐选择区域 -->
+				<view v-if="chargePackages" class="chargepackagesview">
+					
+					<swiper class="card-swiper round-dot margin-top-sm" :indicator-dots="false" :circular="true"
+					 :autoplay="false" interval="5000" duration="500" @change="(e) => (swiperCur = e.detail.current)" indicator-color="#8799a3"
+					 indicator-active-color="#e54d42">
+					 
+						<swiper-item v-for="(item,index) in chargePackages" :key="index" :class="swiperCur==index?'cur':''" @tap.stop="selectPackage(item)">
+							<view class="swiper-item pos-relative">
 								
-								<view class="padding-xl text-white">
-									<view class="padding-xs text-xxl text-bold" :class="[item.colorItem.textColorClass]">
-										{{ `&yen ${item.price}` }}
-										<text v-if="item.extraPrice" class="margin-left-sm text-xl">{{ `+ ${item.extraPrice}` }}</text>
+								<view :class="[ 'bg-img height100', item.colorItem.bgColorClass ]" :style="{backgroundImage: `url(${item.bgImg})`}" >
+									
+									<view class="padding-xl flex flex-direction justify-center text-white height100">
+										<view class="padding-sm" :class="[item.colorItem.textColorClass]">
+											<text class="text-price text-df"></text>
+											<text class="text-sl text-bold">{{ item.price }}</text>
+											<text v-if="item.extraPrice" class="margin-left-sm text-xl">{{ `+ ${item.extraPrice}` }}</text>
+										</view>
+										<view v-if="item.desc" class="padding-sm text-lg">
+											{{ item.desc }}
+										</view>
 									</view>
-									<view class="padding-xs text-lg">
-										{{ item.desc }}
-									</view>
+									
+								</view>
+								
+								<view class="text-sl pos-absolute" style="top: 10rpx;right: 30rpx;">
+									<text class="cuIcon text-white" :class="[ selectPackageType == item.type ? 'cuIcon-roundcheckfill' : 'cuIcon-round' ]"></text>
 								</view>
 								
 							</view>
-							
-							<view class="text-sl pos-absolute" style="top: 10rpx;right: 30rpx;">
-								<text class="cuIcon text-white" :class="[ selectPackageType == item.type ? 'cuIcon-roundcheckfill' : 'cuIcon-round' ]"></text>
-							</view>
-							
-						</view>
-					</swiper-item>
-				</swiper>
-				
-				<view class="cu-bar btn-group padding-sm" :style="{position: 'fixed', bottom: 0, left: 0, right: 0}">
+						</swiper-item>
+						
+					</swiper>
 					
-					<button class="cu-btn bg-grey lg" @tap.stop="bottomType = 'record' ">{{ i18n.base.cancel }}</button>
+				</view>
+				
+				<!-- 确认按钮区域 -->
+				<view class="cu-bar btn-group padding-sm margin-top">
+					
+					<button class="cu-btn bg-grey lg" @tap.stop="pageType = 'wallet' ">{{ i18n.base.cancel }}</button>
 					
 					<button class="cu-btn bg-gradual-red shadow-blur lg" @tap.stop="startToCharge">
 						{{ i18n.base.confirm }}
-						<text class="text-bold text-sm">{{ showSelectPackagePrice() }}</text>
+						<text class="text-bold text-sm">{{ chargeMoney ? `(${$basejs.keepTwoDecimalFull(Number(chargeMoney))})` : '' }}</text>
 					</button>
 					
 				</view>
 				
 			</view>
 			
-		</template>
+		</view>
 		
 		<!-- 设置支付密码 -->
 		<u-keyboard
-			default=""
 			ref="uKeyboard" 
 			mode="number" 
 			:mask="true" 
@@ -250,13 +286,15 @@
 				
 				walletInfo: null, // 钱包数据  为null 代表暂未开通钱包
 				
-				bottomType: 'record', // 底部区域类型  record代表明细,charge代表充值
+				showBalanceFlag: true, // 显示余额
+				pageType: 'wallet', // 页面类型  wallet代表钱包页面,charge代表充值页面
 				
 				billType: 0, // 0 支出 1充值
 				subsectionlist: null, // 分段器数据
 				
 				swiperCur: 0, // 充值包的swiper索引
 				chargePackages: null, // 充值包数组
+				chargeMoney: '', // 充值金额
 				selectPackageType: null, // 选择充值包的类型
 				
 				keyboardShow: false, // 支付键盘是否显示  默认为否
@@ -275,7 +313,7 @@
 			
 			// 支付键盘提示文字
 			paykeyboardtipstr() {
-				
+
 				if(_this.inputStep == 1) {
 					if(_this.inputType == 'settingnewpwd') {
 						return _this.i18n.me.wallet.pleasetyenewpaypassword
@@ -403,10 +441,19 @@
 				})
 			},
 			
+			// 显示余额文字说明提示
+			showBalanceTip() {
+				uni.showModal({
+					content: _this.i18n.me.wallet.balancetip,
+					showCancel: false,
+					confirmText: _this.i18n.base.confirm
+				});
+			},
+			
 			// 充值钱包余额
 			chargeWallet() {
 				this.setChargePackges() // 设置充值数据
-				this.bottomType = 'charge'
+				this.pageType = 'charge'
 			},
 			
 			// 设置分段器数据
@@ -433,10 +480,18 @@
 				this.billType = this.subsectionlist[this.sectionIndex].type
 			},
 			
+			// 点击查看待确认状态
+			showConfirmTip() {
+				uni.showModal({
+					content: _this.i18n.me.wallet.balancetip,
+					showCancel: false,
+					confirmText: _this.i18n.base.confirm
+				});
+			},
+			
 			// 查看全部账单记录
 			checkAllBillRecord() {
 				let billType = this.billType
-				console.log(billType);
 				uni.navigateTo({
 					url: `/pages/me/billrecord?billType=${billType}`
 				});
@@ -452,40 +507,49 @@
 			
 			// 设置充值包数据
 			setChargePackges() {
-				
 				let configData = this.$store.getters.configData
-				console.log(configData);
 				if(configData && configData.chargePackagesInfo) {
 					
-					let chargePackages = configData.chargePackagesInfo.packages
+					// 注意此处不能直接赋值 否则会覆盖store中的config变量
+					let chargePackages = [...configData.chargePackagesInfo.packages]
 					chargePackages.forEach(item => {
 						let randomIndex = _this.$u.random(0, colorList.length - 1)
 						item.colorItem = colorList[randomIndex]
 					})
 					let defaultSelectType = configData.chargePackagesInfo.defaultType
-					
 					this.chargePackages = chargePackages
 					this.swiperCur = chargePackages.findIndex(item => (item.type == defaultSelectType))
-					this.selectPackageType = defaultSelectType
-					
+
 				}
 			},
 			
-			// 显示选中的充值包价格
-			showSelectPackagePrice() {
-				let selectPackage = this.chargePackages.find(item => item.type == _this.selectPackageType)
-				return selectPackage ? `(${selectPackage.price})` : ''
+			// 选择充值套餐类型
+			selectPackage(packageItem) {
+				
+				let selectPackageType = packageItem.type
+				// 设置充值金额
+				let chargeMoney = packageItem.price
+				this.chargeMoney = chargeMoney
+				this.selectPackageType = packageItem.type
+				
 			},
 			
 			// 开始充值
 			startToCharge() {
 				
-				this.bottomType = 'record'
-				let selectPackage = this.chargePackages.find(item => item.type == _this.selectPackageType)
-				let price = selectPackage.price
-				uni.navigateTo({
-					url: `/pages/makeorder/payment?type=walletcharge&totalPrice=${price}`
-				});
+				let chargeMoney = this.chargeMoney
+				if(chargeMoney) {
+					uni.navigateTo({
+						url: `/pages/makeorder/payment?type=walletcharge&totalPrice=${chargeMoney}`
+					});
+					this.pageType = 'wallet'
+				}
+				else {
+					uni.showToast({
+						title: _this.i18n.me.wallet.chargetip,
+						icon: 'none'
+					});
+				}
 				
 			},
 			

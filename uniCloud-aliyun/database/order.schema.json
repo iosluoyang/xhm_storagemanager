@@ -12,11 +12,53 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
+		"orderType" : {
+			"description":"订单类型  0普通订单  1心愿订单",
+			"defaultValue": 0,
+			"enum": [0,1]
+		},
+		"status": {
+			"bsonType": "int",
+			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货待评价 4已评价已完成 90已关闭",
+			"defaultValue": 0
+		},
+		"creatUid": {
+			"bsonType": "string",
+			"description": "下单人uid",
+			"foreignKey": "uni-id-users._id",
+			"forceDefaultValue": {
+				"$env":"uid"
+			}
+		},
 		"creatTime": {
 			"description": "创建时间 也即下单时间",
 			"forceDefaultValue": {
 				"$env": "now"
 			}
+		},
+		"productList": {
+			"bsonType":"array",
+			"description":"订单包含的商品列表"
+		},
+		"totalProPrice": {
+			"bsonType": "string",
+			"description": "商品总金额",
+			"defaultValue": ""
+		},
+		"totalDomesticShippingFee": {
+			"bsonType": "string",
+			"description": "国内运费总金额",
+			"defaultValue": ""
+		},
+		"totalCommissionFee": {
+			"bsonType": "string",
+			"description": "服务费总金额",
+			"defaultValue": ""
+		},
+		"totalOrderPrice": {
+			"bsonType": "string",
+			"description": "订单总价",
+			"defaultValue": ""
 		},
 		"payTime": {
 			"bsonType": "timestamp",
@@ -26,11 +68,6 @@
 		"payType": {
 			"bsonType": "string",
 			"description": "支付方式",
-			"defaultValue": ""
-		},
-		"payImgs": {
-			"bsonType": "string",
-			"description": "付款凭证图片",
 			"defaultValue": ""
 		},
 		"deliveryTime": {
@@ -127,62 +164,29 @@
 				}
 			}
 		},
-		"rateTime": {
+		"commentTime": {
 			"bsonType":"timestamp",
-			"description":"用户评分时间",
+			"description":"用户评价时间",
 			"defaultValue":""
 		},
-		"rateNum": {
+		"commentRateNum": {
 			"bsonType":"int",
 			"description":"评分分数",
 			"defaultValue": -1
 		},
-		"creatUid": {
+		"wishId": {
 			"bsonType": "string",
-			"description": "发布者的uid",
-			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
+			"description": "心愿单id",  // 当订单为心愿商品订单时有值
+			"foreignKey":"wish._id"
 		},
 		"agentUid": {
 			"bsonType": "string",
-			"description": "代理员的uid  订单有wishId值时存在 代表该订单对应的心愿单的代理人id",
+			"description": "代理员的uid  订单有wishId值时存在 代表该订单对应的心愿单的代理人uid",
 			"foreignKey": "uni-id-users._id" // 使用foreignKey表示，此字段关联uni-id-users表的_id
-		},
-		"status": {
-			"bsonType": "int",
-			"description": "订单状态  0已下单待付款 1已付款待发货 2已发货待收货 3已收货待评价 4已评价已完成 90已关闭"
-		},
-		"wishId": {
-			"bsonType": "string",
-			"description": "心愿单id",  // 当订单为从心愿单生成时有值
-			"foreignKey":"wish._id"
-		},
-		"productList": {
-			"bsonType":"array",
-			"description":"订单包含的商品列表"
-		},
-		"totalProPrice": {
-			"bsonType": "string",
-			"description": "商品总金额",
-			"defaultValue": ""
-		},
-		"totalCommissionFee": {
-			"bsonType": "string",
-			"description": "服务费总金额",
-			"defaultValue": ""
-		},
-		"totalDomesticShippingFee": {
-			"bsonType": "string",
-			"description": "国内运费总金额",
-			"defaultValue": ""
-		},
-		"totalOrderPrice": {
-			"bsonType": "string",
-			"description": "订单总价",
-			"defaultValue": ""
 		},
 		"thirdPlatformType": {
 			"bsonType": "string",
-			"description": "第三方平台类型",
+			"description": "该订单所属的第三方平台类型 代理使用",
 			"enum": [
 				"pro-1688",
 				"pro-taobao",
@@ -193,14 +197,8 @@
 		},
 		"thirdOrderNum": {
 			"bsonType": "string",
-			"description": "第三方订单号",
+			"description": "该订单所属的第三方平台订单号",
 			"defaultValue": ""
-		},
-		"thirdOrderImgs": {
-			"bsonType":"string",
-			"description":"第三方订单图片",
-			"defaultValue":""
 		}
-
 	}
 }

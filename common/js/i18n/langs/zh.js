@@ -16,8 +16,8 @@ const zh = {
 		translate: "文/A",
 		customerservice: "客服",
 		favor: "收藏",
+		addtocart: "加入购物车",
 		buynow: "立即购买",
-		shoppingcart: "购物车",
 		uploadimg: "图片上传",
 		share: "分享",
 		setshareparam: "设置分享内容",
@@ -60,7 +60,10 @@ const zh = {
 		wishdetail: "心愿详情",
 		me: "个人中心",
 		wallet: "钱包",
+		bill: "账单",
+		financialmanage: "财务管理",
 		storemanage: "店铺管理",
+		addressmanage: "地址管理",
 		shipping: "物流",
 		notice: "公告",
 		resetpwd: "重置密码",
@@ -417,9 +420,12 @@ const zh = {
 		wallet: {
 			income: "收入",
 			expense: "支出",
+			balance: "余额",
 			charge: "充值",
 			openwallet: "开通钱包账户",
 			openwallettip: "您还未开通钱包,点击确定即刻开通,后续可直接使用钱包余额进行支付，各种不定时优惠现金活动等您来参与!",
+			balancetip: "充值后需要经过平台管理员确认，确认通过余额实时到账，请您耐心等待。",
+			chargetip: "请输入充值金额或者选择充值套餐",
 			pleasetypepaypassword: "请输入支付密码",
 			pleasetyenewpaypassword: "请输入新的支付密码",
 			pleasetypepaypasswordagain: "请再次输入支付密码",
@@ -427,8 +433,22 @@ const zh = {
 			changepaypassword: "修改支付密码",
 			closewallet: "注销钱包",
 			paymentimgtip: "请上传支付凭证",
-			waittoconfirm: "等待管理员确认",
+			billType: {
+				0: "普通订单",
+				1: "心愿订单",
+				2: "用户充值",
+				3: "平台赠送"
+			},
 		},
+		
+		address: {
+			name: "姓名",
+			mobile: "联系电话",
+			address: "详细地址",
+			shippingcode: "唛头",
+			alias: "标签",
+			setdefault: "设为默认地址",
+		}
 		
 	},
 	

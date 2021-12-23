@@ -35,6 +35,11 @@
 	}
 }
 
+// 设置原生的下拉刷新样式
+.uni-page-refresh{
+	z-index: 99999 !important;
+}
+
 // 动画相关
 @keyframes show {
 	0% {

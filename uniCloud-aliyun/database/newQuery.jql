@@ -64,3 +64,6 @@ db.collection('wish').doc('61af110acd02c3000107ddd3').update({
 
 db.collection('order').remove()
 
+db.collection('wish').doc('61b0c8c1b804f80001608ee5').update({
+	status: 2
+})

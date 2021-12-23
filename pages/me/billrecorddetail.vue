@@ -2,10 +2,12 @@
 	<view class="pagecontent bgf5">
 
 		<!-- 自定义导航栏 -->
-		<cu-custom bgColor="bg-gradual-orange"></cu-custom>
+		<cu-custom bgColor="bg-gradual-orange">
+			<block slot="content">{{i18n.nav.bill}}</block>
+		</cu-custom>
 
-		<unicloud-db v-slot:default="{data, loading, error, options}" collection="bill" ref="udb"
-			:where=" `_id == '${id}'` " :getone="true">
+		<unicloud-db manual v-slot:default="{data, loading, error, options}" collection="bill" ref="udb"
+			:where="wherestr" :getone="true">
 			
 			<view v-if="error">{{error.message}}</view>
 			<view v-else-if="loading" class="cu-load loading"></view>
@@ -25,16 +27,19 @@
 					<!-- 账单收入支出类型 -->
 					<view class="cu-item">
 						<view class="content">
-							<text class="cuIcon cuIcon-calendar text-grey"></text>
-							<text>{{ data.type == 0 ? i18n.me.wallet.expense : i18n.me.wallet.income }}</text>
+							<text class="cuIcon cuIcon-rank text-grey"></text>
+							<text class="text-bold" :class="[ data.type == 0 ? 'cuIcon-move text-green' : 'cuIcon-add text-red']"></text>
+							<text class="text-price text-bold text-xl" :class="[ data.type == 0 ? 'text-green' : 'text-red' ]">{{ data.price }}</text>
 						</view>
 					</view>
 					
-					<!-- 账单金额 -->
-					<view class="cu-item">
+					<!-- 账单待确认状态 -->
+					<view v-if="data.status == 0" class="cu-item">
 						<view class="content">
-							<text class="cuIcon cuIcon-refund text-grey"></text>
-							<text class="text-price">{{ data.price }}</text>
+							<text class="cuIcon cuIcon-info text-grey"></text>
+						</view>
+						<view class="action padding-sm">
+							<text class="text-df">{{ i18n.me.wallet.balancetip }}</text>
 						</view>
 					</view>
 					
@@ -42,7 +47,7 @@
 					<view class="cu-item">
 						<view class="content">
 							<text class="cuIcon cuIcon-sort text-grey"></text>
-							<text>{{ data.billType }}</text>
+							<text>{{ i18n.me.wallet.billType[data.billType] }}</text>
 						</view>
 					</view>
 					
@@ -84,7 +89,7 @@
 			return {
 
 				id: null, // 账单id
-
+				wherestr: '', // udb的where 查询语句
 			};
 		},
 
@@ -93,6 +98,13 @@
 			_this = this
 			if(option.id) {
 				this.id = option.id
+				this.wherestr = `_id == '${this.id}'`
+			}
+		},
+		
+		onReady() {
+			if (this.id) {
+				this.$refs.udb.loadData()
 			}
 		},
 

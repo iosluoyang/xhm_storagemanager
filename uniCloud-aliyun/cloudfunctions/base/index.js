@@ -93,13 +93,13 @@ exports.main = async (event, context) => {
 				.doc(orderId)
 				.get()
 			orderInfo = orderres.data[0]
-			productTitle = orderInfo.title.substr(0,10) + '...'
+			productTitle = orderInfo.productList[0].substr(0,10) + '...'
 			
 			console.log(`获取的订单详情`);
 			console.log(orderInfo);
 			
-			creatUserId = orderInfo.creatUser
-			agentUserId = orderInfo.agentUser
+			creatUserId = orderInfo.creatUid
+			agentUserId = orderInfo.agentUid
 			
 		}
 		
@@ -204,8 +204,6 @@ exports.main = async (event, context) => {
 			
 		}
 		
-		// 截止此处...
-		
 		// 客户完成支付(发送给代理员)
 		else if(msgtype == 'finishpay') {
 			
@@ -221,13 +219,15 @@ exports.main = async (event, context) => {
 				time8: {value: currenttimestr}, // 推送时间
 			}
 			
-			page = `/pages/order/orderdetail?wishOrderId=${orderId}&ifShare=true`
+			page = `/pages/order/orderdetail?orderId=${orderId}&ifShare=true`
 			
 			console.log(`模拟发送的消息体为:`);
 			console.log(data);
 			console.log(page);
 			
 		}
+		
+		// 截止此处...
 		
 		// 代理员下单(发送给客户)
 		else if(msgtype == 'purchaseorder') {
